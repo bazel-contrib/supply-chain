@@ -42,6 +42,7 @@ _package_metadata = rule(
         "attributes": attr.label_list(
             mandatory = False,
             doc = """
+A list of `attributes` of the package (e.g., source location, license, ...).
 """.strip(),
             providers = [
                 PackageAttributeInfo,
