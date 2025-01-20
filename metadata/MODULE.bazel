@@ -3,5 +3,5 @@ module(
     version = "HEAD",  # Automatically updated by release pipeline.
 )
 
-# This is a fundamental module that's dependet on by virtually every bazel
+# This is a fundamental module that's depended on by virtually every bazel
 # module and **MUST NOT** have any dependencies.
