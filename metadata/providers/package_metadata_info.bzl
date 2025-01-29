@@ -1,6 +1,17 @@
 """Declares provider `PackageMetadataInfo`."""
 
-PackageMetadataInfo = provider(
+def _init(metadata, files = []):
+    return {
+        "files": depset(
+            direct = [
+                metadata,
+            ],
+            transitive = files,
+        ),
+        "metadata": metadata,
+    }
+
+PackageMetadataInfo, _create = provider(
     doc = """
 Provider for declaring metadata about a Bazel package.
 """.strip(),
@@ -15,4 +26,5 @@ The [File](https://bazel.build/rules/lib/builtins/File) containing metadata
 about the package.
 """.strip(),
     },
+    init = _init,
 )

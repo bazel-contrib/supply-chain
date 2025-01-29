@@ -27,12 +27,7 @@ def _package_metadata_impl(ctx):
         ),
         PackageMetadataInfo(
             metadata = metadata,
-            files = depset(
-                direct = [
-                    metadata,
-                ],
-                transitive = [a.files for a in attributes],
-            ),
+            files = [a.files for a in attributes],
         ),
     ]
 
@@ -64,7 +59,6 @@ Rule for declaring `PackageMetadataInfo`, typically of a `bzlmod` module.
 """.strip(),
 )
 
-# TODO(yannic): Remove wrapper when Starlark rules support `deleted_attributes`.
 def package_metadata(
         # Disallow unnamed attributes.
         *,
