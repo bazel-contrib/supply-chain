@@ -1,5 +1,5 @@
-load("//:defs.bzl", "package_metadata")
-load("//licenses:defs.bzl", "license")
+load("//licenses/rules:license.bzl", "license")
+load("//rules:package_metadata.bzl", "package_metadata")
 
 package_metadata(
     name = "package_metadata",

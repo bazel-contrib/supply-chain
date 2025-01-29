@@ -1,7 +1,7 @@
 """Declares rule `package_metadata`."""
 
-load("//private/providers:package_attribute_info.bzl", "PackageAttributeInfo")
-load("//private/providers:package_metadata_info.bzl", "PackageMetadataInfo")
+load("//providers:package_attribute_info.bzl", "PackageAttributeInfo")
+load("//providers:package_metadata_info.bzl", "PackageMetadataInfo")
 
 def _package_metadata_impl(ctx):
     attributes = [a[PackageAttributeInfo] for a in ctx.attr.attributes]

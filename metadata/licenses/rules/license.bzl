@@ -1,6 +1,6 @@
 """Declares rule `license`."""
 
-load("//:defs.bzl", "PackageAttributeInfo")
+load("//providers:package_attribute_info.bzl", "PackageAttributeInfo")
 
 def _license_impl(ctx):
     metadata = ctx.actions.declare_file("{}.package-metadata.attribute.build.bazel.supply-chain.license.json".format(ctx.attr.name))
