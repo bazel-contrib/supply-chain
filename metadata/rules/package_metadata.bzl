@@ -3,6 +3,8 @@
 load("//providers:package_attribute_info.bzl", "PackageAttributeInfo")
 load("//providers:package_metadata_info.bzl", "PackageMetadataInfo")
 
+visibility("public")
+
 def _package_metadata_impl(ctx):
     attributes = [a[PackageAttributeInfo] for a in ctx.attr.attributes]
 

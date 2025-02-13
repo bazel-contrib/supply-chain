@@ -1,5 +1,7 @@
 """Declares provider `PackageAttributeInfo`."""
 
+visibility("public")
+
 def _init(kind, attributes, files = []):
     return {
         "attributes": attributes,

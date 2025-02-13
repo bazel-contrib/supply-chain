@@ -1,5 +1,7 @@
 """Declares provider `PackageMetadataInfo`."""
 
+visibility("public")
+
 def _init(metadata, files = []):
     return {
         "files": depset(

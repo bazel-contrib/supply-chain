@@ -1,4 +1,4 @@
-load("//rules:package_metadata.bzl", "package_metadata")
+load("//:defs.bzl", "package_metadata")
 
 package_metadata(
     name = "package_metadata",
