@@ -18,4 +18,5 @@ jobs:
   release:
     uses: bazel-contrib/.github/.github/workflows/release_ruleset.yaml@c9d6d1893b10a8d68584a6ba52c3dd35506486d0 # 2024-12-03
     with:
+      bazel_test_command: cd metadata; bazel test //...
       release_files: supply-chain-*.tar.gz
