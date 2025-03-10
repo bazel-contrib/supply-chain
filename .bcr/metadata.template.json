@@ -2,11 +2,15 @@
   "homepage": "https://github.com/bazel-contrib/supply-chain",
   "maintainers": [
     {
-      "github": "Yannic"
-    },
-    {
-      "github": "TheGrizzlyDev"
-    }
+            "email": "antonio@engflow.com",
+            "github": "TheGrizzlyDev",
+            "name": "Antonio Di Stefano"
+        },
+        {
+            "email": "yannic@engflow.com",
+            "github": "Yannic",
+            "name": "Yannic Bonenberger"
+        }
   ],
   "repository": ["github:bazel-contrib/supply-chain"],
   "versions": [],
