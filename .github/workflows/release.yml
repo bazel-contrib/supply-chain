@@ -1,0 +1,23 @@
+# Cut a release whenever a new tag appears on the repository.
+name: Release
+
+on:
+  # Developers can manually push a tag from their clone.
+  push:
+    tags:
+      # NB: this assumes a consistent tagging scheme for the repo.
+      # If/when there are multiple Bazel modules, we may find that semver requires
+      # one to remain stable while another has breaking changes. In that case we'll
+      # have to have a tagging scheme that versions modules independently.
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    uses: bazel-contrib/.github/.github/workflows/release_ruleset.yaml@c9d6d1893b10a8d68584a6ba52c3dd35506486d0 # 2024-12-03
+    with:
+      # TODO: change to test when there are any test targets
+      bazel_test_command: cd metadata; bazel build //...
+      release_files: supply-chain-*.tar.gz
