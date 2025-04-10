@@ -7,6 +7,11 @@
             "name": "Antonio Di Stefano"
         },
         {
+            "email": "fwe@google.com",
+            "github": "fweikert",
+            "name": "Florian Weikert"
+        },
+        {
             "email": "yannic@engflow.com",
             "github": "Yannic",
             "name": "Yannic Bonenberger"
