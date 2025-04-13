@@ -1,0 +1,16 @@
+# Bazel convenience symlinks.
+/bazel-*
+
+# bzlmod
+/MODULE.bazel.lock
+
+# VSCode
+/.vscode
+
+# JetBrains IDEs-
+/.ijwb
+/.clwb
+/.idea
+
+# macOS-specific excludes
+.DS_Store
