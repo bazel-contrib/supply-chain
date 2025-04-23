@@ -71,7 +71,7 @@ type packageMetadata struct {
 /*
  * PackageMetadata implementation
  */
-var _ PackageMetadata = &packageMetadata{}
+var _ PackageMetadata = (*packageMetadata)(nil)
 
 func (p *packageMetadata) packageMetadataPrivate() {
 	// Nothing to do.
@@ -88,8 +88,8 @@ func (p *packageMetadata) GetAttribute(d PackageAttributeDescriptor[any]) (any, 
 /*
  * JSON implementation.
  */
-var _ json.Marshaler = &packageMetadata{}
-var _ json.Unmarshaler = &packageMetadata{}
+var _ json.Marshaler = (*packageMetadata)(nil)
+var _ json.Unmarshaler = (*packageMetadata)(nil)
 
 type rawPackageMetadata struct {
 	Label      string            `json:"label"`
