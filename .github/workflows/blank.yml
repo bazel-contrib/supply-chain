@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+    branches:
+      - "main"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: "Bazel latest: @package_metadata (Linux x64)"
+            bazel: "rolling"
+            package: "metadata"
+            runner: "ubuntu-latest"
+
+          - name: "Bazel 8.x: @package_metadata (Linux x64)"
+            bazel: "8.x"
+            package: "metadata"
+            runner: "ubuntu-latest"
+
+          - name: "Bazel 7.x: @package_metadata (Linux x64)"
+            bazel: "8.x"
+            package: "metadata"
+            runner: "ubuntu-latest"
+
+    runs-on:
+      - "${{ matrix.package }}"
+
+    steps:
+      - uses: "actions/checkout@v4"
+
+      - name: "Build"
+        working-directory: "${{ github.workspace }}/${{ matrix.package }}"
+        run: |
+          bazel build //...
