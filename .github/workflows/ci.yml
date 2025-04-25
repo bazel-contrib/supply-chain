@@ -43,4 +43,5 @@ jobs:
         env:
           USE_BAZEL_VERSION: "${{ matrix.bazel_version }}"
         run: |
+          echo "Using ${USE_BAZEL_VERSION}"
           bazel build //...
