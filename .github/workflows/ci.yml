@@ -44,3 +44,5 @@ jobs:
           USE_BAZEL_VERSION: "${{ matrix.bazel_version }}"
         run: |
           bazel build //...
+
+      # TODO(yannic): Run tests one there are tests.
