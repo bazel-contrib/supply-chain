@@ -33,7 +33,7 @@ jobs:
             runner: "ubuntu-latest"
 
     runs-on:
-      - "${{ matrix.package }}"
+      - "${{ matrix.runner }}"
 
     steps:
       - uses: "actions/checkout@v4"
