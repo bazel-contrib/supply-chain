@@ -28,7 +28,7 @@ jobs:
             runner: "ubuntu-latest"
 
           - name: "Bazel 7.x: @package_metadata (Linux x64)"
-            bazel_version: "8.x"
+            bazel_version: "7.x"
             package: "metadata"
             runner: "ubuntu-latest"
 
@@ -43,5 +43,4 @@ jobs:
         env:
           USE_BAZEL_VERSION: "${{ matrix.bazel_version }}"
         run: |
-          echo "Using ${USE_BAZEL_VERSION}"
           bazel build //...
