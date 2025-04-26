@@ -47,19 +47,12 @@ jobs:
     steps:
       - uses: "actions/checkout@v4"
 
-      - name: "Build"
-        working-directory: "${{ github.workspace }}/${{ matrix.package }}"
-        env:
-          USE_BAZEL_VERSION: "${{ matrix.bazel_version }}"
-        run: |
-          bazel build //...
-
       - name: "Test"
-        if: success() && ${{ matrix.bazel_version }}
         working-directory: "${{ github.workspace }}/${{ matrix.package }}"
         env:
           USE_BAZEL_VERSION: "${{ matrix.bazel_version }}"
         run: |
           bazel test //...
-
-      # TODO(yannic): Run tests once there are tests.
+          if [[ "$?" = "4" ]]; then
+            exit 0
+          fi
