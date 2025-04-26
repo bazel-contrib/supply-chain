@@ -12,7 +12,7 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  checks:
     strategy:
       fail-fast: false
       matrix:
@@ -26,19 +26,16 @@ jobs:
             bazel_version: "rolling"
             package: "metadata"
             runner: "ubuntu-latest"
-            skip_testing: true
 
           - name: "Bazel 8.x: @package_metadata (Linux x64)"
             bazel_version: "8.x"
             package: "metadata"
             runner: "ubuntu-latest"
-            skip_testing: true
 
           - name: "Bazel 7.x: @package_metadata (Linux x64)"
             bazel_version: "7.x"
             package: "metadata"
             runner: "ubuntu-latest"
-            skip_testing: true
 
     runs-on:
       - "${{ matrix.runner }}"
@@ -46,18 +43,8 @@ jobs:
     steps:
       - uses: "actions/checkout@v4"
 
-      - name: "Build"
-        if: success() && !!${{ matrix.skip_testing }}
+      - name: "Run (Bash)"
         working-directory: "${{ github.workspace }}/${{ matrix.package }}"
         env:
           USE_BAZEL_VERSION: "${{ matrix.bazel_version }}"
-        run: |
-          bazel build //...
-
-      - name: "Test"
-        if: success() && !${{ matrix.skip_testing }}
-        working-directory: "${{ github.workspace }}/${{ matrix.package }}"
-        env:
-          USE_BAZEL_VERSION: "${{ matrix.bazel_version }}"
-        run: |
-          bazel test //...
+        run: bash "${{ github.workspace }}/.github/workflows/ci.sh"
