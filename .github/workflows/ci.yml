@@ -19,7 +19,7 @@ jobs:
         include:
           - name: "Docs"
             bazel_version: "rolling"
-            package: "metadata"
+            package: "docs"
             runner: "ubuntu-latest"
             test: true
 
