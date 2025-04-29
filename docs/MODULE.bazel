@@ -1,0 +1,32 @@
+module(
+    name = "supply-chain-docs",
+    version = "HEAD",
+)
+
+bazel_dep(
+    name = "bazel_skylib",
+    version = "1.7.1",
+)
+bazel_dep(
+    name = "stardoc",
+    version = "0.8.0",
+)
+
+#
+# Modules from this repository.
+#
+
+bazel_dep(
+    name = "package_metadata",
+    # Always overridden to use local path.
+    version = "HEAD",
+)
+
+#
+# Overrides from modules from this repository.
+#
+
+local_path_override(
+    module_name = "package_metadata",
+    path = "../metadata",
+)

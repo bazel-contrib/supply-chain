@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+    branches:
+      - "main"
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: "Docs"
+            bazel_version: "rolling"
+            package: "docs"
+            runner: "ubuntu-latest"
+
+          - name: "Bazel latest: @package_metadata (Linux x64)"
+            bazel_version: "rolling"
+            package: "metadata"
+            runner: "ubuntu-latest"
+
+          - name: "Bazel 8.x: @package_metadata (Linux x64)"
+            bazel_version: "8.x"
+            package: "metadata"
+            runner: "ubuntu-latest"
+
+          - name: "Bazel 7.x: @package_metadata (Linux x64)"
+            bazel_version: "7.x"
+            package: "metadata"
+            runner: "ubuntu-latest"
+
+    runs-on:
+      - "${{ matrix.runner }}"
+
+    steps:
+      - uses: "actions/checkout@v4"
+
+      - name: "Run (Bash)"
+        working-directory: "${{ github.workspace }}/${{ matrix.package }}"
+        env:
+          USE_BAZEL_VERSION: "${{ matrix.bazel_version }}"
+        run: bash "${{ github.workspace }}/.github/workflows/ci.sh"
