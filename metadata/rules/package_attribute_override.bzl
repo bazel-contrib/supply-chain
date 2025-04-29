@@ -8,7 +8,7 @@ visibility("public")
 def _package_attribute_override_impl(ctx):
     return [
         PackageAttributeOverrideInfo(
-            package = ctx.label.relative(ctx.attr.package),
+            package = Label(ctx.attr.package),
             overrides = [o[PackageAttributeInfo] for o in ctx.attr.overrides],
         ),
     ]
@@ -37,22 +37,26 @@ Rule for declaring overrides for a `package_metadata` attribute.
 """.strip(),
 )
 
-def package_attribute_override(
-        # Disallow unnamed attributes.
-        *,
-        # `_package_attribute_override` attributes.
-        name,
-        package,
-        overrides = [],
-        # Common attributes (subset since this target is non-configurable).
-        visibility = None):
+def _macro_impl(package, **kwargs):
     _package_attribute_override(
-        # `_package_attribute_override` attributes.
-        name = name,
-        package = package,
-        overrides = overrides,
-
-        # Common attributes.
-        visibility = visibility,
+        package = str(package),
         applicable_licenses = [],
+        **kwargs
     )
+
+package_attribute_override = macro(
+    implementation = _macro_impl,
+    inherit_attrs = _package_attribute_override,
+    attrs = {
+        # This trick of defining `package` as `string` in rule
+        # `package_attribute_override` above and as `label` in this macro allows
+        # us to emulate no-dep labels.
+        "package": attr.label(
+            mandatory = True,
+            configurable = False,
+            doc = """
+The label of the package these overrides are for.
+""".strip(),
+        ),
+    },
+)

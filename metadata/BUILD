@@ -24,4 +24,5 @@ package_metadata(
         module_name(),
         module_version(),
     ),
+    visibility = ["//visibility:public"],
 )

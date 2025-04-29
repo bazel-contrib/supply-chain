@@ -3,6 +3,10 @@ module(
     version = "HEAD",
 )
 
+register_toolchains(
+    "//:baz",
+)
+
 bazel_dep(
     name = "bazel_skylib",
     version = "1.7.1",
