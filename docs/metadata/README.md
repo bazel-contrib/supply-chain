@@ -51,7 +51,7 @@ If you are a module author and want to annotate your module, you will need to ta
 
     `package_metadata` itself only provides information about the identity of a module or package and where it was retrieved from. Additional metadata is provided as `attributes` to the `package_metadata` target (e.g., the license the packages are under, ...).
 
-    > Definition of attributes are currently under development and not ready for wider usage yet. Please avoid adding attributes in OSS module for now.
+    > Definition of attributes are currently under development and not ready for wider usage yet. Please avoid adding attributes to OSS modules for now.
 
   - Annotate all targets with `package_metadata`.
 
