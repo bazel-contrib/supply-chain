@@ -1,6 +1,6 @@
 # Module `@package_metadata`
 
-Rules for injecting supply-chain metadata into Bazel modules (sometimes also called `"repostory"` or `"workspace"`) and packages.
+Rules for injecting supply-chain metadata into Bazel projects.
 
 ## Stability
 
