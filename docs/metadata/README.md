@@ -71,7 +71,7 @@ If you are a module author and want to annotate your module, you will need to ta
         )
         ```
 
-        While this allows very fine grained control over the metadata of a target, it's also very tidious to modify all targets in a module. This method should therefore be reserved for targets with different metadata.
+        While this allows very fine grained control over the metadata of a target, it's also very tedious to modify all targets in a module. This method should therefore be reserved for targets with different metadata.
 
       - Add `default_package_metadata` to all packages
 
