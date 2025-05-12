@@ -14,6 +14,8 @@ PackageAttributeInfo(<a href="#PackageAttributeInfo-kind">kind</a>, <a href="#Pa
 
 Provider for declaring metadata about a Bazel package.
 
+**Fields in this provider are not covered by the stability gurantee.**
+
 **FIELDS**
 
 | Name  | Description | Default Value |

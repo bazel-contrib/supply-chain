@@ -1,6 +1,103 @@
 # Module `@package_metadata`
 
-Bazel module for injecting supply-chain metadata into build graphs.
+Rules for injecting supply-chain metadata into Bazel modules (sometimes also called `"repostory"` or `"workspace"`) and packages.
+
+## Stability
+
+This is a fundamental module of the Bazel ecosystem that most, if not all, other Bazel modules depend on. Thus stability is very important, and we promise to never change the public API.
+
+> **IMPORTANT**: This module is currently under active development, and not all exported symbols are covered by this stability gurantee. Please refer to the documentation of rules and providers for whether they are currently considered stable.
+
+
+## Usage
+
+The rules and providers in this module have two primary audiences:
+
+  - Authors of modules in the [Bazel Central Registry](https://registry.bazel.build) (or private registries) that want to annotate their module/packages/targets, and
+  - Organizations that want to consume annotations for compliance checks or for producing provanance information for artifacts.
+
+### As module author
+
+If you are a module author and want to annotate your module, you will need to take the following steps:
+
+  - Add a dependency on `package_metadata` to your `MODULE.bazel` file.
+
+    ```starlark
+    bazel_dep(name = "package_metadata", version = "<check releases>")
+    ```
+
+  - Create `package_metadata` target(s) for declaring metadata.
+
+    This target is typically in the top-level `BUILD.bazel` file.
+
+    > Modules typically need only a single `package_metadata` target. However, multiple targets can be required in some cases (e.g., when some targets are licensed under a different license).
+
+    ```starlark
+    load("@package_metadata//rules:package_metadata.bzl", "package_metadata")
+
+    package_metadata(
+        name = "package_metadata",
+        purl = "pkg:bazel/{}@{}".format(module_name(), module_version()),
+        attributes = [
+            # ...
+        ],
+        visibility = ["//visibility:public"],
+    )
+    ```
+
+    <!-- TODO(yannic): use PURL builder instead of a format string. -->
+
+  - (optional) Add `attributes` to your `package_metadata` target(s).
+
+    `package_metadata` itself only provides information about the identity of a module or package and where it was retrieved from. Additional metadata is provided as `attributes` to the `package_metadata` target (e.g., the license the packages are under, ...).
+
+    > Definition of attributes are currently under development and not ready for wider usage yet. Please avoid adding attributes in OSS module for now.
+
+  - Annotate all targets with `package_metadata`.
+
+    This step is required for consumers to access the declared metadata.
+
+    There are three options to annotate targets:
+
+      - Add `package_metadata` to all targets individually:
+
+        ```starlark
+        foo_library(
+            name = "hello",
+            package_metadata = [
+                "//:package_metadata",
+            ],
+            # ...
+        )
+        ```
+
+        While this allows very fine grained control over the metadata of a target, it's also very tidious to modify all targets in a module. This method should therefore be reserved for targets with different metadata.
+
+      - Add `default_package_metadata` to all packages
+
+        ```starlark
+        package(default_package_metadata = ["//:package_metadata"])
+        ```
+
+        This provides a simple way to annotate all targets in a package, while preserving the ability to annotate some targets in the package with a different metadata using the method above.
+
+      - Add `default_package_metadata` to `REPO.bazel`
+
+        This method is very similar to adding `default_package_metadata` to all packages, but it requires changing a single file only.
+
+        ```starlark
+        package(default_package_metadata = ["//:package_metadata"])
+        ```
+
+        This provides a simple way to annotate all targets in a package, while preserving the ability to annotate some packages or targets in the package with a different metadata using the methods above.
+
+  - Publish your module.
+
+### As an organization
+
+> This is currently under active development.
+>
+> We will update this page after stabilizing the API.
 
 
 ## API Documentation

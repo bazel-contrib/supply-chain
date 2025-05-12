@@ -14,6 +14,8 @@ PackageMetadataInfo(<a href="#PackageMetadataInfo-metadata">metadata</a>, <a hre
 
 Provider for declaring metadata about a Bazel package.
 
+**Fields in this provider are not covered by the stability gurantee.**
+
 **FIELDS**
 
 | Name  | Description | Default Value |
