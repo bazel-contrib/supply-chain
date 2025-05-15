@@ -20,5 +20,9 @@ filegroup(
 
 package_metadata(
     name = "package_metadata",
-    purl = "pkg:github/bazel-contrib/supply-chain@HEAD",
+    purl = "pkg:bazel/{}@{}".format(
+        module_name(),
+        module_version(),
+    ),
+    visibility = ["//visibility:public"],
 )
