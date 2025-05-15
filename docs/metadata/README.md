@@ -14,7 +14,7 @@ This is a fundamental module of the Bazel ecosystem that most, if not all, other
 The rules and providers in this module have two primary audiences:
 
   - Authors of modules in the [Bazel Central Registry](https://registry.bazel.build) (or private registries) that want to annotate their module/packages/targets, and
-  - Organizations that want to consume annotations for compliance checks or for producing provanance information for artifacts.
+  - Organizations that want to consume annotations for compliance checks or for producing provenance information for artifacts.
 
 ### As module author
 
