@@ -1,12 +1,25 @@
 # Module `@package_metadata`
 
-Rules for injecting supply-chain metadata into Bazel projects.
+General-purpose rules for injecting supply-chain metadata into Bazel projects (e.g., for generating [SBOM](https://www.ntia.gov/page/software-bill-materials)s for shipped software artifacts). 
+
 
 ## Stability
 
 This is a fundamental module of the Bazel ecosystem that most, if not all, other Bazel modules depend on. Thus stability is very important, and we promise to never change the public API.
 
 > **IMPORTANT**: This module is currently under active development, and not all exported symbols are covered by this stability gurantee. Please refer to the documentation of rules and providers for whether they are currently considered stable.
+
+
+## Concepts
+
+Requirements for software supply-chain security measures vary widely depending on the organization building the product or the jurisdiction(s) the software is shipped to. They are also subject to change over time as laws evolve over time and companies find themselves in need to comply to these new requirements from governments around the world. Hence, the rules to inject supply-chain metadata needs to be very customizable.
+
+The core of this module is built around `package`s and `attribute`s.
+
+  - `package` is used to identify (third-party) software and track its origin (e.g., `npm` module, `maven` artifact, or Rust `crate` its downloaded from). We use [PURL](https://github.com/package-url/purl-spec)s for this.
+  - `attribute`s are used to declare metadata attached to `package`s (e.g., the License, or who the maintainers are). They are identified by `kind` to distinguish between different types of `attribute`s.
+    - This provides the primary extension point for organizations to inject the metadata they need.
+    - While we encourage organizations to adopt "well-known" `attribute`s provided in this module whenever possible, custom `attribute`s are also expected.
 
 
 ## Usage
