@@ -5,32 +5,57 @@ load("//providers:package_metadata_info.bzl", "PackageMetadataInfo")
 
 visibility("public")
 
+def _resolve_attributes(*, label, attributes, toolchain):
+    attribute_map = {a.kind: a for a in attributes}
+
+    if toolchain:
+        overrides = toolchain.package_metadata.overrides.get(label, None)
+        if overrides:
+            for kind, attribute in overrides.overrides.items():
+                attribute_map[kind] = attribute
+
+    metadata = {kind: attribute.attributes.path for kind, attribute in attribute_map.items()}
+    return metadata, [attribute.files for attribute in attribute_map.values()]
+
+def _create_package_metadata(*, actions, output, label, purl, attributes = [], toolchain = None):
+    resolved_attributes, files = _resolve_attributes(
+        label = label,
+        attributes = attributes,
+        toolchain = toolchain,
+    )
+
+    actions.write(
+        output = output,
+        content = json.encode({
+            "attributes": resolved_attributes,
+            "label": str(label),
+            "purl": purl,
+        }),
+    )
+
+    return PackageMetadataInfo(
+        metadata = output,
+        files = files,
+    )
+
 def _package_metadata_impl(ctx):
     attributes = [a[PackageAttributeInfo] for a in ctx.attr.attributes]
 
     metadata = ctx.actions.declare_file("{}.package-metadata.json".format(ctx.attr.name))
-
-    ctx.actions.write(
+    info = _create_package_metadata(
+        actions = ctx.actions,
         output = metadata,
-        content = json.encode({
-            "attributes": {a.kind: a.attributes.path for a in attributes},
-            "label": str(ctx.label),
-            "purl": ctx.attr.purl,
-        }),
+        label = ctx.label,
+        purl = ctx.attr.purl,
+        attributes = [a[PackageAttributeInfo] for a in ctx.attr.attributes],
+        toolchain = ctx.toolchains["//toolchains:type"],
     )
 
     return [
         DefaultInfo(
-            files = depset(
-                direct = [
-                    metadata,
-                ],
-            ),
+            files = info.files,
         ),
-        PackageMetadataInfo(
-            metadata = metadata,
-            files = [a.files for a in attributes],
-        ),
+        info,
     ]
 
 _package_metadata = rule(
@@ -59,6 +84,9 @@ package.
     doc = """
 Rule for declaring `PackageMetadataInfo`, typically of a `bzlmod` module.
 """.strip(),
+    toolchains = [
+        config_common.toolchain_type("//toolchains:type", mandatory = False),
+    ],
 )
 
 def package_metadata(
