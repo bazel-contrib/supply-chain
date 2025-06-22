@@ -1,6 +1,5 @@
-# See https://github.com/bazel-contrib/publish-to-bcr#a-note-on-release-automation
-# for guidance about whether to uncomment this section:
+# A list of Bazel modules we want to publish.
 #
-# fixedReleaser:
-#   login: my_github_handle
-#   email: me@my.org
+# Each module must have a directory in `github.com/bazel-contrib/supply-chain/.bcr` with the configuration to publish the module.
+moduleRoots:
+  - "metadata"

@@ -1,7 +1,6 @@
 exports_files(
     [
-        "package_attribute_info.bzl",
-        "package_metadata_info.bzl",
+        "defs.bzl",
     ],
     visibility = ["//visibility:public"],
 )
@@ -9,8 +8,10 @@ exports_files(
 filegroup(
     name = "srcs",
     srcs = [
-        "package_attribute_info.bzl",
-        "package_metadata_info.bzl",
+        "defs.bzl",
+    ] + [
+        "//licenses/providers:srcs",
+        "//licenses/rules:srcs",
     ],
     visibility = ["//visibility:public"],
 )
