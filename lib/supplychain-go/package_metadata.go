@@ -33,7 +33,7 @@ func ReadPackageMetadata(r io.Reader) (PackageMetadata, error) {
 	return &metadata, nil
 }
 
-// ReadPackageMetadataFromFile( deserializes `PackageMetadata` from a file with the provided path.
+// ReadPackageMetadataFromFile deserializes `PackageMetadata` from a file with the provided path.
 func ReadPackageMetadataFromFile(path string) (PackageMetadata, error) {
 	f, err := os.Open(path)
 	if err != nil {
