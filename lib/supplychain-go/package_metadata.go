@@ -16,11 +16,6 @@ type PackageMetadata interface {
 
 	// GetPURL returns the [package-url](https://github.com/package-url/purl-spec/blob/main/PURL-SPECIFICATION.rst) this `PackageMetadata` if for.
 	GetPURL() packageurl.PackageURL
-
-	// GetPackageAttribute returns the provided attribute from this `PackageMetadata`.
-	//
-	// Unfortunately, Go does not allow generic methods, so this returns `any`. Most users should prefer `GetPackageAttribute`.
-	GetAttribute(d PackageAttributeDescriptor[any]) (any, error)
 }
 
 // ReadPackageMetadata deserializes `PackageMetadata` from the provided reader.
@@ -79,10 +74,6 @@ func (p *packageMetadata) packageMetadataPrivate() {
 
 func (p *packageMetadata) GetPURL() packageurl.PackageURL {
 	return p.PURL
-}
-
-func (p *packageMetadata) GetAttribute(d PackageAttributeDescriptor[any]) (any, error) {
-	return GetPackageAttribute(p, d)
 }
 
 /*
