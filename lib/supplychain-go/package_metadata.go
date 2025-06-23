@@ -11,7 +11,9 @@ import (
 
 // PackageMetadata provides metadata about a Bazel package.
 type PackageMetadata interface {
-	// packageMetadataPrivate is a private method s.t. only this package can implement `PackageMetadata`.
+	// packageMetadataPrivate acts as marker to prevent other packages to implement the interface.
+	//
+	// See also https://medium.com/@johnsiilver/writing-an-interface-that-only-sub-packages-can-implement-fe36e7511449
 	packageMetadataPrivate()
 
 	// GetPURL returns the [package-url](https://github.com/package-url/purl-spec/blob/main/PURL-SPECIFICATION.rst) this `PackageMetadata` if for.
