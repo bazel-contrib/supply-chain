@@ -1,3 +1,4 @@
+load("//licenses/rules:license.bzl", "license")
 load("//rules:package_metadata.bzl", "package_metadata")
 
 exports_files(
@@ -20,5 +21,18 @@ filegroup(
 
 package_metadata(
     name = "package_metadata",
-    purl = "pkg:bazel/{}@{}".format(module_name(), module_version()),
+    attributes = [
+        ":license",
+    ],
+    purl = "pkg:bazel/{}@{}".format(
+        module_name(),
+        module_version(),
+    ),
+    visibility = ["//visibility:public"],
+)
+
+license(
+    name = "license",
+    kind = "//licenses/spdx:Apache-2.0",
+    text = "LICENSE",
 )

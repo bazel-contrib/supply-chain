@@ -139,4 +139,5 @@ If you are a module author and want to annotate your module, you will need to ta
 
 #### Rules
 
+  - [@package_metadata//licenses/rules:license.bzl](./licenses/rules/license.md)
   - [@package_metadata//licenses/rules:license_kind.bzl](./licenses/rules/license_kind.md)
