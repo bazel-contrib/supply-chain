@@ -31,6 +31,11 @@ jobs:
         id: "tag"
         env:
           VERSION: "${{ inputs.version }}"
+
+          GIT_AUTHOR_NAME: "${{ github.actor }}"
+          GIT_AUTHOR_EMAIL: "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+          GIT_COMMITTER_NAME: "${{ github.actor }}"
+          GIT_COMMITTER_EMAIL: "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
         run: |
           # 1. Download `buildozer`
           #
@@ -54,34 +59,34 @@ jobs:
           git commit -m "Release `v${VERSION}`"
 
           # 3. Push release tag.
-          git tag "v${VERSION}" "HEAD"
-          git push origin "v${VERSION}"
+          # git tag "v${VERSION}" "HEAD"
+          # git push origin "v${VERSION}"
 
-  release:
-    name: "Create GitHub release"
-    needs:
-      - "ci"
+  # release:
+  #   name: "Create GitHub release"
+  #   needs:
+  #     - "create_tag"
 
-    uses: "bazel-contrib/.github/.github/workflows/release_ruleset.yaml@v7.2.0"
-    with:
-      bazel_test_command: |
-          echo "Already executed by step 'CI'"
-      release_files: "supply-chain-*.tar.gz"
-      tag_name: "v${{ inputs.version }}"
+  #   uses: "bazel-contrib/.github/.github/workflows/release_ruleset.yaml@v7.2.0"
+  #   with:
+  #     bazel_test_command: |
+  #         echo "Already executed by step 'CI'"
+  #     release_files: "supply-chain-*.tar.gz"
+  #     tag_name: "v${{ inputs.version }}"
 
-  publish:
-    name: "Create GitHub release"
-    needs:
-      - "release"
+  # publish:
+  #   name: "Create GitHub release"
+  #   needs:
+  #     - "release"
 
-    permissions:
-      attestations: write
-      contents: write
-      id-token: write
+  #   permissions:
+  #     attestations: write
+  #     contents: write
+  #     id-token: write
 
-    uses: "bazel-contrib/publish-to-bcr/.github/workflows/publish.yaml@v0.0.4"
-    with:
-      tag_name: "v${{ inputs.tag_name }}"
-      registry_fork: "bazel-contrib/bazel-central-registry"
-    secrets:
-      publish_token: "${{ secrets.BCR_PUBLISH_TOKEN }}"
+  #   uses: "bazel-contrib/publish-to-bcr/.github/workflows/publish.yaml@v0.0.4"
+  #   with:
+  #     tag_name: "v${{ inputs.tag_name }}"
+  #     registry_fork: "bazel-contrib/bazel-central-registry"
+  #   secrets:
+  #     publish_token: "${{ secrets.BCR_PUBLISH_TOKEN }}"
