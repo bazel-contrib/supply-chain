@@ -1,31 +1,87 @@
-# Cut a release whenever a new tag appears on the repository.
-name: Release
+name: "Create release"
 
 on:
-  # Developers can manually push a tag from their clone.
-  push:
-    tags:
-      # NB: this assumes a consistent tagging scheme for the repo.
-      # If/when there are multiple Bazel modules, we may find that semver requires
-      # one to remain stable while another has breaking changes. In that case we'll
-      # have to have a tagging scheme that versions modules independently.
-      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      version:
+        required: true
+        type: "string"
+
 permissions:
   id-token: write
   attestations: write
   contents: write
+
 jobs:
+  ci:
+    name: "CI"
+    uses: "./.github/workflows/ci.yaml"
+  
+  create_tag:
+    name: "Create tag"
+    runs-on:
+      - "ubuntu-latest"
+    needs:
+      - "ci"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "Create tag"
+        id: "tag"
+        env:
+          VERSION: "${{ inputs.version }}"
+        run: |
+          # 1. Download `buildozer`
+          #
+          # TODO(yannic): Use `RUNNER_TOOL_CACHE` and cache between runs?
+          curl -o "${RUNNER_TEMP}/buildozer" -L "https://github.com/bazelbuild/buildtools/releases/download/v7.3.1/buildozer-linux-amd64"
+          chmod +x "${RUNNER_TEMP}/buildozer"
+
+          # 2. Update `MODULE.bazel` and commit.
+          #
+          # TODO(yannic): Read directories from `//.bcr:config.yaml`.
+          bzlmod_names=("supply-chain-docs" "package_metadata" "supply-chain-go")
+          bzlmod_directories=("docs" "lib/supplychain-go" "metadata")
+
+          for bzlmod_directory in "${bzlmod_directories[@]}"; do
+            for bzlmod_name in "${bzlmod_names[@]}"; do
+              "${RUNNER_TEMP}/buildozer" "set version ${VERSION}" "//${bzlmod_directory}/MODULE.bazel:${bzlmod_name}" || true
+            done
+
+            git add "${bzlmod_directory}/MODULE.bazel"
+          done
+          git commit -m "Release `v${VERSION}`"
+
+          # 3. Push release tag.
+          git tag "v${VERSION}" "HEAD"
+          git push origin "v${VERSION}"
+
   release:
-    uses: bazel-contrib/.github/.github/workflows/release_ruleset.yaml@v7.2.0
+    name: "Create GitHub release"
+    needs:
+      - "ci"
+
+    uses: "bazel-contrib/.github/.github/workflows/release_ruleset.yaml@v7.2.0"
     with:
-      # TODO: change to test when there are any test targets
-      bazel_test_command: cd metadata; bazel build //...
-      release_files: supply-chain-*.tar.gz
-      tag_name: ${{ inputs.tag_name || github.ref_name }}
+      bazel_test_command: |
+          echo "Already executed by step 'CI'"
+      release_files: "supply-chain-*.tar.gz"
+      tag_name: "v${{ inputs.version }}"
+
   publish:
-    needs: release
-    uses: ./.github/workflows/publish.yaml
+    name: "Create GitHub release"
+    needs:
+      - "release"
+
+    permissions:
+      attestations: write
+      contents: write
+      id-token: write
+
+    uses: "bazel-contrib/publish-to-bcr/.github/workflows/publish.yaml@v0.0.4"
     with:
-      tag_name: ${{ inputs.tag_name || github.ref_name }}
+      tag_name: "v${{ inputs.tag_name }}"
+      registry_fork: "bazel-contrib/bazel-central-registry"
     secrets:
-      publish_token: ${{ secrets.BCR_PUBLISH_TOKEN }}
+      publish_token: "${{ secrets.BCR_PUBLISH_TOKEN }}"
