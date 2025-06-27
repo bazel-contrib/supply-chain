@@ -33,6 +33,8 @@ jobs:
           VERSION: "${{ inputs.version }}"
         run: |
           # 1. Download `buildozer`
+          #
+          # TODO(yannic): Use `RUNNER_TOOL_CACHE` and cache between runs?
           curl -o "${RUNNER_TEMP}/buildozer" -L "https://github.com/bazelbuild/buildtools/releases/download/v7.3.1/buildozer-linux-amd64"
           chmod +x "${RUNNER_TEMP}/buildozer"
 
