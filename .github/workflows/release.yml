@@ -87,7 +87,7 @@ jobs:
 
     uses: "bazel-contrib/publish-to-bcr/.github/workflows/publish.yaml@v0.0.4"
     with:
-      tag_name: "v${{ inputs.tag_name }}"
+      tag_name: "v${{ inputs.version }}"
       registry_fork: "bazel-contrib/bazel-central-registry"
     secrets:
       publish_token: "${{ secrets.BCR_PUBLISH_TOKEN }}"
