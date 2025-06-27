@@ -69,9 +69,9 @@ jobs:
 
     uses: "bazel-contrib/.github/.github/workflows/release_ruleset.yaml@v7.2.0"
     with:
-      mount_bazel_caches: false
-      bazel_test_command: |
-          echo "Already executed by step 'CI'"
+      # The workflow appends `--disk_cache` here. There seems to be now way to
+      # opt out, so use `echo || false` to make it a noop.
+      bazel_test_command: echo "Already executed by step 'CI'" || false
       release_files: "supply-chain-*.tar.gz"
       tag_name: "v${{ inputs.version }}"
 
