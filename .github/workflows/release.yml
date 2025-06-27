@@ -76,7 +76,7 @@ jobs:
       tag_name: "v${{ inputs.version }}"
 
   publish:
-    name: "Create GitHub release"
+    name: "Publish to BCR"
     needs:
       - "release"
 
