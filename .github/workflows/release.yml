@@ -69,6 +69,7 @@ jobs:
 
     uses: "bazel-contrib/.github/.github/workflows/release_ruleset.yaml@v7.2.0"
     with:
+      mount_bazel_caches: false
       bazel_test_command: |
           echo "Already executed by step 'CI'"
       release_files: "supply-chain-*.tar.gz"
