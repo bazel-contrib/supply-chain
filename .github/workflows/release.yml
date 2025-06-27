@@ -13,7 +13,7 @@ permissions:
 jobs:
   publish:
     name: "CI"
-    uses: "./.github/workflows/publish.yaml"
+    uses: "./.github/workflows/ci.yaml"
 
   # release:
   #   uses: bazel-contrib/.github/.github/workflows/release_ruleset.yaml@v7.2.0
