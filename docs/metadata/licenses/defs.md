@@ -22,6 +22,29 @@ Provides information to identify a license.
 | <a id="LicenseKindInfo-name"></a>name | A [string](https://bazel.build/rules/lib/core/string) containing the (human readable) name of the license (e.g., `Apache License 2.0`, `European Union Public License 1.1`) |
 
 
+<a id="license"></a>
+
+## license
+
+<pre>
+load("@package_metadata//licenses:defs.bzl", "license")
+
+license(*, <a href="#license-name">name</a>, <a href="#license-kind">kind</a>, <a href="#license-text">text</a>, <a href="#license-visibility">visibility</a>)
+</pre>
+
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="license-name"></a>name |  <p align="center"> - </p>   |  none |
+| <a id="license-kind"></a>kind |  <p align="center"> - </p>   |  none |
+| <a id="license-text"></a>text |  <p align="center"> - </p>   |  `None` |
+| <a id="license-visibility"></a>visibility |  <p align="center"> - </p>   |  `None` |
+
+
 <a id="license_kind"></a>
 
 ## license_kind
