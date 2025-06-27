@@ -2,4 +2,5 @@
 #
 # Each module must have a directory in `github.com/bazel-contrib/supply-chain/.bcr` with the configuration to publish the module.
 moduleRoots:
+  - "lib/supplychain-go"
   - "metadata"
