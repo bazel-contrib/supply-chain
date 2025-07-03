@@ -22,10 +22,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: "dummy"
-            bazel_version: "rolling"
-            package: "dummy"
-            runner: "ubuntu-latest"
           - name: "Docs"
             bazel_version: "rolling"
             package: "docs"
