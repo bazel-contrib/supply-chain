@@ -87,6 +87,6 @@ jobs:
           RESULT: "${{ needs.checks.result }}"
         run: |
           echo "Status: ${RESULT}"
-          if [ "${RESULT}" -ne "success" ]; then
+          if [[ "${RESULT}" != "success" ]]; then
             exit 1
           fi
