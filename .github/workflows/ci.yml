@@ -9,6 +9,8 @@ on:
     branches:
       - "main"
 
+  merge_group: {}
+
   workflow_call: {}
 
 permissions:
@@ -66,3 +68,21 @@ jobs:
         env:
           USE_BAZEL_VERSION: "${{ matrix.bazel_version }}"
         run: bash "${{ github.workspace }}/.github/workflows/ci.sh"
+
+  status:
+    runs-on:
+      - "ubuntu-latest"
+
+    needs:
+      - "checks"
+    if: always()
+
+    steps:
+      - name: "Report status"
+        env:
+          RESULT: "${{ needs.checks.result }}"
+        run: |
+          echo "Status: ${RESULT}"
+          if [ "${RESULT}" -ne "success" ]; then
+            exit 1
+          fi
