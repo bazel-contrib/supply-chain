@@ -23,7 +23,7 @@ def _bazel(name, version):
         ],
         visibility = ["//visibility:public"],
     )
-    ´´´
+    ```
 
     Args:
         name (str): The name of the Bazel module. Typically
