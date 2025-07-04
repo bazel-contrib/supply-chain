@@ -67,7 +67,7 @@ jobs:
     needs:
       - "create_tag"
 
-    uses: "bazel-contrib/.github/.github/workflows/release_ruleset.yaml@v7.2.0"
+    uses: "bazel-contrib/.github/.github/workflows/release_ruleset.yaml@v7.2.2"
     with:
       # The workflow appends `--disk_cache` here. There seems to be now way to
       # opt out, so use `echo || false` to make it a noop.
@@ -85,7 +85,7 @@ jobs:
       contents: write
       id-token: write
 
-    uses: "bazel-contrib/publish-to-bcr/.github/workflows/publish.yaml@v0.0.4"
+    uses: "bazel-contrib/publish-to-bcr/.github/workflows/publish.yaml@v0.2.2"
     with:
       tag_name: "v${{ inputs.version }}"
       registry_fork: "bazel-contrib/bazel-central-registry"
