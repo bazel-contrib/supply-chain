@@ -16,6 +16,8 @@ def _init(metadata, files = []):
 PackageMetadataInfo, _create = provider(
     doc = """
 Provider for declaring metadata about a Bazel package.
+
+> **Fields in this provider are not covered by the stability gurantee.**
 """.strip(),
     fields = {
         "files": """

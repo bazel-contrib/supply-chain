@@ -1,3 +1,5 @@
+load("//licenses/rules:license.bzl", "license")
+load("//purl:purl.bzl", "purl")
 load("//rules:package_metadata.bzl", "package_metadata")
 
 exports_files(
@@ -13,6 +15,7 @@ filegroup(
         "defs.bzl",
     ] + [
         "//providers:srcs",
+        "//purl:srcs",
         "//rules:srcs",
     ],
     visibility = ["//visibility:public"],
@@ -20,5 +23,18 @@ filegroup(
 
 package_metadata(
     name = "package_metadata",
-    purl = "pkg:github/bazel-contrib/supply-chain@HEAD",
+    attributes = [
+        ":license",
+    ],
+    purl = purl.bazel(
+        module_name(),
+        module_version(),
+    ),
+    visibility = ["//visibility:public"],
+)
+
+license(
+    name = "license",
+    kind = "//licenses/spdx:Apache-2.0",
+    text = "LICENSE",
 )

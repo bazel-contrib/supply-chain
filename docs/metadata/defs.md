@@ -14,6 +14,8 @@ PackageAttributeInfo(<a href="#PackageAttributeInfo-kind">kind</a>, <a href="#Pa
 
 Provider for declaring metadata about a Bazel package.
 
+> **Fields in this provider are not covered by the stability gurantee.**
+
 **FIELDS**
 
 | Name  | Description | Default Value |
@@ -34,6 +36,8 @@ PackageMetadataInfo(<a href="#PackageMetadataInfo-metadata">metadata</a>, <a hre
 </pre>
 
 Provider for declaring metadata about a Bazel package.
+
+> **Fields in this provider are not covered by the stability gurantee.**
 
 **FIELDS**
 
@@ -64,5 +68,52 @@ package_metadata(*, <a href="#package_metadata-name">name</a>, <a href="#package
 | <a id="package_metadata-purl"></a>purl |  <p align="center"> - </p>   |  none |
 | <a id="package_metadata-attributes"></a>attributes |  <p align="center"> - </p>   |  `[]` |
 | <a id="package_metadata-visibility"></a>visibility |  <p align="center"> - </p>   |  `None` |
+
+
+<a id="purl.bazel"></a>
+
+## purl.bazel
+
+<pre>
+load("@package_metadata//:defs.bzl", "purl")
+
+purl.bazel(<a href="#purl.bazel-name">name</a>, <a href="#purl.bazel-version">version</a>)
+</pre>
+
+Defines a `purl` for a Bazel module.
+
+This is typically used to construct `purl` for `package_metadata` targets in
+Bazel modules.
+
+This is **NOT** supported in `WORKSPACE` mode.
+
+Example:
+
+```starlark
+load("@package_metadata//purl:purl.bzl", "purl")
+
+package_metadata(
+    name = "package_metadata",
+    purl = purl.bazel(module_name(), module_version()),
+    attributes = [
+        # ...
+    ],
+    visibility = ["//visibility:public"],
+)
+```
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="purl.bazel-name"></a>name |  The name of the Bazel module. Typically [module_name()](https://bazel.build/rules/lib/globals/build#module_name).   |  none |
+| <a id="purl.bazel-version"></a>version |  The version of the Bazel module. Typically [module_version()](https://bazel.build/rules/lib/globals/build#module_version). May be empty or `None`.   |  none |
+
+**RETURNS**
+
+The `purl` for the Bazel module (e.g. `pkg:bazel/foo` or
+  `pkg:bazel/bar@1.2.3`).
 
 
