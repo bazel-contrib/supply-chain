@@ -3,10 +3,10 @@
 Spec: https://github.com/package-url/purl-spec/blob/main/PURL-SPECIFICATION.rst#character-encoding
 """
 
-load("//private/purl:tables.bzl", "percent_encoding")
+load("//purl:tables.bzl", "percent_encoding")
 
 visibility([
-    "//private/purl/...",
+    "//purl/...",
 ])
 
 def _encode_byte(b):
