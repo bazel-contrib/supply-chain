@@ -1,5 +1,8 @@
 load("//purl:percent_encoding_test.bzl", "percent_encoding_test")
+load("//purl:starlark.bzl", "starlark")
 load("//purl:tables.bzl", "percent_encoding")
+
+print(starlark.encoding)
 
 exports_files(
     [
