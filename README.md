@@ -5,6 +5,13 @@ This repository contains Bazel modules for injecting and collecting supply-chain
   - [Documentation](./docs)
   - Modules
     - [@package_metadata](./metadata)
+  - Contact:
+    - Mailing list: [bazel-ssc@bazel.build](https://groups.google.com/a/bazel.build/g/bazel-ssc)  
+    - [Slack](https://bazelbuild.slack.com/archives/C04AZC3E729)
+    - There is a working group which meets weekly on Thursdays at 2:30pm CET / 8:30am EST. [Meet link](https://meet.google.com/qop-eyei-cfh).
+      - If you would like to participate, reach out on the slack channel for an invitation.
+      - [Meeting notes](https://docs.google.com/document/d/1WhScaOLERet4Fxi4fa2Lpke2MgJZGvEE4EXeq6yb0LU)
+
 
 This project is the successor to [rules_license](https://github.com/bazelbuild/rules_license).
 
@@ -21,16 +28,6 @@ The intended use cases are:
 
 WARNING: The code here is still in active initial development and will churn a lot.
 
-## Contact
-
-If you want to follow along:
-- Mailing list: [bazel-ssc@bazel.build](https://groups.google.com/a/bazel.build/g/bazel-ssc)  
-- [Slack](https://bazelbuild.slack.com/archives/C04AZC3E729)
-
-There is a working group which meets weekly on Thursdays at 8:30am US/NYC time.
-If you would like to participate, reach out on the slack channel for an invitation.
-
-[Meeting notes](https://docs.google.com/document/d/1WhScaOLERet4Fxi4fa2Lpke2MgJZGvEE4EXeq6yb0LU)
 
 ## Roadmap
 
