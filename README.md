@@ -6,7 +6,7 @@ This repository contains Bazel modules for injecting and collecting supply-chain
   - Modules
     - [@package_metadata](./metadata)
 
-It is the successor to https://github.com/bazelbuild/rules_license.
+This project is the successor to [rules_license](https://github.com/bazelbuild/rules_license).
 
 The intended use cases are:
 - declaring metadata about packages, such as
