@@ -1,4 +1,5 @@
 load("//licenses/rules:license.bzl", "license")
+load("//purl:purl.bzl", "purl")
 load("//rules:package_metadata.bzl", "package_metadata")
 
 exports_files(
@@ -14,6 +15,7 @@ filegroup(
         "defs.bzl",
     ] + [
         "//providers:srcs",
+        "//purl:srcs",
         "//rules:srcs",
     ],
     visibility = ["//visibility:public"],
@@ -24,7 +26,7 @@ package_metadata(
     attributes = [
         ":license",
     ],
-    purl = "pkg:bazel/{}@{}".format(
+    purl = purl.bazel(
         module_name(),
         module_version(),
     ),

@@ -46,11 +46,12 @@ If you are a module author and want to annotate your module, you will need to ta
     > Modules typically need only a single `package_metadata` target. However, multiple targets can be required in some cases (e.g., when some targets are licensed under a different license).
 
     ```starlark
+    load("@package_metadata//purl:purl.bzl", "purl")
     load("@package_metadata//rules:package_metadata.bzl", "package_metadata")
 
     package_metadata(
         name = "package_metadata",
-        purl = "pkg:bazel/{}@{}".format(module_name(), module_version()),
+        purl = purl.bazel(module_name(), module_version()),
         attributes = [
             # ...
         ],
@@ -127,6 +128,10 @@ If you are a module author and want to annotate your module, you will need to ta
 #### Rules
 
   - [@package_metadata//rules:package_metadata.bzl](./rules/package_metadata.md)
+
+#### Utils
+
+  - [@package_metadata//purl:purl.bzl](./purl/purl.md)
 
 
 ### Licenses
