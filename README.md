@@ -30,6 +30,8 @@ If you want to follow along:
 There is a working group which meets weekly on Thursdays at 8:30am US/NYC time.
 If you would like to participate, reach out on the slack channel for an invitation.
 
+[Meeting notes](https://docs.google.com/document/d/1WhScaOLERet4Fxi4fa2Lpke2MgJZGvEE4EXeq6yb0LU)
+
 ## Roadmap
 
 In flux.
