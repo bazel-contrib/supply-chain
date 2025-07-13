@@ -10,6 +10,8 @@ def _to_bytes(value):
       A sequence of bytes in Bazel's native encoding.
     """
 
+    forced_utf8_encoded_string = "".join(value.elems())
+
     # Bazel reads `BUILD` and `.bzl` files as `ISO-8859-1` (a.k.a., `latin-1`),
     # which is always 1 byte wide. This means that `utf-8` multi-byte characters
     # will end up being multiple characters in a Starlark string (e.g., `ü`,
@@ -22,7 +24,7 @@ def _to_bytes(value):
     # (where `s` is the `char[]` internally used by `String`). For one-char
     # `Strings` this means that
     # `String#hashCode() == (int) String#toCharArray()`.
-    return [hash(c) for c in value.elems()]
+    return [hash(c) for c in forced_utf8_encoded_string.elems()]
 
 string = struct(
     to_bytes = _to_bytes,
