@@ -1,4 +1,4 @@
-module github.com/bazel-contrib/supply-chain/lib/supply-chain-go
+module github.com/bazel-contrib/supply-chain/lib/supplychain-go
 
 go 1.24.2
 
