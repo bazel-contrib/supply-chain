@@ -4,7 +4,7 @@ Spec: https://github.com/package-url/purl-spec/blob/main/PURL-SPECIFICATION.rst#
 """
 
 load("//purl:string.bzl", "string")
-load("//purl:tables.bzl", "percent_encoding")
+load("//purl/private:tables.bzl", "encode_byte")
 
 visibility([
     "//purl/...",
@@ -19,7 +19,7 @@ def _encode_byte(b):
       The encoded string.
     """
 
-    encoded = percent_encoding.encode.get(b, None)
+    encoded = encode_byte.get(b, None)
     if not encoded:
         fail("Cannot encode {} (type={})".format(b, type(b)))
 

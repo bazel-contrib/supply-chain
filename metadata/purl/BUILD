@@ -1,5 +1,5 @@
 load("//purl:percent_encoding_test.bzl", "percent_encoding_test")
-load("//purl:tables.bzl", "percent_encoding")
+load("//purl/private:tables_test.bzl", "test_cases")
 
 exports_files(
     [
@@ -18,5 +18,5 @@ filegroup(
 
 percent_encoding_test(
     name = "percent_encoding_test",
-    cases = percent_encoding.tests,
+    cases = test_cases["percent_encoding"]["tests"],
 )
