@@ -19,5 +19,4 @@ filegroup(
 percent_encoding_test(
     name = "percent_encoding_test",
     cases = test_cases,
-    # XXX cases = test_cases["tests"],
 )
