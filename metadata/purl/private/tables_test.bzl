@@ -3,6 +3,19 @@
 visibility([
     "//purl/...",
 ])
-
-test_cases = json.decode("{\"foo\": \"foo\", \"Hello, World!\": \"Hello%2C%20World%21\", \"path: /foo\": \"path:%20/foo\", \"M\\u00fcnchen\": \"M%C3%BCnchen\", \"K\\u00f6ln\": \"K%C3%B6ln\", \"Sm\\u00e5land\": \"Sm%C3%A5land\", \"fran\\u00e7aise\": \"fran%C3%A7aise\", \"\\u00a1Hola Mundo!\": \"%C2%A1Hola%20Mundo%21\", \"\\u0645\\u0631\\u062d\\u0628\\u0627 \\u0628\\u0627\\u0644\\u0639\\u0627\\u0644\\u0645!\": \"%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%20%D8%A8%D8%A7%D9%84%D8%B9%D8%A7%D9%84%D9%85%21\", \"\\u4f60\\u597d\\u4e16\\u754c\\uff01\": \"%E4%BD%A0%E5%A5%BD%E4%B8%96%E7%95%8C%EF%BC%81\", \"\\u3053\\u3093\\u306b\\u3061\\u306f\\u4e16\\u754c\\uff01\": \"%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF%E4%B8%96%E7%95%8C%EF%BC%81\", \"\\ud83d\\ude4e\": \"%F0%9F%99%8E\", \"\\ud83d\\ude4a\": \"%F0%9F%99%8A\", \"\\ud83d\\ude4e\\ud83c\\udffe\\u200d\\u2640\\ufe0f\": \"%F0%9F%99%8E%F0%9F%8F%BE%E2%80%8D%E2%99%80%EF%B8%8F\"}")
-
+test_cases = {
+  "foo": "foo",
+  "Hello, World!": "Hello%2C%20World%21",
+  "path: /foo": "path:%20/foo",
+  "München": "M%C3%BCnchen",
+  "Köln": "K%C3%B6ln",
+  "Småland": "Sm%C3%A5land",
+  "française": "fran%C3%A7aise",
+  "¡Hola Mundo!": "%C2%A1Hola%20Mundo%21",
+  "مرحبا بالعالم!": "%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%20%D8%A8%D8%A7%D9%84%D8%B9%D8%A7%D9%84%D9%85%21",
+  "你好世界！": "%E4%BD%A0%E5%A5%BD%E4%B8%96%E7%95%8C%EF%BC%81",
+  "こんにちは世界！": "%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF%E4%B8%96%E7%95%8C%EF%BC%81",
+  "🙎": "%F0%9F%99%8E",
+  "🙊": "%F0%9F%99%8A",
+  "🙎🏾‍♀️": "%F0%9F%99%8E%F0%9F%8F%BE%E2%80%8D%E2%99%80%EF%B8%8F",
+}

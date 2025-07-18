@@ -83,11 +83,11 @@ visibility([
     "//purl/...",
 ])
 """)
-            # Json-encode twice to get a valid Starlark string for the JSON object.
-            f.write(f"""
-test_cases = json.decode({json.dumps(json.dumps(test_cases))})
-""")
-            f.write("\n")
+            f.write("test_cases = {\n")
+            for s in percent_encoding_tests:
+                f.write("  \"%s\": \"%s\",\n" % (s, _percent_encode(s)))
+            f.write("}\n")
+     
     return 0
 
 
