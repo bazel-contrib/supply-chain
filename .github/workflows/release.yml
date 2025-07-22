@@ -89,5 +89,6 @@ jobs:
     with:
       tag_name: "v${{ inputs.version }}"
       registry_fork: "bazel-contrib/bazel-central-registry"
+      draft: false
     secrets:
       publish_token: "${{ secrets.BCR_PUBLISH_TOKEN }}"
