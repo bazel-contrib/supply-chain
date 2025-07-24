@@ -39,6 +39,9 @@ def _license_impl(ctx):
             attributes = output,
             files = files,
         ),
+        # TODO(aiuto): There should be a LicenseInfo provider that combines
+        # kind, text file path, and copyright text.
+	kind,
     ]
 
 _license = rule(
@@ -111,5 +114,6 @@ def license(
 
         # Common attributes.
         visibility = visibility,
+	# TODO: rename to package_metadata if Bazel 9 drops that.
         applicable_licenses = [],
     )
