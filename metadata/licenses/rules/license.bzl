@@ -39,6 +39,9 @@ def _license_impl(ctx):
             attributes = output,
             files = files,
         ),
+        # TODO(aiuto): There should be a LicenseInfo provider that combines
+        # kind, text file path, and copyright text.
+	kind,
     ]
 
 _license = rule(
@@ -111,5 +114,5 @@ def license(
 
         # Common attributes.
         visibility = visibility,
-        applicable_licenses = [],
+        package_metadata = [],
     )
