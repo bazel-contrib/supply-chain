@@ -114,5 +114,6 @@ def license(
 
         # Common attributes.
         visibility = visibility,
-        package_metadata = [],
+	# TODO: rename to package_metadata if Bazel 9 drops that.
+        applicable_licenses = [],
     )

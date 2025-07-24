@@ -8,9 +8,6 @@ visibility("public")
 def _package_metadata_impl(ctx):
     attributes = [a[PackageAttributeInfo] for a in ctx.attr.attributes]
 
-    for aa in attributes:
-        print(ctx.label, aa.attributes.path)
-
     metadata = ctx.actions.declare_file("{}.package-metadata.json".format(ctx.attr.name))
 
     ctx.actions.write(
@@ -81,5 +78,5 @@ def package_metadata(
 
         # Common attributes.
         visibility = visibility,
-        package_metadata = [],
+        applicable_licenses = [],
     )
