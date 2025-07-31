@@ -3,7 +3,6 @@
 """Tool for updating the tables for PURL."""
 
 import argparse
-import json
 import os
 import sys
 
