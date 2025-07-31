@@ -76,7 +76,7 @@ def _get_transitive_metadata(
                 info = dep[provider]
                 #XXif info.deps:
                 #XX    trans_deps.append(info.deps)
-                if info.traces:
+                if hasattr(info, "traces") and getattr(info, "traces"):
                     for trace in info.traces:
                         traces.append("(" + ", ".join([str(ctx.label), ctx.rule.kind, name]) + ") -> " + trace)
 

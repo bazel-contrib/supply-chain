@@ -37,7 +37,7 @@ license_kind(
 
 license_kind(
     name = "unencumbered",
-    identifier = "unencumberd",
+    identifier = "unencumbered",
     full_name = "a sample unencumered license",
 )
 
