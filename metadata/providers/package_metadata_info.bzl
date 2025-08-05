@@ -29,6 +29,10 @@ package, including transitive files from all attributes of the package.
 The [File](https://bazel.build/rules/lib/builtins/File) containing metadata
 about the package.
 """.strip(),
+        "attributes": """
+A [depset](https://bazel.build/rules/lib/builtins/depset) of
+`PackageAttributeInfo` providers.
+""".strip(),
     },
     init = _init,
 )
