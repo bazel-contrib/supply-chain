@@ -9,7 +9,6 @@ def _package_metadata_impl(ctx):
     attributes = [a[PackageAttributeInfo] for a in ctx.attr.attributes]
 
     metadata = ctx.actions.declare_file("{}.package-metadata.json".format(ctx.attr.name))
-
     ctx.actions.write(
         output = metadata,
         content = json.encode({
@@ -28,8 +27,9 @@ def _package_metadata_impl(ctx):
             ),
         ),
         PackageMetadataInfo(
-            metadata = metadata,
+            attributes = attributes,
             files = [a.files for a in attributes],
+            metadata = metadata,
         ),
     ]
 
