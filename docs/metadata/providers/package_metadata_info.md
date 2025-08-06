@@ -9,7 +9,7 @@ Declares provider `PackageMetadataInfo`.
 <pre>
 load("@package_metadata//providers:package_metadata_info.bzl", "PackageMetadataInfo")
 
-PackageMetadataInfo(<a href="#PackageMetadataInfo-metadata">metadata</a>, <a href="#PackageMetadataInfo-files">files</a>)
+PackageMetadataInfo(<a href="#PackageMetadataInfo-metadata">metadata</a>, <a href="#PackageMetadataInfo-files">files</a>, <a href="#PackageMetadataInfo-attributes">attributes</a>)
 </pre>
 
 Provider for declaring metadata about a Bazel package.
@@ -22,5 +22,6 @@ Provider for declaring metadata about a Bazel package.
 | :------------- | :------------- | :------------- |
 | <a id="PackageMetadataInfo-metadata"></a>metadata | The [File](https://bazel.build/rules/lib/builtins/File) containing metadata about the package. | none |
 | <a id="PackageMetadataInfo-files"></a>files | A [depset](https://bazel.build/rules/lib/builtins/depset) of [File](https://bazel.build/rules/lib/builtins/File)s with metadata about the package, including transitive files from all attributes of the package. | `[]` |
+| <a id="PackageMetadataInfo-attributes"></a>attributes | A [depset](https://bazel.build/rules/lib/builtins/depset) of `PackageAttributeInfo` providers. | `[]` |
 
 
