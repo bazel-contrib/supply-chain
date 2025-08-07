@@ -1,10 +1,19 @@
 # A package with a commercial license.
 
+load("@package_metadata//:defs.bzl", "package_metadata")
 load("@package_metadata//licenses/rules:license.bzl", "license")
 
 package(
-   default_package_metadata = [":license"],
-   default_visibility = ["//examples:__subpackages__"],
+    default_package_metadata = [":package_data"],
+    default_visibility = ["//examples:__subpackages__"],
+)
+
+package_metadata(
+    name = "package_data",
+    attributes = [
+        ":license",
+    ],
+    purl = "...",
 )
 
 # The default license for an entire package is typically named "license".

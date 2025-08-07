@@ -12,7 +12,7 @@ def _package_metadata_impl(ctx):
     ctx.actions.write(
         output = metadata,
         content = json.encode({
-            "attributes": {a.kind: a.attributes.path for a in attributes},
+            "attributes": {a.kind: a.data.path for a in attributes},
             "label": str(ctx.label),
             "purl": ctx.attr.purl,
         }),

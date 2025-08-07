@@ -6,11 +6,11 @@ load("//providers:package_attribute_info.bzl", "PackageAttributeInfo")
 visibility("public")
 
 def _license_impl(ctx):
-    kind = ctx.attr.kind[LicenseKindInfo]
+    license_kind = ctx.attr.kind[LicenseKindInfo]
     attribute = {
         "kind": {
-            "identifier": kind.identifier,
-            "name": kind.name,
+            "identifier": license_kind.identifier,
+            "name": license_kind.name,
         },
         "label": str(ctx.label),
     }
@@ -36,12 +36,12 @@ def _license_impl(ctx):
         ),
         PackageAttributeInfo(
             kind = "build.bazel.attribute.license",
-            attributes = output,
+            data = output,
             files = files,
         ),
         # TODO(aiuto): There should be a LicenseInfo provider that combines
         # kind, text file path, and copyright text.
-	kind,
+	license_kind,
     ]
 
 _license = rule(
