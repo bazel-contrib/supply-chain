@@ -37,7 +37,6 @@ def should_traverse(ctx, attr, user_filters = None):
 def _get_transitive_metadata(
         ctx,
         trans_metadata, 
-        trans_package_metadata, 
         trans_deps, 
         provider, 
         filter_func = None,
@@ -74,26 +73,13 @@ def _get_transitive_metadata(
             # cases.
             if provider in dep:
                 info = dep[provider]
-                #XXif info.deps:
-                #XX    trans_deps.append(info.deps)
                 if hasattr(info, "traces") and getattr(info, "traces"):
                     for trace in info.traces:
                         traces.append("(" + ", ".join([str(ctx.label), ctx.rule.kind, name]) + ") -> " + trace)
-
-                # We only need one or the other of these stanzas.
-                # If we use a polymorphic approach to metadata providers, then
-                # this works.
-                if hasattr(info, "metadata"):
-                    if info.metadata:
-                        trans_metadata.append(info.metadata)
-
-                # But if we want more precise type safety, we would have a
-                # trans_* for each type of metadata. That is not user
-                # extensibile.
-                if hasattr(info, "package_info"):
-                    if info.package_info:
-                        trans_package_metadata.append(info.package_info)
-
+                if hasattr(info, "deps") and info.deps:
+                    trans_deps.append(info.deps)
+                if hasattr(info, "metadata") and info.metadata:
+                    trans_metadata.append(info.metadata)
 
 def gather_metadata_info_common(
         target,
@@ -108,7 +94,7 @@ def gather_metadata_info_common(
     Any single target might directly depend on a package metadata, or depend on
     something that transitively depends on a package metadata, or neither.
     This aspect bundles all those into a single provider. At each level, we add
-    in new direct metadagta deps found and forward up the transitive information
+    in new direct metadata deps found and forward up the transitive information
     collected so far.
 
     This is a common abstraction for crawling the dependency graph. It is
@@ -142,7 +128,7 @@ def gather_metadata_info_common(
     package_info = []
     if DEBUG_LEVEL > 1:
         print("==============================================\n %s (%s) \n" % (target.label, ctx.rule.kind))
-    if ctx.rule.kind == "build.bazel.attribute.license":
+    if hasattr(ctx.rule.attr, "kind") and ctx.rule.attr.kind == "build.bazel.attribute.license":
         # Don't try to gather licenses from the license rule itself. We'll just
         # blunder into the text file of the license and pick up the default
         # attribute of the package, which we don't want.
@@ -152,12 +138,12 @@ def gather_metadata_info_common(
             package_metadata = ctx.rule.attr.package_metadata
         else:
             package_metadata = []
-        for dep in package_metadata:
+        for metadata_dependency in package_metadata:
             if DEBUG_LEVEL > 1:
-                print("checking", dep.label)
-            for m_p in want_providers:
-                if m_p in dep:
-                    got_providers.append(dep[m_p])
+                print("checking", metadata_dependency.label)
+            for wanted_provider in want_providers:
+                if wanted_provider in metadata_dependency:
+                    got_providers.append(metadata_dependency[wanted_provider])
 
     if DEBUG_LEVEL > 0 and got_providers:
         print("  GOT: ", target.label, got_providers)
@@ -165,13 +151,11 @@ def gather_metadata_info_common(
     # Now gather transitive collection of providers from the children
     # this target depends upon.
     trans_metadata = []
-    trans_package_metadata = []
     trans_deps = []
     traces = []
     _get_transitive_metadata(
         ctx = ctx,
         trans_metadata = trans_metadata,
-        trans_package_metadata = trans_package_metadata,
         trans_deps = trans_deps,
         provider = provider_factory,
         filter_func = filter_func,
@@ -181,7 +165,6 @@ def gather_metadata_info_common(
     # If this is the target, start the sequence of traces.
     if ctx.attr._trace[TraceInfo].trace and ctx.attr._trace[TraceInfo].trace in str(ctx.label):
         traces = [ctx.attr._trace[TraceInfo].trace]
-
     # Trim the number of traces accumulated since the output can be quite large.
     # A few representative traces are generally sufficient to identify why a dependency
     # is incorrectly incorporated.
@@ -208,12 +191,18 @@ def gather_metadata_info_common(
         direct_license_uses = None
     """
 
-    # Efficiently merge them:
-    # 
+    # Efficiently merge them.
+    # TODO(aiuto): We can do some tricks to avoid allocating a lot of memory
+    # in big graphs. For the most part, metadata attachments are near the
+    # leaves, and sparse higher up.
+    # 1. If there is no direct metadata (got_providers is None) and there
+    #    is no transitive metadata, return the null instance
+    # 2. If got_providers is None, and there transitive info.
+    #    If the length of the list is one, just pass up the first element
+    # 3. If the above fail, construct a new one.
 
     return [provider_factory(
         target = target.label,
         metadata = depset(tuple(got_providers), transitive = trans_metadata),
-        # deps = depset(direct = direct_license_uses, transitive = trans_deps),
         traces = traces,
     )]

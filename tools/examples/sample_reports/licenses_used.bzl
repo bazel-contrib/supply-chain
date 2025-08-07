@@ -3,6 +3,7 @@
 load(
     "@package_metadata//:defs.bzl",
     "PackageAttributeInfo",
+    "PackageMetadataInfo",
 )
 load(
     "@package_metadata//licenses/providers:license_kind_info.bzl",
@@ -23,7 +24,7 @@ def _gather_licenses_info_impl(target, ctx):
     return gather_metadata_info_common(
         target,
         ctx,
-        want_providers = [PackageAttributeInfo, LicenseKindInfo],
+        want_providers = [PackageAttributeInfo, PackageMetadataInfo, LicenseKindInfo],
         provider_factory = TransitiveMetadataInfo,
         null_provider_instance = null_transitive_metadata_info,
         filter_func = should_traverse,
@@ -55,6 +56,7 @@ def _licenses_used_impl(ctx):
             continue
         t_m_i = dep[TransitiveMetadataInfo]
         out.append("Target: %s\n" % str(t_m_i.target))
+        out.append("       ==== %s\n" % str(t_m_i))
         for item in t_m_i.metadata.to_list():
            kind = item.kind if hasattr(item, "kind") else "<unknown>"
            props = ["kind: %s" % kind]
@@ -63,11 +65,14 @@ def _licenses_used_impl(ctx):
                if field in ("files", "kind"):
                    continue
                value = getattr(item, field)
-               if field == "attributes":
-                   props.append("%s: %s" % (field, value.path))
+               if field == "data":
+                   props.append("path: %s" % value.path)
                else:
                    props.append("%s: %s" % (field, value))
            out.append("   %s\n" % ", ".join(props))
+        if hasattr(t_m_i, "attributes"):
+            for attribute in t_m_i.attributes:
+                 props.append("    %s: %s" % (attribute.kind, str(attribute)))
     ctx.actions.write(ctx.outputs.out, "".join(out) + "\n")
     return [DefaultInfo(files = depset([ctx.outputs.out]))]
 

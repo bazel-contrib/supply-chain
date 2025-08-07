@@ -1,14 +1,23 @@
 # An example of a code generator with a distinct license for the generated code.
 
+load("@package_metadata//:defs.bzl", "package_metadata")
 load("@package_metadata//licenses/rules:license.bzl", "license")
 load("@supply_chain_tools//examples/sample_reports:licenses_used.bzl", "licenses_used")
 load(":defs.bzl", "constant_gen")
 
 package(
-    default_package_metadata = [":license_of_the_package"],
+    default_package_metadata = [":package_data"],
     default_visibility = ["//examples:__subpackages__"],
 )
 
+package_metadata(
+    name = "package_data",
+    attributes = [
+	":license_of_the_package",
+    ],
+    purl = "",
+)
+    
 # The default license for an entire package is typically named "license".
 license(
     name = "license_of_the_package",
