@@ -55,6 +55,7 @@ def _licenses_used_impl(ctx):
             continue
         t_m_i = dep[TransitiveMetadataInfo]
         out.append("Target: %s\n" % str(t_m_i.target))
+        out.append("       ==== %s\n" % str(t_m_i))
         for item in t_m_i.metadata.to_list():
            kind = item.kind if hasattr(item, "kind") else "<unknown>"
            props = ["kind: %s" % kind]
@@ -68,6 +69,9 @@ def _licenses_used_impl(ctx):
                else:
                    props.append("%s: %s" % (field, value))
            out.append("   %s\n" % ", ".join(props))
+        if hasattr(t_m_i, "attributes"):
+            for attribute in t_m_i.attributes:
+                 props.append("    %s: %s" % (attribute.kind, str(attribute)))
     ctx.actions.write(ctx.outputs.out, "".join(out) + "\n")
     return [DefaultInfo(files = depset([ctx.outputs.out]))]
 

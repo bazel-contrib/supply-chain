@@ -27,9 +27,9 @@ def _package_metadata_impl(ctx):
             ),
         ),
         PackageMetadataInfo(
+            metadata = metadata,
             attributes = attributes,
             files = [a.files for a in attributes],
-            metadata = metadata,
         ),
     ]
 
