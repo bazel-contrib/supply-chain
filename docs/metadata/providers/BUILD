@@ -17,6 +17,21 @@ diff_test(
 )
 
 stardoc(
+    name = "package_metadata_collection_info",
+    out = "package_metadata_collection_info.generated.md",
+    input = "@package_metadata//providers:package_metadata_collection_info.bzl",
+    deps = [
+        "@package_metadata//providers:srcs",
+    ],
+)
+
+diff_test(
+    name = "package_metadata_collection_info_test",
+    file1 = ":package_metadata_collection_info",
+    file2 = "package_metadata_collection_info.md",
+)
+
+stardoc(
     name = "package_metadata_info",
     out = "package_metadata_info.generated.md",
     input = "@package_metadata//providers:package_metadata_info.bzl",
