@@ -4,6 +4,7 @@ visibility("public")
 
 def _init(identifier, name):
     return {
+        "kind": "build.bazel.attribute.license_kind",
         "identifier": identifier,
         "name": name,
     }
@@ -13,6 +14,7 @@ LicenseKindInfo, _create = provider(
 Provides information to identify a license.
 """.strip(),
     fields = {
+        "kind": """A kind from the namespace of PackageAttributeInfo.""",
         "identifier": """
 A [string](https://bazel.build/rules/lib/core/string) uniquely identifying the
 license (e.g., `Apache-2.0`, `EUPL-1.1`).
