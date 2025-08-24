@@ -4,7 +4,7 @@ go 1.24.2
 
 require (
 	github.com/package-url/packageurl-go v0.1.3
-	github.com/stretchr/testify v1.10.0
+	github.com/stretchr/testify v1.11.0
 )
 
 require (
