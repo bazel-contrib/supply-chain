@@ -15,6 +15,10 @@ bazel_dep(
     name = "gazelle",
     version = "0.45.0",
 )
+bazel_dep(
+    name = "supply_chain_tools",
+    version = "HEAD",  # Automatically updated by release pipeline.
+)
 
 go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
 go_deps.from_file(go_mod = "//:go.mod")
@@ -27,4 +31,9 @@ use_repo(
 local_path_override(
     module_name = "package_metadata",
     path = "../../metadata",
+)
+
+local_path_override(
+    module_name = "supply_chain_tools",
+    path = "../../tools",
 )
