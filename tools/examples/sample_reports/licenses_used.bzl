@@ -55,9 +55,10 @@ def _licenses_used_impl(ctx):
         if TransitiveMetadataInfo not in dep:
             continue
         t_m_i = dep[TransitiveMetadataInfo]
-        out.append("Target: %s\n" % str(t_m_i.target))
+        if hasattr(t_m_i, "target"):
+            out.append("Target: %s\n" % str(t_m_i.target))
         out.append("       ==== %s\n" % str(t_m_i))
-        for item in t_m_i.metadata.to_list():
+        for item in t_m_i.trans.to_list():
             kind = item.kind if hasattr(item, "kind") else "<unknown>"
             props = ["kind: %s" % kind]
             for field in sorted(dir(item)):

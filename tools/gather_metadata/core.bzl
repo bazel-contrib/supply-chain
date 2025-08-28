@@ -8,6 +8,9 @@ DEBUG_LEVEL = 0
 def should_traverse(ctx, attr, user_filters = None):
     """Checks if the dependent attribute should be traversed.
 
+    Note for the future: We can vastly inmprove the peformance by
+    moving this to a Bazel 9 style aspect traversal filter.
+
     Args:
       ctx: The aspect evaluation context.
       attr: The name of the attribute to be checked.
@@ -34,22 +37,32 @@ def should_traverse(ctx, attr, user_filters = None):
 
 def _get_transitive_metadata(
         ctx,
-        trans_metadata,
-        trans_deps,
+        trans_tmi,
         provider,
+        null_provider_instance,
         filter_func = None,
         traces = None):
-    """Gather the provider instances of interest from our children
+    """Gather the collection provider instances of interest from our children.
+
+   This is a helper to pull up the collected metadata info from children so
+   that we can rebundle into the next level efficiently. It revolves around
+   a "collection provider" which is the transitive collected data so far.
+   While this method is intended to be generic, it is only build and tried
+   with TransitiveMetadataInfo.
 
     Args:
         ctx: the ctx
-        # TODO
-    """
+        trans_tmi: (output) list of the provider found from the children.
+        provider: the transitive collection provider.
+        null_provider_instance: a singleton instance of the empty provider.
+        filter_func: filter to determine to skip.
+        traces: debuging traces
+    """    
     attrs = [attr for attr in dir(ctx.rule.attr)]
     for name in attrs:
         if filter_func and not filter_func(ctx, name):
             if DEBUG_LEVEL > 2:
-                print("Triming attribute %s of %s" % (name, ctx.rule.kind))
+                print("Trimming attribute %s of %s" % (name, ctx.rule.kind))
             continue
         if DEBUG_LEVEL > 4:
             print("CHECKING attribute %s of %s" % (name, ctx.rule.kind))
@@ -75,10 +88,9 @@ def _get_transitive_metadata(
                 if hasattr(info, "traces") and getattr(info, "traces"):
                     for trace in info.traces:
                         traces.append("(" + ", ".join([str(ctx.label), ctx.rule.kind, name]) + ") -> " + trace)
-                if hasattr(info, "deps") and info.deps:
-                    trans_deps.append(info.deps)
-                if hasattr(info, "metadata") and info.metadata:
-                    trans_metadata.append(info.metadata)
+                if hasattr(info, "directs"):
+                   fail("we're fucked")
+                trans_tmi.append(info)
 
 def gather_metadata_info_common(
         target,
@@ -121,7 +133,7 @@ def gather_metadata_info_common(
     if "-exec-" in ctx.bin_dir.path:
         return null_provider_instance or provider_factory()
 
-    # First we gather my direct metadata providers
+    # First we gather my direct metadata providers.
     got_providers = []
     package_info = []
     if DEBUG_LEVEL > 1:
@@ -150,14 +162,13 @@ def gather_metadata_info_common(
 
     # Now gather transitive collection of providers from the children
     # this target depends upon.
-    trans_metadata = []
-    trans_deps = []
+    trans_tmi = []
     traces = []
     _get_transitive_metadata(
         ctx = ctx,
-        trans_metadata = trans_metadata,
-        trans_deps = trans_deps,
+        trans_tmi = trans_tmi,
         provider = provider_factory,
+        null_provider_instance = null_provider_instance,
         filter_func = filter_func,
         traces = traces,
     )
@@ -172,16 +183,18 @@ def gather_metadata_info_common(
     if len(traces) > 10:
         traces = traces[0:10]
 
+    # State so far:
+    # got_providers: list (maybe empty) of metadata providers we directly have
+    # trans_tmi: the list of the collection providers from our children.
+
     """ THIS MAY NOT MAKE THE PR
     if got_providers:
-        # At this point we have a target and a list of direct pointers to
-        # metadata. We bundle those together so we can report the exact targets
-        # that are of interest. For example, when we have a license applied to
-        # a package, we don't want to just report the license - it is more 
-        # useful to report the targets in the package that pull in the
-        # license.
+        # We want to record the leaves were we depend on metadata.
+        # For example, when we have a license applied to a package,
+        # we don't want to just report the license - it is more useful
+        # to report the targets in the package that pull in the license.
 
-        # Since a list cannot be stored in a # depset, even inside a provider,
+        # Since a list cannot be stored in a depset, even inside a provider,
         # the list is concatenated into a string and will be unconcatenated in
         # the output phase.
         direct_license_uses = [LicensedTargetInfo(
@@ -193,17 +206,42 @@ def gather_metadata_info_common(
     """
 
     # Efficiently merge them.
-    # TODO(aiuto): We can do some tricks to avoid allocating a lot of memory
+
+    # We can do some tricks to avoid allocating a lot of memory
     # in big graphs. For the most part, metadata attachments are near the
     # leaves, and sparse higher up.
-    # 1. If there is no direct metadata (got_providers is None) and there
-    #    is no transitive metadata, return the null instance
+    # 1. If there is no direct metadata (got_providers is None) and there is
+    #    no transitive metadata, return the null instance.  This is typical
+    #    for home grown code that only depends on our own code.
     # 2. If got_providers is None, and there transitive info.
-    #    If the length of the list is one, just pass up the first element
+    #    If the length of the list is one, just pass up the first element.
+    #    This is common through the whole middle of a build graph.
     # 3. If the above fail, construct a new one.
 
-    return [provider_factory(
+    print("%s: got: %d, trans: %d" % (target.label, len(got_providers), len(trans_tmi)))
+
+    if not got_providers and not trans_tmi:
+        return null_provider_instance or provider_factory()
+
+    if not got_providers:
+        if len(trans_tmi) == 1:
+            # Often, there is only one thing we are passing up. There is no
+            # reason to allocate another collection provider around that.
+            return trans_tmi[0]
+        return [provider_factory(
+            target = target.label,
+            trans = depset(direct=[x.trans for x in trans_tmi]),
+            traces = traces,
+        )]
+
+    # Now we want 
+    me = provider_factory(
         target = target.label,
-        metadata = depset(tuple(got_providers), transitive = trans_metadata),
-        traces = traces,
+        directs = depset(tuple(got_providers))
+    )
+
+    return [provider_factory(
+        # target = target.label,
+        trans = depset(direct=tuple([me]), transitive=[depset(trans_tmi)]),
+        # traces = traces,
     )]
