@@ -6,6 +6,7 @@ go_library(
     importpath = "github.com/bazel-contrib/supply-chain/lib/supplychain-go/cmd/spdx",
     visibility = ["//visibility:private"],
     deps = [
+        "//:supplychain-go",
         "//internal/sbom",
         "@com_github_spdx_tools_golang//json",
         "@com_github_spdx_tools_golang//spdx",
