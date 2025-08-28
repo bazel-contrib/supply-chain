@@ -136,6 +136,8 @@ def gather_metadata_info_common(
     else:
         if hasattr(ctx.rule.attr, "package_metadata"):
             package_metadata = ctx.rule.attr.package_metadata
+        elif hasattr(ctx.rule.attr, "applicable_licenses"):
+            package_metadata = ctx.rule.attr.applicable_licenses
         else:
             package_metadata = []
         for metadata_dependency in package_metadata:
