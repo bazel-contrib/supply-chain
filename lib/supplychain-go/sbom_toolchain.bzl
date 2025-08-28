@@ -6,9 +6,20 @@ def _generate_sbom_factory(spdx_tool):
             sbom_tool=spdx_tool
         else:
             fail("format '{}' is not supported".format(format))
+
+        config = {
+            "deps": []
+        }
         transitive_inputs = []
         for m in info.metadata.to_list():
+            config["deps"].append({
+                "metadata": m.metadata.path
+            })
             transitive_inputs.append(m.files)
+
+        sbom_gen_config = ctx.actions.declare_file("{name}.sbom.config.json".format(name=ctx.attr.name))
+        ctx.actions.write(sbom_gen_config, json.encode(config))
+
         ctx.actions.run(
             outputs=[out],
             inputs=depset(
