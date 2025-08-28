@@ -1,0 +1,14 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "spdx_lib",
+    srcs = ["spdx.go"],
+    importpath = "github.com/bazel-contrib/supply-chain/lib/supplychain-go/cmd/spdx",
+    visibility = ["//visibility:private"],
+)
+
+go_binary(
+    name = "spdx",
+    embed = [":spdx_lib"],
+    visibility = ["//visibility:public"],
+)
