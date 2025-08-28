@@ -23,7 +23,7 @@ def _generate_sbom_factory(spdx_tool):
         ctx.actions.run(
             outputs=[out],
             inputs=depset(
-                [],
+                [sbom_gen_config],
                 transitive=[
                     sbom_tool[DefaultInfo].default_runfiles.files,
                     sbom_tool[DefaultInfo].data_runfiles.files,
@@ -31,6 +31,9 @@ def _generate_sbom_factory(spdx_tool):
             ),
             executable=sbom_tool[DefaultInfo].files_to_run.executable,
             arguments=[
+                "--config",
+                sbom_gen_config.path,
+                "--out",
                 out.path,
             ],
         )
