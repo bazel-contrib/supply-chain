@@ -1,4 +1,4 @@
-"""Rules and macros for collecting LicenseInfo providers."""
+"""Rules and macros for collecting metadata providers."""
 
 load(
     "@package_metadata//:defs.bzl",
@@ -94,13 +94,13 @@ gather_metadata_info_and_write = aspect(
 
     Usage:
       bazel build //some:target \
-          --aspects=@rules_license//rules_gathering:gather_metadata.bzl%gather_metadata_info_and_write
+          --aspects=@supply_chain//rules_gathering:gather_metadata.bzl%gather_metadata_info_and_write
           --output_groups=licenses
     """,
     implementation = _write_metadata_info_impl,
     attr_aspects = ["*"],
     attrs = {
-        "_trace": attr.label(default = "@rules_license//rules:trace_target"),
+        "_trace": attr.label(default = "@supply_chain_tools//gather_metdata:trace_target"),
     },
     provides = [OutputGroupInfo],
     requires = [gather_metadata_info],

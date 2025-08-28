@@ -1,6 +1,6 @@
 <!-- Generated with Stardoc: http://skydoc.bazel.build -->
 
-Rules and macros for collecting LicenseInfo providers.
+Rules and macros for collecting metadata providers.
 
 <a id="metadata_info_to_json"></a>
 
@@ -103,7 +103,7 @@ gather_metadata_info_and_write()
 Collects TransitiveMetadataInfo providers and writes JSON representation to a file.
 
 Usage:
-  bazel build //some:target           --aspects=@rules_license//rules_gathering:gather_metadata.bzl%gather_metadata_info_and_write
+  bazel build //some:target           --aspects=@supply_chain//rules_gathering:gather_metadata.bzl%gather_metadata_info_and_write
       --output_groups=licenses
 
 **ASPECT ATTRIBUTES**
