@@ -14,7 +14,6 @@ would ignore all attributes prefixed with a _.
 # Rule kinds with attributes the aspect currently needs to ignore
 rule_to_excluded_attributes = {
     "*": ["linter"],
-    "_constant_gen": ["_generator"],
     "cc_binary": ["_*"],
     "cc_embed_data": ["_*"],
     "cc_grpc_library": ["_*"],
@@ -31,4 +30,5 @@ rule_to_excluded_attributes = {
     "py_binary": ["_*"],
     "py_extension": ["_cc_toolchain"],
     "sh_binary": ["_bash_binary"],
+    "_constant_gen": ["_generator"],
 }

@@ -6,7 +6,7 @@ stardoc(
     out = "gather_metadata.generated.md",
     input = "@supply_chain_tools//gather_metadata:gather_metadata.bzl",
     deps = [
-        "@supply_chain_tools//gather_metadata:gather_metadata",
+        "@supply_chain_tools//gather_metadata",
     ],
 )
 
