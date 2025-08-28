@@ -72,23 +72,24 @@ def _sbom_impl(ctx):
     command = ["echo"]
     command.append("--target '%s'" % str(t_m_i.target))
     command.append("--output '%s'" % ctx.outputs.out.path)
+    inputs = []
     for item in t_m_i.metadata.to_list():
        kind = item.kind if hasattr(item, "kind") else "_UNKNOWN_"
+       # but maybe the kind is in the info file.
        command.append("-kind %s" % kind)
+       if hasattr(item, "attributes"):
+           command.append("-attributes %s" % item.attributes.path)
        if hasattr(item, "files"):
-           for file in item.files.to_list():
-               command.append("-info %s" % file.path)
+           inputs.extend(item.files.to_list())
+
        # Check for extras
        # This is for debugging during initial development. There should be
        # no extra fields.
        for field in sorted(dir(item)):
-           if field in ("files", "kind"):
+           if field in ("attributes", "files", "kind"):
                continue
            value = getattr(item, field)
-           if field == "data":
-               report.append("path: %s" % value.path)
-           else:
-               report.append("%s: %s" % (field, value))
+           report.append("%s: %s" % (field, value))
 
     # TBD: Run the SBOM generator here.
     print("RUN THE SBOM\n  %s\n" % ' '.join(command))
