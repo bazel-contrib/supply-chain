@@ -5,6 +5,7 @@ go_library(
     srcs = ["spdx.go"],
     importpath = "github.com/bazel-contrib/supply-chain/lib/supplychain-go/cmd/spdx",
     visibility = ["//visibility:private"],
+    deps = ["//internal/sbom"],
 )
 
 go_binary(
