@@ -3,10 +3,11 @@ package main
 import (
 	"encoding/json"
 	"flag"
-	"fmt"
 	"os"
 
 	"github.com/bazel-contrib/supply-chain/lib/supplychain-go/internal/sbom"
+	spdxJson "github.com/spdx/tools-golang/json"
+	"github.com/spdx/tools-golang/spdx"
 )
 
 var (
@@ -25,5 +26,15 @@ func main() {
 
 	json.Unmarshal(configBytes, &config)
 
-	fmt.Println(config)
+	doc := spdx.Document{
+		SPDXVersion: "SPDX-3.0",
+	}
+
+	out, err := os.OpenFile(*outPath, os.O_WRONLY|os.O_CREATE, 0664)
+	if err != nil {
+		panic(err)
+	}
+	defer out.Close()
+
+	spdxJson.Write(&doc, out)
 }
