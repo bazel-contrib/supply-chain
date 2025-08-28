@@ -24,31 +24,31 @@ package(default_visibility = ["//examples:__subpackages__"])
 # are intermingled with normal target build rules
 license_kind(
     name = "generic_notice",
-    identifier = "generic_license",
     full_name = "a sample generic license",
+    identifier = "generic_license",
     # TODO: Bring back conditions on kind.
 )
 
 license_kind(
     name = "generic_restricted",
-    identifier = "generic_restricted",
     full_name = "a sample generic license",
+    identifier = "generic_restricted",
 )
 
 license_kind(
     name = "unencumbered",
-    identifier = "unencumbered",
     full_name = "a sample unencumered license",
+    identifier = "unencumbered",
 )
 
 license_kind(
     name = "lgpl_like",
-    identifier = "LGPL",
     full_name = "a sample generic license",
+    identifier = "LGPL",
 )
 
 license_kind(
     name = "acme_corp_paid",
+    full_name = "The ACME per seat license.",
     identifier = "ACME",
-    full_name = "The ACME per seat license."
 )
