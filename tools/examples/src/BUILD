@@ -1,9 +1,11 @@
 # Examples of applications and interactions with licenses
 
-load("@supply_chain_tools//examples/vendor/constant_gen:defs.bzl", "constant_gen")
+load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
+
 # load("@supply_chain_tools//rules:compliance.bzl", "check_license")
 load("@supply_chain_tools//examples/sample_reports:licenses_used.bzl", "licenses_used")
 load("@supply_chain_tools//examples/sbom:sbom.bzl", "sbom")
+load("@supply_chain_tools//examples/vendor/constant_gen:defs.bzl", "constant_gen")
 
 package(
     default_package_metadata = ["//:package_metadata"],
@@ -49,13 +51,11 @@ licenses_used(
     deps = [":my_violating_server"],
 )
 
-
 sbom(
     name = "server_sbom",
     out = "server_sbom.txt",
     target = ":my_violating_server",
 )
-
 
 # TODO(aiuto): Turn this strictly into a compliance test.
 #check_license(
@@ -67,8 +67,6 @@ sbom(
 #        ":my_server",
 #    ],
 #)
-
-
 
 #py_test(
 #    name = "server_licenses_test",

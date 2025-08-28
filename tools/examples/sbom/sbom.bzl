@@ -16,10 +16,9 @@ load(
 )
 load(
     "@supply_chain_tools//gather_metadata:providers.bzl",
-    "null_transitive_metadata_info",
     "TransitiveMetadataInfo",
+    "null_transitive_metadata_info",
 )
-
 
 #
 # All top level metadata processing rules will generally wrap gahter with their
@@ -49,7 +48,6 @@ gather_metadata_info = aspect(
     apply_to_generating_rules = True,
 )
 
-
 def _sbom_impl(ctx):
     # Gather all metadata and make a report from that
 
@@ -74,31 +72,31 @@ def _sbom_impl(ctx):
     command.append("--output '%s'" % ctx.outputs.out.path)
     inputs = []
     for item in t_m_i.metadata.to_list():
-       kind = item.kind if hasattr(item, "kind") else "_UNKNOWN_"
-       # but maybe the kind is in the info file.
-       command.append("-kind %s" % kind)
-       if hasattr(item, "attributes"):
-           command.append("-attributes %s" % item.attributes.path)
-       if hasattr(item, "files"):
-           inputs.extend(item.files.to_list())
+        kind = item.kind if hasattr(item, "kind") else "_UNKNOWN_"
 
-       # Check for extras
-       # This is for debugging during initial development. There should be
-       # no extra fields.
-       for field in sorted(dir(item)):
-           if field in ("attributes", "files", "kind"):
-               continue
-           value = getattr(item, field)
-           report.append("%s: %s" % (field, value))
+        # but maybe the kind is in the info file.
+        command.append("-kind %s" % kind)
+        if hasattr(item, "attributes"):
+            command.append("-attributes %s" % item.attributes.path)
+        if hasattr(item, "files"):
+            inputs.extend(item.files.to_list())
+
+        # Check for extras
+        # This is for debugging during initial development. There should be
+        # no extra fields.
+        for field in sorted(dir(item)):
+            if field in ("attributes", "files", "kind"):
+                continue
+            value = getattr(item, field)
+            report.append("%s: %s" % (field, value))
 
     # TBD: Run the SBOM generator here.
-    print("RUN THE SBOM\n  %s\n" % ' '.join(command))
+    print("RUN THE SBOM\n  %s\n" % " ".join(command))
 
     # This just gives us an output.  Next pass the write will happen in the
     # action we create
     ctx.actions.write(ctx.outputs.out, "\n".join(report) + "\n")
     return [DefaultInfo(files = depset([ctx.outputs.out]))]
-
 
 """
   ==== struct(
@@ -127,18 +125,17 @@ def _sbom_impl(ctx):
    kind: <unknown>, metadata: <generated file package_metadata.package-metadata.json>
 """
 
-
 _sbom = rule(
     implementation = _sbom_impl,
     doc = """Internal tmplementation method for sbom().""",
     attrs = {
-        "target": attr.label(
-            doc = """Targets to build an SBOM for.""",
-            aspects = [gather_metadata_info],
-        ),
         "out": attr.output(
             doc = """Output file.""",
             mandatory = True,
+        ),
+        "target": attr.label(
+            doc = """Targets to build an SBOM for.""",
+            aspects = [gather_metadata_info],
         ),
     },
 )

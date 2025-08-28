@@ -2,6 +2,7 @@
 # we expect to see.
 
 load("@package_metadata//licenses/rules:license.bzl", "license")
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
 
 # Using a package wide default ensure that all targets are associated with the
 # license.
