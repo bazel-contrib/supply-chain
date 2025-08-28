@@ -2,7 +2,6 @@
 
 load(":rule_filters.bzl", "rule_to_excluded_attributes")
 load(":trace.bzl", "TraceInfo")
-load("@package_metadata//:defs.bzl", "PackageAttributeInfo", "PackageMetadataInfo")
 
 DEBUG_LEVEL = 0
 
@@ -27,18 +26,17 @@ def should_traverse(ctx, attr, user_filters = None):
             return False
         rule_specific_filter = filters.get(ctx.rule.kind, None)
         if rule_specific_filter:
-            if (attr in rule_specific_filter
-                or "*" in rule_specific_filter
-                or ("_*" in rule_specific_filter and attr.startswith("_"))):
+            if (attr in rule_specific_filter or
+                "*" in rule_specific_filter or
+                ("_*" in rule_specific_filter and attr.startswith("_"))):
                 return False
     return True
 
-
 def _get_transitive_metadata(
         ctx,
-        trans_metadata, 
-        trans_deps, 
-        provider, 
+        trans_metadata,
+        trans_deps,
+        provider,
         filter_func = None,
         traces = None):
     """Gather the provider instances of interest from our children
@@ -46,7 +44,7 @@ def _get_transitive_metadata(
     Args:
         ctx: the ctx
         # TODO
-    """    
+    """
     attrs = [attr for attr in dir(ctx.rule.attr)]
     for name in attrs:
         if filter_func and not filter_func(ctx, name):
@@ -57,6 +55,7 @@ def _get_transitive_metadata(
             print("CHECKING attribute %s of %s" % (name, ctx.rule.kind))
 
         attr_value = getattr(ctx.rule.attr, name)
+
         # Make scalers into a lists for convenience.
         if type(attr_value) != type([]):
             attr_value = [attr_value]
@@ -87,8 +86,7 @@ def gather_metadata_info_common(
         want_providers,
         provider_factory = None,
         null_provider_instance = None,
-        filter_func = None
-    ):
+        filter_func = None):
     """Collect package metadata info from myself and my deps.
 
     Any single target might directly depend on a package metadata, or depend on
@@ -167,6 +165,7 @@ def gather_metadata_info_common(
     # If this is the target, start the sequence of traces.
     if ctx.attr._trace[TraceInfo].trace and ctx.attr._trace[TraceInfo].trace in str(ctx.label):
         traces = [ctx.attr._trace[TraceInfo].trace]
+
     # Trim the number of traces accumulated since the output can be quite large.
     # A few representative traces are generally sufficient to identify why a dependency
     # is incorrectly incorporated.

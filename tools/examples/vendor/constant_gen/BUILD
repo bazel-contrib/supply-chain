@@ -2,6 +2,7 @@
 
 load("@package_metadata//:defs.bzl", "package_metadata")
 load("@package_metadata//licenses/rules:license.bzl", "license")
+load("@rules_python//python:defs.bzl", "py_binary")
 load("@supply_chain_tools//examples/sample_reports:licenses_used.bzl", "licenses_used")
 load(":defs.bzl", "constant_gen")
 
@@ -13,11 +14,11 @@ package(
 package_metadata(
     name = "package_data",
     attributes = [
-	":license_of_the_package",
+        ":license_of_the_package",
     ],
     purl = "",
 )
-    
+
 # The default license for an entire package is typically named "license".
 license(
     name = "license_of_the_package",
