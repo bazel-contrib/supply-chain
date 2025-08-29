@@ -10,6 +10,7 @@ go_library(
         "//internal/sbom",
         "@com_github_spdx_tools_golang//json",
         "@com_github_spdx_tools_golang//spdx",
+        "@com_github_spdx_tools_golang//spdx/v2/common",
         "@com_github_spdx_tools_golang//tagvalue",
         "@com_github_spdx_tools_golang//yaml",
     ],
