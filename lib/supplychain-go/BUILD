@@ -1,7 +1,6 @@
 load("@gazelle//:def.bzl", "gazelle")
 load("@package_metadata//rules:package_metadata.bzl", "package_metadata")
 load("@rules_go//go:def.bzl", "go_library", "go_test")
-load(":sbom_toolchain.bzl", "sbom_toolchain")
 
 package_metadata(
     name = "package_metadata",
@@ -36,14 +35,4 @@ go_test(
         "@com_github_package_url_packageurl_go//:packageurl-go",
         "@com_github_stretchr_testify//assert",
     ],
-)
-
-sbom_toolchain(
-    name = "sbom_toolchain_impl",
-)
-
-toolchain(
-    name = "sbom_toolchain",
-    toolchain = ":sbom_toolchain_impl",
-    toolchain_type = "@supply_chain_tools//sbom:sbom_toolchain_type",
 )

@@ -21,5 +21,3 @@ bzl_library(
     ],
     visibility = ["//visibility:public"],
 )
-
-toolchain_type(name = "sbom_toolchain_type")
