@@ -13,7 +13,7 @@ bazel_dep(
 )
 bazel_dep(
     name = "supply-chain-go", 
-    version = "HEAD",  # Automatically updated by release pipeline.
+    version = "0.0.5",  # Automatically updated by release pipeline.
 )
 
 
