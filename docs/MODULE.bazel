@@ -40,3 +40,13 @@ local_path_override(
     module_name = "supply_chain_tools",
     path = "../tools",
 )
+
+bazel_dep(
+    name = "supply-chain-go",
+    # Always overridden to use local path.
+    version = "HEAD",
+)
+local_path_override(
+    module_name = "supply-chain-go",
+    path = "../lib/supplychain-go",
+)
