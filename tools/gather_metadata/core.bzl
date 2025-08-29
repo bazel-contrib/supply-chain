@@ -61,24 +61,30 @@ def _get_transitive_metadata(
             attr_value = [attr_value]
 
         for dep in attr_value:
-            # Ignore anything that isn't a target
-            if type(dep) != "Target":
-                continue
+            parsed_deps = []
+            if type(dep) == "Target":
+                parsed_deps.append(dep)
+            elif type(dep) == "dict":
+                for dep_target,_ in dep.items():
+                    if type(dep_target) == "Target":
+                        parsed_deps.append(dep_target)
 
             # Targets can also include things like input files that won't have the
             # aspect, so we additionally check for the aspect rather than assume
             # it's on all targets.  Even some regular targets may be synthetic and
             # not have the aspect. This provides protection against those outlier
             # cases.
-            if provider in dep:
-                info = dep[provider]
-                if hasattr(info, "traces") and getattr(info, "traces"):
-                    for trace in info.traces:
-                        traces.append("(" + ", ".join([str(ctx.label), ctx.rule.kind, name]) + ") -> " + trace)
-                if hasattr(info, "deps") and info.deps:
-                    trans_deps.append(info.deps)
-                if hasattr(info, "metadata") and info.metadata:
-                    trans_metadata.append(info.metadata)
+            for cur_dep in parsed_deps:
+                if provider in cur_dep:
+                    info = cur_dep[provider]
+                    if hasattr(info, "traces") and getattr(info, "traces"):
+                        for trace in info.traces:
+                            traces.append("(" + ", ".join([str(ctx.label), ctx.rule.kind, name]) + ") -> " + trace)
+                    if hasattr(info, "deps") and info.deps:
+                        trans_deps.append(info.deps)
+                    if hasattr(info, "metadata") and info.metadata:
+                        trans_metadata.append(info.metadata)
+
 
 def gather_metadata_info_common(
         target,
@@ -189,7 +195,7 @@ def gather_metadata_info_common(
             licenses = ",".join([str(x.label) for x in licenses]),
         )]
     else:
-        direct_license_uses = None
+        direct_licoense_uses = None
     """
 
     # Efficiently merge them.
