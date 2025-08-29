@@ -10,6 +10,7 @@ import (
 	"github.com/bazel-contrib/supply-chain/lib/supplychain-go/internal/sbom"
 	spdxJson "github.com/spdx/tools-golang/json"
 	"github.com/spdx/tools-golang/spdx"
+	"github.com/spdx/tools-golang/spdx/v2/common"
 	spdxTV "github.com/spdx/tools-golang/tagvalue"
 	spdxYaml "github.com/spdx/tools-golang/yaml"
 )
@@ -69,20 +70,17 @@ func GenerateDocument(config sbom.GenConfig) (*spdx.Document, error) {
 			return nil, err
 		}
 		spdxPackages[i] = &spdx.Package{
-			PackageExternalReferences: []*spdx.PackageExternalReference{
-				{
-					Category: "PACKAGE-MANAGER",
-					RefType:  "purl",
-					Locator:  pkgMetadata.GetPURL().String(),
-				},
-			},
-			PackageName: pkgMetadata.GetPURL().Name,
+			PackageSPDXIdentifier:     common.ElementID(fmt.Sprintf("dep-%d", i)),
+			PackageExternalReferences: []*spdx.PackageExternalReference{},
+			PackageName:               pkgMetadata.GetPURL().Name,
 		}
 	}
 
 	doc := spdx.Document{
-		SPDXVersion: "SPDX-2.3",
-		Packages:    spdxPackages,
+		SPDXIdentifier: "DOCUMENT",
+		SPDXVersion:    "SPDX-2.3",
+		Packages:       spdxPackages,
+		CreationInfo:   &spdx.CreationInfo{},
 	}
 
 	return &doc, nil
