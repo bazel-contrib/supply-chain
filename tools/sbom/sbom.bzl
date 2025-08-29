@@ -18,8 +18,6 @@ load(
     "TransitiveMetadataInfo",
 )
 
-ToolchainSbomInfo = provider()
-
 def _gather_metadata_info_impl(target, ctx):
     return gather_metadata_info_common(
         target,
@@ -43,28 +41,28 @@ gather_metadata_info = aspect(
 
 def _sbom_impl(ctx):
     transitive_metadata_info = ctx.attr.target[TransitiveMetadataInfo]
-    sbom_toolchain = ctx.toolchains[SBOM_TOOLCHAIN_TYPE]
-    out = ctx.actions.declare_file(ctx.attr.out.name if ctx.attr.out != None else "%s.txt" % ctx.attr.name)
-    return sbom_toolchain.sbom_toolchain_info.generate_sbom(
-        ctx,
-        format=ctx.attr.format,
-        out=out,
-        info=transitive_metadata_info,
-    )
+    transitive_inputs = []
+    config = { "deps": [] }
+    for m in transitive_metadata_info.metadata.to_list():
+        config["deps"].append({
+            "metadata": m.metadata.path
+        })
+        transitive_inputs.append(m.files)
 
-SBOM_TOOLCHAIN_TYPE = "//sbom:sbom_toolchain_type"
+    sbom_gen_config = ctx.actions.declare_file("{name}.sbom.config.json".format(name=ctx.attr.name))
+    ctx.actions.write(sbom_gen_config, json.encode(config))
+
+    return DefaultInfo(files=depset(
+        [sbom_gen_config],
+        transitive=transitive_inputs
+    ))
 
 def sbom_rule(gathering_aspect):
     return rule(
         _sbom_impl,
         attrs = {
             "target": attr.label(aspects = [gathering_aspect]),
-            "out": attr.output(),
-            "format": attr.string(),
         },
-        toolchains = [
-            SBOM_TOOLCHAIN_TYPE,
-        ],
     )
 
 sbom = sbom_rule(gathering_aspect=gather_metadata_info)
