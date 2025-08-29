@@ -69,12 +69,21 @@ func GenerateDocument(config sbom.GenConfig) (*spdx.Document, error) {
 			return nil, err
 		}
 		spdxPackages[i] = &spdx.Package{
+			PackageExternalReferences: []*spdx.PackageExternalReference{
+				{
+					Category: "PACKAGE-MANAGER",
+					RefType:  "purl",
+					Locator:  pkgMetadata.GetPURL().String(),
+				},
+			},
 			PackageName: pkgMetadata.GetPURL().Name,
 		}
 	}
 
-	return &spdx.Document{
-		SPDXVersion: "SPDX-3.0",
+	doc := spdx.Document{
+		SPDXVersion: "SPDX-2.3",
 		Packages:    spdxPackages,
-	}, nil
+	}
+
+	return &doc, nil
 }
