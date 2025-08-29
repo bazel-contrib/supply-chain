@@ -39,6 +39,8 @@ gather_metadata_info = aspect(
     apply_to_generating_rules = True,
 )
 
+SbomProvider = provider()
+
 def _sbom_impl(ctx):
     transitive_metadata_info = ctx.attr.target[TransitiveMetadataInfo]
     transitive_inputs = []
@@ -52,10 +54,13 @@ def _sbom_impl(ctx):
     sbom_gen_config = ctx.actions.declare_file("{name}.sbom.config.json".format(name=ctx.attr.name))
     ctx.actions.write(sbom_gen_config, json.encode(config))
 
-    return DefaultInfo(files=depset(
-        [sbom_gen_config],
-        transitive=transitive_inputs
-    ))
+    return [
+        DefaultInfo(files=depset(
+            [sbom_gen_config],
+            transitive=transitive_inputs
+        )),
+        SbomProvider(config=sbom_gen_config),
+    ]
 
 def sbom_rule(gathering_aspect):
     return rule(
