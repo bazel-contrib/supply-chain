@@ -1,4 +1,4 @@
-load("sbom.bzl", "SbomProvider")
+load("providers.bzl", "SbomInfo")
 
 def _spdx_impl(ctx):
     out_path = ctx.attr.out.name if ctx.attr.out != None else "%s.txt" % ctx.attr.name
@@ -16,7 +16,7 @@ def _spdx_impl(ctx):
         executable=ctx.attr._spdx[DefaultInfo].files_to_run.executable,
         arguments=[
             "--config",
-            ctx.attr.sbom[SbomProvider].config.path,
+            ctx.attr.sbom[SbomInfo].config.path,
             "--out",
             out.path,
             "--format",
@@ -28,9 +28,9 @@ def _spdx_impl(ctx):
 spdx = rule(
     _spdx_impl,
     attrs = {
-        "sbom": attr.label(),
-        "format": attr.string(default = "json", values = ["json", "yaml", "tag-value"]),
-        "out": attr.output(),
-        "_spdx": attr.label(default = "@supply-chain-go//cmd/spdx"),
+        "sbom": attr.label(doc = "The sbom target to generate the SPDX SBOM from."),
+        "format": attr.string(default = "json", values = ["json", "yaml", "tag-value"], doc = "The output format for the SPDX SBOM."),
+        "out": attr.output(doc = "The output file for the SPDX SBOM."),
+        "_spdx": attr.label(default = "@supply-chain-go//cmd/spdx", doc = "The spdx tool to use."),
     }
 )

@@ -1,3 +1,4 @@
+load("providers.bzl", "SbomInfo")
 load(
     "@package_metadata//:defs.bzl",
     "PackageAttributeInfo",
@@ -39,8 +40,6 @@ gather_metadata_info = aspect(
     apply_to_generating_rules = True,
 )
 
-SbomProvider = provider()
-
 def _sbom_impl(ctx):
     transitive_metadata_info = ctx.attr.target[TransitiveMetadataInfo]
     transitive_inputs = []
@@ -59,14 +58,14 @@ def _sbom_impl(ctx):
             [sbom_gen_config],
             transitive=transitive_inputs
         )),
-        SbomProvider(config=sbom_gen_config),
+        SbomInfo(config=sbom_gen_config),
     ]
 
 def sbom_rule(gathering_aspect):
     return rule(
         _sbom_impl,
         attrs = {
-            "target": attr.label(aspects = [gathering_aspect]),
+            "target": attr.label(aspects = [gathering_aspect], doc="The target for which to generate an SBOM."),
         },
     )
 
