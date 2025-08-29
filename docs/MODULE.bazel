@@ -36,7 +36,6 @@ bazel_dep(
     # Always overridden to use local path.
     version = "HEAD",
 )
-
 local_path_override(
     module_name = "supply_chain_tools",
     path = "../tools",

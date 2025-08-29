@@ -7,10 +7,9 @@ to change at any release.
 TransitiveMetadataInfo = provider(
     doc = """The transitive set of metadata applicable to a target.""",
     fields = {
-        "top_level_target": "Label: The top level target label we are examining.",
         "metadata": "depset()",
-
         "target": "Label: A target which will be associated with some metadata.",
+        "top_level_target": "Label: The top level target label we are examining.",
         # NOT NEEDED "deps": "depset(provider): The transitive list of dependencies that ar metadata.",
         "traces": "list(string) - diagnostic for tracing a dependency relationship to a target.",
     },

@@ -37,7 +37,6 @@ filegroup(
     visibility = ["//visibility:public"],
 )
 
-
 # This is a convenience warpper to turn the metadata core into a bzl_library
 # that can be consumed by others.
 bzl_library(
