@@ -16,9 +16,9 @@ import (
 )
 
 var (
-	outPath    = flag.String("out", "", "")
-	configPath = flag.String("config", "", "")
-	format     = flag.String("format", "", "")
+	outPath    = flag.String("out", "", "The path to write the generated SPDX SBOM.")
+	configPath = flag.String("config", "", "The path to the SBOM generation configuration file.")
+	format     = flag.String("format", "", "The output format of the SPDX SBOM.")
 )
 
 func main() {
