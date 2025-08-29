@@ -70,9 +70,15 @@ func GenerateDocument(config sbom.GenConfig) (*spdx.Document, error) {
 			return nil, err
 		}
 		spdxPackages[i] = &spdx.Package{
-			PackageSPDXIdentifier:     common.ElementID(fmt.Sprintf("dep-%d", i)),
-			PackageExternalReferences: []*spdx.PackageExternalReference{},
-			PackageName:               pkgMetadata.GetPURL().Name,
+			PackageSPDXIdentifier: common.ElementID(fmt.Sprintf("dep-%d", i)),
+			PackageExternalReferences: []*spdx.PackageExternalReference{
+				{
+					Category: "PACKAGE-MANAGER",
+					RefType:  "purl",
+					Locator:  pkgMetadata.GetPURL().String(),
+				},
+			},
+			PackageName: pkgMetadata.GetPURL().Name,
 		}
 	}
 
