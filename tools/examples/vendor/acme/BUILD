@@ -14,7 +14,7 @@ package_metadata(
     attributes = [
         ":license",
     ],
-    purl = "...",
+    purl = "pkg:github/acmecorp/coyote@3.1.4",
 )
 
 # The default license for an entire package is typically named "license".

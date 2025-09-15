@@ -16,7 +16,7 @@ package_metadata(
     attributes = [
         ":license_of_the_package",
     ],
-    purl = "",
+    purl = "pkg:ftp//insecure@fictionalcorp.com/constant_generator-latest.tgz@0.0.1",
 )
 
 # The default license for an entire package is typically named "license".
