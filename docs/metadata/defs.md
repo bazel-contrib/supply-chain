@@ -47,6 +47,49 @@ Provider for declaring metadata about a Bazel package.
 | <a id="PackageMetadataInfo-files"></a>files | A [depset](https://bazel.build/rules/lib/builtins/depset) of [File](https://bazel.build/rules/lib/builtins/File)s with metadata about the package, including transitive files from all attributes of the package. | `[]` |
 
 
+<a id="PackageMetadataOverrideInfo"></a>
+
+## PackageMetadataOverrideInfo
+
+<pre>
+load("@package_metadata//:defs.bzl", "PackageMetadataOverrideInfo")
+
+PackageMetadataOverrideInfo(*, <a href="#PackageMetadataOverrideInfo-packages">packages</a>, <a href="#PackageMetadataOverrideInfo-metadata">metadata</a>)
+</pre>
+
+Defines an override for `PackageMetadataInfo` for a set of packages.
+
+> **Fields in this provider are not covered by the stability gurantee.**
+
+**FIELDS**
+
+| Name  | Description |
+| :------------- | :------------- |
+| <a id="PackageMetadataOverrideInfo-packages"></a>packages | A [PackageSpecificationInfo](https://bazel.build/rules/lib/providers/PackageSpecificationInfo) provider declaring which packages the override applies to.<br><br>This is typically created by a [package_group](https://bazel.build/rules/lib/globals/build#package_group) target. |
+| <a id="PackageMetadataOverrideInfo-metadata"></a>metadata | The `PackageMetadataInfo` provider to use instead of the provider declared by package itself. |
+
+
+<a id="PackageMetadataToolchainInfo"></a>
+
+## PackageMetadataToolchainInfo
+
+<pre>
+load("@package_metadata//:defs.bzl", "PackageMetadataToolchainInfo")
+
+PackageMetadataToolchainInfo(<a href="#PackageMetadataToolchainInfo-metadata_overrides">metadata_overrides</a>)
+</pre>
+
+Toolchain for `package_metadata`.
+
+> **Fields in this provider are not covered by the stability gurantee.**
+
+**FIELDS**
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="PackageMetadataToolchainInfo-metadata_overrides"></a>metadata_overrides | A sequence of `PackageMetadataOverrideInfo` providers. | `[]` |
+
+
 <a id="package_metadata"></a>
 
 ## package_metadata
@@ -68,6 +111,27 @@ package_metadata(*, <a href="#package_metadata-name">name</a>, <a href="#package
 | <a id="package_metadata-purl"></a>purl |  <p align="center"> - </p>   |  none |
 | <a id="package_metadata-attributes"></a>attributes |  <p align="center"> - </p>   |  `[]` |
 | <a id="package_metadata-visibility"></a>visibility |  <p align="center"> - </p>   |  `None` |
+
+
+<a id="package_metadata_toolchain"></a>
+
+## package_metadata_toolchain
+
+<pre>
+load("@package_metadata//:defs.bzl", "package_metadata_toolchain")
+
+package_metadata_toolchain(*, <a href="#package_metadata_toolchain-name">name</a>, <a href="#package_metadata_toolchain-visibility">visibility</a>)
+</pre>
+
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="package_metadata_toolchain-name"></a>name |  <p align="center"> - </p>   |  none |
+| <a id="package_metadata_toolchain-visibility"></a>visibility |  <p align="center"> - </p>   |  `None` |
 
 
 <a id="purl.bazel"></a>
