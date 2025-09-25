@@ -42,12 +42,8 @@ filegroup(
 bzl_library(
     name = "core_metadata",
     srcs = [
-        "@package_metadata//:defs.bzl",
-        "@package_metadata//licenses/providers:license_kind_info.bzl",
-        "@package_metadata//providers:package_attribute_info.bzl",
-        "@package_metadata//providers:package_metadata_info.bzl",
-        "@package_metadata//purl:purl.bzl",
-        "@package_metadata//rules:package_metadata.bzl",
+        "@package_metadata//:srcs",
+        "@package_metadata//licenses:srcs",
     ],
     visibility = ["//visibility:public"],
 )
