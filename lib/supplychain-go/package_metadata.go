@@ -4,9 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"maps"
 	"os"
+	"slices"
 
 	"github.com/package-url/packageurl-go"
+
+	"github.com/bazel-contrib/supply-chain/lib/supplychain-go/label"
 )
 
 // PackageMetadata provides metadata about a Bazel package.
@@ -16,8 +20,14 @@ type PackageMetadata interface {
 	// See also https://medium.com/@johnsiilver/writing-an-interface-that-only-sub-packages-can-implement-fe36e7511449
 	packageMetadataPrivate()
 
+	// GetLabel returns the [Label](https://bazel.build/rules/lib/builtins/Label) of the `package_metadata` target declaring this `PackageMetadata`.
+	GetLabel() label.Label
+
 	// GetPURL returns the [package-url](https://github.com/package-url/purl-spec/blob/main/PURL-SPECIFICATION.rst) this `PackageMetadata` if for.
 	GetPURL() packageurl.PackageURL
+
+	// ListAttributeKinds returns a slice of kinds of `PackageAttributeDescriptor`s included in this `PackageMetadata`.
+	ListAttributeKinds() []string
 }
 
 // ReadPackageMetadata deserializes `PackageMetadata` from the provided reader.
@@ -41,6 +51,22 @@ func ReadPackageMetadataFromFile(path string) (PackageMetadata, error) {
 	return ReadPackageMetadata(f)
 }
 
+// WritePackageMetadata serializes `PackageMetadata` to the provided reader.
+func WritePackageMetadata(r io.Writer, metadata PackageMetadata) error {
+	return json.NewEncoder(r).Encode(metadata)
+}
+
+// WritePackageMetadataToFile serializes `PackageMetadata` into a file with the provided path.
+func WritePackageMetadataToFile(path string, metadata PackageMetadata) error {
+	f, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	return WritePackageMetadata(f, metadata)
+}
+
 // GetPackageAttribute returns the provided attribute from the `PackageMetadata`.
 func GetPackageAttribute[T any](m PackageMetadata, d PackageAttributeDescriptor[T]) (*T, error) {
 	p := m.(*packageMetadata)
@@ -60,7 +86,7 @@ func GetPackageAttribute[T any](m PackageMetadata, d PackageAttributeDescriptor[
 }
 
 type packageMetadata struct {
-	Label      string
+	Label      label.Label
 	PURL       packageurl.PackageURL
 	Attributes map[string]string
 }
@@ -74,8 +100,16 @@ func (p *packageMetadata) packageMetadataPrivate() {
 	// Nothing to do.
 }
 
+func (p *packageMetadata) GetLabel() label.Label {
+	return p.Label
+}
+
 func (p *packageMetadata) GetPURL() packageurl.PackageURL {
 	return p.PURL
+}
+
+func (p *packageMetadata) ListAttributeKinds() []string {
+	return slices.Sorted(maps.Keys(p.Attributes))
 }
 
 /*
@@ -96,7 +130,11 @@ func (p *packageMetadata) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	p.Label = rawMetadata.Label
+	l, err := label.Parse(rawMetadata.Label)
+	if err != nil {
+		return err
+	}
+	p.Label = l
 
 	purl, err := packageurl.FromString(rawMetadata.PURL)
 	if err != nil {
@@ -114,7 +152,7 @@ func (p *packageMetadata) UnmarshalJSON(data []byte) error {
 
 func (p *packageMetadata) MarshalJSON() ([]byte, error) {
 	return json.Marshal(&rawPackageMetadata{
-		Label:      p.Label,
+		Label:      p.Label.String(),
 		PURL:       p.PURL.String(),
 		Attributes: p.Attributes,
 	})

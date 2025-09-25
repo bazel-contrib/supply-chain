@@ -12,22 +12,33 @@ package_metadata(
 
 gazelle(name = "gazelle")
 
-go_library(
+# Shortcut to allow people to reference this as `@supply-chain-go`.
+alias(
     name = "supply-chain-go",
+    actual = ":supplychain-go",
+    visibility = ["//visibility:public"],
+)
+
+go_library(
+    name = "supplychain-go",
     srcs = [
         "package_attribute.go",
         "package_metadata.go",
     ],
-    importpath = "github.com/bazel-contrib/supply-chain/lib/supply-chain-go",
+    importpath = "github.com/bazel-contrib/supply-chain/lib/supplychain-go",
     visibility = ["//visibility:public"],
-    deps = ["@com_github_package_url_packageurl_go//:packageurl-go"],
+    deps = [
+        "//label",
+        "@com_github_package_url_packageurl_go//:packageurl-go",
+    ],
 )
 
 go_test(
-    name = "supply-chain-go_test",
+    name = "supplychain-go_test",
     srcs = ["package_metadata_test.go"],
-    embed = [":supply-chain-go"],
+    embed = [":supplychain-go"],
     deps = [
+        "//label",
         "@com_github_package_url_packageurl_go//:packageurl-go",
         "@com_github_stretchr_testify//assert",
     ],
