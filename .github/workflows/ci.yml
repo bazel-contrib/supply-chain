@@ -57,6 +57,11 @@ jobs:
             package: "lib/supplychain-go"
             runner: "ubuntu-latest"
 
+          - name: "Bazel 8.x: @tools (Linux x64)"
+            bazel_version: "8.x"
+            package: "tools"
+            runner: "ubuntu-latest"
+
     runs-on:
       - "${{ matrix.runner }}"
 
