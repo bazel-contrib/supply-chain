@@ -7,7 +7,7 @@ load("@rules_cc//cc:cc_library.bzl", "cc_library")
 # Using a package wide default ensure that all targets are associated with the
 # license.
 package(
-    default_package_metadata = [":license"],
+    default_applicable_licenses = [":license"],
     default_visibility = ["//examples:__subpackages__"],
 )
 
