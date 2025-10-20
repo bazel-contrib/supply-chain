@@ -7,7 +7,7 @@ General-purpose rules for injecting supply-chain metadata into Bazel projects (e
 
 This is a fundamental module of the Bazel ecosystem that most, if not all, other Bazel modules depend on. Thus stability is very important, and we promise to never change the public API.
 
-> **IMPORTANT**: This module is currently under active development, and not all exported symbols are covered by this stability gurantee. Please refer to the documentation of rules and providers for whether they are currently considered stable.
+> **IMPORTANT**: This module is currently under active development, and not all exported symbols are covered by this stability guarantee. Please refer to the documentation of rules and providers for whether they are currently considered stable.
 
 
 ## Concepts
