@@ -9,7 +9,7 @@ load("@supply_chain_tools//examples/sbom:sbom.bzl", "sbom")
 load("@supply_chain_tools//examples/vendor/constant_gen:defs.bzl", "constant_gen")
 
 package(
-    default_package_metadata = ["//:package_metadata"],
+    default_applicable_licenses = ["//:package_metadata"],
     default_visibility = ["//examples:__subpackages__"],
 )
 
