@@ -23,7 +23,7 @@ jobs:
       matrix:
         include:
           - name: "Docs"
-            bazel_version: "rolling"
+            bazel_version: "8.x"
             package: "docs"
             runner: "ubuntu-latest"
 
@@ -43,7 +43,7 @@ jobs:
             runner: "ubuntu-latest"
 
           - name: "Bazel latest: @supply-chain-go (Linux x64)"
-            bazel_version: "rolling"
+            bazel_version: "9.0.0-pre.20250921.2"
             package: "lib/supplychain-go"
             runner: "ubuntu-latest"
 
