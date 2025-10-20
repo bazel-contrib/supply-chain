@@ -10,7 +10,6 @@ load(
 
 def _sbom_impl(ctx):
     transitive_metadata_info = ctx.attr.target[TransitiveMetadataInfo]
-    # print(transitive_metadata_info)
     transitive_inputs = []
     config = { "deps": [] }
     for m in transitive_metadata_info.metadata.to_list():
