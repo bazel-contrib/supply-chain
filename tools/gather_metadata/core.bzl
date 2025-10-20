@@ -203,7 +203,6 @@ def gather_metadata_info_common(
     #    If the length of the list is one, just pass up the first element.
     #    This is common through the whole middle of a build graph.
     # 3. If the above fail, construct a new one.
-
     if DEBUG_LEVEL > 0:
         print("%s: got: %d, trans: %d" % (target.label, len(got_providers), len(trans_tmi)))
 
@@ -217,18 +216,18 @@ def gather_metadata_info_common(
             # Often, there is only one thing we are passing up. There is no
             # reason to allocate another collection provider around that.
             return trans_tmi[0]
-         """
-        return [provider_factory(trans = depset(transitive = trans_tmi))]
-
-    # Create a TWMI linking this target to the applicable metadata
-    me = TargetWithMetadataInfo(
-        target = target.label,
-        metadata = depset(got_providers),
-    )
-    if not trans_tmi:
         return [provider_factory(
-            trans = depset(direct = [me]),
+            target = target.label,
+            trans = depset(direct=[x.trans for x in trans_tmi]),
+            traces = traces,
         )]
+
+    # Now we want 
+    me = provider_factory(
+        target = target.label,
+        directs = depset(tuple(got_providers))
+    )
+
     return [provider_factory(
         trans = depset(direct = [me], transitive = trans_tmi),
     )]
