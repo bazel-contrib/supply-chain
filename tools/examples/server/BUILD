@@ -2,13 +2,14 @@
 
 load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
 
+load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
 # load("@supply_chain_tools//rules:compliance.bzl", "check_license")
 load("@supply_chain_tools//examples/sample_reports:licenses_used.bzl", "licenses_used")
 load("@supply_chain_tools//examples/sbom:sbom.bzl", "sbom")
 load("@supply_chain_tools//examples/vendor/constant_gen:defs.bzl", "constant_gen")
 
 package(
-    default_package_metadata = ["//:package_metadata"],
+    default_applicable_licenses = ["//:package_metadata"],
     default_visibility = ["//examples:__subpackages__"],
 )
 
@@ -58,6 +59,12 @@ sbom(
     name = "server_sbom",
     out = "server_sbom.txt",
     target = ":my_violating_server",
+)
+
+diff_test(
+    name = "sbom_diff_test",
+    file1 = ":server_sbom.txt",
+    file2 = "server_sbom.golden",
 )
 
 # TODO(aiuto): Turn this strictly into a compliance test.

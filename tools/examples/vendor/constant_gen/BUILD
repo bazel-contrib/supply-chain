@@ -7,7 +7,7 @@ load("@supply_chain_tools//examples/sample_reports:licenses_used.bzl", "licenses
 load(":defs.bzl", "constant_gen")
 
 package(
-    default_package_metadata = [":package_data"],
+    default_applicable_licenses = [":package_data"],
     default_visibility = ["//examples:__subpackages__"],
 )
 
