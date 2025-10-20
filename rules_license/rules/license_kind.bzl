@@ -23,9 +23,11 @@ load("@rules_license//rules:providers.bzl", _legacyLicenseKindInfo = "LicenseKin
 #
 
 def _license_kind_impl(ctx):
-    print(ctx.label.workspace_name)
     identifier = "@%s//%s:%s" % (
-        ctx.label.workspace_name.replace("+_repo_rules+", ""),
+        # Remove the disambiguator on the repo name so we get the actual
+	# canonical name for this target.
+        # TODO: This could be more robust
+        ctx.label.repo_name.replace("+_repo_rules+", ""),
         ctx.label.package,
         ctx.label.name,
     )
