@@ -37,6 +37,7 @@ def _license_kind_impl(ctx):
     provider = LicenseKindInfo(
         identifier = identifier,
         name = ctx.attr.long_name,
+        full_name = ctx.attr.long_name,
     )
     return [legacy_provider, provider]
 

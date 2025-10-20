@@ -6,4970 +6,4260 @@ load("//rules:license_kind.bzl", "license_kind")
 
 license_kind(
     name = "0BSD",
-    full_name = "BSD Zero Clause License",
-    identifier = "0BSD",
+    long_name = "BSD Zero Clause License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "3D-Slicer-1.0",
-    full_name = "3D Slicer License v1.0",
-    identifier = "3D-Slicer-1.0",
+    long_name = "3D Slicer License v1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "AAL",
-    full_name = "Attribution Assurance License",
-    identifier = "AAL",
+    long_name = "Attribution Assurance License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "ADSL",
-    full_name = "Amazon Digital Services License",
-    identifier = "ADSL",
+    long_name = "Amazon Digital Services License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "AFL-1.1",
-    full_name = "Academic Free License v1.1",
-    identifier = "AFL-1.1",
+    long_name = "Academic Free License v1.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "AFL-1.2",
-    full_name = "Academic Free License v1.2",
-    identifier = "AFL-1.2",
+    long_name = "Academic Free License v1.2",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "AFL-2.0",
-    full_name = "Academic Free License v2.0",
-    identifier = "AFL-2.0",
+    long_name = "Academic Free License v2.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "AFL-2.1",
-    full_name = "Academic Free License v2.1",
-    identifier = "AFL-2.1",
+    long_name = "Academic Free License v2.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "AFL-3.0",
-    full_name = "Academic Free License v3.0",
-    identifier = "AFL-3.0",
+    long_name = "Academic Free License v3.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "AGPL-1.0",
-    full_name = "Affero General Public License v1.0",
-    identifier = "AGPL-1.0",
+    long_name = "Affero General Public License v1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "AGPL-1.0-only",
-    full_name = "Affero General Public License v1.0 only",
-    identifier = "AGPL-1.0-only",
+    long_name = "Affero General Public License v1.0 only",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "AGPL-1.0-or-later",
-    full_name = "Affero General Public License v1.0 or later",
-    identifier = "AGPL-1.0-or-later",
+    long_name = "Affero General Public License v1.0 or later",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "AGPL-3.0",
-    full_name = "GNU Affero General Public License v3.0",
-    identifier = "AGPL-3.0",
+    long_name = "GNU Affero General Public License v3.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "AGPL-3.0-only",
-    full_name = "GNU Affero General Public License v3.0 only",
-    identifier = "AGPL-3.0-only",
+    long_name = "GNU Affero General Public License v3.0 only",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "AGPL-3.0-or-later",
-    full_name = "GNU Affero General Public License v3.0 or later",
-    identifier = "AGPL-3.0-or-later",
+    long_name = "GNU Affero General Public License v3.0 or later",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "AMD-newlib",
-    full_name = "AMD newlib License",
-    identifier = "AMD-newlib",
+    long_name = "AMD newlib License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "AMDPLPA",
-    full_name = "AMD's plpa_map.c License",
-    identifier = "AMDPLPA",
+    long_name = "AMD's plpa_map.c License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "AML",
-    full_name = "Apple MIT License",
-    identifier = "AML",
+    long_name = "Apple MIT License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "AML-glslang",
-    full_name = "AML glslang variant License",
-    identifier = "AML-glslang",
+    long_name = "AML glslang variant License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "AMPAS",
-    full_name = "Academy of Motion Picture Arts and Sciences BSD",
-    identifier = "AMPAS",
+    long_name = "Academy of Motion Picture Arts and Sciences BSD",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "ANTLR-PD",
-    full_name = "ANTLR Software Rights Notice",
-    identifier = "ANTLR-PD",
+    long_name = "ANTLR Software Rights Notice",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "ANTLR-PD-fallback",
-    full_name = "ANTLR Software Rights Notice with license fallback",
-    identifier = "ANTLR-PD-fallback",
+    long_name = "ANTLR Software Rights Notice with license fallback",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "APAFML",
-    full_name = "Adobe Postscript AFM License",
-    identifier = "APAFML",
+    long_name = "Adobe Postscript AFM License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "APL-1.0",
-    full_name = "Adaptive Public License 1.0",
-    identifier = "APL-1.0",
+    long_name = "Adaptive Public License 1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "APSL-1.0",
-    full_name = "Apple Public Source License 1.0",
-    identifier = "APSL-1.0",
+    long_name = "Apple Public Source License 1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "APSL-1.1",
-    full_name = "Apple Public Source License 1.1",
-    identifier = "APSL-1.1",
+    long_name = "Apple Public Source License 1.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "APSL-1.2",
-    full_name = "Apple Public Source License 1.2",
-    identifier = "APSL-1.2",
+    long_name = "Apple Public Source License 1.2",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "APSL-2.0",
-    full_name = "Apple Public Source License 2.0",
-    identifier = "APSL-2.0",
+    long_name = "Apple Public Source License 2.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "ASWF-Digital-Assets-1.0",
-    full_name = "ASWF Digital Assets License version 1.0",
-    identifier = "ASWF-Digital-Assets-1.0",
+    long_name = "ASWF Digital Assets License version 1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "ASWF-Digital-Assets-1.1",
-    full_name = "ASWF Digital Assets License 1.1",
-    identifier = "ASWF-Digital-Assets-1.1",
+    long_name = "ASWF Digital Assets License 1.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Abstyles",
-    full_name = "Abstyles License",
-    identifier = "Abstyles",
+    long_name = "Abstyles License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "AdaCore-doc",
-    full_name = "AdaCore Doc License",
-    identifier = "AdaCore-doc",
+    long_name = "AdaCore Doc License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Adobe-2006",
-    full_name = "Adobe Systems Incorporated Source Code License Agreement",
-    identifier = "Adobe-2006",
+    long_name = "Adobe Systems Incorporated Source Code License Agreement",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Adobe-Display-PostScript",
-    full_name = "Adobe Display PostScript License",
-    identifier = "Adobe-Display-PostScript",
+    long_name = "Adobe Display PostScript License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Adobe-Glyph",
-    full_name = "Adobe Glyph List License",
-    identifier = "Adobe-Glyph",
+    long_name = "Adobe Glyph List License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Adobe-Utopia",
-    full_name = "Adobe Utopia Font License",
-    identifier = "Adobe-Utopia",
+    long_name = "Adobe Utopia Font License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Advanced-Cryptics-Dictionary",
-    full_name = "Advanced Cryptics Dictionary License",
-    identifier = "Advanced-Cryptics-Dictionary",
+    long_name = "Advanced Cryptics Dictionary License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Afmparse",
-    full_name = "Afmparse License",
-    identifier = "Afmparse",
+    long_name = "Afmparse License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Aladdin",
-    full_name = "Aladdin Free Public License",
-    identifier = "Aladdin",
+    long_name = "Aladdin Free Public License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Apache-1.0",
-    full_name = "Apache License 1.0",
-    identifier = "Apache-1.0",
+    long_name = "Apache License 1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Apache-1.1",
-    full_name = "Apache License 1.1",
-    identifier = "Apache-1.1",
+    long_name = "Apache License 1.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Apache-2.0",
-    full_name = "Apache License 2.0",
-    identifier = "Apache-2.0",
+    long_name = "Apache License 2.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "App-s2p",
-    full_name = "App::s2p License",
-    identifier = "App-s2p",
+    long_name = "App::s2p License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Arphic-1999",
-    full_name = "Arphic Public License",
-    identifier = "Arphic-1999",
+    long_name = "Arphic Public License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Artistic-1.0",
-    full_name = "Artistic License 1.0",
-    identifier = "Artistic-1.0",
+    long_name = "Artistic License 1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Artistic-1.0-Perl",
-    full_name = "Artistic License 1.0 (Perl)",
-    identifier = "Artistic-1.0-Perl",
+    long_name = "Artistic License 1.0 (Perl)",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Artistic-1.0-cl8",
-    full_name = "Artistic License 1.0 w/clause 8",
-    identifier = "Artistic-1.0-cl8",
+    long_name = "Artistic License 1.0 w/clause 8",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Artistic-2.0",
-    full_name = "Artistic License 2.0",
-    identifier = "Artistic-2.0",
+    long_name = "Artistic License 2.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Artistic-dist",
-    full_name = "Artistic License 1.0 (dist)",
-    identifier = "Artistic-dist",
+    long_name = "Artistic License 1.0 (dist)",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Aspell-RU",
-    full_name = "Aspell Russian License",
-    identifier = "Aspell-RU",
+    long_name = "Aspell Russian License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-1-Clause",
-    full_name = "BSD 1-Clause License",
-    identifier = "BSD-1-Clause",
+    long_name = "BSD 1-Clause License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-2-Clause",
-    full_name = "BSD 2-Clause \"Simplified\" License",
-    identifier = "BSD-2-Clause",
+    long_name = "BSD 2-Clause \"Simplified\" License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-2-Clause-Darwin",
-    full_name = "BSD 2-Clause - Ian Darwin variant",
-    identifier = "BSD-2-Clause-Darwin",
+    long_name = "BSD 2-Clause - Ian Darwin variant",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-2-Clause-FreeBSD",
-    full_name = "BSD 2-Clause FreeBSD License",
-    identifier = "BSD-2-Clause-FreeBSD",
+    long_name = "BSD 2-Clause FreeBSD License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-2-Clause-NetBSD",
-    full_name = "BSD 2-Clause NetBSD License",
-    identifier = "BSD-2-Clause-NetBSD",
+    long_name = "BSD 2-Clause NetBSD License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-2-Clause-Patent",
-    full_name = "BSD-2-Clause Plus Patent License",
-    identifier = "BSD-2-Clause-Patent",
+    long_name = "BSD-2-Clause Plus Patent License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-2-Clause-Views",
-    full_name = "BSD 2-Clause with views sentence",
-    identifier = "BSD-2-Clause-Views",
+    long_name = "BSD 2-Clause with views sentence",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-2-Clause-first-lines",
-    full_name = "BSD 2-Clause - first lines requirement",
-    identifier = "BSD-2-Clause-first-lines",
+    long_name = "BSD 2-Clause - first lines requirement",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-2-Clause-pkgconf-disclaimer",
-    full_name = "BSD 2-Clause pkgconf disclaimer variant",
-    identifier = "BSD-2-Clause-pkgconf-disclaimer",
+    long_name = "BSD 2-Clause pkgconf disclaimer variant",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-3-Clause",
-    full_name = "BSD 3-Clause \"New\" or \"Revised\" License",
-    identifier = "BSD-3-Clause",
+    long_name = "BSD 3-Clause \"New\" or \"Revised\" License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-3-Clause-Attribution",
-    full_name = "BSD with attribution",
-    identifier = "BSD-3-Clause-Attribution",
+    long_name = "BSD with attribution",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-3-Clause-Clear",
-    full_name = "BSD 3-Clause Clear License",
-    identifier = "BSD-3-Clause-Clear",
+    long_name = "BSD 3-Clause Clear License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-3-Clause-HP",
-    full_name = "Hewlett-Packard BSD variant license",
-    identifier = "BSD-3-Clause-HP",
+    long_name = "Hewlett-Packard BSD variant license",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-3-Clause-LBNL",
-    full_name = "Lawrence Berkeley National Labs BSD variant license",
-    identifier = "BSD-3-Clause-LBNL",
+    long_name = "Lawrence Berkeley National Labs BSD variant license",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-3-Clause-Modification",
-    full_name = "BSD 3-Clause Modification",
-    identifier = "BSD-3-Clause-Modification",
+    long_name = "BSD 3-Clause Modification",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-3-Clause-No-Military-License",
-    full_name = "BSD 3-Clause No Military License",
-    identifier = "BSD-3-Clause-No-Military-License",
+    long_name = "BSD 3-Clause No Military License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-3-Clause-No-Nuclear-License",
-    full_name = "BSD 3-Clause No Nuclear License",
-    identifier = "BSD-3-Clause-No-Nuclear-License",
+    long_name = "BSD 3-Clause No Nuclear License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-3-Clause-No-Nuclear-License-2014",
-    full_name = "BSD 3-Clause No Nuclear License 2014",
-    identifier = "BSD-3-Clause-No-Nuclear-License-2014",
+    long_name = "BSD 3-Clause No Nuclear License 2014",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-3-Clause-No-Nuclear-Warranty",
-    full_name = "BSD 3-Clause No Nuclear Warranty",
-    identifier = "BSD-3-Clause-No-Nuclear-Warranty",
+    long_name = "BSD 3-Clause No Nuclear Warranty",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-3-Clause-Open-MPI",
-    full_name = "BSD 3-Clause Open MPI variant",
-    identifier = "BSD-3-Clause-Open-MPI",
+    long_name = "BSD 3-Clause Open MPI variant",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-3-Clause-Sun",
-    full_name = "BSD 3-Clause Sun Microsystems",
-    identifier = "BSD-3-Clause-Sun",
+    long_name = "BSD 3-Clause Sun Microsystems",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-3-Clause-Tso",
-    full_name = "BSD 3-Clause Tso variant",
-    identifier = "BSD-3-Clause-Tso",
+    long_name = "BSD 3-Clause Tso variant",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-3-Clause-acpica",
-    full_name = "BSD 3-Clause acpica variant",
-    identifier = "BSD-3-Clause-acpica",
+    long_name = "BSD 3-Clause acpica variant",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-3-Clause-flex",
-    full_name = "BSD 3-Clause Flex variant",
-    identifier = "BSD-3-Clause-flex",
+    long_name = "BSD 3-Clause Flex variant",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-4-Clause",
-    full_name = "BSD 4-Clause \"Original\" or \"Old\" License",
-    identifier = "BSD-4-Clause",
+    long_name = "BSD 4-Clause \"Original\" or \"Old\" License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-4-Clause-Shortened",
-    full_name = "BSD 4 Clause Shortened",
-    identifier = "BSD-4-Clause-Shortened",
+    long_name = "BSD 4 Clause Shortened",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-4-Clause-UC",
-    full_name = "BSD-4-Clause (University of California-Specific)",
-    identifier = "BSD-4-Clause-UC",
+    long_name = "BSD-4-Clause (University of California-Specific)",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-4.3RENO",
-    full_name = "BSD 4.3 RENO License",
-    identifier = "BSD-4.3RENO",
+    long_name = "BSD 4.3 RENO License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-4.3TAHOE",
-    full_name = "BSD 4.3 TAHOE License",
-    identifier = "BSD-4.3TAHOE",
+    long_name = "BSD 4.3 TAHOE License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-Advertising-Acknowledgement",
-    full_name = "BSD Advertising Acknowledgement License",
-    identifier = "BSD-Advertising-Acknowledgement",
+    long_name = "BSD Advertising Acknowledgement License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-Attribution-HPND-disclaimer",
-    full_name = "BSD with Attribution and HPND disclaimer",
-    identifier = "BSD-Attribution-HPND-disclaimer",
+    long_name = "BSD with Attribution and HPND disclaimer",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-Inferno-Nettverk",
-    full_name = "BSD-Inferno-Nettverk",
-    identifier = "BSD-Inferno-Nettverk",
+    long_name = "BSD-Inferno-Nettverk",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-Mark-Modifications",
-    full_name = "BSD Mark Modifications License",
-    identifier = "BSD-Mark-Modifications",
+    long_name = "BSD Mark Modifications License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-Protection",
-    full_name = "BSD Protection License",
-    identifier = "BSD-Protection",
+    long_name = "BSD Protection License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-Source-Code",
-    full_name = "BSD Source Code Attribution",
-    identifier = "BSD-Source-Code",
+    long_name = "BSD Source Code Attribution",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-Source-beginning-file",
-    full_name = "BSD Source Code Attribution - beginning of file variant",
-    identifier = "BSD-Source-beginning-file",
+    long_name = "BSD Source Code Attribution - beginning of file variant",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-Systemics",
-    full_name = "Systemics BSD variant license",
-    identifier = "BSD-Systemics",
+    long_name = "Systemics BSD variant license",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSD-Systemics-W3Works",
-    full_name = "Systemics W3Works BSD variant license",
-    identifier = "BSD-Systemics-W3Works",
+    long_name = "Systemics W3Works BSD variant license",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BSL-1.0",
-    full_name = "Boost Software License 1.0",
-    identifier = "BSL-1.0",
+    long_name = "Boost Software License 1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BUSL-1.1",
-    full_name = "Business Source License 1.1",
-    identifier = "BUSL-1.1",
+    long_name = "Business Source License 1.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Baekmuk",
-    full_name = "Baekmuk License",
-    identifier = "Baekmuk",
+    long_name = "Baekmuk License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Bahyph",
-    full_name = "Bahyph License",
-    identifier = "Bahyph",
+    long_name = "Bahyph License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Barr",
-    full_name = "Barr License",
-    identifier = "Barr",
+    long_name = "Barr License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Beerware",
-    full_name = "Beerware License",
-    identifier = "Beerware",
+    long_name = "Beerware License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BitTorrent-1.0",
-    full_name = "BitTorrent Open Source License v1.0",
-    identifier = "BitTorrent-1.0",
+    long_name = "BitTorrent Open Source License v1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BitTorrent-1.1",
-    full_name = "BitTorrent Open Source License v1.1",
-    identifier = "BitTorrent-1.1",
+    long_name = "BitTorrent Open Source License v1.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Bitstream-Charter",
-    full_name = "Bitstream Charter Font License",
-    identifier = "Bitstream-Charter",
+    long_name = "Bitstream Charter Font License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Bitstream-Vera",
-    full_name = "Bitstream Vera Font License",
-    identifier = "Bitstream-Vera",
+    long_name = "Bitstream Vera Font License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "BlueOak-1.0.0",
-    full_name = "Blue Oak Model License 1.0.0",
-    identifier = "BlueOak-1.0.0",
+    long_name = "Blue Oak Model License 1.0.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Boehm-GC",
-    full_name = "Boehm-Demers-Weiser GC License",
-    identifier = "Boehm-GC",
+    long_name = "Boehm-Demers-Weiser GC License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Boehm-GC-without-fee",
-    full_name = "Boehm-Demers-Weiser GC License (without fee)",
-    identifier = "Boehm-GC-without-fee",
+    long_name = "Boehm-Demers-Weiser GC License (without fee)",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Borceux",
-    full_name = "Borceux license",
-    identifier = "Borceux",
+    long_name = "Borceux license",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Brian-Gladman-2-Clause",
-    full_name = "Brian Gladman 2-Clause License",
-    identifier = "Brian-Gladman-2-Clause",
+    long_name = "Brian Gladman 2-Clause License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Brian-Gladman-3-Clause",
-    full_name = "Brian Gladman 3-Clause License",
-    identifier = "Brian-Gladman-3-Clause",
+    long_name = "Brian Gladman 3-Clause License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "C-UDA-1.0",
-    full_name = "Computational Use of Data Agreement v1.0",
-    identifier = "C-UDA-1.0",
+    long_name = "Computational Use of Data Agreement v1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CAL-1.0",
-    full_name = "Cryptographic Autonomy License 1.0",
-    identifier = "CAL-1.0",
+    long_name = "Cryptographic Autonomy License 1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CAL-1.0-Combined-Work-Exception",
-    full_name = "Cryptographic Autonomy License 1.0 (Combined Work Exception)",
-    identifier = "CAL-1.0-Combined-Work-Exception",
+    long_name = "Cryptographic Autonomy License 1.0 (Combined Work Exception)",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CATOSL-1.1",
-    full_name = "Computer Associates Trusted Open Source License 1.1",
-    identifier = "CATOSL-1.1",
+    long_name = "Computer Associates Trusted Open Source License 1.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-1.0",
-    full_name = "Creative Commons Attribution 1.0 Generic",
-    identifier = "CC-BY-1.0",
+    long_name = "Creative Commons Attribution 1.0 Generic",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-2.0",
-    full_name = "Creative Commons Attribution 2.0 Generic",
-    identifier = "CC-BY-2.0",
+    long_name = "Creative Commons Attribution 2.0 Generic",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-2.5",
-    full_name = "Creative Commons Attribution 2.5 Generic",
-    identifier = "CC-BY-2.5",
+    long_name = "Creative Commons Attribution 2.5 Generic",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-2.5-AU",
-    full_name = "Creative Commons Attribution 2.5 Australia",
-    identifier = "CC-BY-2.5-AU",
+    long_name = "Creative Commons Attribution 2.5 Australia",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-3.0",
-    full_name = "Creative Commons Attribution 3.0 Unported",
-    identifier = "CC-BY-3.0",
+    long_name = "Creative Commons Attribution 3.0 Unported",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-3.0-AT",
-    full_name = "Creative Commons Attribution 3.0 Austria",
-    identifier = "CC-BY-3.0-AT",
+    long_name = "Creative Commons Attribution 3.0 Austria",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-3.0-AU",
-    full_name = "Creative Commons Attribution 3.0 Australia",
-    identifier = "CC-BY-3.0-AU",
+    long_name = "Creative Commons Attribution 3.0 Australia",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-3.0-DE",
-    full_name = "Creative Commons Attribution 3.0 Germany",
-    identifier = "CC-BY-3.0-DE",
+    long_name = "Creative Commons Attribution 3.0 Germany",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-3.0-IGO",
-    full_name = "Creative Commons Attribution 3.0 IGO",
-    identifier = "CC-BY-3.0-IGO",
+    long_name = "Creative Commons Attribution 3.0 IGO",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-3.0-NL",
-    full_name = "Creative Commons Attribution 3.0 Netherlands",
-    identifier = "CC-BY-3.0-NL",
+    long_name = "Creative Commons Attribution 3.0 Netherlands",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-3.0-US",
-    full_name = "Creative Commons Attribution 3.0 United States",
-    identifier = "CC-BY-3.0-US",
+    long_name = "Creative Commons Attribution 3.0 United States",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-4.0",
-    full_name = "Creative Commons Attribution 4.0 International",
-    identifier = "CC-BY-4.0",
+    long_name = "Creative Commons Attribution 4.0 International",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-NC-1.0",
-    full_name = "Creative Commons Attribution Non Commercial 1.0 Generic",
-    identifier = "CC-BY-NC-1.0",
+    long_name = "Creative Commons Attribution Non Commercial 1.0 Generic",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-NC-2.0",
-    full_name = "Creative Commons Attribution Non Commercial 2.0 Generic",
-    identifier = "CC-BY-NC-2.0",
+    long_name = "Creative Commons Attribution Non Commercial 2.0 Generic",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-NC-2.5",
-    full_name = "Creative Commons Attribution Non Commercial 2.5 Generic",
-    identifier = "CC-BY-NC-2.5",
+    long_name = "Creative Commons Attribution Non Commercial 2.5 Generic",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-NC-3.0",
-    full_name = "Creative Commons Attribution Non Commercial 3.0 Unported",
-    identifier = "CC-BY-NC-3.0",
+    long_name = "Creative Commons Attribution Non Commercial 3.0 Unported",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-NC-3.0-DE",
-    full_name = "Creative Commons Attribution Non Commercial 3.0 Germany",
-    identifier = "CC-BY-NC-3.0-DE",
+    long_name = "Creative Commons Attribution Non Commercial 3.0 Germany",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-NC-4.0",
-    full_name = "Creative Commons Attribution Non Commercial 4.0 International",
-    identifier = "CC-BY-NC-4.0",
+    long_name = "Creative Commons Attribution Non Commercial 4.0 International",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-NC-ND-1.0",
-    full_name = "Creative Commons Attribution Non Commercial No Derivatives 1.0 Generic",
-    identifier = "CC-BY-NC-ND-1.0",
+    long_name = "Creative Commons Attribution Non Commercial No Derivatives 1.0 Generic",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-NC-ND-2.0",
-    full_name = "Creative Commons Attribution Non Commercial No Derivatives 2.0 Generic",
-    identifier = "CC-BY-NC-ND-2.0",
+    long_name = "Creative Commons Attribution Non Commercial No Derivatives 2.0 Generic",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-NC-ND-2.5",
-    full_name = "Creative Commons Attribution Non Commercial No Derivatives 2.5 Generic",
-    identifier = "CC-BY-NC-ND-2.5",
+    long_name = "Creative Commons Attribution Non Commercial No Derivatives 2.5 Generic",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-NC-ND-3.0",
-    full_name = "Creative Commons Attribution Non Commercial No Derivatives 3.0 Unported",
-    identifier = "CC-BY-NC-ND-3.0",
+    long_name = "Creative Commons Attribution Non Commercial No Derivatives 3.0 Unported",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-NC-ND-3.0-DE",
-    full_name = "Creative Commons Attribution Non Commercial No Derivatives 3.0 Germany",
-    identifier = "CC-BY-NC-ND-3.0-DE",
+    long_name = "Creative Commons Attribution Non Commercial No Derivatives 3.0 Germany",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-NC-ND-3.0-IGO",
-    full_name = "Creative Commons Attribution Non Commercial No Derivatives 3.0 IGO",
-    identifier = "CC-BY-NC-ND-3.0-IGO",
+    long_name = "Creative Commons Attribution Non Commercial No Derivatives 3.0 IGO",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-NC-ND-4.0",
-    full_name = "Creative Commons Attribution Non Commercial No Derivatives 4.0 International",
-    identifier = "CC-BY-NC-ND-4.0",
+    long_name = "Creative Commons Attribution Non Commercial No Derivatives 4.0 International",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-NC-SA-1.0",
-    full_name = "Creative Commons Attribution Non Commercial Share Alike 1.0 Generic",
-    identifier = "CC-BY-NC-SA-1.0",
+    long_name = "Creative Commons Attribution Non Commercial Share Alike 1.0 Generic",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-NC-SA-2.0",
-    full_name = "Creative Commons Attribution Non Commercial Share Alike 2.0 Generic",
-    identifier = "CC-BY-NC-SA-2.0",
+    long_name = "Creative Commons Attribution Non Commercial Share Alike 2.0 Generic",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-NC-SA-2.0-DE",
-    full_name = "Creative Commons Attribution Non Commercial Share Alike 2.0 Germany",
-    identifier = "CC-BY-NC-SA-2.0-DE",
+    long_name = "Creative Commons Attribution Non Commercial Share Alike 2.0 Germany",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-NC-SA-2.0-FR",
-    full_name = "Creative Commons Attribution-NonCommercial-ShareAlike 2.0 France",
-    identifier = "CC-BY-NC-SA-2.0-FR",
+    long_name = "Creative Commons Attribution-NonCommercial-ShareAlike 2.0 France",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-NC-SA-2.0-UK",
-    full_name = "Creative Commons Attribution Non Commercial Share Alike 2.0 England and Wales",
-    identifier = "CC-BY-NC-SA-2.0-UK",
+    long_name = "Creative Commons Attribution Non Commercial Share Alike 2.0 England and Wales",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-NC-SA-2.5",
-    full_name = "Creative Commons Attribution Non Commercial Share Alike 2.5 Generic",
-    identifier = "CC-BY-NC-SA-2.5",
+    long_name = "Creative Commons Attribution Non Commercial Share Alike 2.5 Generic",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-NC-SA-3.0",
-    full_name = "Creative Commons Attribution Non Commercial Share Alike 3.0 Unported",
-    identifier = "CC-BY-NC-SA-3.0",
+    long_name = "Creative Commons Attribution Non Commercial Share Alike 3.0 Unported",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-NC-SA-3.0-DE",
-    full_name = "Creative Commons Attribution Non Commercial Share Alike 3.0 Germany",
-    identifier = "CC-BY-NC-SA-3.0-DE",
+    long_name = "Creative Commons Attribution Non Commercial Share Alike 3.0 Germany",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-NC-SA-3.0-IGO",
-    full_name = "Creative Commons Attribution Non Commercial Share Alike 3.0 IGO",
-    identifier = "CC-BY-NC-SA-3.0-IGO",
+    long_name = "Creative Commons Attribution Non Commercial Share Alike 3.0 IGO",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-NC-SA-4.0",
-    full_name = "Creative Commons Attribution Non Commercial Share Alike 4.0 International",
-    identifier = "CC-BY-NC-SA-4.0",
+    long_name = "Creative Commons Attribution Non Commercial Share Alike 4.0 International",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-ND-1.0",
-    full_name = "Creative Commons Attribution No Derivatives 1.0 Generic",
-    identifier = "CC-BY-ND-1.0",
+    long_name = "Creative Commons Attribution No Derivatives 1.0 Generic",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-ND-2.0",
-    full_name = "Creative Commons Attribution No Derivatives 2.0 Generic",
-    identifier = "CC-BY-ND-2.0",
+    long_name = "Creative Commons Attribution No Derivatives 2.0 Generic",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-ND-2.5",
-    full_name = "Creative Commons Attribution No Derivatives 2.5 Generic",
-    identifier = "CC-BY-ND-2.5",
+    long_name = "Creative Commons Attribution No Derivatives 2.5 Generic",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-ND-3.0",
-    full_name = "Creative Commons Attribution No Derivatives 3.0 Unported",
-    identifier = "CC-BY-ND-3.0",
+    long_name = "Creative Commons Attribution No Derivatives 3.0 Unported",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-ND-3.0-DE",
-    full_name = "Creative Commons Attribution No Derivatives 3.0 Germany",
-    identifier = "CC-BY-ND-3.0-DE",
+    long_name = "Creative Commons Attribution No Derivatives 3.0 Germany",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-ND-4.0",
-    full_name = "Creative Commons Attribution No Derivatives 4.0 International",
-    identifier = "CC-BY-ND-4.0",
+    long_name = "Creative Commons Attribution No Derivatives 4.0 International",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-SA-1.0",
-    full_name = "Creative Commons Attribution Share Alike 1.0 Generic",
-    identifier = "CC-BY-SA-1.0",
+    long_name = "Creative Commons Attribution Share Alike 1.0 Generic",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-SA-2.0",
-    full_name = "Creative Commons Attribution Share Alike 2.0 Generic",
-    identifier = "CC-BY-SA-2.0",
+    long_name = "Creative Commons Attribution Share Alike 2.0 Generic",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-SA-2.0-UK",
-    full_name = "Creative Commons Attribution Share Alike 2.0 England and Wales",
-    identifier = "CC-BY-SA-2.0-UK",
+    long_name = "Creative Commons Attribution Share Alike 2.0 England and Wales",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-SA-2.1-JP",
-    full_name = "Creative Commons Attribution Share Alike 2.1 Japan",
-    identifier = "CC-BY-SA-2.1-JP",
+    long_name = "Creative Commons Attribution Share Alike 2.1 Japan",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-SA-2.5",
-    full_name = "Creative Commons Attribution Share Alike 2.5 Generic",
-    identifier = "CC-BY-SA-2.5",
+    long_name = "Creative Commons Attribution Share Alike 2.5 Generic",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-SA-3.0",
-    full_name = "Creative Commons Attribution Share Alike 3.0 Unported",
-    identifier = "CC-BY-SA-3.0",
+    long_name = "Creative Commons Attribution Share Alike 3.0 Unported",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-SA-3.0-AT",
-    full_name = "Creative Commons Attribution Share Alike 3.0 Austria",
-    identifier = "CC-BY-SA-3.0-AT",
+    long_name = "Creative Commons Attribution Share Alike 3.0 Austria",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-SA-3.0-DE",
-    full_name = "Creative Commons Attribution Share Alike 3.0 Germany",
-    identifier = "CC-BY-SA-3.0-DE",
+    long_name = "Creative Commons Attribution Share Alike 3.0 Germany",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-SA-3.0-IGO",
-    full_name = "Creative Commons Attribution-ShareAlike 3.0 IGO",
-    identifier = "CC-BY-SA-3.0-IGO",
+    long_name = "Creative Commons Attribution-ShareAlike 3.0 IGO",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-BY-SA-4.0",
-    full_name = "Creative Commons Attribution Share Alike 4.0 International",
-    identifier = "CC-BY-SA-4.0",
+    long_name = "Creative Commons Attribution Share Alike 4.0 International",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-PDDC",
-    full_name = "Creative Commons Public Domain Dedication and Certification",
-    identifier = "CC-PDDC",
+    long_name = "Creative Commons Public Domain Dedication and Certification",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-PDM-1.0",
-    full_name = "Creative    Commons Public Domain Mark 1.0 Universal",
-    identifier = "CC-PDM-1.0",
+    long_name = "Creative    Commons Public Domain Mark 1.0 Universal",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC-SA-1.0",
-    full_name = "Creative Commons Share Alike 1.0 Generic",
-    identifier = "CC-SA-1.0",
+    long_name = "Creative Commons Share Alike 1.0 Generic",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CC0-1.0",
-    full_name = "Creative Commons Zero v1.0 Universal",
-    identifier = "CC0-1.0",
+    long_name = "Creative Commons Zero v1.0 Universal",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CDDL-1.0",
-    full_name = "Common Development and Distribution License 1.0",
-    identifier = "CDDL-1.0",
+    long_name = "Common Development and Distribution License 1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CDDL-1.1",
-    full_name = "Common Development and Distribution License 1.1",
-    identifier = "CDDL-1.1",
+    long_name = "Common Development and Distribution License 1.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CDL-1.0",
-    full_name = "Common Documentation License 1.0",
-    identifier = "CDL-1.0",
+    long_name = "Common Documentation License 1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CDLA-Permissive-1.0",
-    full_name = "Community Data License Agreement Permissive 1.0",
-    identifier = "CDLA-Permissive-1.0",
+    long_name = "Community Data License Agreement Permissive 1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CDLA-Permissive-2.0",
-    full_name = "Community Data License Agreement Permissive 2.0",
-    identifier = "CDLA-Permissive-2.0",
+    long_name = "Community Data License Agreement Permissive 2.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CDLA-Sharing-1.0",
-    full_name = "Community Data License Agreement Sharing 1.0",
-    identifier = "CDLA-Sharing-1.0",
+    long_name = "Community Data License Agreement Sharing 1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CECILL-1.0",
-    full_name = "CeCILL Free Software License Agreement v1.0",
-    identifier = "CECILL-1.0",
+    long_name = "CeCILL Free Software License Agreement v1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CECILL-1.1",
-    full_name = "CeCILL Free Software License Agreement v1.1",
-    identifier = "CECILL-1.1",
+    long_name = "CeCILL Free Software License Agreement v1.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CECILL-2.0",
-    full_name = "CeCILL Free Software License Agreement v2.0",
-    identifier = "CECILL-2.0",
+    long_name = "CeCILL Free Software License Agreement v2.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CECILL-2.1",
-    full_name = "CeCILL Free Software License Agreement v2.1",
-    identifier = "CECILL-2.1",
+    long_name = "CeCILL Free Software License Agreement v2.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CECILL-B",
-    full_name = "CeCILL-B Free Software License Agreement",
-    identifier = "CECILL-B",
+    long_name = "CeCILL-B Free Software License Agreement",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CECILL-C",
-    full_name = "CeCILL-C Free Software License Agreement",
-    identifier = "CECILL-C",
+    long_name = "CeCILL-C Free Software License Agreement",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CERN-OHL-1.1",
-    full_name = "CERN Open Hardware Licence v1.1",
-    identifier = "CERN-OHL-1.1",
+    long_name = "CERN Open Hardware Licence v1.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CERN-OHL-1.2",
-    full_name = "CERN Open Hardware Licence v1.2",
-    identifier = "CERN-OHL-1.2",
+    long_name = "CERN Open Hardware Licence v1.2",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CERN-OHL-P-2.0",
-    full_name = "CERN Open Hardware Licence Version 2 - Permissive",
-    identifier = "CERN-OHL-P-2.0",
+    long_name = "CERN Open Hardware Licence Version 2 - Permissive",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CERN-OHL-S-2.0",
-    full_name = "CERN Open Hardware Licence Version 2 - Strongly Reciprocal",
-    identifier = "CERN-OHL-S-2.0",
+    long_name = "CERN Open Hardware Licence Version 2 - Strongly Reciprocal",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CERN-OHL-W-2.0",
-    full_name = "CERN Open Hardware Licence Version 2 - Weakly Reciprocal",
-    identifier = "CERN-OHL-W-2.0",
+    long_name = "CERN Open Hardware Licence Version 2 - Weakly Reciprocal",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CFITSIO",
-    full_name = "CFITSIO License",
-    identifier = "CFITSIO",
+    long_name = "CFITSIO License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CMU-Mach",
-    full_name = "CMU Mach License",
-    identifier = "CMU-Mach",
+    long_name = "CMU Mach License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CMU-Mach-nodoc",
-    full_name = "CMU    Mach - no notices-in-documentation variant",
-    identifier = "CMU-Mach-nodoc",
+    long_name = "CMU    Mach - no notices-in-documentation variant",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CNRI-Jython",
-    full_name = "CNRI Jython License",
-    identifier = "CNRI-Jython",
+    long_name = "CNRI Jython License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CNRI-Python",
-    full_name = "CNRI Python License",
-    identifier = "CNRI-Python",
+    long_name = "CNRI Python License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CNRI-Python-GPL-Compatible",
-    full_name = "CNRI Python Open Source GPL Compatible License Agreement",
-    identifier = "CNRI-Python-GPL-Compatible",
+    long_name = "CNRI Python Open Source GPL Compatible License Agreement",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "COIL-1.0",
-    full_name = "Copyfree Open Innovation License",
-    identifier = "COIL-1.0",
+    long_name = "Copyfree Open Innovation License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CPAL-1.0",
-    full_name = "Common Public Attribution License 1.0",
-    identifier = "CPAL-1.0",
+    long_name = "Common Public Attribution License 1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CPL-1.0",
-    full_name = "Common Public License 1.0",
-    identifier = "CPL-1.0",
+    long_name = "Common Public License 1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CPOL-1.02",
-    full_name = "Code Project Open License 1.02",
-    identifier = "CPOL-1.02",
+    long_name = "Code Project Open License 1.02",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CUA-OPL-1.0",
-    full_name = "CUA Office Public License v1.0",
-    identifier = "CUA-OPL-1.0",
+    long_name = "CUA Office Public License v1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Caldera",
-    full_name = "Caldera License",
-    identifier = "Caldera",
+    long_name = "Caldera License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Caldera-no-preamble",
-    full_name = "Caldera License (without preamble)",
-    identifier = "Caldera-no-preamble",
+    long_name = "Caldera License (without preamble)",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Catharon",
-    full_name = "Catharon License",
-    identifier = "Catharon",
+    long_name = "Catharon License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "ClArtistic",
-    full_name = "Clarified Artistic License",
-    identifier = "ClArtistic",
+    long_name = "Clarified Artistic License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Clips",
-    full_name = "Clips License",
-    identifier = "Clips",
+    long_name = "Clips License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Community-Spec-1.0",
-    full_name = "Community Specification License 1.0",
-    identifier = "Community-Spec-1.0",
+    long_name = "Community Specification License 1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Condor-1.1",
-    full_name = "Condor Public License v1.1",
-    identifier = "Condor-1.1",
+    long_name = "Condor Public License v1.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Cornell-Lossless-JPEG",
-    full_name = "Cornell Lossless JPEG License",
-    identifier = "Cornell-Lossless-JPEG",
+    long_name = "Cornell Lossless JPEG License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Cronyx",
-    full_name = "Cronyx License",
-    identifier = "Cronyx",
+    long_name = "Cronyx License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Crossword",
-    full_name = "Crossword License",
-    identifier = "Crossword",
+    long_name = "Crossword License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CryptoSwift",
-    full_name = "CryptoSwift License",
-    identifier = "CryptoSwift",
+    long_name = "CryptoSwift License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "CrystalStacker",
-    full_name = "CrystalStacker License",
-    identifier = "CrystalStacker",
+    long_name = "CrystalStacker License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Cube",
-    full_name = "Cube License",
-    identifier = "Cube",
+    long_name = "Cube License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "D-FSL-1.0",
-    full_name = "Deutsche Freie Software Lizenz",
-    identifier = "D-FSL-1.0",
+    long_name = "Deutsche Freie Software Lizenz",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "DEC-3-Clause",
-    full_name = "DEC 3-Clause License",
-    identifier = "DEC-3-Clause",
+    long_name = "DEC 3-Clause License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "DL-DE-BY-2.0",
-    full_name = "Data licence Germany – attribution – version 2.0",
-    identifier = "DL-DE-BY-2.0",
+    long_name = "Data licence Germany – attribution – version 2.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "DL-DE-ZERO-2.0",
-    full_name = "Data licence Germany – zero – version 2.0",
-    identifier = "DL-DE-ZERO-2.0",
+    long_name = "Data licence Germany – zero – version 2.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "DOC",
-    full_name = "DOC License",
-    identifier = "DOC",
+    long_name = "DOC License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "DRL-1.0",
-    full_name = "Detection Rule License 1.0",
-    identifier = "DRL-1.0",
+    long_name = "Detection Rule License 1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "DRL-1.1",
-    full_name = "Detection Rule License 1.1",
-    identifier = "DRL-1.1",
+    long_name = "Detection Rule License 1.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "DSDP",
-    full_name = "DSDP License",
-    identifier = "DSDP",
+    long_name = "DSDP License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "DocBook-DTD",
-    full_name = "DocBook DTD License",
-    identifier = "DocBook-DTD",
+    long_name = "DocBook DTD License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "DocBook-Schema",
-    full_name = "DocBook Schema License",
-    identifier = "DocBook-Schema",
+    long_name = "DocBook Schema License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "DocBook-Stylesheet",
-    full_name = "DocBook Stylesheet License",
-    identifier = "DocBook-Stylesheet",
+    long_name = "DocBook Stylesheet License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "DocBook-XML",
-    full_name = "DocBook XML License",
-    identifier = "DocBook-XML",
+    long_name = "DocBook XML License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Dotseqn",
-    full_name = "Dotseqn License",
-    identifier = "Dotseqn",
+    long_name = "Dotseqn License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "ECL-1.0",
-    full_name = "Educational Community License v1.0",
-    identifier = "ECL-1.0",
+    long_name = "Educational Community License v1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "ECL-2.0",
-    full_name = "Educational Community License v2.0",
-    identifier = "ECL-2.0",
+    long_name = "Educational Community License v2.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "EFL-1.0",
-    full_name = "Eiffel Forum License v1.0",
-    identifier = "EFL-1.0",
+    long_name = "Eiffel Forum License v1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "EFL-2.0",
-    full_name = "Eiffel Forum License v2.0",
-    identifier = "EFL-2.0",
+    long_name = "Eiffel Forum License v2.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "EPICS",
-    full_name = "EPICS Open License",
-    identifier = "EPICS",
+    long_name = "EPICS Open License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "EPL-1.0",
-    full_name = "Eclipse Public License 1.0",
-    identifier = "EPL-1.0",
+    long_name = "Eclipse Public License 1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "EPL-2.0",
-    full_name = "Eclipse Public License 2.0",
-    identifier = "EPL-2.0",
+    long_name = "Eclipse Public License 2.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "ESA-PL-permissive-2.4",
-    full_name = "European Space Agency Public License – v2.4 – Permissive (Type 3)",
-    identifier = "ESA-PL-permissive-2.4",
+    long_name = "European Space Agency Public License – v2.4 – Permissive (Type 3)",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "ESA-PL-strong-copyleft-2.4",
-    full_name = "European Space Agency Public License (ESA-PL) - V2.4 - Strong Copyleft (Type 1)",
-    identifier = "ESA-PL-strong-copyleft-2.4",
+    long_name = "European Space Agency Public License (ESA-PL) - V2.4 - Strong Copyleft (Type 1)",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "ESA-PL-weak-copyleft-2.4",
-    full_name = "European Space Agency Public License – v2.4 – Weak Copyleft (Type 2)",
-    identifier = "ESA-PL-weak-copyleft-2.4",
+    long_name = "European Space Agency Public License – v2.4 – Weak Copyleft (Type 2)",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "EUDatagrid",
-    full_name = "EU DataGrid Software License",
-    identifier = "EUDatagrid",
+    long_name = "EU DataGrid Software License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "EUPL-1.0",
-    full_name = "European Union Public License 1.0",
-    identifier = "EUPL-1.0",
+    long_name = "European Union Public License 1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "EUPL-1.1",
-    full_name = "European Union Public License 1.1",
-    identifier = "EUPL-1.1",
+    long_name = "European Union Public License 1.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "EUPL-1.2",
-    full_name = "European Union Public License 1.2",
-    identifier = "EUPL-1.2",
+    long_name = "European Union Public License 1.2",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Elastic-2.0",
-    full_name = "Elastic License 2.0",
-    identifier = "Elastic-2.0",
+    long_name = "Elastic License 2.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Entessa",
-    full_name = "Entessa Public License v1.0",
-    identifier = "Entessa",
+    long_name = "Entessa Public License v1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "ErlPL-1.1",
-    full_name = "Erlang Public License v1.1",
-    identifier = "ErlPL-1.1",
+    long_name = "Erlang Public License v1.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Eurosym",
-    full_name = "Eurosym License",
-    identifier = "Eurosym",
+    long_name = "Eurosym License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "FBM",
-    full_name = "Fuzzy Bitmap License",
-    identifier = "FBM",
+    long_name = "Fuzzy Bitmap License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "FDK-AAC",
-    full_name = "Fraunhofer FDK AAC Codec Library",
-    identifier = "FDK-AAC",
+    long_name = "Fraunhofer FDK AAC Codec Library",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "FSFAP",
-    full_name = "FSF All Permissive License",
-    identifier = "FSFAP",
+    long_name = "FSF All Permissive License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "FSFAP-no-warranty-disclaimer",
-    full_name = "FSF All Permissive License (without Warranty)",
-    identifier = "FSFAP-no-warranty-disclaimer",
+    long_name = "FSF All Permissive License (without Warranty)",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "FSFUL",
-    full_name = "FSF Unlimited License",
-    identifier = "FSFUL",
+    long_name = "FSF Unlimited License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "FSFULLR",
-    full_name = "FSF Unlimited License (with License Retention)",
-    identifier = "FSFULLR",
+    long_name = "FSF Unlimited License (with License Retention)",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "FSFULLRSD",
-    full_name = "FSF Unlimited License (with License Retention and Short Disclaimer)",
-    identifier = "FSFULLRSD",
+    long_name = "FSF Unlimited License (with License Retention and Short Disclaimer)",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "FSFULLRWD",
-    full_name = "FSF Unlimited License (With License Retention and Warranty Disclaimer)",
-    identifier = "FSFULLRWD",
+    long_name = "FSF Unlimited License (With License Retention and Warranty Disclaimer)",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "FSL-1.1-ALv2",
-    full_name = "Functional Source License, Version 1.1, ALv2 Future License",
-    identifier = "FSL-1.1-ALv2",
+    long_name = "Functional Source License, Version 1.1, ALv2 Future License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "FSL-1.1-MIT",
-    full_name = "Functional Source License, Version 1.1, MIT Future License",
-    identifier = "FSL-1.1-MIT",
+    long_name = "Functional Source License, Version 1.1, MIT Future License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "FTL",
-    full_name = "Freetype Project License",
-    identifier = "FTL",
+    long_name = "Freetype Project License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Fair",
-    full_name = "Fair License",
-    identifier = "Fair",
+    long_name = "Fair License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Ferguson-Twofish",
-    full_name = "Ferguson Twofish License",
-    identifier = "Ferguson-Twofish",
+    long_name = "Ferguson Twofish License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Frameworx-1.0",
-    full_name = "Frameworx Open License 1.0",
-    identifier = "Frameworx-1.0",
+    long_name = "Frameworx Open License 1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "FreeBSD-DOC",
-    full_name = "FreeBSD Documentation License",
-    identifier = "FreeBSD-DOC",
+    long_name = "FreeBSD Documentation License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "FreeImage",
-    full_name = "FreeImage Public License v1.0",
-    identifier = "FreeImage",
+    long_name = "FreeImage Public License v1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Furuseth",
-    full_name = "Furuseth License",
-    identifier = "Furuseth",
+    long_name = "Furuseth License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GCR-docs",
-    full_name = "Gnome GCR Documentation License",
-    identifier = "GCR-docs",
+    long_name = "Gnome GCR Documentation License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GD",
-    full_name = "GD License",
-    identifier = "GD",
+    long_name = "GD License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GFDL-1.1",
-    full_name = "GNU Free Documentation License v1.1",
-    identifier = "GFDL-1.1",
+    long_name = "GNU Free Documentation License v1.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GFDL-1.1-invariants-only",
-    full_name = "GNU Free Documentation License v1.1 only - invariants",
-    identifier = "GFDL-1.1-invariants-only",
+    long_name = "GNU Free Documentation License v1.1 only - invariants",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GFDL-1.1-invariants-or-later",
-    full_name = "GNU Free Documentation License v1.1 or later - invariants",
-    identifier = "GFDL-1.1-invariants-or-later",
+    long_name = "GNU Free Documentation License v1.1 or later - invariants",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GFDL-1.1-no-invariants-only",
-    full_name = "GNU Free Documentation License v1.1 only - no invariants",
-    identifier = "GFDL-1.1-no-invariants-only",
+    long_name = "GNU Free Documentation License v1.1 only - no invariants",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GFDL-1.1-no-invariants-or-later",
-    full_name = "GNU Free Documentation License v1.1 or later - no invariants",
-    identifier = "GFDL-1.1-no-invariants-or-later",
+    long_name = "GNU Free Documentation License v1.1 or later - no invariants",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GFDL-1.1-only",
-    full_name = "GNU Free Documentation License v1.1 only",
-    identifier = "GFDL-1.1-only",
+    long_name = "GNU Free Documentation License v1.1 only",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GFDL-1.1-or-later",
-    full_name = "GNU Free Documentation License v1.1 or later",
-    identifier = "GFDL-1.1-or-later",
+    long_name = "GNU Free Documentation License v1.1 or later",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GFDL-1.2",
-    full_name = "GNU Free Documentation License v1.2",
-    identifier = "GFDL-1.2",
+    long_name = "GNU Free Documentation License v1.2",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GFDL-1.2-invariants-only",
-    full_name = "GNU Free Documentation License v1.2 only - invariants",
-    identifier = "GFDL-1.2-invariants-only",
+    long_name = "GNU Free Documentation License v1.2 only - invariants",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GFDL-1.2-invariants-or-later",
-    full_name = "GNU Free Documentation License v1.2 or later - invariants",
-    identifier = "GFDL-1.2-invariants-or-later",
+    long_name = "GNU Free Documentation License v1.2 or later - invariants",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GFDL-1.2-no-invariants-only",
-    full_name = "GNU Free Documentation License v1.2 only - no invariants",
-    identifier = "GFDL-1.2-no-invariants-only",
+    long_name = "GNU Free Documentation License v1.2 only - no invariants",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GFDL-1.2-no-invariants-or-later",
-    full_name = "GNU Free Documentation License v1.2 or later - no invariants",
-    identifier = "GFDL-1.2-no-invariants-or-later",
+    long_name = "GNU Free Documentation License v1.2 or later - no invariants",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GFDL-1.2-only",
-    full_name = "GNU Free Documentation License v1.2 only",
-    identifier = "GFDL-1.2-only",
+    long_name = "GNU Free Documentation License v1.2 only",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GFDL-1.2-or-later",
-    full_name = "GNU Free Documentation License v1.2 or later",
-    identifier = "GFDL-1.2-or-later",
+    long_name = "GNU Free Documentation License v1.2 or later",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GFDL-1.3",
-    full_name = "GNU Free Documentation License v1.3",
-    identifier = "GFDL-1.3",
+    long_name = "GNU Free Documentation License v1.3",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GFDL-1.3-invariants-only",
-    full_name = "GNU Free Documentation License v1.3 only - invariants",
-    identifier = "GFDL-1.3-invariants-only",
+    long_name = "GNU Free Documentation License v1.3 only - invariants",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GFDL-1.3-invariants-or-later",
-    full_name = "GNU Free Documentation License v1.3 or later - invariants",
-    identifier = "GFDL-1.3-invariants-or-later",
+    long_name = "GNU Free Documentation License v1.3 or later - invariants",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GFDL-1.3-no-invariants-only",
-    full_name = "GNU Free Documentation License v1.3 only - no invariants",
-    identifier = "GFDL-1.3-no-invariants-only",
+    long_name = "GNU Free Documentation License v1.3 only - no invariants",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GFDL-1.3-no-invariants-or-later",
-    full_name = "GNU Free Documentation License v1.3 or later - no invariants",
-    identifier = "GFDL-1.3-no-invariants-or-later",
+    long_name = "GNU Free Documentation License v1.3 or later - no invariants",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GFDL-1.3-only",
-    full_name = "GNU Free Documentation License v1.3 only",
-    identifier = "GFDL-1.3-only",
+    long_name = "GNU Free Documentation License v1.3 only",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GFDL-1.3-or-later",
-    full_name = "GNU Free Documentation License v1.3 or later",
-    identifier = "GFDL-1.3-or-later",
+    long_name = "GNU Free Documentation License v1.3 or later",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GL2PS",
-    full_name = "GL2PS License",
-    identifier = "GL2PS",
+    long_name = "GL2PS License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GLWTPL",
-    full_name = "Good Luck With That Public License",
-    identifier = "GLWTPL",
+    long_name = "Good Luck With That Public License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GPL-1.0",
-    full_name = "GNU General Public License v1.0 only",
-    identifier = "GPL-1.0",
+    long_name = "GNU General Public License v1.0 only",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GPL-1.0+",
-    full_name = "GNU General Public License v1.0 or later",
-    identifier = "GPL-1.0+",
+    long_name = "GNU General Public License v1.0 or later",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GPL-1.0-only",
-    full_name = "GNU General Public License v1.0 only",
-    identifier = "GPL-1.0-only",
+    long_name = "GNU General Public License v1.0 only",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GPL-1.0-or-later",
-    full_name = "GNU General Public License v1.0 or later",
-    identifier = "GPL-1.0-or-later",
+    long_name = "GNU General Public License v1.0 or later",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GPL-2.0",
-    full_name = "GNU General Public License v2.0 only",
-    identifier = "GPL-2.0",
+    long_name = "GNU General Public License v2.0 only",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GPL-2.0+",
-    full_name = "GNU General Public License v2.0 or later",
-    identifier = "GPL-2.0+",
+    long_name = "GNU General Public License v2.0 or later",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GPL-2.0-only",
-    full_name = "GNU General Public License v2.0 only",
-    identifier = "GPL-2.0-only",
+    long_name = "GNU General Public License v2.0 only",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GPL-2.0-or-later",
-    full_name = "GNU General Public License v2.0 or later",
-    identifier = "GPL-2.0-or-later",
+    long_name = "GNU General Public License v2.0 or later",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GPL-2.0-with-GCC-exception",
-    full_name = "GNU General Public License v2.0 w/GCC Runtime Library exception",
-    identifier = "GPL-2.0-with-GCC-exception",
+    long_name = "GNU General Public License v2.0 w/GCC Runtime Library exception",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GPL-2.0-with-autoconf-exception",
-    full_name = "GNU General Public License v2.0 w/Autoconf exception",
-    identifier = "GPL-2.0-with-autoconf-exception",
+    long_name = "GNU General Public License v2.0 w/Autoconf exception",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GPL-2.0-with-bison-exception",
-    full_name = "GNU General Public License v2.0 w/Bison exception",
-    identifier = "GPL-2.0-with-bison-exception",
+    long_name = "GNU General Public License v2.0 w/Bison exception",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GPL-2.0-with-classpath-exception",
-    full_name = "GNU General Public License v2.0 w/Classpath exception",
-    identifier = "GPL-2.0-with-classpath-exception",
+    long_name = "GNU General Public License v2.0 w/Classpath exception",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GPL-2.0-with-font-exception",
-    full_name = "GNU General Public License v2.0 w/Font exception",
-    identifier = "GPL-2.0-with-font-exception",
+    long_name = "GNU General Public License v2.0 w/Font exception",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GPL-3.0",
-    full_name = "GNU General Public License v3.0 only",
-    identifier = "GPL-3.0",
+    long_name = "GNU General Public License v3.0 only",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GPL-3.0+",
-    full_name = "GNU General Public License v3.0 or later",
-    identifier = "GPL-3.0+",
+    long_name = "GNU General Public License v3.0 or later",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GPL-3.0-only",
-    full_name = "GNU General Public License v3.0 only",
-    identifier = "GPL-3.0-only",
+    long_name = "GNU General Public License v3.0 only",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GPL-3.0-or-later",
-    full_name = "GNU General Public License v3.0 or later",
-    identifier = "GPL-3.0-or-later",
+    long_name = "GNU General Public License v3.0 or later",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GPL-3.0-with-GCC-exception",
-    full_name = "GNU General Public License v3.0 w/GCC Runtime Library exception",
-    identifier = "GPL-3.0-with-GCC-exception",
+    long_name = "GNU General Public License v3.0 w/GCC Runtime Library exception",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "GPL-3.0-with-autoconf-exception",
-    full_name = "GNU General Public License v3.0 w/Autoconf exception",
-    identifier = "GPL-3.0-with-autoconf-exception",
+    long_name = "GNU General Public License v3.0 w/Autoconf exception",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Game-Programming-Gems",
-    full_name = "Game Programming Gems License",
-    identifier = "Game-Programming-Gems",
+    long_name = "Game Programming Gems License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Giftware",
-    full_name = "Giftware License",
-    identifier = "Giftware",
+    long_name = "Giftware License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Glide",
-    full_name = "3dfx Glide License",
-    identifier = "Glide",
+    long_name = "3dfx Glide License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Glulxe",
-    full_name = "Glulxe License",
-    identifier = "Glulxe",
+    long_name = "Glulxe License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Graphics-Gems",
-    full_name = "Graphics Gems License",
-    identifier = "Graphics-Gems",
+    long_name = "Graphics Gems License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Gutmann",
-    full_name = "Gutmann License",
-    identifier = "Gutmann",
+    long_name = "Gutmann License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "HDF5",
-    full_name = "HDF5 License",
-    identifier = "HDF5",
+    long_name = "HDF5 License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "HIDAPI",
-    full_name = "HIDAPI License",
-    identifier = "HIDAPI",
+    long_name = "HIDAPI License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "HP-1986",
-    full_name = "Hewlett-Packard 1986 License",
-    identifier = "HP-1986",
+    long_name = "Hewlett-Packard 1986 License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "HP-1989",
-    full_name = "Hewlett-Packard 1989 License",
-    identifier = "HP-1989",
+    long_name = "Hewlett-Packard 1989 License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "HPND",
-    full_name = "Historical Permission Notice and Disclaimer",
-    identifier = "HPND",
+    long_name = "Historical Permission Notice and Disclaimer",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "HPND-DEC",
-    full_name = "Historical Permission Notice and Disclaimer - DEC variant",
-    identifier = "HPND-DEC",
+    long_name = "Historical Permission Notice and Disclaimer - DEC variant",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "HPND-Fenneberg-Livingston",
-    full_name = "Historical Permission Notice and Disclaimer - Fenneberg-Livingston variant",
-    identifier = "HPND-Fenneberg-Livingston",
+    long_name = "Historical Permission Notice and Disclaimer - Fenneberg-Livingston variant",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "HPND-INRIA-IMAG",
-    full_name = "Historical Permission Notice and Disclaimer    - INRIA-IMAG variant",
-    identifier = "HPND-INRIA-IMAG",
+    long_name = "Historical Permission Notice and Disclaimer    - INRIA-IMAG variant",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "HPND-Intel",
-    full_name = "Historical Permission Notice and Disclaimer - Intel variant",
-    identifier = "HPND-Intel",
+    long_name = "Historical Permission Notice and Disclaimer - Intel variant",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "HPND-Kevlin-Henney",
-    full_name = "Historical Permission Notice and Disclaimer - Kevlin Henney variant",
-    identifier = "HPND-Kevlin-Henney",
+    long_name = "Historical Permission Notice and Disclaimer - Kevlin Henney variant",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "HPND-MIT-disclaimer",
-    full_name = "Historical Permission Notice and Disclaimer with MIT disclaimer",
-    identifier = "HPND-MIT-disclaimer",
+    long_name = "Historical Permission Notice and Disclaimer with MIT disclaimer",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "HPND-Markus-Kuhn",
-    full_name = "Historical Permission Notice and Disclaimer - Markus Kuhn variant",
-    identifier = "HPND-Markus-Kuhn",
+    long_name = "Historical Permission Notice and Disclaimer - Markus Kuhn variant",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "HPND-Netrek",
-    full_name = "Historical Permission Notice and Disclaimer - Netrek variant",
-    identifier = "HPND-Netrek",
+    long_name = "Historical Permission Notice and Disclaimer - Netrek variant",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "HPND-Pbmplus",
-    full_name = "Historical Permission Notice and Disclaimer - Pbmplus variant",
-    identifier = "HPND-Pbmplus",
+    long_name = "Historical Permission Notice and Disclaimer - Pbmplus variant",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "HPND-SMC",
-    full_name = "Historical Permission Notice and Disclaimer - SMC variant",
-    identifier = "HPND-SMC",
+    long_name = "Historical Permission Notice and Disclaimer - SMC variant",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "HPND-UC",
-    full_name = "Historical Permission Notice and Disclaimer - University of California variant",
-    identifier = "HPND-UC",
+    long_name = "Historical Permission Notice and Disclaimer - University of California variant",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "HPND-UC-export-US",
-    full_name = "Historical Permission Notice and Disclaimer - University of California, US export warning",
-    identifier = "HPND-UC-export-US",
+    long_name = "Historical Permission Notice and Disclaimer - University of California, US export warning",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "HPND-doc",
-    full_name = "Historical Permission Notice and Disclaimer - documentation variant",
-    identifier = "HPND-doc",
+    long_name = "Historical Permission Notice and Disclaimer - documentation variant",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "HPND-doc-sell",
-    full_name = "Historical Permission Notice and Disclaimer - documentation sell variant",
-    identifier = "HPND-doc-sell",
+    long_name = "Historical Permission Notice and Disclaimer - documentation sell variant",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "HPND-export-US",
-    full_name = "HPND with US Government export control warning",
-    identifier = "HPND-export-US",
+    long_name = "HPND with US Government export control warning",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "HPND-export-US-acknowledgement",
-    full_name = "HPND with US Government export control warning and acknowledgment",
-    identifier = "HPND-export-US-acknowledgement",
+    long_name = "HPND with US Government export control warning and acknowledgment",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "HPND-export-US-modify",
-    full_name = "HPND with US Government export control warning and modification rqmt",
-    identifier = "HPND-export-US-modify",
+    long_name = "HPND with US Government export control warning and modification rqmt",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "HPND-export2-US",
-    full_name = "HPND with US Government export control and 2 disclaimers",
-    identifier = "HPND-export2-US",
+    long_name = "HPND with US Government export control and 2 disclaimers",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "HPND-merchantability-variant",
-    full_name = "Historical Permission Notice and Disclaimer - merchantability variant",
-    identifier = "HPND-merchantability-variant",
+    long_name = "Historical Permission Notice and Disclaimer - merchantability variant",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "HPND-sell-MIT-disclaimer-xserver",
-    full_name = "Historical Permission Notice and Disclaimer - sell xserver variant with MIT disclaimer",
-    identifier = "HPND-sell-MIT-disclaimer-xserver",
+    long_name = "Historical Permission Notice and Disclaimer - sell xserver variant with MIT disclaimer",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "HPND-sell-regexpr",
-    full_name = "Historical Permission Notice and Disclaimer - sell regexpr variant",
-    identifier = "HPND-sell-regexpr",
+    long_name = "Historical Permission Notice and Disclaimer - sell regexpr variant",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "HPND-sell-variant",
-    full_name = "Historical Permission Notice and Disclaimer - sell variant",
-    identifier = "HPND-sell-variant",
+    long_name = "Historical Permission Notice and Disclaimer - sell variant",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "HPND-sell-variant-MIT-disclaimer",
-    full_name = "HPND sell variant with MIT disclaimer",
-    identifier = "HPND-sell-variant-MIT-disclaimer",
+    long_name = "HPND sell variant with MIT disclaimer",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "HPND-sell-variant-MIT-disclaimer-rev",
-    full_name = "HPND sell variant with MIT disclaimer - reverse",
-    identifier = "HPND-sell-variant-MIT-disclaimer-rev",
+    long_name = "HPND sell variant with MIT disclaimer - reverse",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "HTMLTIDY",
-    full_name = "HTML Tidy License",
-    identifier = "HTMLTIDY",
+    long_name = "HTML Tidy License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "HaskellReport",
-    full_name = "Haskell Language Report License",
-    identifier = "HaskellReport",
+    long_name = "Haskell Language Report License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Hippocratic-2.1",
-    full_name = "Hippocratic License 2.1",
-    identifier = "Hippocratic-2.1",
+    long_name = "Hippocratic License 2.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "IBM-pibs",
-    full_name = "IBM PowerPC Initialization and Boot Software",
-    identifier = "IBM-pibs",
+    long_name = "IBM PowerPC Initialization and Boot Software",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "ICU",
-    full_name = "ICU License",
-    identifier = "ICU",
+    long_name = "ICU License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "IEC-Code-Components-EULA",
-    full_name = "IEC    Code Components End-user licence agreement",
-    identifier = "IEC-Code-Components-EULA",
+    long_name = "IEC    Code Components End-user licence agreement",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "IJG",
-    full_name = "Independent JPEG Group License",
-    identifier = "IJG",
+    long_name = "Independent JPEG Group License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "IJG-short",
-    full_name = "Independent JPEG Group License - short",
-    identifier = "IJG-short",
+    long_name = "Independent JPEG Group License - short",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "IPA",
-    full_name = "IPA Font License",
-    identifier = "IPA",
+    long_name = "IPA Font License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "IPL-1.0",
-    full_name = "IBM Public License v1.0",
-    identifier = "IPL-1.0",
+    long_name = "IBM Public License v1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "ISC",
-    full_name = "ISC License",
-    identifier = "ISC",
+    long_name = "ISC License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "ISC-Veillard",
-    full_name = "ISC Veillard variant",
-    identifier = "ISC-Veillard",
+    long_name = "ISC Veillard variant",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "ImageMagick",
-    full_name = "ImageMagick License",
-    identifier = "ImageMagick",
+    long_name = "ImageMagick License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Imlib2",
-    full_name = "Imlib2 License",
-    identifier = "Imlib2",
+    long_name = "Imlib2 License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Info-ZIP",
-    full_name = "Info-ZIP License",
-    identifier = "Info-ZIP",
+    long_name = "Info-ZIP License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Inner-Net-2.0",
-    full_name = "Inner Net License v2.0",
-    identifier = "Inner-Net-2.0",
+    long_name = "Inner Net License v2.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "InnoSetup",
-    full_name = "Inno Setup License",
-    identifier = "InnoSetup",
+    long_name = "Inno Setup License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Intel",
-    full_name = "Intel Open Source License",
-    identifier = "Intel",
+    long_name = "Intel Open Source License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Intel-ACPI",
-    full_name = "Intel ACPI Software License Agreement",
-    identifier = "Intel-ACPI",
+    long_name = "Intel ACPI Software License Agreement",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Interbase-1.0",
-    full_name = "Interbase Public License v1.0",
-    identifier = "Interbase-1.0",
+    long_name = "Interbase Public License v1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "JPL-image",
-    full_name = "JPL Image Use Policy",
-    identifier = "JPL-image",
+    long_name = "JPL Image Use Policy",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "JPNIC",
-    full_name = "Japan Network Information Center License",
-    identifier = "JPNIC",
+    long_name = "Japan Network Information Center License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "JSON",
-    full_name = "JSON License",
-    identifier = "JSON",
+    long_name = "JSON License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Jam",
-    full_name = "Jam License",
-    identifier = "Jam",
+    long_name = "Jam License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "JasPer-2.0",
-    full_name = "JasPer License",
-    identifier = "JasPer-2.0",
+    long_name = "JasPer License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Kastrup",
-    full_name = "Kastrup License",
-    identifier = "Kastrup",
+    long_name = "Kastrup License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Kazlib",
-    full_name = "Kazlib License",
-    identifier = "Kazlib",
+    long_name = "Kazlib License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Knuth-CTAN",
-    full_name = "Knuth CTAN License",
-    identifier = "Knuth-CTAN",
+    long_name = "Knuth CTAN License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "LAL-1.2",
-    full_name = "Licence Art Libre 1.2",
-    identifier = "LAL-1.2",
+    long_name = "Licence Art Libre 1.2",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "LAL-1.3",
-    full_name = "Licence Art Libre 1.3",
-    identifier = "LAL-1.3",
+    long_name = "Licence Art Libre 1.3",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "LGPL-2.0",
-    full_name = "GNU Library General Public License v2 only",
-    identifier = "LGPL-2.0",
+    long_name = "GNU Library General Public License v2 only",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "LGPL-2.0+",
-    full_name = "GNU Library General Public License v2 or later",
-    identifier = "LGPL-2.0+",
+    long_name = "GNU Library General Public License v2 or later",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "LGPL-2.0-only",
-    full_name = "GNU Library General Public License v2 only",
-    identifier = "LGPL-2.0-only",
+    long_name = "GNU Library General Public License v2 only",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "LGPL-2.0-or-later",
-    full_name = "GNU Library General Public License v2 or later",
-    identifier = "LGPL-2.0-or-later",
+    long_name = "GNU Library General Public License v2 or later",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "LGPL-2.1",
-    full_name = "GNU Lesser General Public License v2.1 only",
-    identifier = "LGPL-2.1",
+    long_name = "GNU Lesser General Public License v2.1 only",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "LGPL-2.1+",
-    full_name = "GNU Lesser General Public License v2.1 or later",
-    identifier = "LGPL-2.1+",
+    long_name = "GNU Lesser General Public License v2.1 or later",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "LGPL-2.1-only",
-    full_name = "GNU Lesser General Public License v2.1 only",
-    identifier = "LGPL-2.1-only",
+    long_name = "GNU Lesser General Public License v2.1 only",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "LGPL-2.1-or-later",
-    full_name = "GNU Lesser General Public License v2.1 or later",
-    identifier = "LGPL-2.1-or-later",
+    long_name = "GNU Lesser General Public License v2.1 or later",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "LGPL-3.0",
-    full_name = "GNU Lesser General Public License v3.0 only",
-    identifier = "LGPL-3.0",
+    long_name = "GNU Lesser General Public License v3.0 only",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "LGPL-3.0+",
-    full_name = "GNU Lesser General Public License v3.0 or later",
-    identifier = "LGPL-3.0+",
+    long_name = "GNU Lesser General Public License v3.0 or later",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "LGPL-3.0-only",
-    full_name = "GNU Lesser General Public License v3.0 only",
-    identifier = "LGPL-3.0-only",
+    long_name = "GNU Lesser General Public License v3.0 only",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "LGPL-3.0-or-later",
-    full_name = "GNU Lesser General Public License v3.0 or later",
-    identifier = "LGPL-3.0-or-later",
+    long_name = "GNU Lesser General Public License v3.0 or later",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "LGPLLR",
-    full_name = "Lesser General Public License For Linguistic Resources",
-    identifier = "LGPLLR",
+    long_name = "Lesser General Public License For Linguistic Resources",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "LOOP",
-    full_name = "Common Lisp LOOP License",
-    identifier = "LOOP",
+    long_name = "Common Lisp LOOP License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "LPD-document",
-    full_name = "LPD Documentation License",
-    identifier = "LPD-document",
+    long_name = "LPD Documentation License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "LPL-1.0",
-    full_name = "Lucent Public License Version 1.0",
-    identifier = "LPL-1.0",
+    long_name = "Lucent Public License Version 1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "LPL-1.02",
-    full_name = "Lucent Public License v1.02",
-    identifier = "LPL-1.02",
+    long_name = "Lucent Public License v1.02",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "LPPL-1.0",
-    full_name = "LaTeX Project Public License v1.0",
-    identifier = "LPPL-1.0",
+    long_name = "LaTeX Project Public License v1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "LPPL-1.1",
-    full_name = "LaTeX Project Public License v1.1",
-    identifier = "LPPL-1.1",
+    long_name = "LaTeX Project Public License v1.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "LPPL-1.2",
-    full_name = "LaTeX Project Public License v1.2",
-    identifier = "LPPL-1.2",
+    long_name = "LaTeX Project Public License v1.2",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "LPPL-1.3a",
-    full_name = "LaTeX Project Public License v1.3a",
-    identifier = "LPPL-1.3a",
+    long_name = "LaTeX Project Public License v1.3a",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "LPPL-1.3c",
-    full_name = "LaTeX Project Public License v1.3c",
-    identifier = "LPPL-1.3c",
+    long_name = "LaTeX Project Public License v1.3c",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "LZMA-SDK-9.11-to-9.20",
-    full_name = "LZMA SDK License (versions 9.11 to 9.20)",
-    identifier = "LZMA-SDK-9.11-to-9.20",
+    long_name = "LZMA SDK License (versions 9.11 to 9.20)",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "LZMA-SDK-9.22",
-    full_name = "LZMA SDK License (versions 9.22 and beyond)",
-    identifier = "LZMA-SDK-9.22",
+    long_name = "LZMA SDK License (versions 9.22 and beyond)",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Latex2e",
-    full_name = "Latex2e License",
-    identifier = "Latex2e",
+    long_name = "Latex2e License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Latex2e-translated-notice",
-    full_name = "Latex2e with translated notice permission",
-    identifier = "Latex2e-translated-notice",
+    long_name = "Latex2e with translated notice permission",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Leptonica",
-    full_name = "Leptonica License",
-    identifier = "Leptonica",
+    long_name = "Leptonica License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "LiLiQ-P-1.1",
-    full_name = "Licence Libre du Québec – Permissive version 1.1",
-    identifier = "LiLiQ-P-1.1",
+    long_name = "Licence Libre du Québec – Permissive version 1.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "LiLiQ-R-1.1",
-    full_name = "Licence Libre du Québec – Réciprocité version 1.1",
-    identifier = "LiLiQ-R-1.1",
+    long_name = "Licence Libre du Québec – Réciprocité version 1.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "LiLiQ-Rplus-1.1",
-    full_name = "Licence Libre du Québec – Réciprocité forte version 1.1",
-    identifier = "LiLiQ-Rplus-1.1",
+    long_name = "Licence Libre du Québec – Réciprocité forte version 1.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Libpng",
-    full_name = "libpng License",
-    identifier = "Libpng",
+    long_name = "libpng License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Linux-OpenIB",
-    full_name = "Linux Kernel Variant of OpenIB.org license",
-    identifier = "Linux-OpenIB",
+    long_name = "Linux Kernel Variant of OpenIB.org license",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Linux-man-pages-1-para",
-    full_name = "Linux man-pages - 1 paragraph",
-    identifier = "Linux-man-pages-1-para",
+    long_name = "Linux man-pages - 1 paragraph",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Linux-man-pages-copyleft",
-    full_name = "Linux man-pages Copyleft",
-    identifier = "Linux-man-pages-copyleft",
+    long_name = "Linux man-pages Copyleft",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Linux-man-pages-copyleft-2-para",
-    full_name = "Linux man-pages Copyleft - 2 paragraphs",
-    identifier = "Linux-man-pages-copyleft-2-para",
+    long_name = "Linux man-pages Copyleft - 2 paragraphs",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Linux-man-pages-copyleft-var",
-    full_name = "Linux man-pages Copyleft Variant",
-    identifier = "Linux-man-pages-copyleft-var",
+    long_name = "Linux man-pages Copyleft Variant",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Lucida-Bitmap-Fonts",
-    full_name = "Lucida Bitmap Fonts License",
-    identifier = "Lucida-Bitmap-Fonts",
+    long_name = "Lucida Bitmap Fonts License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "MIPS",
-    full_name = "MIPS License",
-    identifier = "MIPS",
+    long_name = "MIPS License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "MIT",
-    full_name = "MIT License",
-    identifier = "MIT",
+    long_name = "MIT License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "MIT-0",
-    full_name = "MIT No Attribution",
-    identifier = "MIT-0",
+    long_name = "MIT No Attribution",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "MIT-CMU",
-    full_name = "CMU License",
-    identifier = "MIT-CMU",
+    long_name = "CMU License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "MIT-Click",
-    full_name = "MIT Click License",
-    identifier = "MIT-Click",
+    long_name = "MIT Click License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "MIT-Festival",
-    full_name = "MIT Festival Variant",
-    identifier = "MIT-Festival",
+    long_name = "MIT Festival Variant",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "MIT-Khronos-old",
-    full_name = "MIT Khronos - old variant",
-    identifier = "MIT-Khronos-old",
+    long_name = "MIT Khronos - old variant",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "MIT-Modern-Variant",
-    full_name = "MIT License Modern Variant",
-    identifier = "MIT-Modern-Variant",
+    long_name = "MIT License Modern Variant",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "MIT-Wu",
-    full_name = "MIT Tom Wu Variant",
-    identifier = "MIT-Wu",
+    long_name = "MIT Tom Wu Variant",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "MIT-advertising",
-    full_name = "Enlightenment License (e16)",
-    identifier = "MIT-advertising",
+    long_name = "Enlightenment License (e16)",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "MIT-enna",
-    full_name = "enna License",
-    identifier = "MIT-enna",
+    long_name = "enna License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "MIT-feh",
-    full_name = "feh License",
-    identifier = "MIT-feh",
+    long_name = "feh License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "MIT-open-group",
-    full_name = "MIT Open Group variant",
-    identifier = "MIT-open-group",
+    long_name = "MIT Open Group variant",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "MIT-testregex",
-    full_name = "MIT testregex Variant",
-    identifier = "MIT-testregex",
+    long_name = "MIT testregex Variant",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "MITNFA",
-    full_name = "MIT +no-false-attribs license",
-    identifier = "MITNFA",
+    long_name = "MIT +no-false-attribs license",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "MMIXware",
-    full_name = "MMIXware License",
-    identifier = "MMIXware",
+    long_name = "MMIXware License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "MPEG-SSG",
-    full_name = "MPEG Software Simulation",
-    identifier = "MPEG-SSG",
+    long_name = "MPEG Software Simulation",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "MPL-1.0",
-    full_name = "Mozilla Public License 1.0",
-    identifier = "MPL-1.0",
+    long_name = "Mozilla Public License 1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "MPL-1.1",
-    full_name = "Mozilla Public License 1.1",
-    identifier = "MPL-1.1",
+    long_name = "Mozilla Public License 1.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "MPL-2.0",
-    full_name = "Mozilla Public License 2.0",
-    identifier = "MPL-2.0",
+    long_name = "Mozilla Public License 2.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "MPL-2.0-no-copyleft-exception",
-    full_name = "Mozilla Public License 2.0 (no copyleft exception)",
-    identifier = "MPL-2.0-no-copyleft-exception",
+    long_name = "Mozilla Public License 2.0 (no copyleft exception)",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "MS-LPL",
-    full_name = "Microsoft Limited Public License",
-    identifier = "MS-LPL",
+    long_name = "Microsoft Limited Public License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "MS-PL",
-    full_name = "Microsoft Public License",
-    identifier = "MS-PL",
+    long_name = "Microsoft Public License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "MS-RL",
-    full_name = "Microsoft Reciprocal License",
-    identifier = "MS-RL",
+    long_name = "Microsoft Reciprocal License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "MTLL",
-    full_name = "Matrix Template Library License",
-    identifier = "MTLL",
+    long_name = "Matrix Template Library License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Mackerras-3-Clause",
-    full_name = "Mackerras 3-Clause License",
-    identifier = "Mackerras-3-Clause",
+    long_name = "Mackerras 3-Clause License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Mackerras-3-Clause-acknowledgment",
-    full_name = "Mackerras 3-Clause - acknowledgment variant",
-    identifier = "Mackerras-3-Clause-acknowledgment",
+    long_name = "Mackerras 3-Clause - acknowledgment variant",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "MakeIndex",
-    full_name = "MakeIndex License",
-    identifier = "MakeIndex",
+    long_name = "MakeIndex License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Martin-Birgmeier",
-    full_name = "Martin Birgmeier License",
-    identifier = "Martin-Birgmeier",
+    long_name = "Martin Birgmeier License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "McPhee-slideshow",
-    full_name = "McPhee Slideshow License",
-    identifier = "McPhee-slideshow",
+    long_name = "McPhee Slideshow License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Minpack",
-    full_name = "Minpack License",
-    identifier = "Minpack",
+    long_name = "Minpack License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "MirOS",
-    full_name = "The MirOS Licence",
-    identifier = "MirOS",
+    long_name = "The MirOS Licence",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Motosoto",
-    full_name = "Motosoto License",
-    identifier = "Motosoto",
+    long_name = "Motosoto License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "MulanPSL-1.0",
-    full_name = "Mulan Permissive Software License, Version 1",
-    identifier = "MulanPSL-1.0",
+    long_name = "Mulan Permissive Software License, Version 1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "MulanPSL-2.0",
-    full_name = "Mulan Permissive Software License, Version 2",
-    identifier = "MulanPSL-2.0",
+    long_name = "Mulan Permissive Software License, Version 2",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Multics",
-    full_name = "Multics License",
-    identifier = "Multics",
+    long_name = "Multics License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Mup",
-    full_name = "Mup License",
-    identifier = "Mup",
+    long_name = "Mup License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "NAIST-2003",
-    full_name = "Nara Institute of Science and Technology License (2003)",
-    identifier = "NAIST-2003",
+    long_name = "Nara Institute of Science and Technology License (2003)",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "NASA-1.3",
-    full_name = "NASA Open Source Agreement 1.3",
-    identifier = "NASA-1.3",
+    long_name = "NASA Open Source Agreement 1.3",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "NBPL-1.0",
-    full_name = "Net Boolean Public License v1",
-    identifier = "NBPL-1.0",
+    long_name = "Net Boolean Public License v1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "NCBI-PD",
-    full_name = "NCBI Public Domain Notice",
-    identifier = "NCBI-PD",
+    long_name = "NCBI Public Domain Notice",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "NCGL-UK-2.0",
-    full_name = "Non-Commercial Government Licence",
-    identifier = "NCGL-UK-2.0",
+    long_name = "Non-Commercial Government Licence",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "NCL",
-    full_name = "NCL Source Code License",
-    identifier = "NCL",
+    long_name = "NCL Source Code License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "NCSA",
-    full_name = "University of Illinois/NCSA Open Source License",
-    identifier = "NCSA",
+    long_name = "University of Illinois/NCSA Open Source License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "NGPL",
-    full_name = "Nethack General Public License",
-    identifier = "NGPL",
+    long_name = "Nethack General Public License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "NICTA-1.0",
-    full_name = "NICTA Public Software License, Version 1.0",
-    identifier = "NICTA-1.0",
+    long_name = "NICTA Public Software License, Version 1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "NIST-PD",
-    full_name = "NIST Public Domain Notice",
-    identifier = "NIST-PD",
+    long_name = "NIST Public Domain Notice",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "NIST-PD-fallback",
-    full_name = "NIST Public Domain Notice with license fallback",
-    identifier = "NIST-PD-fallback",
+    long_name = "NIST Public Domain Notice with license fallback",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "NIST-Software",
-    full_name = "NIST Software License",
-    identifier = "NIST-Software",
+    long_name = "NIST Software License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "NLOD-1.0",
-    full_name = "Norwegian Licence for Open Government Data (NLOD) 1.0",
-    identifier = "NLOD-1.0",
+    long_name = "Norwegian Licence for Open Government Data (NLOD) 1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "NLOD-2.0",
-    full_name = "Norwegian Licence for Open Government Data (NLOD) 2.0",
-    identifier = "NLOD-2.0",
+    long_name = "Norwegian Licence for Open Government Data (NLOD) 2.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "NLPL",
-    full_name = "No Limit Public License",
-    identifier = "NLPL",
+    long_name = "No Limit Public License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "NOSL",
-    full_name = "Netizen Open Source License",
-    identifier = "NOSL",
+    long_name = "Netizen Open Source License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "NPL-1.0",
-    full_name = "Netscape Public License v1.0",
-    identifier = "NPL-1.0",
+    long_name = "Netscape Public License v1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "NPL-1.1",
-    full_name = "Netscape Public License v1.1",
-    identifier = "NPL-1.1",
+    long_name = "Netscape Public License v1.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "NPOSL-3.0",
-    full_name = "Non-Profit Open Software License 3.0",
-    identifier = "NPOSL-3.0",
+    long_name = "Non-Profit Open Software License 3.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "NRL",
-    full_name = "NRL License",
-    identifier = "NRL",
+    long_name = "NRL License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "NTIA-PD",
-    full_name = "NTIA Public Domain Notice",
-    identifier = "NTIA-PD",
+    long_name = "NTIA Public Domain Notice",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "NTP",
-    full_name = "NTP License",
-    identifier = "NTP",
+    long_name = "NTP License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "NTP-0",
-    full_name = "NTP No Attribution",
-    identifier = "NTP-0",
+    long_name = "NTP No Attribution",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Naumen",
-    full_name = "Naumen Public License",
-    identifier = "Naumen",
+    long_name = "Naumen Public License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Net-SNMP",
-    full_name = "Net-SNMP License",
-    identifier = "Net-SNMP",
+    long_name = "Net-SNMP License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "NetCDF",
-    full_name = "NetCDF license",
-    identifier = "NetCDF",
+    long_name = "NetCDF license",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Newsletr",
-    full_name = "Newsletr License",
-    identifier = "Newsletr",
+    long_name = "Newsletr License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Nokia",
-    full_name = "Nokia Open Source License",
-    identifier = "Nokia",
+    long_name = "Nokia Open Source License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Noweb",
-    full_name = "Noweb License",
-    identifier = "Noweb",
+    long_name = "Noweb License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Nunit",
-    full_name = "Nunit License",
-    identifier = "Nunit",
+    long_name = "Nunit License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "O-UDA-1.0",
-    full_name = "Open Use of Data Agreement v1.0",
-    identifier = "O-UDA-1.0",
+    long_name = "Open Use of Data Agreement v1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OAR",
-    full_name = "OAR License",
-    identifier = "OAR",
+    long_name = "OAR License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OCCT-PL",
-    full_name = "Open CASCADE Technology Public License",
-    identifier = "OCCT-PL",
+    long_name = "Open CASCADE Technology Public License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OCLC-2.0",
-    full_name = "OCLC Research Public License 2.0",
-    identifier = "OCLC-2.0",
+    long_name = "OCLC Research Public License 2.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "ODC-By-1.0",
-    full_name = "Open Data Commons Attribution License v1.0",
-    identifier = "ODC-By-1.0",
+    long_name = "Open Data Commons Attribution License v1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "ODbL-1.0",
-    full_name = "Open Data Commons Open Database License v1.0",
-    identifier = "ODbL-1.0",
+    long_name = "Open Data Commons Open Database License v1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OFFIS",
-    full_name = "OFFIS License",
-    identifier = "OFFIS",
+    long_name = "OFFIS License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OFL-1.0",
-    full_name = "SIL Open Font License 1.0",
-    identifier = "OFL-1.0",
+    long_name = "SIL Open Font License 1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OFL-1.0-RFN",
-    full_name = "SIL Open Font License 1.0 with Reserved Font Name",
-    identifier = "OFL-1.0-RFN",
+    long_name = "SIL Open Font License 1.0 with Reserved Font Name",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OFL-1.0-no-RFN",
-    full_name = "SIL Open Font License 1.0 with no Reserved Font Name",
-    identifier = "OFL-1.0-no-RFN",
+    long_name = "SIL Open Font License 1.0 with no Reserved Font Name",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OFL-1.1",
-    full_name = "SIL Open Font License 1.1",
-    identifier = "OFL-1.1",
+    long_name = "SIL Open Font License 1.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OFL-1.1-RFN",
-    full_name = "SIL Open Font License 1.1 with Reserved Font Name",
-    identifier = "OFL-1.1-RFN",
+    long_name = "SIL Open Font License 1.1 with Reserved Font Name",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OFL-1.1-no-RFN",
-    full_name = "SIL Open Font License 1.1 with no Reserved Font Name",
-    identifier = "OFL-1.1-no-RFN",
+    long_name = "SIL Open Font License 1.1 with no Reserved Font Name",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OGC-1.0",
-    full_name = "OGC Software License, Version 1.0",
-    identifier = "OGC-1.0",
+    long_name = "OGC Software License, Version 1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OGDL-Taiwan-1.0",
-    full_name = "Taiwan Open Government Data License, version 1.0",
-    identifier = "OGDL-Taiwan-1.0",
+    long_name = "Taiwan Open Government Data License, version 1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OGL-Canada-2.0",
-    full_name = "Open Government Licence - Canada",
-    identifier = "OGL-Canada-2.0",
+    long_name = "Open Government Licence - Canada",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OGL-UK-1.0",
-    full_name = "Open Government Licence v1.0",
-    identifier = "OGL-UK-1.0",
+    long_name = "Open Government Licence v1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OGL-UK-2.0",
-    full_name = "Open Government Licence v2.0",
-    identifier = "OGL-UK-2.0",
+    long_name = "Open Government Licence v2.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OGL-UK-3.0",
-    full_name = "Open Government Licence v3.0",
-    identifier = "OGL-UK-3.0",
+    long_name = "Open Government Licence v3.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OGTSL",
-    full_name = "Open Group Test Suite License",
-    identifier = "OGTSL",
+    long_name = "Open Group Test Suite License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OLDAP-1.1",
-    full_name = "Open LDAP Public License v1.1",
-    identifier = "OLDAP-1.1",
+    long_name = "Open LDAP Public License v1.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OLDAP-1.2",
-    full_name = "Open LDAP Public License v1.2",
-    identifier = "OLDAP-1.2",
+    long_name = "Open LDAP Public License v1.2",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OLDAP-1.3",
-    full_name = "Open LDAP Public License v1.3",
-    identifier = "OLDAP-1.3",
+    long_name = "Open LDAP Public License v1.3",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OLDAP-1.4",
-    full_name = "Open LDAP Public License v1.4",
-    identifier = "OLDAP-1.4",
+    long_name = "Open LDAP Public License v1.4",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OLDAP-2.0",
-    full_name = "Open LDAP Public License v2.0 (or possibly 2.0A and 2.0B)",
-    identifier = "OLDAP-2.0",
+    long_name = "Open LDAP Public License v2.0 (or possibly 2.0A and 2.0B)",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OLDAP-2.0.1",
-    full_name = "Open LDAP Public License v2.0.1",
-    identifier = "OLDAP-2.0.1",
+    long_name = "Open LDAP Public License v2.0.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OLDAP-2.1",
-    full_name = "Open LDAP Public License v2.1",
-    identifier = "OLDAP-2.1",
+    long_name = "Open LDAP Public License v2.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OLDAP-2.2",
-    full_name = "Open LDAP Public License v2.2",
-    identifier = "OLDAP-2.2",
+    long_name = "Open LDAP Public License v2.2",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OLDAP-2.2.1",
-    full_name = "Open LDAP Public License v2.2.1",
-    identifier = "OLDAP-2.2.1",
+    long_name = "Open LDAP Public License v2.2.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OLDAP-2.2.2",
-    full_name = "Open LDAP Public License 2.2.2",
-    identifier = "OLDAP-2.2.2",
+    long_name = "Open LDAP Public License 2.2.2",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OLDAP-2.3",
-    full_name = "Open LDAP Public License v2.3",
-    identifier = "OLDAP-2.3",
+    long_name = "Open LDAP Public License v2.3",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OLDAP-2.4",
-    full_name = "Open LDAP Public License v2.4",
-    identifier = "OLDAP-2.4",
+    long_name = "Open LDAP Public License v2.4",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OLDAP-2.5",
-    full_name = "Open LDAP Public License v2.5",
-    identifier = "OLDAP-2.5",
+    long_name = "Open LDAP Public License v2.5",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OLDAP-2.6",
-    full_name = "Open LDAP Public License v2.6",
-    identifier = "OLDAP-2.6",
+    long_name = "Open LDAP Public License v2.6",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OLDAP-2.7",
-    full_name = "Open LDAP Public License v2.7",
-    identifier = "OLDAP-2.7",
+    long_name = "Open LDAP Public License v2.7",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OLDAP-2.8",
-    full_name = "Open LDAP Public License v2.8",
-    identifier = "OLDAP-2.8",
+    long_name = "Open LDAP Public License v2.8",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OLFL-1.3",
-    full_name = "Open Logistics Foundation License Version 1.3",
-    identifier = "OLFL-1.3",
+    long_name = "Open Logistics Foundation License Version 1.3",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OML",
-    full_name = "Open Market License",
-    identifier = "OML",
+    long_name = "Open Market License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OPL-1.0",
-    full_name = "Open Public License v1.0",
-    identifier = "OPL-1.0",
+    long_name = "Open Public License v1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OPL-UK-3.0",
-    full_name = "United    Kingdom Open Parliament Licence v3.0",
-    identifier = "OPL-UK-3.0",
+    long_name = "United    Kingdom Open Parliament Licence v3.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OPUBL-1.0",
-    full_name = "Open Publication License v1.0",
-    identifier = "OPUBL-1.0",
+    long_name = "Open Publication License v1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OSET-PL-2.1",
-    full_name = "OSET Public License version 2.1",
-    identifier = "OSET-PL-2.1",
+    long_name = "OSET Public License version 2.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OSL-1.0",
-    full_name = "Open Software License 1.0",
-    identifier = "OSL-1.0",
+    long_name = "Open Software License 1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OSL-1.1",
-    full_name = "Open Software License 1.1",
-    identifier = "OSL-1.1",
+    long_name = "Open Software License 1.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OSL-2.0",
-    full_name = "Open Software License 2.0",
-    identifier = "OSL-2.0",
+    long_name = "Open Software License 2.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OSL-2.1",
-    full_name = "Open Software License 2.1",
-    identifier = "OSL-2.1",
+    long_name = "Open Software License 2.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OSL-3.0",
-    full_name = "Open Software License 3.0",
-    identifier = "OSL-3.0",
+    long_name = "Open Software License 3.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OSSP",
-    full_name = "OSSP License",
-    identifier = "OSSP",
+    long_name = "OSSP License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OpenPBS-2.3",
-    full_name = "OpenPBS v2.3 Software License",
-    identifier = "OpenPBS-2.3",
+    long_name = "OpenPBS v2.3 Software License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OpenSSL",
-    full_name = "OpenSSL License",
-    identifier = "OpenSSL",
+    long_name = "OpenSSL License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OpenSSL-standalone",
-    full_name = "OpenSSL License - standalone",
-    identifier = "OpenSSL-standalone",
+    long_name = "OpenSSL License - standalone",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "OpenVision",
-    full_name = "OpenVision License",
-    identifier = "OpenVision",
+    long_name = "OpenVision License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "PADL",
-    full_name = "PADL License",
-    identifier = "PADL",
+    long_name = "PADL License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "PDDL-1.0",
-    full_name = "Open Data Commons Public Domain Dedication & License 1.0",
-    identifier = "PDDL-1.0",
+    long_name = "Open Data Commons Public Domain Dedication & License 1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "PHP-3.0",
-    full_name = "PHP License v3.0",
-    identifier = "PHP-3.0",
+    long_name = "PHP License v3.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "PHP-3.01",
-    full_name = "PHP License v3.01",
-    identifier = "PHP-3.01",
+    long_name = "PHP License v3.01",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "PPL",
-    full_name = "Peer Production License",
-    identifier = "PPL",
+    long_name = "Peer Production License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "PSF-2.0",
-    full_name = "Python Software Foundation License 2.0",
-    identifier = "PSF-2.0",
+    long_name = "Python Software Foundation License 2.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Parity-6.0.0",
-    full_name = "The Parity Public License 6.0.0",
-    identifier = "Parity-6.0.0",
+    long_name = "The Parity Public License 6.0.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Parity-7.0.0",
-    full_name = "The Parity Public License 7.0.0",
-    identifier = "Parity-7.0.0",
+    long_name = "The Parity Public License 7.0.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Pixar",
-    full_name = "Pixar License",
-    identifier = "Pixar",
+    long_name = "Pixar License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Plexus",
-    full_name = "Plexus Classworlds License",
-    identifier = "Plexus",
+    long_name = "Plexus Classworlds License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "PolyForm-Noncommercial-1.0.0",
-    full_name = "PolyForm Noncommercial License 1.0.0",
-    identifier = "PolyForm-Noncommercial-1.0.0",
+    long_name = "PolyForm Noncommercial License 1.0.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "PolyForm-Small-Business-1.0.0",
-    full_name = "PolyForm Small Business License 1.0.0",
-    identifier = "PolyForm-Small-Business-1.0.0",
+    long_name = "PolyForm Small Business License 1.0.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "PostgreSQL",
-    full_name = "PostgreSQL License",
-    identifier = "PostgreSQL",
+    long_name = "PostgreSQL License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Python-2.0",
-    full_name = "Python License 2.0",
-    identifier = "Python-2.0",
+    long_name = "Python License 2.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Python-2.0.1",
-    full_name = "Python License 2.0.1",
-    identifier = "Python-2.0.1",
+    long_name = "Python License 2.0.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "QPL-1.0",
-    full_name = "Q Public License 1.0",
-    identifier = "QPL-1.0",
+    long_name = "Q Public License 1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "QPL-1.0-INRIA-2004",
-    full_name = "Q Public License 1.0 - INRIA 2004 variant",
-    identifier = "QPL-1.0-INRIA-2004",
+    long_name = "Q Public License 1.0 - INRIA 2004 variant",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Qhull",
-    full_name = "Qhull License",
-    identifier = "Qhull",
+    long_name = "Qhull License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "RHeCos-1.1",
-    full_name = "Red Hat eCos Public License v1.1",
-    identifier = "RHeCos-1.1",
+    long_name = "Red Hat eCos Public License v1.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "RPL-1.1",
-    full_name = "Reciprocal Public License 1.1",
-    identifier = "RPL-1.1",
+    long_name = "Reciprocal Public License 1.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "RPL-1.5",
-    full_name = "Reciprocal Public License 1.5",
-    identifier = "RPL-1.5",
+    long_name = "Reciprocal Public License 1.5",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "RPSL-1.0",
-    full_name = "RealNetworks Public Source License v1.0",
-    identifier = "RPSL-1.0",
+    long_name = "RealNetworks Public Source License v1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "RSA-MD",
-    full_name = "RSA Message-Digest License",
-    identifier = "RSA-MD",
+    long_name = "RSA Message-Digest License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "RSCPL",
-    full_name = "Ricoh Source Code Public License",
-    identifier = "RSCPL",
+    long_name = "Ricoh Source Code Public License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Rdisc",
-    full_name = "Rdisc License",
-    identifier = "Rdisc",
+    long_name = "Rdisc License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Ruby",
-    full_name = "Ruby License",
-    identifier = "Ruby",
+    long_name = "Ruby License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Ruby-pty",
-    full_name = "Ruby pty extension license",
-    identifier = "Ruby-pty",
+    long_name = "Ruby pty extension license",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "SAX-PD",
-    full_name = "Sax Public Domain Notice",
-    identifier = "SAX-PD",
+    long_name = "Sax Public Domain Notice",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "SAX-PD-2.0",
-    full_name = "Sax Public Domain Notice 2.0",
-    identifier = "SAX-PD-2.0",
+    long_name = "Sax Public Domain Notice 2.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "SCEA",
-    full_name = "SCEA Shared Source License",
-    identifier = "SCEA",
+    long_name = "SCEA Shared Source License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "SGI-B-1.0",
-    full_name = "SGI Free Software License B v1.0",
-    identifier = "SGI-B-1.0",
+    long_name = "SGI Free Software License B v1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "SGI-B-1.1",
-    full_name = "SGI Free Software License B v1.1",
-    identifier = "SGI-B-1.1",
+    long_name = "SGI Free Software License B v1.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "SGI-B-2.0",
-    full_name = "SGI Free Software License B v2.0",
-    identifier = "SGI-B-2.0",
+    long_name = "SGI Free Software License B v2.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "SGI-OpenGL",
-    full_name = "SGI OpenGL License",
-    identifier = "SGI-OpenGL",
+    long_name = "SGI OpenGL License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "SGMLUG-PM",
-    full_name = "SGMLUG Parser Materials License",
-    identifier = "SGMLUG-PM",
+    long_name = "SGMLUG Parser Materials License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "SGP4",
-    full_name = "SGP4 Permission Notice",
-    identifier = "SGP4",
+    long_name = "SGP4 Permission Notice",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "SHL-0.5",
-    full_name = "Solderpad Hardware License v0.5",
-    identifier = "SHL-0.5",
+    long_name = "Solderpad Hardware License v0.5",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "SHL-0.51",
-    full_name = "Solderpad Hardware License, Version 0.51",
-    identifier = "SHL-0.51",
+    long_name = "Solderpad Hardware License, Version 0.51",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "SISSL",
-    full_name = "Sun Industry Standards Source License v1.1",
-    identifier = "SISSL",
+    long_name = "Sun Industry Standards Source License v1.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "SISSL-1.2",
-    full_name = "Sun Industry Standards Source License v1.2",
-    identifier = "SISSL-1.2",
+    long_name = "Sun Industry Standards Source License v1.2",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "SL",
-    full_name = "SL License",
-    identifier = "SL",
+    long_name = "SL License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "SMAIL-GPL",
-    full_name = "SMAIL General Public License",
-    identifier = "SMAIL-GPL",
+    long_name = "SMAIL General Public License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "SMLNJ",
-    full_name = "Standard ML of New Jersey License",
-    identifier = "SMLNJ",
+    long_name = "Standard ML of New Jersey License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "SMPPL",
-    full_name = "Secure Messaging Protocol Public License",
-    identifier = "SMPPL",
+    long_name = "Secure Messaging Protocol Public License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "SNIA",
-    full_name = "SNIA Public License 1.1",
-    identifier = "SNIA",
+    long_name = "SNIA Public License 1.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "SOFA",
-    full_name = "SOFA Software License",
-    identifier = "SOFA",
+    long_name = "SOFA Software License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "SPL-1.0",
-    full_name = "Sun Public License v1.0",
-    identifier = "SPL-1.0",
+    long_name = "Sun Public License v1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "SSH-OpenSSH",
-    full_name = "SSH OpenSSH license",
-    identifier = "SSH-OpenSSH",
+    long_name = "SSH OpenSSH license",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "SSH-short",
-    full_name = "SSH short notice",
-    identifier = "SSH-short",
+    long_name = "SSH short notice",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "SSLeay-standalone",
-    full_name = "SSLeay License - standalone",
-    identifier = "SSLeay-standalone",
+    long_name = "SSLeay License - standalone",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "SSPL-1.0",
-    full_name = "Server Side Public License, v 1",
-    identifier = "SSPL-1.0",
+    long_name = "Server Side Public License, v 1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "SUL-1.0",
-    full_name = "Sustainable Use License v1.0",
-    identifier = "SUL-1.0",
+    long_name = "Sustainable Use License v1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "SWL",
-    full_name = "Scheme Widget Library (SWL) Software License Agreement",
-    identifier = "SWL",
+    long_name = "Scheme Widget Library (SWL) Software License Agreement",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Saxpath",
-    full_name = "Saxpath License",
-    identifier = "Saxpath",
+    long_name = "Saxpath License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "SchemeReport",
-    full_name = "Scheme Language Report License",
-    identifier = "SchemeReport",
+    long_name = "Scheme Language Report License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Sendmail",
-    full_name = "Sendmail License",
-    identifier = "Sendmail",
+    long_name = "Sendmail License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Sendmail-8.23",
-    full_name = "Sendmail License 8.23",
-    identifier = "Sendmail-8.23",
+    long_name = "Sendmail License 8.23",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Sendmail-Open-Source-1.1",
-    full_name = "Sendmail Open Source License v1.1",
-    identifier = "Sendmail-Open-Source-1.1",
+    long_name = "Sendmail Open Source License v1.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "SimPL-2.0",
-    full_name = "Simple Public License 2.0",
-    identifier = "SimPL-2.0",
+    long_name = "Simple Public License 2.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Sleepycat",
-    full_name = "Sleepycat License",
-    identifier = "Sleepycat",
+    long_name = "Sleepycat License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Soundex",
-    full_name = "Soundex License",
-    identifier = "Soundex",
+    long_name = "Soundex License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Spencer-86",
-    full_name = "Spencer License 86",
-    identifier = "Spencer-86",
+    long_name = "Spencer License 86",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Spencer-94",
-    full_name = "Spencer License 94",
-    identifier = "Spencer-94",
+    long_name = "Spencer License 94",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Spencer-99",
-    full_name = "Spencer License 99",
-    identifier = "Spencer-99",
+    long_name = "Spencer License 99",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "StandardML-NJ",
-    full_name = "Standard ML of New Jersey License",
-    identifier = "StandardML-NJ",
+    long_name = "Standard ML of New Jersey License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "SugarCRM-1.1.3",
-    full_name = "SugarCRM Public License v1.1.3",
-    identifier = "SugarCRM-1.1.3",
+    long_name = "SugarCRM Public License v1.1.3",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Sun-PPP",
-    full_name = "Sun PPP License",
-    identifier = "Sun-PPP",
+    long_name = "Sun PPP License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Sun-PPP-2000",
-    full_name = "Sun PPP License (2000)",
-    identifier = "Sun-PPP-2000",
+    long_name = "Sun PPP License (2000)",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "SunPro",
-    full_name = "SunPro License",
-    identifier = "SunPro",
+    long_name = "SunPro License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Symlinks",
-    full_name = "Symlinks License",
-    identifier = "Symlinks",
+    long_name = "Symlinks License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "TAPR-OHL-1.0",
-    full_name = "TAPR Open Hardware License v1.0",
-    identifier = "TAPR-OHL-1.0",
+    long_name = "TAPR Open Hardware License v1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "TCL",
-    full_name = "TCL/TK License",
-    identifier = "TCL",
+    long_name = "TCL/TK License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "TCP-wrappers",
-    full_name = "TCP Wrappers License",
-    identifier = "TCP-wrappers",
+    long_name = "TCP Wrappers License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "TGPPL-1.0",
-    full_name = "Transitive Grace Period Public Licence 1.0",
-    identifier = "TGPPL-1.0",
+    long_name = "Transitive Grace Period Public Licence 1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "TMate",
-    full_name = "TMate Open Source License",
-    identifier = "TMate",
+    long_name = "TMate Open Source License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "TORQUE-1.1",
-    full_name = "TORQUE v2.5+ Software License v1.1",
-    identifier = "TORQUE-1.1",
+    long_name = "TORQUE v2.5+ Software License v1.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "TOSL",
-    full_name = "Trusster Open Source License",
-    identifier = "TOSL",
+    long_name = "Trusster Open Source License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "TPDL",
-    full_name = "Time::ParseDate License",
-    identifier = "TPDL",
+    long_name = "Time::ParseDate License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "TPL-1.0",
-    full_name = "THOR Public License 1.0",
-    identifier = "TPL-1.0",
+    long_name = "THOR Public License 1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "TTWL",
-    full_name = "Text-Tabs+Wrap License",
-    identifier = "TTWL",
+    long_name = "Text-Tabs+Wrap License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "TTYP0",
-    full_name = "TTYP0 License",
-    identifier = "TTYP0",
+    long_name = "TTYP0 License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "TU-Berlin-1.0",
-    full_name = "Technische Universitaet Berlin License 1.0",
-    identifier = "TU-Berlin-1.0",
+    long_name = "Technische Universitaet Berlin License 1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "TU-Berlin-2.0",
-    full_name = "Technische Universitaet Berlin License 2.0",
-    identifier = "TU-Berlin-2.0",
+    long_name = "Technische Universitaet Berlin License 2.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "TermReadKey",
-    full_name = "TermReadKey License",
-    identifier = "TermReadKey",
+    long_name = "TermReadKey License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "ThirdEye",
-    full_name = "ThirdEye License",
-    identifier = "ThirdEye",
+    long_name = "ThirdEye License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "TrustedQSL",
-    full_name = "TrustedQSL License",
-    identifier = "TrustedQSL",
+    long_name = "TrustedQSL License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "UCAR",
-    full_name = "UCAR License",
-    identifier = "UCAR",
+    long_name = "UCAR License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "UCL-1.0",
-    full_name = "Upstream Compatibility License v1.0",
-    identifier = "UCL-1.0",
+    long_name = "Upstream Compatibility License v1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "UMich-Merit",
-    full_name = "Michigan/Merit Networks License",
-    identifier = "UMich-Merit",
+    long_name = "Michigan/Merit Networks License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "UPL-1.0",
-    full_name = "Universal Permissive License v1.0",
-    identifier = "UPL-1.0",
+    long_name = "Universal Permissive License v1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "URT-RLE",
-    full_name = "Utah Raster Toolkit Run Length Encoded License",
-    identifier = "URT-RLE",
+    long_name = "Utah Raster Toolkit Run Length Encoded License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Ubuntu-font-1.0",
-    full_name = "Ubuntu Font Licence v1.0",
-    identifier = "Ubuntu-font-1.0",
+    long_name = "Ubuntu Font Licence v1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Unicode-3.0",
-    full_name = "Unicode License v3",
-    identifier = "Unicode-3.0",
+    long_name = "Unicode License v3",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Unicode-DFS-2015",
-    full_name = "Unicode License Agreement - Data Files and Software (2015)",
-    identifier = "Unicode-DFS-2015",
+    long_name = "Unicode License Agreement - Data Files and Software (2015)",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Unicode-DFS-2016",
-    full_name = "Unicode License Agreement - Data Files and Software (2016)",
-    identifier = "Unicode-DFS-2016",
+    long_name = "Unicode License Agreement - Data Files and Software (2016)",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Unicode-TOU",
-    full_name = "Unicode Terms of Use",
-    identifier = "Unicode-TOU",
+    long_name = "Unicode Terms of Use",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "UnixCrypt",
-    full_name = "UnixCrypt License",
-    identifier = "UnixCrypt",
+    long_name = "UnixCrypt License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Unlicense",
-    full_name = "The Unlicense",
-    identifier = "Unlicense",
+    long_name = "The Unlicense",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Unlicense-libtelnet",
-    full_name = "Unlicense - libtelnet variant",
-    identifier = "Unlicense-libtelnet",
+    long_name = "Unlicense - libtelnet variant",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Unlicense-libwhirlpool",
-    full_name = "Unlicense - libwhirlpool variant",
-    identifier = "Unlicense-libwhirlpool",
+    long_name = "Unlicense - libwhirlpool variant",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "VOSTROM",
-    full_name = "VOSTROM Public License for Open Source",
-    identifier = "VOSTROM",
+    long_name = "VOSTROM Public License for Open Source",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "VSL-1.0",
-    full_name = "Vovida Software License v1.0",
-    identifier = "VSL-1.0",
+    long_name = "Vovida Software License v1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Vim",
-    full_name = "Vim License",
-    identifier = "Vim",
+    long_name = "Vim License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "W3C",
-    full_name = "W3C Software Notice and License (2002-12-31)",
-    identifier = "W3C",
+    long_name = "W3C Software Notice and License (2002-12-31)",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "W3C-19980720",
-    full_name = "W3C Software Notice and License (1998-07-20)",
-    identifier = "W3C-19980720",
+    long_name = "W3C Software Notice and License (1998-07-20)",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "W3C-20150513",
-    full_name = "W3C Software Notice and Document License (2015-05-13)",
-    identifier = "W3C-20150513",
+    long_name = "W3C Software Notice and Document License (2015-05-13)",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "WTFNMFPL",
-    full_name = "Do What The F*ck You Want To But It's Not My Fault Public License",
-    identifier = "WTFNMFPL",
+    long_name = "Do What The F*ck You Want To But It's Not My Fault Public License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "WTFPL",
-    full_name = "Do What The F*ck You Want To Public License",
-    identifier = "WTFPL",
+    long_name = "Do What The F*ck You Want To Public License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Watcom-1.0",
-    full_name = "Sybase Open Watcom Public License 1.0",
-    identifier = "Watcom-1.0",
+    long_name = "Sybase Open Watcom Public License 1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Widget-Workshop",
-    full_name = "Widget Workshop License",
-    identifier = "Widget-Workshop",
+    long_name = "Widget Workshop License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "WordNet",
-    full_name = "WordNet License",
-    identifier = "WordNet",
+    long_name = "WordNet License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Wsuipa",
-    full_name = "Wsuipa License",
-    identifier = "Wsuipa",
+    long_name = "Wsuipa License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "X11",
-    full_name = "X11 License",
-    identifier = "X11",
+    long_name = "X11 License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "X11-distribute-modifications-variant",
-    full_name = "X11 License Distribution Modification Variant",
-    identifier = "X11-distribute-modifications-variant",
+    long_name = "X11 License Distribution Modification Variant",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "X11-swapped",
-    full_name = "X11 swapped final paragraphs",
-    identifier = "X11-swapped",
+    long_name = "X11 swapped final paragraphs",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "XFree86-1.1",
-    full_name = "XFree86 License 1.1",
-    identifier = "XFree86-1.1",
+    long_name = "XFree86 License 1.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "XSkat",
-    full_name = "XSkat License",
-    identifier = "XSkat",
+    long_name = "XSkat License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Xdebug-1.03",
-    full_name = "Xdebug License v 1.03",
-    identifier = "Xdebug-1.03",
+    long_name = "Xdebug License v 1.03",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Xerox",
-    full_name = "Xerox License",
-    identifier = "Xerox",
+    long_name = "Xerox License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Xfig",
-    full_name = "Xfig License",
-    identifier = "Xfig",
+    long_name = "Xfig License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Xnet",
-    full_name = "X.Net License",
-    identifier = "Xnet",
+    long_name = "X.Net License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "YPL-1.0",
-    full_name = "Yahoo! Public License v1.0",
-    identifier = "YPL-1.0",
+    long_name = "Yahoo! Public License v1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "YPL-1.1",
-    full_name = "Yahoo! Public License v1.1",
-    identifier = "YPL-1.1",
+    long_name = "Yahoo! Public License v1.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "ZPL-1.1",
-    full_name = "Zope Public License 1.1",
-    identifier = "ZPL-1.1",
+    long_name = "Zope Public License 1.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "ZPL-2.0",
-    full_name = "Zope Public License 2.0",
-    identifier = "ZPL-2.0",
+    long_name = "Zope Public License 2.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "ZPL-2.1",
-    full_name = "Zope Public License 2.1",
-    identifier = "ZPL-2.1",
+    long_name = "Zope Public License 2.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Zed",
-    full_name = "Zed License",
-    identifier = "Zed",
+    long_name = "Zed License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Zeeff",
-    full_name = "Zeeff License",
-    identifier = "Zeeff",
+    long_name = "Zeeff License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Zend-2.0",
-    full_name = "Zend License v2.0",
-    identifier = "Zend-2.0",
+    long_name = "Zend License v2.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Zimbra-1.3",
-    full_name = "Zimbra Public License v1.3",
-    identifier = "Zimbra-1.3",
+    long_name = "Zimbra Public License v1.3",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Zimbra-1.4",
-    full_name = "Zimbra Public License v1.4",
-    identifier = "Zimbra-1.4",
+    long_name = "Zimbra Public License v1.4",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "Zlib",
-    full_name = "zlib License",
-    identifier = "Zlib",
+    long_name = "zlib License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "any-OSI",
-    full_name = "Any OSI License",
-    identifier = "any-OSI",
+    long_name = "Any OSI License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "any-OSI-perl-modules",
-    full_name = "Any OSI License - Perl Modules",
-    identifier = "any-OSI-perl-modules",
+    long_name = "Any OSI License - Perl Modules",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "bcrypt-Solar-Designer",
-    full_name = "bcrypt Solar Designer License",
-    identifier = "bcrypt-Solar-Designer",
+    long_name = "bcrypt Solar Designer License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "blessing",
-    full_name = "SQLite Blessing",
-    identifier = "blessing",
+    long_name = "SQLite Blessing",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "bzip2-1.0.5",
-    full_name = "bzip2 and libbzip2 License v1.0.5",
-    identifier = "bzip2-1.0.5",
+    long_name = "bzip2 and libbzip2 License v1.0.5",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "bzip2-1.0.6",
-    full_name = "bzip2 and libbzip2 License v1.0.6",
-    identifier = "bzip2-1.0.6",
+    long_name = "bzip2 and libbzip2 License v1.0.6",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "check-cvs",
-    full_name = "check-cvs License",
-    identifier = "check-cvs",
+    long_name = "check-cvs License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "checkmk",
-    full_name = "Checkmk License",
-    identifier = "checkmk",
+    long_name = "Checkmk License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "copyleft-next-0.3.0",
-    full_name = "copyleft-next 0.3.0",
-    identifier = "copyleft-next-0.3.0",
+    long_name = "copyleft-next 0.3.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "copyleft-next-0.3.1",
-    full_name = "copyleft-next 0.3.1",
-    identifier = "copyleft-next-0.3.1",
+    long_name = "copyleft-next 0.3.1",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "curl",
-    full_name = "curl License",
-    identifier = "curl",
+    long_name = "curl License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "cve-tou",
-    full_name = "Common Vulnerability Enumeration ToU License",
-    identifier = "cve-tou",
+    long_name = "Common Vulnerability Enumeration ToU License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "diffmark",
-    full_name = "diffmark license",
-    identifier = "diffmark",
+    long_name = "diffmark license",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "dtoa",
-    full_name = "David M. Gay dtoa License",
-    identifier = "dtoa",
+    long_name = "David M. Gay dtoa License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "dvipdfm",
-    full_name = "dvipdfm License",
-    identifier = "dvipdfm",
+    long_name = "dvipdfm License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "eCos-2.0",
-    full_name = "eCos license version 2.0",
-    identifier = "eCos-2.0",
+    long_name = "eCos license version 2.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "eGenix",
-    full_name = "eGenix.com Public License 1.1.0",
-    identifier = "eGenix",
+    long_name = "eGenix.com Public License 1.1.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "etalab-2.0",
-    full_name = "Etalab Open License 2.0",
-    identifier = "etalab-2.0",
+    long_name = "Etalab Open License 2.0",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "fwlw",
-    full_name = "fwlw License",
-    identifier = "fwlw",
+    long_name = "fwlw License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "gSOAP-1.3b",
-    full_name = "gSOAP Public License v1.3b",
-    identifier = "gSOAP-1.3b",
+    long_name = "gSOAP Public License v1.3b",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "generic-xts",
-    full_name = "Generic XTS License",
-    identifier = "generic-xts",
+    long_name = "Generic XTS License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "gnuplot",
-    full_name = "gnuplot License",
-    identifier = "gnuplot",
+    long_name = "gnuplot License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "gtkbook",
-    full_name = "gtkbook License",
-    identifier = "gtkbook",
+    long_name = "gtkbook License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "hdparm",
-    full_name = "hdparm License",
-    identifier = "hdparm",
+    long_name = "hdparm License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "iMatix",
-    full_name = "iMatix Standard Function Library Agreement",
-    identifier = "iMatix",
+    long_name = "iMatix Standard Function Library Agreement",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "jove",
-    full_name = "Jove License",
-    identifier = "jove",
+    long_name = "Jove License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "libpng-1.6.35",
-    full_name = "PNG Reference Library License v1 (for libpng 0.5 through 1.6.35)",
-    identifier = "libpng-1.6.35",
+    long_name = "PNG Reference Library License v1 (for libpng 0.5 through 1.6.35)",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "libpng-2.0",
-    full_name = "PNG Reference Library version 2",
-    identifier = "libpng-2.0",
+    long_name = "PNG Reference Library version 2",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "libselinux-1.0",
-    full_name = "libselinux public domain notice",
-    identifier = "libselinux-1.0",
+    long_name = "libselinux public domain notice",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "libtiff",
-    full_name = "libtiff License",
-    identifier = "libtiff",
+    long_name = "libtiff License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "libutil-David-Nugent",
-    full_name = "libutil David Nugent License",
-    identifier = "libutil-David-Nugent",
+    long_name = "libutil David Nugent License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "lsof",
-    full_name = "lsof License",
-    identifier = "lsof",
+    long_name = "lsof License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "magaz",
-    full_name = "magaz License",
-    identifier = "magaz",
+    long_name = "magaz License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "mailprio",
-    full_name = "mailprio License",
-    identifier = "mailprio",
+    long_name = "mailprio License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "man2html",
-    full_name = "man2html License",
-    identifier = "man2html",
+    long_name = "man2html License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "metamail",
-    full_name = "metamail License",
-    identifier = "metamail",
+    long_name = "metamail License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "mpi-permissive",
-    full_name = "mpi Permissive License",
-    identifier = "mpi-permissive",
+    long_name = "mpi Permissive License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "mpich2",
-    full_name = "mpich2 License",
-    identifier = "mpich2",
+    long_name = "mpich2 License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "mplus",
-    full_name = "mplus Font License",
-    identifier = "mplus",
+    long_name = "mplus Font License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "ngrep",
-    full_name = "ngrep License",
-    identifier = "ngrep",
+    long_name = "ngrep License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "pkgconf",
-    full_name = "pkgconf License",
-    identifier = "pkgconf",
+    long_name = "pkgconf License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "pnmstitch",
-    full_name = "pnmstitch License",
-    identifier = "pnmstitch",
+    long_name = "pnmstitch License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "psfrag",
-    full_name = "psfrag License",
-    identifier = "psfrag",
+    long_name = "psfrag License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "psutils",
-    full_name = "psutils License",
-    identifier = "psutils",
+    long_name = "psutils License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "python-ldap",
-    full_name = "Python ldap License",
-    identifier = "python-ldap",
+    long_name = "Python ldap License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "radvd",
-    full_name = "radvd License",
-    identifier = "radvd",
+    long_name = "radvd License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "snprintf",
-    full_name = "snprintf License",
-    identifier = "snprintf",
+    long_name = "snprintf License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "softSurfer",
-    full_name = "softSurfer License",
-    identifier = "softSurfer",
+    long_name = "softSurfer License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "ssh-keyscan",
-    full_name = "ssh-keyscan License",
-    identifier = "ssh-keyscan",
+    long_name = "ssh-keyscan License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "swrule",
-    full_name = "swrule License",
-    identifier = "swrule",
+    long_name = "swrule License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "threeparttable",
-    full_name = "threeparttable License",
-    identifier = "threeparttable",
+    long_name = "threeparttable License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "ulem",
-    full_name = "ulem License",
-    identifier = "ulem",
+    long_name = "ulem License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "w3m",
-    full_name = "w3m License",
-    identifier = "w3m",
+    long_name = "w3m License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "wwl",
-    full_name = "WWL License",
-    identifier = "wwl",
+    long_name = "WWL License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "wxWindows",
-    full_name = "wxWindows Library License",
-    identifier = "wxWindows",
+    long_name = "wxWindows Library License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "xinetd",
-    full_name = "xinetd License",
-    identifier = "xinetd",
+    long_name = "xinetd License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "xkeyboard-config-Zinoviev",
-    full_name = "xkeyboard-config Zinoviev License",
-    identifier = "xkeyboard-config-Zinoviev",
+    long_name = "xkeyboard-config Zinoviev License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "xlock",
-    full_name = "xlock License",
-    identifier = "xlock",
+    long_name = "xlock License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "xpp",
-    full_name = "XPP License",
-    identifier = "xpp",
+    long_name = "XPP License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "xzoom",
-    full_name = "xzoom License",
-    identifier = "xzoom",
+    long_name = "xzoom License",
     visibility = ["//visibility:public"],
 )
 
 license_kind(
     name = "zlib-acknowledgement",
-    full_name = "zlib/libpng License with Acknowledgement",
-    identifier = "zlib-acknowledgement",
+    long_name = "zlib/libpng License with Acknowledgement",
     visibility = ["//visibility:public"],
 )
