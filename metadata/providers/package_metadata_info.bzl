@@ -5,7 +5,7 @@ visibility("public")
 def _init(metadata, attributes = [], files = []):
     return {
         "metadata": metadata,
-	"attributes": attributes,
+        "attributes": attributes,
         "files": depset(
             direct = [
                 metadata,
@@ -18,7 +18,7 @@ PackageMetadataInfo, _create = provider(
     doc = """
 Provider for declaring metadata about a Bazel package.
 
-**Fields in this provider are not covered by the stability gurantee.**
+> **Fields in this provider are not covered by the stability guarantee.**
 """.strip(),
     fields = {
         "attributes": """
