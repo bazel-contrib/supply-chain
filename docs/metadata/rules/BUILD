@@ -19,6 +19,5 @@ load("@stardoc//stardoc:stardoc.bzl", "stardoc")
     ]
     for file in [
         "package_metadata",
-        "package_metadata_toolchain",
     ]
 ]

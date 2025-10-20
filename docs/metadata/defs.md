@@ -113,27 +113,6 @@ package_metadata(*, <a href="#package_metadata-name">name</a>, <a href="#package
 | <a id="package_metadata-visibility"></a>visibility |  <p align="center"> - </p>   |  `None` |
 
 
-<a id="package_metadata_toolchain"></a>
-
-## package_metadata_toolchain
-
-<pre>
-load("@package_metadata//:defs.bzl", "package_metadata_toolchain")
-
-package_metadata_toolchain(*, <a href="#package_metadata_toolchain-name">name</a>, <a href="#package_metadata_toolchain-visibility">visibility</a>)
-</pre>
-
-
-
-**PARAMETERS**
-
-
-| Name  | Description | Default Value |
-| :------------- | :------------- | :------------- |
-| <a id="package_metadata_toolchain-name"></a>name |  <p align="center"> - </p>   |  none |
-| <a id="package_metadata_toolchain-visibility"></a>visibility |  <p align="center"> - </p>   |  `None` |
-
-
 <a id="purl.bazel"></a>
 
 ## purl.bazel
