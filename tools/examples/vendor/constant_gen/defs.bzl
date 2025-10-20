@@ -36,12 +36,12 @@ def constant_gen(name, text, var):
         src_out = name + "_src_.cc",
         text = text,
         var = var,
-        package_metadata = ["@supply_chain_tools//examples/vendor/constant_gen:license_for_emitted_code"],
+        applicable_licenses = ["@supply_chain_tools//examples/vendor/constant_gen:license_for_emitted_code"],
     )
 
     # And turn it into a library we can link against
     cc_library(
         name = name,
         srcs = [name + "_src_"],
-        package_metadata = ["@supply_chain_tools//examples/vendor/constant_gen:license_for_emitted_code"],
+        applicable_licenses = ["@supply_chain_tools//examples/vendor/constant_gen:license_for_emitted_code"],
     )
