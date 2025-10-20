@@ -4,9 +4,9 @@ module(
 )
 
 # Do not update to newer versions until you need a specific new feature.
+bazel_dep(name = "package_metadata", version = "0.0.5")
 bazel_dep(name = "rules_license", version = "1.0.0")
 bazel_dep(name = "bazel_skylib", version = "1.8.2")
-bazel_dep(name = "package_metadata", version = "0.0.5")
 
 # Development tools
 local_path_override(
@@ -16,7 +16,7 @@ local_path_override(
 
 local_path_override(
     module_name = "rules_license",
-    path = "rules_license",
+    path = "../rules_license",
 )
 
 bazel_dep(name = "rules_python", version = "1.6.3", dev_dependency = True)
