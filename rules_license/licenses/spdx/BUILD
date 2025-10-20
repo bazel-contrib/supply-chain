@@ -2,7 +2,7 @@
 #
 # version: 614a375
 
-load("//licenses/rules:license_kind.bzl", "license_kind")
+load("//rules:license_kind.bzl", "license_kind")
 
 license_kind(
     name = "0BSD",
