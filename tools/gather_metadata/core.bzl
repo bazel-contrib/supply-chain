@@ -95,6 +95,7 @@ def _get_transitive_metadata(
 def gather_metadata_info_common(
         target,
         ctx,
+        *,
         want_providers = None,
         provider_factory = None,
         null_provider_instance = None,
@@ -130,6 +131,7 @@ def gather_metadata_info_common(
     # A hack until https://github.com/bazelbuild/rules_license/issues/89 is
     # fully resolved. If exec is in the bin_dir path, then the current
     # configuration is probably cfg = exec.
+
     if "-exec-" in ctx.bin_dir.path:
         return [null_provider_instance or provider_factory()]
 
