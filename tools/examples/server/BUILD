@@ -43,6 +43,7 @@ cc_binary(
         "//examples/lib:private_lib",
 	"//examples/lib:lib_with_third_party_deps",
         "@supply_chain_tools//examples/vendor/acme",
+        "@supply_chain_tools//examples/vendor/legacy_license:libfoo",
         "@supply_chain_tools//examples/vendor/libhhgttg",
     ],
 )
