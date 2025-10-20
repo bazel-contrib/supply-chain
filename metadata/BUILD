@@ -14,6 +14,7 @@ filegroup(
     srcs = [
         "defs.bzl",
     ] + [
+        "//licenses:srcs",
         "//providers:srcs",
         "//purl:srcs",
         "//rules:srcs",
