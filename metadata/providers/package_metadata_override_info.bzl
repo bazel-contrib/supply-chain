@@ -12,7 +12,7 @@ PackageMetadataOverrideInfo, _create = provider(
     doc = """
 Defines an override for `PackageMetadataInfo` for a set of packages.
 
-> **Fields in this provider are not covered by the stability gurantee.**
+> **Fields in this provider are not covered by the stability guarantee.**
 """.strip(),
     fields = {
         "metadata": """

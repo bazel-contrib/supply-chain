@@ -14,7 +14,7 @@ PackageMetadataToolchainInfo(<a href="#PackageMetadataToolchainInfo-metadata_ove
 
 Toolchain for `package_metadata`.
 
-> **Fields in this provider are not covered by the stability gurantee.**
+> **Fields in this provider are not covered by the stability guarantee.**
 
 **FIELDS**
 
