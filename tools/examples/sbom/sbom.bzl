@@ -77,23 +77,13 @@ def _handle_provider(metadata_provider, command, inputs, report):
     if kind:
         # but maybe the kind is in the info file.
         command.append("-kind %s" % kind)
-
         if hasattr(metadata_provider, "attributes"):
             command.append("-attributes %s" % metadata_provider.attributes.path)
-            report.append("  Attribute data: %s" % metadata_provider.attributes.path)
+            report.append("  Attribute data: %s" % metadata_provider.attributes.short_path)
             if hasattr(metadata_provider, "files"):
                 inputs.extend(metadata_provider.files.to_list())
                 for f in metadata_provider.files.to_list():
                     report.append("    file: %s" % f.short_path)
-
-        # Check for extras.
-        # This is for debugging during initial development. There should be
-        # no extra fields.
-        for field in sorted(dir(metadata_provider)):
-            if field in ("attributes", "files", "kind"):
-                continue
-            value = getattr(metadata_provider, field)
-            report.append("%s: %s" % (field, value))
 
 def _handle_trans_collector(t_m_i, command, inputs, report):
     """Process a TransitiveMetadataInfo.
