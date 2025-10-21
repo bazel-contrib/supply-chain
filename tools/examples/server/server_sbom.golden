@@ -1,7 +1,7 @@
 Target: @@//examples/server:my_violating_server
   Attribute data: bazel-out/fastbuild-noconfig/bin/examples/vendor/constant_gen/license_for_emitted_code.package-attribute.json
     file: examples/vendor/constant_gen/LICENSE_OF_OUTPUT
-    file: bazel-out/fastbuild-noconfig/bin/examples/vendor/constant_gen/license_for_emitted_code.package-attribute.json
+    file: examples/vendor/constant_gen/license_for_emitted_code.package-attribute.json
   Attribute data: bazel-out/fastbuild-noconfig/bin/examples/vendor/libhhgttg/license.package-attribute.json
     file: examples/vendor/libhhgttg/LICENSE
-    file: bazel-out/fastbuild-noconfig/bin/examples/vendor/libhhgttg/license.package-attribute.json
+    file: examples/vendor/libhhgttg/license.package-attribute.json

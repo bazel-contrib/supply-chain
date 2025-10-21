@@ -59,13 +59,14 @@ def _handle_provider(metadata_provider, command, inputs, report):
                 This is for illustrating how to use these rules, and
                 is not needed for the SBOM.
     """
+
     # We are presuming having metadata means you are a PackageMetadataInfo.
     if hasattr(metadata_provider, "metadata"):
         command.append("-metadata %s" % metadata_provider.metadata.path)
         inputs.extend(metadata_provider.files.to_list())
         if hasattr(metadata_provider, "purl"):
-           command.append("-purl %s" % metadata_provider.purl)
-           report.append("purl %s" % metadata_provider.purl)
+            command.append("-purl %s" % metadata_provider.purl)
+            report.append("purl %s" % metadata_provider.purl)
         return
 
     # If you are gathering your own custom types, having a kind field can
@@ -83,7 +84,7 @@ def _handle_provider(metadata_provider, command, inputs, report):
             if hasattr(metadata_provider, "files"):
                 inputs.extend(metadata_provider.files.to_list())
                 for f in metadata_provider.files.to_list():
-                    report.append("    file: %s" % f.path)
+                    report.append("    file: %s" % f.short_path)
 
         # Check for extras.
         # This is for debugging during initial development. There should be
@@ -93,7 +94,6 @@ def _handle_provider(metadata_provider, command, inputs, report):
                 continue
             value = getattr(metadata_provider, field)
             report.append("%s: %s" % (field, value))
-
 
 def _handle_trans_collector(t_m_i, command, inputs, report):
     """Process a TransitiveMetadataInfo.
@@ -107,7 +107,7 @@ def _handle_trans_collector(t_m_i, command, inputs, report):
                 is not needed for the SBOM.
     """
     if hasattr(t_m_i, "directs"):
-        print("HAS DIRECTS", )
+        print("HAS DIRECTS")
         print(t_m_i.directs.to_list())
         for direct in t_m_i.directs.to_list():
             _handle_provider(direct, command, inputs, report)
@@ -119,11 +119,10 @@ def _handle_trans_collector(t_m_i, command, inputs, report):
                 for direct in trans.directs.to_list():
                     _handle_provider(direct, command, inputs, report)
             if hasattr(trans, "trans"):
-               print("=======Trans in trans")
-               print(trans.trans)
-               print(">>>>>>")
-               # _handle_trans_collector(trans, command, inputs, report)
-
+                print("=======Trans in trans")
+                print(trans.trans)
+                print(">>>>>>")
+                # _handle_trans_collector(trans, command, inputs, report)
 
 def _sbom_impl(ctx):
     # Gather all metadata and make a report from that
@@ -159,7 +158,6 @@ def _sbom_impl(ctx):
         print("TOP HAS TRANS")
         for trans in t_m_i.trans.to_list():
             _handle_trans_collector(trans, command, inputs, report)
-
 
     # TBD: Run the SBOM generator here.
     print("RUN THE SBOM\n  %s\n" % " ".join(command))
