@@ -3,7 +3,6 @@
 load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
 
 load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
-# load("@supply_chain_tools//rules:compliance.bzl", "check_license")
 load("@supply_chain_tools//examples/sample_reports:licenses_used.bzl", "licenses_used")
 load("@supply_chain_tools//examples/sbom:sbom.bzl", "sbom")
 load("@supply_chain_tools//examples/vendor/constant_gen:defs.bzl", "constant_gen")
