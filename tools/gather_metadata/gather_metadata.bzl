@@ -14,7 +14,7 @@ load(
     "gather_metadata_info_common",
     "should_traverse",
 )
-load(":providers.bzl", "TransitiveMetadataInfo")
+load(":providers.bzl", "TransitiveMetadataInfo", "null_transitive_metadata_info")
 load(":trace.bzl", "TraceInfo")
 
 def _strip_null_repo(label):
@@ -37,9 +37,10 @@ def _gather_metadata_info_impl(target, ctx):
     return gather_metadata_info_common(
         target,
         ctx,
-        TransitiveMetadataInfo,
-        [PackageAttributeInfo, PackageMetadataInfo, LicenseKindInfo],
-        should_traverse,
+        want_providers = [PackageAttributeInfo, PackageMetadataInfo, LicenseKindInfo],
+        provider_factory = TransitiveMetadataInfo,
+        null_provider_instance = null_transitive_metadata_info,
+        filter_func = should_traverse,
     )
 
 gather_metadata_info = aspect(
