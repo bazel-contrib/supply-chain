@@ -9,16 +9,16 @@ package(
 cc_library(
     name = "private_lib",
     srcs = [
-        "private_lib.cc"
+        "private_lib.cc",
     ],
     hdrs = [
-        "private_lib.h"
-    ]
+        "private_lib.h",
+    ],
 )
 
 cc_library(
     name = "lib_with_third_party_deps",
     deps = [
-        "@supply_chain_tools//examples/vendor/acme",
-    ]
+        "//examples/vendor/acme",
+    ],
 )
