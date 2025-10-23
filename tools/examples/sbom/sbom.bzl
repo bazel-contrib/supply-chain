@@ -6,10 +6,6 @@ load(
     "PackageMetadataInfo",
 )
 load(
-    "@package_metadata//licenses/providers:license_kind_info.bzl",
-    "LicenseKindInfo",
-)
-load(
     "@supply_chain_tools//gather_metadata:core.bzl",
     "gather_metadata_info_common",
     "should_traverse",
@@ -20,7 +16,6 @@ load(
     "null_transitive_metadata_info",
 )
 
-#
 # All top level metadata processing rules will generally wrap gahter with their
 # Own aspect to walk the tree. This wrapper is usually not much different than
 # the example here. The variation is usually only to provide the set of
@@ -29,9 +24,9 @@ load(
 #
 def _gather_metadata_info_impl(target, ctx):
     return gather_metadata_info_common(
-        target,
-        ctx,
-        want_providers = [PackageAttributeInfo, PackageMetadataInfo, LicenseKindInfo],
+        target = target,
+        ctx = ctx,
+        want_providers = [PackageAttributeInfo, PackageMetadataInfo],
         provider_factory = TransitiveMetadataInfo,
         null_provider_instance = null_transitive_metadata_info,
         filter_func = should_traverse,
@@ -73,7 +68,8 @@ def _handle_provider(metadata_provider, command, inputs, report):
     # be used to distingish them if they need different post processing.
     kind = metadata_provider.kind if hasattr(metadata_provider, "kind") else "_UNKNOWN_"
     print("##-- %s" % kind)
-    print(metadata_provider)
+
+    # print(metadata_provider)
     if kind:
         # but maybe the kind is in the info file.
         command.append("-kind %s" % kind)
@@ -96,23 +92,9 @@ def _handle_trans_collector(t_m_i, command, inputs, report):
                 This is for illustrating how to use these rules, and
                 is not needed for the SBOM.
     """
-    if hasattr(t_m_i, "directs"):
-        print("HAS DIRECTS")
-        print(t_m_i.directs.to_list())
-        for direct in t_m_i.directs.to_list():
-            _handle_provider(direct, command, inputs, report)
-    if hasattr(t_m_i, "trans"):
-        print("HAS TRANS")
-        for trans in t_m_i.trans.to_list():
-            if hasattr(trans, "directs"):
-                print("Inner DIRECTS")
-                for direct in trans.directs.to_list():
-                    _handle_provider(direct, command, inputs, report)
-            if hasattr(trans, "trans"):
-                print("=======Trans in trans")
-                print(trans.trans)
-                print(">>>>>>")
-                # _handle_trans_collector(trans, command, inputs, report)
+    if hasattr(t_m_i, "metadata"):
+        for metadata in t_m_i.metadata.to_list():
+            _handle_provider(metadata, command, inputs, report)
 
 def _sbom_impl(ctx):
     # Gather all metadata and make a report from that
@@ -139,13 +121,11 @@ def _sbom_impl(ctx):
     if hasattr(t_m_i, "target"):
         report.append("Gathered target: %s" % str(t_m_i.target))
         command.append("--target '%s'" % str(t_m_i.target))
-
-    if hasattr(t_m_i, "directs"):
+    if hasattr(t_m_i, "metadata"):
         print("TOP HAS DIRECTS")
         for direct in t_m_i.directs.to_list():
             _handle_provider(direct, command, inputs, report)
     if hasattr(t_m_i, "trans"):
-        print("TOP HAS TRANS")
         for trans in t_m_i.trans.to_list():
             _handle_trans_collector(trans, command, inputs, report)
 
