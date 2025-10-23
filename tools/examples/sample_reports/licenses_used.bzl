@@ -6,10 +6,6 @@ load(
     "PackageMetadataInfo",
 )
 load(
-    "@package_metadata//licenses/providers:license_kind_info.bzl",
-    "LicenseKindInfo",
-)
-load(
     "@supply_chain_tools//gather_metadata:core.bzl",
     "gather_metadata_info_common",
     "should_traverse",
@@ -37,8 +33,6 @@ def _gather_metadata_info_impl(target, ctx):
     return gather_metadata_info_common(
         target,
         ctx,
-        # want_providers = [PackageAttributeInfo, PackageMetadataInfo, LicenseKindInfo],
-        # LicenseKindInfo doesn't help. Aspect traversel does not hit it.
         want_providers = [PackageAttributeInfo, PackageMetadataInfo],
         provider_factory = TransitiveMetadataInfo,
         null_provider_instance = null_transitive_metadata_info,

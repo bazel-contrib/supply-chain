@@ -38,7 +38,7 @@ def should_traverse(ctx, attr, user_filters = None):
 
 def _get_transitive_metadata(
         ctx,
-        trans_tmi = None,
+        trans_tmi,
         provider = None,
         null_provider_instance = None,
         filter_func = None,
@@ -131,7 +131,7 @@ def gather_metadata_info_common(
     # fully resolved. If exec is in the bin_dir path, then the current
     # configuration is probably cfg = exec.
     if "-exec-" in ctx.bin_dir.path:
-        return null_provider_instance or provider_factory()
+        return [null_provider_instance or provider_factory()]
 
     # First we gather my direct metadata providers.
     # This captures the pairs if
@@ -206,16 +206,16 @@ def gather_metadata_info_common(
         print("%s: got: %d, trans: %d" % (target.label, len(got_providers), len(trans_tmi)))
 
     if not got_providers and not trans_tmi:
-        print("F", null_provider_instance)
-
-        # return null_provider_instance or provider_factory()
-        return TransitiveMetadataInfo()
+        return [null_provider_instance or provider_factory()]
 
     if not got_providers:
+        """
+        TODO: If there is only one, pass up the entire provider, not the extracted trans
         if len(trans_tmi) == 1 and trans_tmi[0]:
             # Often, there is only one thing we are passing up. There is no
             # reason to allocate another collection provider around that.
             return trans_tmi[0]
+         """
         return [provider_factory(trans = depset(transitive = trans_tmi))]
 
     # Create a TWMI linking this target to the applicable metadata
