@@ -12,11 +12,12 @@ def _sbom_impl(ctx):
     transitive_metadata_info = ctx.attr.target[TransitiveMetadataInfo]
     transitive_inputs = []
     config = { "deps": [] }
-    for m in transitive_metadata_info.metadata.to_list():
-        config["deps"].append({
-            "metadata": m.metadata.path
-        })
-        transitive_inputs.append(m.files)
+    for transitive_metadata in transitive_metadata_info.trans.to_list():
+        for m in transitive_metadata.metadata.to_list():
+            config["deps"].append({
+                "metadata": m.metadata.path
+            })
+            transitive_inputs.append(m.files)
 
     sbom_gen_config = ctx.actions.declare_file("{name}.sbom.config.json".format(name=ctx.attr.name))
     ctx.actions.write(sbom_gen_config, json.encode(config))

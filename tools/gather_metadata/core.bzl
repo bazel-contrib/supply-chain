@@ -95,7 +95,6 @@ def _get_transitive_metadata(
 def gather_metadata_info_common(
         target,
         ctx,
-        *,
         want_providers = None,
         provider_factory = None,
         null_provider_instance = None,
@@ -131,7 +130,6 @@ def gather_metadata_info_common(
     # A hack until https://github.com/bazelbuild/rules_license/issues/89 is
     # fully resolved. If exec is in the bin_dir path, then the current
     # configuration is probably cfg = exec.
-
     if "-exec-" in ctx.bin_dir.path:
         return [null_provider_instance or provider_factory()]
 
@@ -203,6 +201,7 @@ def gather_metadata_info_common(
     #    If the length of the list is one, just pass up the first element.
     #    This is common through the whole middle of a build graph.
     # 3. If the above fail, construct a new one.
+
     if DEBUG_LEVEL > 0:
         print("%s: got: %d, trans: %d" % (target.label, len(got_providers), len(trans_tmi)))
 
@@ -216,18 +215,18 @@ def gather_metadata_info_common(
             # Often, there is only one thing we are passing up. There is no
             # reason to allocate another collection provider around that.
             return trans_tmi[0]
-        return [provider_factory(
-            target = target.label,
-            trans = depset(direct=[x.trans for x in trans_tmi]),
-            traces = traces,
-        )]
+         """
+        return [provider_factory(trans = depset(transitive = trans_tmi))]
 
-    # Now we want 
-    me = provider_factory(
+    # Create a TWMI linking this target to the applicable metadata
+    me = TargetWithMetadataInfo(
         target = target.label,
-        directs = depset(tuple(got_providers))
+        metadata = depset(got_providers),
     )
-
+    if not trans_tmi:
+        return [provider_factory(
+            trans = depset(direct = [me]),
+        )]
     return [provider_factory(
         trans = depset(direct = [me], transitive = trans_tmi),
     )]
