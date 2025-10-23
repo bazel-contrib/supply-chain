@@ -47,7 +47,7 @@ def _get_transitive_metadata(
    This is a helper to pull up the collected metadata info from children so
    that we can rebundle into the next level efficiently. It revolves around
    a "collection provider" which is the transitive collected data so far.
-   While this method is intended to be generic, it is only build and tried
+   While this method is intended to be generic, it is only built and tested
    with TransitiveMetadataInfo.
 
     Args:
@@ -57,7 +57,7 @@ def _get_transitive_metadata(
         null_provider_instance: a singleton instance of the empty provider.
         filter_func: filter to determine to skip.
         traces: debuging traces
-    """    
+    """
     attrs = [attr for attr in dir(ctx.rule.attr)]
     for name in attrs:
         if filter_func and not filter_func(ctx, name):
@@ -89,7 +89,7 @@ def _get_transitive_metadata(
                     for trace in info.traces:
                         traces.append("(" + ", ".join([str(ctx.label), ctx.rule.kind, name]) + ") -> " + trace)
                 if hasattr(info, "directs"):
-                   fail("we're fucked")
+                    fail("Did not expect direct references to metatdata here")
                 trans_tmi.append(info)
 
 def gather_metadata_info_common(
@@ -174,8 +174,9 @@ def gather_metadata_info_common(
     )
 
     # If this is the target, start the sequence of traces.
-    if ctx.attr._trace[TraceInfo].trace and ctx.attr._trace[TraceInfo].trace in str(ctx.label):
-        traces = [ctx.attr._trace[TraceInfo].trace]
+    if hasattr(ctx.attr, "_trace"):
+        if ctx.attr._trace[TraceInfo].trace and ctx.attr._trace[TraceInfo].trace in str(ctx.label):
+            traces = [ctx.attr._trace[TraceInfo].trace]
 
     # Trim the number of traces accumulated since the output can be quite large.
     # A few representative traces are generally sufficient to identify why a dependency
@@ -218,7 +219,8 @@ def gather_metadata_info_common(
     #    This is common through the whole middle of a build graph.
     # 3. If the above fail, construct a new one.
 
-    print("%s: got: %d, trans: %d" % (target.label, len(got_providers), len(trans_tmi)))
+    if DEBUG_LEVEL > 0:
+        print("%s: got: %d, trans: %d" % (target.label, len(got_providers), len(trans_tmi)))
 
     if not got_providers and not trans_tmi:
         return null_provider_instance or provider_factory()
@@ -228,20 +230,15 @@ def gather_metadata_info_common(
             # Often, there is only one thing we are passing up. There is no
             # reason to allocate another collection provider around that.
             return trans_tmi[0]
-        return [provider_factory(
-            target = target.label,
-            trans = depset(direct=[x.trans for x in trans_tmi]),
-            traces = traces,
-        )]
 
-    # Now we want 
+    # Now we want
     me = provider_factory(
         target = target.label,
-        directs = depset(tuple(got_providers))
+        directs = depset(tuple(got_providers)),
     )
 
     return [provider_factory(
         # target = target.label,
-        trans = depset(direct=tuple([me]), transitive=[depset(trans_tmi)]),
+        trans = depset(direct = tuple([me]), transitive = [depset(trans_tmi)]),
         # traces = traces,
     )]
