@@ -50,13 +50,13 @@ constant_gen(
 licenses_used(
     name = "generator_licenses",
     out = "generator_licenses.txt",
-    deps = [":constant_generator"],
+    target = ":constant_generator",
 )
 
 licenses_used(
     name = "generated_code_licenses",
-    # Note: using default output file name
-    deps = [":libhello"],
+    out = "generated_code_licenses.txt",
+    target = ":libhello",
 )
 
 # TODO(aiuto): Add a test that shows what we expect

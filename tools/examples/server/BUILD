@@ -1,11 +1,10 @@
 # Examples of applications and interactions with licenses
 
-load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
-
 load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
-load("@supply_chain_tools//examples/sample_reports:licenses_used.bzl", "licenses_used")
-load("@supply_chain_tools//examples/sbom:sbom.bzl", "sbom")
-load("@supply_chain_tools//examples/vendor/constant_gen:defs.bzl", "constant_gen")
+load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
+load("//examples/sample_reports:licenses_used.bzl", "licenses_used")
+load("//examples/sbom:sbom.bzl", "sbom")
+load("//examples/vendor/constant_gen:defs.bzl", "constant_gen")
 
 package(
     default_applicable_licenses = ["//:package_metadata"],
@@ -31,7 +30,7 @@ cc_binary(
 licenses_used(
     name = "server_licenses",
     out = "server_licenses.txt",
-    deps = [":my_server"],
+    target = ":my_server",
 )
 
 # This server uses something under a restricted license.
@@ -40,18 +39,18 @@ cc_binary(
     srcs = ["server.cc"],
     deps = [
         ":message",
+        "//examples/lib:lib_with_third_party_deps",
         "//examples/lib:private_lib",
-	"//examples/lib:lib_with_third_party_deps",
-        "@supply_chain_tools//examples/vendor/acme",
-        "@supply_chain_tools//examples/vendor/legacy_license:libfoo",
-        "@supply_chain_tools//examples/vendor/libhhgttg",
+        "//examples/vendor/acme",
+        "//examples/vendor/legacy_license:libfoo",
+        "//examples/vendor/libhhgttg",
     ],
 )
 
 licenses_used(
     name = "violating_server_licenses",
     out = "violating_server_licenses.txt",
-    deps = [":my_violating_server"],
+    target = ":my_violating_server",
 )
 
 sbom(
@@ -65,24 +64,3 @@ diff_test(
     file1 = ":server_sbom.txt",
     file2 = "server_sbom.golden",
 )
-
-# TODO(aiuto): Turn this strictly into a compliance test.
-#check_license(
-#    name = "check_server",
-#    check_conditions = False,
-#    license_texts = "server_licenses.txt",
-#    report = "server_report.txt",
-#    deps = [
-#        ":my_server",
-#    ],
-#)
-
-#py_test(
-#    name = "server_licenses_test",
-#    srcs = ["server_licenses_test.py"],
-#    data = [":server_licenses.json"],
-#    python_version = "PY3",
-#    deps = [
-#        "@supply_chain_tools//tests:license_test_utils",
-#    ],
-#)
