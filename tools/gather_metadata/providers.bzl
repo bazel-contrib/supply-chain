@@ -4,13 +4,18 @@ Warning: This is private to the aspect that walks the tree. The API is subject
 to change at any release.
 """
 
-TransitiveMetadataInfo = provider(
-    doc = """The transitive set of metadata applicable to a target.""",
+TargetWithMetadataInfo = provider(
+    doc = """A target and the assocated metadata for it.""",
     fields = {
         "target": "Label: A target which will be associated with some metadata.",
-	# only one of directs or trans may be filled in
-        "directs": "depset(): [list] of my direct collected leaf providers",
-        "trans": "depset(): transitive collection of TMI",
+        "metadata": "depset(): [list] of my direct collected leaf attribute providers",
+    },
+)
+
+TransitiveMetadataInfo = provider(
+    doc = """The transitive set of TargetWithMetadataInfo objects.""",
+    fields = {
+        "trans": "depset(): transitive collection of TWMI",
         "top_level_target": "Label: The top level target label we are examining.",
         "traces": "list(string) - diagnostic for tracing a dependency relationship to a target.",
     },
