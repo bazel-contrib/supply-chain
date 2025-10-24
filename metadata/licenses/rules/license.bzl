@@ -8,7 +8,8 @@ visibility("public")
 def _license_impl(ctx):
     kind = ctx.attr.kind[LicenseKindInfo]
     attribute = {
-        "kind": {
+        "kind" = "build.bazel.attribute.license",
+        "license_kind": {
             "identifier": kind.identifier,
             "name": kind.name,
         },
