@@ -58,7 +58,8 @@ def license_rule_impl(ctx):
         kind = LicenseKindInfo(identifier = "<?>", name = "<?>")
 
     attribute = {
-        "kind": {
+        "kind": "bazel-contrib.supply-chain.attribute.license",
+        "license_kind": {
             "identifier": kind.identifier,
             "name": kind.name,
         },
