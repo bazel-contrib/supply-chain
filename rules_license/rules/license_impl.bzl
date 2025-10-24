@@ -47,22 +47,19 @@ def license_rule_impl(ctx):
     _debug(0, legacy_provider)
 
     # Also return new style
-    new_license_kinds = [k[LicenseKindInfo] for k in ctx.attr.license_kinds]
-    if new_license_kinds:
-        # This is a temporary hack. Just pick the first if there are multiple.
-        # Package metadata should change to allow for more than one.
-        kind = new_license_kinds[0]
-    else:
+    kinds = [k[LicenseKindInfo] for k in ctx.attr.license_kinds]
+    if not kinds:
         # This should not happen, because the override for license_kind should
         # always synthesize a new LicenseKindInfo
-        kind = LicenseKindInfo(identifier = "<?>", name = "<?>")
+        kinds = [LicenseKindInfo(identifier = "<?>", name = "<?>")]
 
     attribute = {
         "kind": "bazel-contrib.supply-chain.attribute.license",
-        "license_kind": {
+        "license_kinds": [{
             "identifier": kind.identifier,
             "name": kind.name,
-        },
+        } for kind in kinds
+        ],
         "label": str(ctx.label),
     }
     files = []
