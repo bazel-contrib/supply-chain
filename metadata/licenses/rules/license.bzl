@@ -5,12 +5,18 @@ load("//providers:package_attribute_info.bzl", "PackageAttributeInfo")
 
 visibility("public")
 
+_KIND = "bazel-contrib.supply-chain.license"
+
 def _license_impl(ctx):
-    kind = ctx.attr.kind[LicenseKindInfo]
+    # We need to pull up the kind information from the child because aspect
+    # traversal will not hit the dependents of targets brought in via
+    # pacakge_metadata.
+    license_kind = ctx.attr.kind[LicenseKindInfo]
     attribute = {
-        "kind": {
-            "identifier": kind.identifier,
-            "name": kind.name,
+        "kind": _KIND,
+        "license_kind": {
+            "identifier": license_kind.identifier,
+            "name": license_kind.name,
         },
         "label": str(ctx.label),
     }
@@ -35,7 +41,7 @@ def _license_impl(ctx):
             ),
         ),
         PackageAttributeInfo(
-            kind = "build.bazel.attribute.license",
+            kind = _KIND,
             attributes = output,
             files = files,
         ),
