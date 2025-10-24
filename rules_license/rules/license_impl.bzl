@@ -55,10 +55,12 @@ def license_rule_impl(ctx):
 
     attribute = {
         "kind": "bazel-contrib.supply-chain.attribute.license",
-        "license_kinds": [{
-            "identifier": kind.identifier,
-            "name": kind.name,
-        } for kind in kinds
+        "license_kinds": [
+            {
+                "identifier": kind.identifier,
+                "name": kind.name,
+            }
+            for kind in kinds
         ],
         "label": str(ctx.label),
     }

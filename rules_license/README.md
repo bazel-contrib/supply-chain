@@ -9,11 +9,12 @@ an http_archive rule.
 ```
 http_archive = use_repo_rule("@bazel_tools//build_defs/repo:http.bzl", "http_archive")
 
-bazel_dep(name = "package_metadata", version = "0.0.5")
-http_archive(
-    name = "rules_license",
-    # sha256 = TBD,
-    strip_prefix = "supply-chain-dd_test/rules_license",
-    urls = ["https://github.com/aiuto/supply-chain/archive/refs/tags/dd_test.tar.gz"],
+bazel_dep(name = "package_metadata", version = "0.0.6")
+bazel_dep(name = "rules_license", version = "1.0.0")
+archive_override(
+    module_name = "rules_license",
+    sha256 = ...,
+    strip_prefix = "supply-chain-0.0.6/rules_license",
+    urls = ["https://github.com/bazel-contrib/supply-chain/archive/refs/tags/v0.0.6.tar.gz"],
 )
 ```
