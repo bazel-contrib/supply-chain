@@ -1,0 +1,20 @@
+module(
+    name = "package_metadata_extensions",
+    version = "",  # Automatically updated by release pipeline.
+)
+
+# This module provides extensions to `@package_metadata` for features that
+# require newer Bazel versions (i.e., Bazel 8 or newer) and that we want
+# to merge into `@package_metadata` once dropping support for older releases
+# of Bazel. Thus, this must adhere to the same policy of "no dependencies" as
+# `@package_metadata` itself (with the exception that a dependency on
+# `@package_metadata` is allowed).
+
+bazel_dep(
+    name = "package_metadata",
+    version = "HEAD",  # Automatically updated by release pipeline.
+)
+local_path_override(
+    module_name = "package_metadata",
+    path = "../metadata",
+)

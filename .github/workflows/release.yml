@@ -46,8 +46,8 @@ jobs:
           # 2. Update `MODULE.bazel` and commit.
           #
           # TODO(yannic): Read directories from `//.bcr:config.yaml`.
-          bzlmod_names=("supply-chain-docs" "package_metadata" "supply-chain-go")
-          bzlmod_directories=("docs" "lib/supplychain-go" "metadata")
+          bzlmod_names=("supply-chain-docs" "package_metadata" "package_metadata_extensions" "supply-chain-go")
+          bzlmod_directories=("docs" "lib/supplychain-go" "metadata", "metadata-extensions")
 
           for bzlmod_directory in "${bzlmod_directories[@]}"; do
             for bzlmod_name in "${bzlmod_names[@]}"; do
