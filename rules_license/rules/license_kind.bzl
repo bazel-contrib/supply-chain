@@ -14,7 +14,7 @@
 """Proof of concept. License restriction."""
 
 load("@package_metadata//licenses/providers:license_kind_info.bzl", "LicenseKindInfo")
-load("@rules_license//rules:providers.bzl", "LicenseKindInfo", _legacyLicenseKindInfo = "LicenseKindInfo")
+load("@rules_license//rules:providers.bzl", _legacyLicenseKindInfo = "LicenseKindInfo")
 
 #
 # License Kind: The declaration of a well known category of license, for example,
