@@ -85,7 +85,7 @@ def license_rule_impl(ctx):
             ),
         ),
         PackageAttributeInfo(
-            kind = "build.bazel.attribute.license",
+            kind = "build.bazel.rules_license.license",
             attributes = output,
             files = files,
         ),
