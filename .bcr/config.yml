@@ -4,4 +4,3 @@
 moduleRoots:
   - "lib/supplychain-go"
   - "metadata"
-  - "metadata-extensions"
