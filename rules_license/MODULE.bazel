@@ -1,0 +1,12 @@
+# This is a modified rules_license.
+# It is intended to be used in conjunction with bazel-contrib/supply-chain.
+
+module(
+    name = "rules_license",
+)
+
+bazel_dep(name = "package_metadata", version = "0.0.5")
+local_path_override(
+    module_name = "package_metadata",
+    path = "../metadata",
+)
