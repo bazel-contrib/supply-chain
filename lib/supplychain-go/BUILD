@@ -12,13 +12,6 @@ package_metadata(
 
 gazelle(name = "gazelle")
 
-# Shortcut to allow people to reference this as `@supply-chain-go`.
-alias(
-    name = "supply-chain-go",
-    actual = ":supplychain-go",
-    visibility = ["//visibility:public"],
-)
-
 go_library(
     name = "supplychain-go",
     srcs = [
