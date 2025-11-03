@@ -105,15 +105,24 @@ This overrides any `package_metadata` directly declared by the packages.
                 PackageMetadataInfo,
             ],
         ),
-        "packages": attr.string_list(
+        "targets": attr.string_list(
             mandatory = True,
             configurable = False,
             doc = """
-A list of packages the override applies to.
+A list of targets the override applies to.
 
-This follows the same syntax as
-[package_group](https://bazel.build/reference/be/functions#package_group), with
-the notable exception that `Label`s may refer to other repositories.
+This allows passing targets of the form
+
+  - `//foo/...` matches all targets under `//foo` in the current repository.
+  - `//foo` matches all targets in `//foo` (but not in subpackages).
+  - `//foo:bar` matches exactly target `//foo:bar`.
+
+This also supports referencing packages and targets in external repositories.
+
+  - `@other_repo//foo/...` matches all targets under `//foo` in `other_repo`.
+  - `@other_repo//foo` matches all targets in `//foo` in `other_repo` (but not
+    in subpackages).
+  - `@other_repo//foo:bar` matches exactly target `//foo:bar` in `other_repo`.
 """.strip(),
         ),
     },
