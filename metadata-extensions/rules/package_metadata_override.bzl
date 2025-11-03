@@ -97,7 +97,9 @@ package_metadata_override = macro(
             mandatory = True,
             configurable = False,
             doc = """
-TODO
+A `package_metadata` target to use for the provided packages.
+
+This overrides any `package_metadata` directly declared by the packages.
 """.strip(),
             providers = [
                 PackageMetadataInfo,
@@ -107,7 +109,11 @@ TODO
             mandatory = True,
             configurable = False,
             doc = """
-TODO
+A list of packages the override applies to.
+
+This follows the same syntax as
+[package_group](https://bazel.build/reference/be/functions#package_group), with
+the notable exception that `Label`s may refer to other repositories.
 """.strip(),
         ),
     },

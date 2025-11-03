@@ -10,10 +10,9 @@ def _contains_impl(configs, label):
         return False
 
     for cfg in config:
-        print(cfg)
         if cfg.recursive:
             if label.package.startswith(cfg.package):
-                return True
+                return False
             continue
 
         if label.package != cfg.package:

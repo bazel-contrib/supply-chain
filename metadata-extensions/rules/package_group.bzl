@@ -16,7 +16,6 @@ def _package_group_rule_impl(ctx):
             config = positive
 
         repo = pattern["repo"]
-
         config.setdefault(repo, []).append(struct(
             package = pattern["package"],
             target = pattern["target"],
