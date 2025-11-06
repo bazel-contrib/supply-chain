@@ -67,6 +67,16 @@ jobs:
             package: "tools"
             runner: "ubuntu-latest"
 
+          - name: "Bazel 7.x: @examples (Linux x64)"
+            bazel_version: "7.x"
+            package: "examples"
+            runner: "ubuntu-latest"
+
+          - name: "Bazel 8.x: @examples (Linux x64)"
+            bazel_version: "8.x"
+            package: "examples"
+            runner: "ubuntu-latest"
+
     runs-on:
       - "${{ matrix.runner }}"
 

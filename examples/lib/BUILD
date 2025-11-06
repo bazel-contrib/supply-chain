@@ -3,7 +3,7 @@
 load("@rules_cc//cc:cc_library.bzl", "cc_library")
 
 package(
-    default_visibility = ["//examples:__subpackages__"],
+    default_visibility = ["//visibility:public"],
 )
 
 cc_library(
@@ -19,6 +19,6 @@ cc_library(
 cc_library(
     name = "lib_with_third_party_deps",
     deps = [
-        "//examples/vendor/acme",
+        "//vendor/acme",
     ],
 )
