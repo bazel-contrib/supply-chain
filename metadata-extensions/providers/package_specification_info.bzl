@@ -12,17 +12,23 @@ def _contains_impl(configs, label):
     for cfg in config:
         if cfg.recursive:
             if label.package.startswith(cfg.package):
-                return False
+                return True
             continue
 
         if label.package != cfg.package:
             continue
+        
+        if cfg.target != None:
+            if label.name == cfg.target:
+                return True
+        else:
+            return True
 
     return False
 
 def _contains(negative, positive, label):
     if _contains_impl(negative, label):
-        return True
+        return False
 
     return _contains_impl(positive, label)
 

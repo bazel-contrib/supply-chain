@@ -46,9 +46,9 @@ def _parse_package_pattern(pattern):
 
     return pattern[:target_separator], pattern[(target_separator + 1):], False
 
-def _package_metadata_override_impl(name, packages, metadata, visibility):
+def _package_metadata_override_impl(name, targets, metadata, visibility):
     patterns = {}
-    for pattern in packages:
+    for pattern in targets:
         if pattern.startswith("//") or pattern.startswith("-//"):
             label = "//:ignored"
             package, target, recursive = _parse_package_pattern(pattern.lstrip("-").lstrip("/"))
@@ -68,7 +68,7 @@ def _package_metadata_override_impl(name, packages, metadata, visibility):
             pkg, target, recursive = _parse_package_pattern(pattern.lstrip("-")[pattern_start:].lstrip("/"))
             config = {
                 "negative": pattern.startswith("-"),
-                "package": package,
+                "package": pkg,
                 "recursive": recursive,
                 "target": target,
             }
