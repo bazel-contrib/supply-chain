@@ -6,7 +6,7 @@ load("@rules_cc//cc:cc_library.bzl", "cc_library")
 
 package(
     default_applicable_licenses = [":package_data"],
-    default_visibility = ["//examples:__subpackages__"],
+    default_visibility = ["//visibility:public"],
 )
 
 package_metadata(
@@ -20,7 +20,7 @@ package_metadata(
 # The default license for an entire package is typically named "license".
 license(
     name = "license",
-    kind = "@supply_chain_tools//examples/my_org/licenses:acme_corp_paid",
+    kind = "//my_org/licenses:acme_corp_paid",
     text = "ACME_LICENSE",
 )
 

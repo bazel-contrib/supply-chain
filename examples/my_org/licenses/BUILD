@@ -18,7 +18,7 @@
 
 load("@package_metadata//licenses/rules:license_kind.bzl", "license_kind")
 
-package(default_visibility = ["//examples:__subpackages__"])
+package(default_visibility = ["//visibility:public"])
 
 # license_kind rules generally appear in a central location per workspace. They
 # are intermingled with normal target build rules

@@ -21,7 +21,7 @@ _constant_gen = rule(
         "text": attr.string(mandatory = True),
         "var": attr.string(mandatory = False),
         "_generator": attr.label(
-            default = Label("@supply_chain_tools//examples/vendor/constant_gen:constant_generator"),
+            default = Label("//vendor/constant_gen:constant_generator"),
             executable = True,
             allow_files = True,
             cfg = "exec",
@@ -36,12 +36,12 @@ def constant_gen(name, text, var):
         src_out = name + "_src_.cc",
         text = text,
         var = var,
-        applicable_licenses = ["@supply_chain_tools//examples/vendor/constant_gen:license_for_emitted_code"],
+        applicable_licenses = ["//vendor/constant_gen:license_for_emitted_code"],
     )
 
     # And turn it into a library we can link against
     cc_library(
         name = name,
         srcs = [name + "_src_"],
-        applicable_licenses = ["@supply_chain_tools//examples/vendor/constant_gen:license_for_emitted_code"],
+        applicable_licenses = ["//vendor/constant_gen:license_for_emitted_code"],
     )
