@@ -8,7 +8,7 @@ load("@rules_cc//cc:cc_library.bzl", "cc_library")
 # license.
 package(
     default_applicable_licenses = [":license"],
-    default_visibility = ["//examples:__subpackages__"],
+    default_visibility = ["//visibility:public"],
 )
 
 # The default license for an entire package is typically named "license".

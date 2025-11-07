@@ -3,12 +3,12 @@
 load("@package_metadata//:defs.bzl", "package_metadata")
 load("@package_metadata//licenses/rules:license.bzl", "license")
 load("@rules_python//python:defs.bzl", "py_binary")
-load("@supply_chain_tools//examples/sample_reports:licenses_used.bzl", "licenses_used")
+load("//sample_reports:licenses_used.bzl", "licenses_used")
 load(":defs.bzl", "constant_gen")
 
 package(
     default_applicable_licenses = [":package_data"],
-    default_visibility = ["//examples:__subpackages__"],
+    default_visibility = ["//visibility:public"],
 )
 
 package_metadata(
@@ -22,13 +22,13 @@ package_metadata(
 # The default license for an entire package is typically named "license".
 license(
     name = "license_of_the_package",
-    kind = "@supply_chain_tools//examples/my_org/licenses:generic_restricted",
+    kind = "//my_org/licenses:generic_restricted",
     text = "LICENSE",
 )
 
 license(
     name = "license_for_emitted_code",
-    kind = "@supply_chain_tools//examples/my_org/licenses:unencumbered",
+    kind = "//my_org/licenses:unencumbered",
     text = "LICENSE_OF_OUTPUT",
 )
 
@@ -61,6 +61,6 @@ licenses_used(
 
 # TODO(aiuto): Add a test that shows what we expect
 # For now:
-# bazel build //examples/examples/vendor/constant_gen:all
-# examine bazel-bin/examples/vendor/constant_gen/generator_licenses.json
-# examine bazel-bin/examples/vendor/constant_gen/generated_code_licenses.json
+# bazel build //vendor/constant_gen:all
+# examine bazel-bin/vendor/constant_gen/generator_licenses.json
+# examine bazel-bin/vendor/constant_gen/generated_code_licenses.json

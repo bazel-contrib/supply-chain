@@ -2,13 +2,13 @@
 
 load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
 load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
-load("//examples/sample_reports:licenses_used.bzl", "licenses_used")
-load("//examples/sbom:sbom.bzl", "sbom")
-load("//examples/vendor/constant_gen:defs.bzl", "constant_gen")
+load("//sample_reports:licenses_used.bzl", "licenses_used")
+load("//sbom:sbom.bzl", "sbom")
+load("//vendor/constant_gen:defs.bzl", "constant_gen")
 
 package(
     default_applicable_licenses = ["//:package_metadata"],
-    default_visibility = ["//examples:__subpackages__"],
+    default_visibility = ["//visibility:public"],
 )
 
 # Sample
@@ -39,11 +39,11 @@ cc_binary(
     srcs = ["server.cc"],
     deps = [
         ":message",
-        "//examples/lib:lib_with_third_party_deps",
-        "//examples/lib:private_lib",
-        "//examples/vendor/acme",
-        "//examples/vendor/legacy_license:libfoo",
-        "//examples/vendor/libhhgttg",
+        "//lib:lib_with_third_party_deps",
+        "//lib:private_lib",
+        "//vendor/acme",
+        "//vendor/legacy_license:libfoo",
+        "//vendor/libhhgttg",
     ],
 )
 
