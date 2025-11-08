@@ -9,7 +9,7 @@ bazel_dep(
 )
 bazel_dep(
     name = "rules_go",
-    version = "0.58.3",
+    version = "0.59.0",
 )
 bazel_dep(
     name = "gazelle",
