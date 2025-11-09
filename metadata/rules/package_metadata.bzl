@@ -29,6 +29,7 @@ def _package_metadata_impl(ctx):
         ),
         PackageMetadataInfo(
             metadata = metadata,
+            purl = ctx.attr.purl,
             files = [a.files for a in attributes],
         ),
     ]
