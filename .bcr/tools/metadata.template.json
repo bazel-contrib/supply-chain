@@ -1,7 +1,12 @@
 {
   "homepage": "https://github.com/bazel-contrib/supply-chain",
   "maintainers": [
-    {
+        {
+            "email": "aiuto@aiuto.dev",
+            "github": "aiuto",
+            "name": "Tony Aiuto"
+        },
+        {
             "email": "antonio@engflow.com",
             "github": "TheGrizzlyDev",
             "name": "Antonio Di Stefano"
