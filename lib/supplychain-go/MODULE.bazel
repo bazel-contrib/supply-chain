@@ -1,11 +1,11 @@
 module(
     name = "supply-chain-go",
-    version = "HEAD",  # Automatically updated by release pipeline.
+    version = "0.0.7",  # Automatically updated by release pipeline.
 )
 
 bazel_dep(
     name = "package_metadata",
-    version = "0.0.6",
+    version = "0.0.7",
 )
 bazel_dep(
     name = "rules_go",
@@ -29,4 +29,3 @@ local_path_override(
     module_name = "package_metadata",
     path = "../../metadata",
 )
-
