@@ -3,7 +3,6 @@ module(
     version = "HEAD",
 )
 
-bazel_dep(name = "apple_support", version = "1.14.0")
 
 bazel_dep(
     name = "bazel_skylib",
