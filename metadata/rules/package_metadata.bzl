@@ -69,7 +69,8 @@ def package_metadata(
         purl,
         attributes = [],
         # Common attributes (subset since this target is non-configurable).
-        visibility = None):
+        visibility = None,
+        tags = None):
     _package_metadata(
         # `_package_metadata` attributes.
         name = name,
@@ -78,5 +79,6 @@ def package_metadata(
 
         # Common attributes.
         visibility = visibility,
+        tags = tags,
         applicable_licenses = [],
     )
