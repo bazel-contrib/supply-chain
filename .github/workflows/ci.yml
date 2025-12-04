@@ -27,8 +27,8 @@ jobs:
             package: "docs"
             runner: "ubuntu-latest"
 
-          - name: "Bazel latest: @package_metadata (Linux x64)"
-            bazel_version: "rolling"
+          - name: "Bazel latest (9x): @package_metadata (Linux x64)"
+            bazel_version: "9.0.0rc3"
             package: "metadata"
             runner: "ubuntu-latest"
 
@@ -43,7 +43,7 @@ jobs:
             runner: "ubuntu-latest"
 
           - name: "Bazel latest: @supply-chain-go (Linux x64)"
-            bazel_version: "9.0.0-pre.20250921.2"
+            bazel_version: "9.0.0rc3"
             package: "lib/supplychain-go"
             runner: "ubuntu-latest"
 
