@@ -3,7 +3,6 @@ module(
     version = "HEAD",
 )
 
-
 bazel_dep(
     name = "bazel_skylib",
     version = "1.8.2",
@@ -11,6 +10,12 @@ bazel_dep(
 bazel_dep(
     name = "stardoc",
     version = "0.8.0",
+)
+
+bazel_dep(
+    name = "rules_java",
+    version = "9.2.0",
+    dev_dependency = True,
 )
 
 #

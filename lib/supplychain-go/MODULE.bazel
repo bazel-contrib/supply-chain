@@ -16,6 +16,12 @@ bazel_dep(
     version = "0.46.0",
 )
 
+bazel_dep(
+    name = "rules_java",
+    version = "9.2.0",
+    dev_dependency = True,
+)
+
 go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
 go_deps.from_file(go_mod = "//:go.mod")
 use_repo(
@@ -29,4 +35,3 @@ local_path_override(
     module_name = "package_metadata",
     path = "../../metadata",
 )
-
