@@ -1,0 +1,108 @@
+name: "Create package_metadata release"
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        required: true
+        type: "string"
+        description: "Version for package_metadata release (e.g., 1.0.0)"
+
+permissions:
+  id-token: write
+  attestations: write
+  contents: write
+
+jobs:
+  ci:
+    name: "CI"
+    uses: "./.github/workflows/ci.yml"
+  
+  create_package_metadata_tag:
+    name: "Create package_metadata tag"
+    runs-on:
+      - "ubuntu-latest"
+    needs:
+      - "ci"
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: "Create package_metadata tag"
+        id: "tag"
+        env:
+          VERSION: "${{ inputs.version }}"
+          GIT_AUTHOR_NAME: "${{ github.actor }}"
+          GIT_AUTHOR_EMAIL: "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+          GIT_COMMITTER_NAME: "${{ github.actor }}"
+          GIT_COMMITTER_EMAIL: "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+        run: |
+          # 1. Download `buildozer`
+          curl -o "${RUNNER_TEMP}/buildozer" -L "https://github.com/bazelbuild/buildtools/releases/download/v7.3.1/buildozer-linux-amd64"
+          chmod +x "${RUNNER_TEMP}/buildozer"
+
+          # 2. Update package_metadata MODULE.bazel version
+          "${RUNNER_TEMP}/buildozer" "set version ${VERSION}" "//metadata/MODULE.bazel:package_metadata"
+          git add "metadata/MODULE.bazel"
+          git commit -m "Release package_metadata v${VERSION}"
+
+          # 3. Push package_metadata release tag
+          git tag "package_metadata-v${VERSION}" "HEAD"
+          git push origin "package_metadata-v${VERSION}"
+
+      - name: "Generate release artifacts"
+        run: |
+          ./.github/workflows/package_metadata_release_prep.sh "package_metadata-v${{ inputs.version }}" > release_notes.md
+
+      - name: "Upload release artifacts"
+        uses: actions/upload-artifact@v4
+        with:
+          name: package_metadata-release-artifacts
+          path: |
+            package_metadata-*.tar.gz
+            release_notes.md
+
+  release:
+    name: "Create GitHub release for package_metadata"
+    needs:
+      - "create_package_metadata_tag"
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: "Download artifacts"
+        uses: actions/download-artifact@v4
+        with:
+          name: package_metadata-release-artifacts
+
+      - name: "Create GitHub Release"
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: "package_metadata-v${{ inputs.version }}"
+          name: "package_metadata v${{ inputs.version }}"
+          body_path: release_notes.md
+          files: |
+            package_metadata-*.tar.gz
+          draft: false
+          prerelease: false
+
+  publish_to_bcr:
+    name: "Publish package_metadata to BCR"
+    needs:
+      - "release"
+
+    permissions:
+      attestations: write
+      contents: write
+      id-token: write
+
+    uses: "bazel-contrib/publish-to-bcr/.github/workflows/publish.yaml@v1.0.0"
+    with:
+      tag_name: "package_metadata-v${{ inputs.version }}"
+      registry_fork: "bazel-contrib/bazel-central-registry"
+      draft: false
+    secrets:
+      publish_token: "${{ secrets.BCR_PUBLISH_TOKEN }}"
