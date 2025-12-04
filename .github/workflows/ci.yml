@@ -42,10 +42,10 @@ jobs:
             package: "metadata"
             runner: "ubuntu-latest"
 
-          - name: "Bazel latest: @supply-chain-go (Linux x64)"
-            bazel_version: "9.0.0rc3"
-            package: "lib/supplychain-go"
-            runner: "ubuntu-latest"
+          # - name: "Bazel latest: @supply-chain-go (Linux x64)"
+          #   bazel_version: "rolling"
+          #   package: "lib/supplychain-go"
+          #   runner: "ubuntu-latest"
 
           - name: "Bazel 8.x: @supply-chain-go (Linux x64)"
             bazel_version: "8.x"
