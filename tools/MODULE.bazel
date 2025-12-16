@@ -6,7 +6,7 @@ module(
 # Do not update to newer versions until you need a specific new feature.
 bazel_dep(name = "package_metadata", version = "0.0.7")
 bazel_dep(name = "rules_license", version = "1.0.0")
-bazel_dep(name = "bazel_skylib", version = "1.8.2")
+bazel_dep(name = "bazel_skylib", version = "1.9.0")
 bazel_dep(name = "supply-chain-go", version = "0.0.6")
 
 # For development, we use our sibling projects directly.
