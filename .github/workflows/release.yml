@@ -67,7 +67,7 @@ jobs:
     needs:
       - "create_tag"
 
-    uses: "bazel-contrib/.github/.github/workflows/release_ruleset.yaml@v7.2.3"
+    uses: "bazel-contrib/.github/.github/workflows/release_ruleset.yaml@v7.2.4"
     with:
       # The workflow appends `--disk_cache` here. There seems to be now way to
       # opt out, so use `echo || false` to make it a noop.
