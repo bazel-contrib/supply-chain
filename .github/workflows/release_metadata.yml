@@ -1,4 +1,4 @@
-name: "Create release"
+name: "Create release of package_metadata"
 
 on:
   workflow_dispatch:
