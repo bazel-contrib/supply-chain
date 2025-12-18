@@ -37,13 +37,19 @@ jobs:
           GIT_COMMITTER_NAME: "${{ github.actor }}"
           GIT_COMMITTER_EMAIL: "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
         run: |
+
+          # Download `buildozer`
+          #
+          # TODO(yannic): Use `RUNNER_TOOL_CACHE` and cache between runs?
+          curl -o "${RUNNER_TEMP}/buildozer" -L "https://github.com/bazelbuild/buildtools/releases/download/v7.3.1/buildozer-linux-amd64"
+          chmod +x "${RUNNER_TEMP}/buildozer"
           # Update `MODULE.bazel` and commit.
           bzlmod_names=("supply_chain_tools")
           bzlmod_directories=("tools")
 
           for bzlmod_directory in "${bzlmod_directories[@]}"; do
             for bzlmod_name in "${bzlmod_names[@]}"; do
-              sed -i -e "s/version = .. /version = \"${VERSION}\" /" "${bzlmod_directory}/MODULE.bazel"
+              "${RUNNER_TEMP}/buildozer" "set version ${VERSION}" "//${bzlmod_directory}/MODULE.bazel:${bzlmod_name}" || true
             done
             git add "${bzlmod_directory}/MODULE.bazel"
           done
