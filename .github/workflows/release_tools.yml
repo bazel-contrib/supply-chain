@@ -3,6 +3,9 @@ name: "Create release of tools"
 on:
   workflow_dispatch:
     inputs:
+      module:
+        required: true
+        type: "string"
       version:
         required: true
         type: "string"
@@ -30,6 +33,7 @@ jobs:
       - name: "Create tag"
         id: "tag"
         env:
+          MODULE: "${{ inputs.module }}"
           VERSION: "${{ inputs.version }}"
 
           GIT_AUTHOR_NAME: "${{ github.actor }}"
@@ -43,21 +47,20 @@ jobs:
           # TODO(yannic): Use `RUNNER_TOOL_CACHE` and cache between runs?
           curl -o "${RUNNER_TEMP}/buildozer" -L "https://github.com/bazelbuild/buildtools/releases/download/v7.3.1/buildozer-linux-amd64"
           chmod +x "${RUNNER_TEMP}/buildozer"
-          # Update `MODULE.bazel` and commit.
-          bzlmod_names=("supply_chain_tools")
-          bzlmod_directories=("tools")
+          declare -A module2_dir
+          module2dir["supply-chain-go"]="lib/supplychain-go"
+          module2dir["supply_chain_tools"]="tools"
+          module2dir["supply_chain_examples"]="examples"
 
-          for bzlmod_directory in "${bzlmod_directories[@]}"; do
-            for bzlmod_name in "${bzlmod_names[@]}"; do
-              "${RUNNER_TEMP}/buildozer" "set version ${VERSION}" "//${bzlmod_directory}/MODULE.bazel:${bzlmod_name}" || true
-            done
-            git add "${bzlmod_directory}/MODULE.bazel"
-          done
-          git commit -m "Release `supply_chain-tools-${VERSION}`"
+          # Update `MODULE.bazel` and commit.
+          module_dir="${module2dir[${MODULE}]:-$MODULE}"
+          "${RUNNER_TEMP}/buildozer" "set version ${VERSION}" "//${module_dir}/MODULE.bazel:${MODULE}" || true
+          git add "${module_dir}/MODULE.bazel"
+          git commit -m "Release `${module_name}-${VERSION}`"
 
           # Push release tag.
-          git tag "supply_chain-tools-${VERSION}" "HEAD"
-          git push origin "supply_chain-tools-${VERSION}"
+          git tag "${module_name}-${VERSION}" "HEAD"
+          git push origin "${module_name}-${VERSION}"
 
   release:
     name: "Create GitHub release"
@@ -69,9 +72,9 @@ jobs:
       # The workflow appends `--disk_cache` here. There seems to be now way to
       # opt out, so use `echo || false` to make it a noop.
       bazel_test_command: echo "Already executed by step 'CI'" || false
-      release_files: "supply_chain_tools-*.tar.gz"
+      release_files: "${{ inputs.module }}-*.tar.gz"
       prerelease: "true"
-      tag_name: "supply_chain_tools-${{ inputs.version }}"
+      tag_name: "${{ inputs.module }}-${{ inputs.version }}"
 
 # Next PR, after we test process.
 #  publish:
@@ -86,7 +89,7 @@ jobs:
 #
 #    uses: "bazel-contrib/publish-to-bcr/.github/workflows/publish.yaml@v1.0.0"
 #    with:
-#      tag_name: "supply_chain-tools-${{ inputs.version }}"
+#      tag_name: "${{ inputs.module}}-${{ inputs.version }}"
 #      registry_fork: "bazel-contrib/bazel-central-registry"
 #      draft: false
 #    secrets:
