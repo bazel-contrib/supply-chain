@@ -1,4 +1,4 @@
-name: "Create release of tools"
+name: "Create release of one of our modules"
 
 on:
   workflow_dispatch:
@@ -48,6 +48,7 @@ jobs:
           curl -o "${RUNNER_TEMP}/buildozer" -L "https://github.com/bazelbuild/buildtools/releases/download/v7.3.1/buildozer-linux-amd64"
           chmod +x "${RUNNER_TEMP}/buildozer"
           declare -A module2_dir
+          module2dir["package_metadata"]="metadata"
           module2dir["supply-chain-go"]="lib/supplychain-go"
           module2dir["supply_chain_tools"]="tools"
           module2dir["supply_chain_examples"]="examples"
