@@ -1,5 +1,5 @@
 load("//purl:percent_encoding_test.bzl", "percent_encoding_test")
-load("//purl/private:tables_test.bzl", "test_cases")
+load("//purl:private/tables_test.bzl", "test_cases")
 
 exports_files(
     [
@@ -11,7 +11,10 @@ exports_files(
 filegroup(
     name = "srcs",
     srcs = [
+        "percent_encoding.bzl",
         "purl.bzl",
+        "private/tables.bzl",
+        "string.bzl",
     ],
     visibility = ["//visibility:public"],
 )

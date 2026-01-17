@@ -4,7 +4,7 @@ Spec: https://github.com/package-url/purl-spec/blob/main/PURL-SPECIFICATION.rst#
 """
 
 load("//purl:string.bzl", "string")
-load("//purl/private:tables.bzl", "encode_byte")
+load(":private/tables.bzl", "encode_byte")
 
 visibility([
     "//purl/...",
