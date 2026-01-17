@@ -1,5 +1,7 @@
 """Module defining urils for [purl](https://github.com/package-url/purl-spec)s."""
 
+load(":percent_encoding.bzl", "percent_encode")
+
 visibility("public")
 
 _DEFAULT_REGISTRY = "https://bcr.bazel.build"
@@ -43,7 +45,10 @@ def _bazel(name, version, registry = _DEFAULT_REGISTRY):
 
     version_part = "@{}".format(version) if version else ""
     normalized_registry = registry.rstrip("/")
-    registry_part = "?repository_url={}".format(normalized_registry) if normalized_registry != _DEFAULT_REGISTRY else ""
+    if normalized_registry != _DEFAULT_REGISTRY:
+        registry_part = "?repository_url={}".format(percent_encode(normalized_registry))
+    else:
+        registry_part = ""
     return "pkg:bazel/{}{}{}".format(name, version_part, registry_part)
 
 purl = struct(
