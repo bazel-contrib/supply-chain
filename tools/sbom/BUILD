@@ -15,7 +15,9 @@ filegroup(
 bzl_library(
     name = "sbom",
     srcs = [
+        ":cdx.bzl",
         ":sbom.bzl",
+        ":spdx.bzl",
         "//gather_metadata",
         "//:core_metadata",
     ],
