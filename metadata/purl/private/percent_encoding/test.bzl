@@ -1,9 +1,9 @@
 """Rule for testing `percent_encode` and `percent_decode`."""
 
-load("//purl:percent_encoding.bzl", "percent_encode")
+load("//purl/private/percent_encoding:percent_encoding.bzl", "percent_encode")
 
 visibility([
-    "//purl/...",
+    "//purl/private/percent_encoding/...",
 ])
 
 _bash_executable = """
