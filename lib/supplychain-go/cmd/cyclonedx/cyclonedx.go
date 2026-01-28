@@ -69,6 +69,7 @@ func main() {
 		os.Exit(1)
 	}
 }
+
 func GenerateBOM(config sbom.GenConfig) (*cdx.BOM, error) {
 	components := make([]cdx.Component, 0, len(config.Deps))
 
