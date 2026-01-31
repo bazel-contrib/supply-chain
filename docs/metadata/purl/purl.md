@@ -49,3 +49,17 @@ The `purl` for the Bazel module (e.g. `pkg:bazel/foo` or
   `pkg:bazel/bar@1.2.3`).
 
 
+<a id="purl.builder"></a>
+
+## purl.builder
+
+<pre>
+load("@package_metadata//purl:purl.bzl", "purl")
+
+purl.builder()
+</pre>
+
+
+
+
+

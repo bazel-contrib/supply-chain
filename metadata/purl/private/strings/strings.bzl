@@ -26,6 +26,6 @@ def _to_bytes(value):
     # `String#hashCode() == (int) String#toCharArray()`.
     return [hash(c) for c in forced_utf8_encoded_string.elems()]
 
-string = struct(
+strings = struct(
     to_bytes = _to_bytes,
 )
