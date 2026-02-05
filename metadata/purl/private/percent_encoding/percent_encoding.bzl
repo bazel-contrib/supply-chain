@@ -3,11 +3,11 @@
 Spec: https://github.com/package-url/purl-spec/blob/main/PURL-SPECIFICATION.rst#character-encoding
 """
 
-load("//purl:string.bzl", "string")
-load("//purl/private:tables.bzl", "encode_byte")
+load("//purl/private/percent_encoding:tables.bzl", "encode_byte")
+load("//purl/private/strings:strings.bzl", "strings")
 
 visibility([
-    "//purl/...",
+    "//purl/private/...",
 ])
 
 def _encode_byte(b):
@@ -34,4 +34,4 @@ def percent_encode(value):
       The encoded string.
     """
 
-    return "".join([_encode_byte(b) for b in string.to_bytes(value)])
+    return "".join([_encode_byte(b) for b in strings.to_bytes(value)])
