@@ -16,7 +16,7 @@ def _percent_encode(s: str) -> str:
     """
 
     try:
-        return quote(s, encoding=None).replace("%3A", ":")
+        return quote(s, encoding=None, safe=':')
     except:
         return None
 
@@ -39,7 +39,7 @@ visibility([
 """)
         f.write("encode_byte = {\n")
         for i in range(0, 256, 1):
-          f.write("""  %d: "%s",\n""" % (i, _percent_encode(bytes([i]))))
+          f.write("""    %d: "%s",\n""" % (i, _percent_encode(bytes([i]))))
         f.write("}\n")
 
     percent_encoding_tests = [
@@ -84,8 +84,8 @@ visibility([
 
 """)
             f.write("test_cases = {\n")
-            for s in percent_encoding_tests:
-                f.write("  \"%s\": \"%s\",\n" % (s, _percent_encode(s)))
+            for s in sorted(percent_encoding_tests):
+                f.write("    \"%s\": \"%s\",\n" % (s, _percent_encode(s)))
             f.write("}\n")
      
     return 0

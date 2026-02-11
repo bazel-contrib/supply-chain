@@ -11,7 +11,7 @@ test_cases = {
     "Småland": "Sm%C3%A5land",
     "foo": "foo",
     "française": "fran%C3%A7aise",
-    "path: /foo": "path:%20/foo",
+    "path: /foo": "path:%20%2Ffoo",
     "¡Hola Mundo!": "%C2%A1Hola%20Mundo%21",
     "مرحبا بالعالم!": "%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%20%D8%A8%D8%A7%D9%84%D8%B9%D8%A7%D9%84%D9%85%21",
     "こんにちは世界！": "%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF%E4%B8%96%E7%95%8C%EF%BC%81",
