@@ -45,7 +45,7 @@ This is a Starlark implementation of [PackageSpecificationInfo](https://bazel.bu
 """.strip(),
     fields = {
         "contains": """
-Checks if a target exists in a package group.
+Checks if a target is included in this package group.
 
 Parameter **MUST** be a label.
 """.strip(),
