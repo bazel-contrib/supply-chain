@@ -22,6 +22,11 @@ bazel_dep(
     # Always overridden to use local path.
     version = "HEAD",
 )
+bazel_dep(
+    name = "package_metadata_extensions",
+    # Always overridden to use local path.
+    version = "HEAD",
+)
 
 #
 # Overrides from modules from this repository.
@@ -30,6 +35,11 @@ bazel_dep(
 local_path_override(
     module_name = "package_metadata",
     path = "../metadata",
+)
+
+local_path_override(
+    module_name = "package_metadata_extensions",
+    path = "../metadata-extensions",
 )
 
 bazel_dep(
