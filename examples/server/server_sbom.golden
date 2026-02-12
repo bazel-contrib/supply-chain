@@ -1,0 +1,13 @@
+Target: @@//server:my_violating_server
+  Attribute data: vendor/constant_gen/license_for_emitted_code.package-attribute.json
+    file: vendor/constant_gen/LICENSE_OF_OUTPUT
+    file: vendor/constant_gen/license_for_emitted_code.package-attribute.json
+  Attribute data: vendor/constant_gen/license_for_emitted_code.package-attribute.json
+    file: vendor/constant_gen/LICENSE_OF_OUTPUT
+    file: vendor/constant_gen/license_for_emitted_code.package-attribute.json
+  Attribute data: vendor/legacy_license/license.package-attribute.json
+    file: vendor/legacy_license/COPYING
+    file: vendor/legacy_license/license.package-attribute.json
+  Attribute data: vendor/libhhgttg/license.package-attribute.json
+    file: vendor/libhhgttg/LICENSE
+    file: vendor/libhhgttg/license.package-attribute.json

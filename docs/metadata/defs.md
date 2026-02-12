@@ -97,7 +97,7 @@ Toolchain for `package_metadata`.
 <pre>
 load("@package_metadata//:defs.bzl", "package_metadata")
 
-package_metadata(*, <a href="#package_metadata-name">name</a>, <a href="#package_metadata-purl">purl</a>, <a href="#package_metadata-attributes">attributes</a>, <a href="#package_metadata-visibility">visibility</a>)
+package_metadata(*, <a href="#package_metadata-name">name</a>, <a href="#package_metadata-purl">purl</a>, <a href="#package_metadata-attributes">attributes</a>, <a href="#package_metadata-visibility">visibility</a>, <a href="#package_metadata-tags">tags</a>)
 </pre>
 
 
@@ -111,6 +111,7 @@ package_metadata(*, <a href="#package_metadata-name">name</a>, <a href="#package
 | <a id="package_metadata-purl"></a>purl |  <p align="center"> - </p>   |  none |
 | <a id="package_metadata-attributes"></a>attributes |  <p align="center"> - </p>   |  `[]` |
 | <a id="package_metadata-visibility"></a>visibility |  <p align="center"> - </p>   |  `None` |
+| <a id="package_metadata-tags"></a>tags |  <p align="center"> - </p>   |  `None` |
 
 
 <a id="purl.bazel"></a>
@@ -158,5 +159,19 @@ package_metadata(
 
 The `purl` for the Bazel module (e.g. `pkg:bazel/foo` or
   `pkg:bazel/bar@1.2.3`).
+
+
+<a id="purl.builder"></a>
+
+## purl.builder
+
+<pre>
+load("@package_metadata//:defs.bzl", "purl")
+
+purl.builder()
+</pre>
+
+
+
 
 

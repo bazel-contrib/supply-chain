@@ -15,24 +15,22 @@ import (
 	spdxYaml "github.com/spdx/tools-golang/yaml"
 )
 
-var (
-	outPath    = flag.String("out", "", "The path to write the generated SPDX SBOM.")
-	configPath = flag.String("config", "", "The path to the SBOM generation configuration file.")
-	format     = flag.String("format", "", "The output format of the SPDX SBOM.")
-)
-
 func main() {
+	var outPath, configPath, format string
+	flag.StringVar(&outPath, "out", "", "The path to write the generated SPDX SBOM.")
+	flag.StringVar(&configPath, "config", "", "The path to the SBOM generation configuration file.")
+	flag.StringVar(&format, "format", "json", "The output format of the SPDX SBOM.")
 	flag.Parse()
 	var config sbom.GenConfig
 
-	configBytes, err := os.ReadFile(*configPath)
+	configBytes, err := os.ReadFile(configPath)
 	if err != nil {
 		panic(err)
 	}
 
 	json.Unmarshal(configBytes, &config)
 
-	out, err := os.OpenFile(*outPath, os.O_WRONLY|os.O_CREATE, 0664)
+	out, err := os.OpenFile(outPath, os.O_WRONLY|os.O_CREATE, 0664)
 	if err != nil {
 		panic(err)
 	}
@@ -49,7 +47,7 @@ func main() {
 		}
 	}
 
-	switch *format {
+	switch format {
 	case "json":
 		must(spdxJson.Write(doc, out))
 	case "yaml":
@@ -57,7 +55,7 @@ func main() {
 	case "tag-value":
 		must(spdxTV.Write(doc, out))
 	default:
-		panic(fmt.Sprintf("'%s' is not a supported format", *format))
+		panic(fmt.Sprintf("'%s' is not a supported format", format))
 	}
 }
 

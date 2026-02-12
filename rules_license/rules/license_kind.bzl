@@ -13,7 +13,8 @@
 # limitations under the License.
 """Proof of concept. License restriction."""
 
-load("@rules_license//rules:providers.bzl", "LicenseKindInfo")
+load("@package_metadata//licenses/providers:license_kind_info.bzl", "LicenseKindInfo")
+load("@rules_license//rules:providers.bzl", _legacyLicenseKindInfo = "LicenseKindInfo")
 
 #
 # License Kind: The declaration of a well known category of license, for example,
@@ -22,17 +23,25 @@ load("@rules_license//rules:providers.bzl", "LicenseKindInfo")
 #
 
 def _license_kind_impl(ctx):
-    provider = LicenseKindInfo(
+    identifier = "@%s//%s:%s" % (
+        # Remove the disambiguator on the repo name so we get the actual
+        # canonical name for this target.
+        # TODO: This could be more robust
+        ctx.label.repo_name.replace("+_repo_rules+", ""),
+        ctx.label.package,
+        ctx.label.name,
+    )
+    legacy_provider = _legacyLicenseKindInfo(
         name = ctx.attr.name,
-        label = "@%s//%s:%s" % (
-            ctx.label.workspace_name,
-            ctx.label.package,
-            ctx.label.name,
-        ),
+        label = identifier,
         long_name = ctx.attr.long_name,
         conditions = ctx.attr.conditions,
     )
-    return [provider]
+    provider = LicenseKindInfo(
+        identifier = identifier,
+        name = ctx.attr.long_name,
+    )
+    return [legacy_provider, provider]
 
 _license_kind = rule(
     implementation = _license_kind_impl,
