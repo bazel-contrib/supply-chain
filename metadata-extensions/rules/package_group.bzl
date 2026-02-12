@@ -69,7 +69,7 @@ package_group = macro(
 A dict from a dummy label to the parsed configuration.
 
 Key: a label in the repository of the target pattern. Only `Label.repo_name` is
-    used. Does not need to extist.
+    used. Does not need to exist.
 Value: a `json.encode()`'d list of dicts defining the configuration of the
        target pattern.
 
