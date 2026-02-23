@@ -12,7 +12,12 @@ def validate(
         version = None,
         qualifiers = {},
         subpath = None):
+    # Spec §5: Validate required fields are present.
     if not type:
-        fail("Mandatory property 'type' not set")
+        return "Mandatory property 'type' not set"
+    if not name:
+        return "Mandatory property 'name' not set"
 
     # TODO(yannic): Implement type-specific validation.
+
+    return None

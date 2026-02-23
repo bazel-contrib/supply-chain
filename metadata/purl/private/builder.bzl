@@ -32,15 +32,32 @@ def _subpath(self, fields, subpath):
     fields["subpath"] = subpath
     return self
 
-def _build(
-        self,
+def _build(self, fields):
+    purl, err = build(
+        type = fields.get("type", None),
+        namespace = fields.get("namespace", None),
+        name = fields.get("name", None),
+        version = fields.get("version", None),
+        qualifiers = fields.get("qualifiers", None),
+        subpath = fields.get("subpath", None),
+    )
+
+    if err:
+        fail(err)
+    return purl
+
+def _is_type(actual, expected):
+    return type(actual) == type(expected)
+
+def build(
+        *,
         type = None,
         namespace = None,
         name = None,
         version = None,
         qualifiers = {},
         subpath = None):
-    validate(
+    err = validate(
         type = type,
         namespace = namespace,
         name = name,
@@ -48,8 +65,10 @@ def _build(
         qualifiers = qualifiers,
         subpath = subpath,
     )
+    if err:
+        return None, err
 
-    purl = normalize(
+    purl, err = normalize(
         type = type,
         namespace = namespace,
         name = name,
@@ -57,6 +76,8 @@ def _build(
         qualifiers = qualifiers,
         subpath = subpath,
     )
+    if err:
+        return None, err
 
     # Serialization accoring to https://github.com/package-url/purl-spec/blob/aaede64286deb66c19a80974397d2d903c393d64/docs/how-to-build.md and Section 5.6 of https://ecma-international.org/wp-content/uploads/ECMA-427_1st_edition_december_2025.pdf.
     components = []
@@ -103,7 +124,7 @@ def _build(
         for key, v in purl.qualifiers.items():
             # If the key is 'checksum' and this is a list of checksums join this
             # list with a ',' to create this qualifier value.
-            if key == "checksum":
+            if (key == "checksum") and _is_type(v, []):
                 value = ",".join(v)
             else:
                 value = v
@@ -129,7 +150,7 @@ def _build(
         # - Append this to the PURL.
         components.append("/".join(segments))
 
-    return "".join(components)
+    return "".join(components), None
 
 def builder():
     fields = {}
@@ -140,6 +161,6 @@ def builder():
         version = lambda version: _version(self, fields, version),
         add_qualifier = lambda name, value: _add_qualifier(self, fields, name, value),
         subpath = lambda subpath: _subpath(self, fields, subpath),
-        build = lambda: _build(self, **fields),
+        build = lambda: _build(self, fields),
     )
     return self
