@@ -102,7 +102,7 @@ gather_metadata_info_and_write = aspect(
     implementation = _write_metadata_info_impl,
     attr_aspects = ["*"],
     attrs = {
-        "_trace": attr.label(default = "@supply_chain_tools//gather_metdata:trace_target"),
+        "_trace": attr.label(default = "@supply_chain_tools//gather_metadata:trace_target"),
     },
     provides = [OutputGroupInfo],
     requires = [gather_metadata_info],
