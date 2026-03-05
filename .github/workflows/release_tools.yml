@@ -47,7 +47,7 @@ jobs:
           # TODO(yannic): Use `RUNNER_TOOL_CACHE` and cache between runs?
           curl -o "${RUNNER_TEMP}/buildozer" -L "https://github.com/bazelbuild/buildtools/releases/download/v7.3.1/buildozer-linux-amd64"
           chmod +x "${RUNNER_TEMP}/buildozer"
-          declare -A module2_dir
+          declare -A module2dir
           module2dir["package_metadata"]="metadata"
           module2dir["supply-chain-go"]="lib/supplychain-go"
           module2dir["supply_chain_tools"]="tools"
