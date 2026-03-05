@@ -1,6 +1,6 @@
 exports_files(
     [
-        "purl.bzl",
+        "package_specification_info.bzl",
     ],
     visibility = ["//visibility:public"],
 )
@@ -8,9 +8,7 @@ exports_files(
 filegroup(
     name = "srcs",
     srcs = [
-        "purl.bzl",
-    ] + [
-        "//purl/private:srcs",
+        "package_specification_info.bzl",
     ],
     visibility = ["//visibility:public"],
 )

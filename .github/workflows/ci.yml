@@ -27,8 +27,17 @@ jobs:
             package: "docs"
             runner: "ubuntu-latest"
 
+          #
+          # @package_metadata
+          #
+
           - name: "Bazel latest: @package_metadata (Linux x64)"
             bazel_version: "rolling"
+            package: "metadata"
+            runner: "ubuntu-latest"
+
+          - name: "Bazel 9.x: @package_metadata (Linux x64)"
+            bazel_version: "9.x"
             package: "metadata"
             runner: "ubuntu-latest"
 
@@ -42,8 +51,17 @@ jobs:
             package: "metadata"
             runner: "ubuntu-latest"
 
+          #
+          # @supply-chain-go
+          #
+
           - name: "Bazel latest: @supply-chain-go (Linux x64)"
             bazel_version: "9.0.0-pre.20250921.2"
+            package: "lib/supplychain-go"
+            runner: "ubuntu-latest"
+
+          - name: "Bazel 9.x: @supply-chain-go (Linux x64)"
+            bazel_version: "9.x"
             package: "lib/supplychain-go"
             runner: "ubuntu-latest"
 
@@ -57,8 +75,12 @@ jobs:
             package: "lib/supplychain-go"
             runner: "ubuntu-latest"
 
-          - name: "Bazel 7.x: @tools (Linux x64)"
-            bazel_version: "7.x"
+          #
+          # @tools
+          #
+
+          - name: "Bazel 9.x: @tools (Linux x64)"
+            bazel_version: "9.x"
             package: "tools"
             runner: "ubuntu-latest"
 
@@ -67,13 +89,27 @@ jobs:
             package: "tools"
             runner: "ubuntu-latest"
 
-          - name: "Bazel 7.x: @examples (Linux x64)"
+          - name: "Bazel 7.x: @tools (Linux x64)"
             bazel_version: "7.x"
+            package: "tools"
+            runner: "ubuntu-latest"
+
+          #
+          # @examples
+          #
+
+          - name: "Bazel 9.x: @examples (Linux x64)"
+            bazel_version: "9.x"
             package: "examples"
             runner: "ubuntu-latest"
 
           - name: "Bazel 8.x: @examples (Linux x64)"
             bazel_version: "8.x"
+            package: "examples"
+            runner: "ubuntu-latest"
+
+          - name: "Bazel 7.x: @examples (Linux x64)"
+            bazel_version: "7.x"
             package: "examples"
             runner: "ubuntu-latest"
 

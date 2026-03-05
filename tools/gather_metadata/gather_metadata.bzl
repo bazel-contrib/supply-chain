@@ -96,13 +96,13 @@ gather_metadata_info_and_write = aspect(
 
     Usage:
       bazel build //some:target \
-          --aspects=@supply_chain//rules_gathering:gather_metadata.bzl%gather_metadata_info_and_write
+          --aspects=@supply_chain_tools//gather_metadata:gather_metadata.bzl%gather_metadata_info_and_write
           --output_groups=licenses
     """,
     implementation = _write_metadata_info_impl,
     attr_aspects = ["*"],
     attrs = {
-        "_trace": attr.label(default = "@supply_chain_tools//gather_metdata:trace_target"),
+        "_trace": attr.label(default = "@supply_chain_tools//gather_metadata:trace_target"),
     },
     provides = [OutputGroupInfo],
     requires = [gather_metadata_info],

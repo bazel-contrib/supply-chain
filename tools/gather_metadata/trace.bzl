@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Rules and macros for collecting package metdata providers."""
+"""Rules and macros for collecting package metadata providers."""
 
 TraceInfo = provider(
     doc = """Provides a target (as a string) to assist in debugging dependency issues.""",
