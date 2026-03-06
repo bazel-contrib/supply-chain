@@ -12,6 +12,8 @@ def _sbom_impl(ctx):
     transitive_metadata_info = ctx.attr.target[TransitiveMetadataInfo]
     transitive_inputs = []
     config = { "deps": [] }
+    if not hasattr(transitive_metadata_info, "trans"):
+        return []
     for transitive_metadata in transitive_metadata_info.trans.to_list():
         for m in transitive_metadata.metadata.to_list():
             if hasattr(m, "metadata"):
