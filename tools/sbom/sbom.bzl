@@ -13,16 +13,17 @@ def _sbom_impl(ctx):
     transitive_inputs = []
     config = { "deps": [] }
     seen_metadata = {}
-    for transitive_metadata in transitive_metadata_info.trans.to_list():
-        for m in transitive_metadata.metadata.to_list():
-            if hasattr(m, "metadata"):
-                path = m.metadata.path
-                if path not in seen_metadata:
-                    seen_metadata[path] = True
-                    config["deps"].append({
-                        "metadata": path,
-                    })
-                    transitive_inputs.append(m.files)
+    if hasattr(transitive_metadata_info, "trans"):
+        for transitive_metadata in transitive_metadata_info.trans.to_list():
+            for m in transitive_metadata.metadata.to_list():
+                if hasattr(m, "metadata"):
+                    path = m.metadata.path
+                    if path not in seen_metadata:
+                        seen_metadata[path] = True
+                        config["deps"].append({
+                            "metadata": path,
+                        })
+                        transitive_inputs.append(m.files)
 
     sbom_gen_config = ctx.actions.declare_file("{name}.sbom.config.json".format(name=ctx.attr.name))
     ctx.actions.write(sbom_gen_config, json.encode(config))
