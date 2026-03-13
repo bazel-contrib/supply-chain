@@ -1,8 +1,7 @@
 module(
     name = "supply-chain-docs",
-    version = "HEAD",
+    version = "0.0.8",
 )
-
 
 bazel_dep(
     name = "bazel_skylib",
@@ -20,12 +19,12 @@ bazel_dep(
 bazel_dep(
     name = "package_metadata",
     # Always overridden to use local path.
-    version = "HEAD",
+    version = "0.0.8",
 )
 bazel_dep(
     name = "package_metadata_extensions",
     # Always overridden to use local path.
-    version = "HEAD",
+    version = "0.0.8",
 )
 
 #
@@ -55,7 +54,7 @@ local_path_override(
 bazel_dep(
     name = "supply-chain-go",
     # Always overridden to use local path.
-    version = "HEAD",
+    version = "0.0.8",
 )
 local_path_override(
     module_name = "supply-chain-go",
