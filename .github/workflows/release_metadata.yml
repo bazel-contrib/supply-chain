@@ -56,7 +56,7 @@ jobs:
 
             git add "${bzlmod_directory}/MODULE.bazel"
           done
-          git commit -m "Release `v${VERSION}`"
+          git commit -m "Release v${VERSION}"
 
           # 3. Push release tag.
           git tag "v${VERSION}" "HEAD"
