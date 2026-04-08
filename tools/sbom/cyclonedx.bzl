@@ -13,7 +13,7 @@ def _cyclonedx_impl(ctx):
     ctx.actions.run(
         outputs = [out],
         inputs = inputs,
-        executable = ctx.attr._cyclonedx[DefaultInfo].files_to_run.executable,
+        executable = ctx.attr._cyclonedx[DefaultInfo].files_to_run,
         arguments = [
             "--config",
             ctx.attr.sbom[SbomInfo].config.path,
@@ -31,6 +31,6 @@ cyclonedx = rule(
         "sbom": attr.label(doc = "The sbom target to generate the CycloneDX SBOM from."),
         "format": attr.string(default = "json", values = ["json", "xml"], doc = "The output format for the CycloneDX SBOM."),
         "out": attr.output(doc = "The output file for the CycloneDX SBOM."),
-        "_cyclonedx": attr.label(default = "@supply-chain-go//cmd/cyclonedx", doc = "The cyclonedx tool to use."),
+        "_cyclonedx": attr.label(default = "@supply-chain-go//cmd/cyclonedx", doc = "The cyclonedx tool to use.", executable = True, cfg = "exec"),
     },
 )
