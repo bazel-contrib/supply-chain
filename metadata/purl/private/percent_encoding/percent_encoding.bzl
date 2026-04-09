@@ -34,4 +34,4 @@ def percent_encode(value):
       The encoded string.
     """
 
-    return "".join([_encode_byte(b) for b in strings.to_bytes(value)])
+    return "".join([_encode_byte(b) for b in strings.bytes.from_string(value)])

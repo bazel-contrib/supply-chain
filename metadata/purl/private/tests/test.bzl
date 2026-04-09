@@ -22,7 +22,6 @@ exit /b {status}
 _UNSUPPORTED_TYPES = [
     "conan",
     "cpan",
-    "npm",
     "otp",
     "swift",
     "vscode-extension",
