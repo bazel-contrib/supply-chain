@@ -1,5 +1,7 @@
 exports_files(
     [
+        "ascii.bzl",
+        "bytes.bzl",
         "strings.bzl",
     ],
     visibility = [
@@ -10,6 +12,8 @@ exports_files(
 filegroup(
     name = "srcs",
     srcs = [
+        "ascii.bzl",
+        "bytes.bzl",
         "strings.bzl",
     ],
     visibility = [
