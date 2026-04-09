@@ -9,7 +9,7 @@ visibility([
 # these bits is tightly coupled to this implementation, the individual bits are
 # not named.
 #
-# See also
+# Borrowed from
 # https://github.com/abseil/abseil-cpp/blob/9034b9ca6ecc53ff44ba0e41f069815147338f86/absl/strings/ascii.cc#L62
 _property_bits = [
     0x40,
