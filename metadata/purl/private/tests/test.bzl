@@ -21,10 +21,7 @@ exit /b {status}
 
 _UNSUPPORTED_TYPES = [
     "conan",
-    "cpan",
     "otp",
-    "swift",
-    "vscode-extension",
 ]
 
 def _purl_spec_test_impl(ctx):

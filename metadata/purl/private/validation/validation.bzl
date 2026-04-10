@@ -1,12 +1,21 @@
 """Utils to validate [purl](https://github.com/package-url/purl-spec)s."""
 
 load("//purl/private/strings:strings.bzl", "strings")
+load("//purl/private/validation:cpan.bzl", "validate_cpan")
+load("//purl/private/validation:julia.bzl", "validate_julia")
+load("//purl/private/validation:swift.bzl", "validate_swift")
+load("//purl/private/validation:vscode_extension.bzl", "validate_vscode_extension")
 
 visibility([
     "//purl/private",
 ])
 
-_validators = {}
+_validators = {
+    "cpan": validate_cpan,
+    "vscode-extension": validate_vscode_extension,
+    "swift": validate_swift,
+    "julia": validate_julia,
+}
 
 def validate(
         *,
