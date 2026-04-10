@@ -21,4 +21,8 @@ TransitiveMetadataInfo = provider(
     },
 )
 
-null_transitive_metadata_info = TransitiveMetadataInfo()
+null_transitive_metadata_info = TransitiveMetadataInfo(
+    trans = depset(),
+    top_level_target = None,
+    traces = [],
+)
