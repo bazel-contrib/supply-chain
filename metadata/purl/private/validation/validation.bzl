@@ -3,6 +3,7 @@
 load("//purl/private/strings:strings.bzl", "strings")
 load("//purl/private/validation:cpan.bzl", "validate_cpan")
 load("//purl/private/validation:julia.bzl", "validate_julia")
+load("//purl/private/validation:otp.bzl", "validate_otp")
 load("//purl/private/validation:swift.bzl", "validate_swift")
 load("//purl/private/validation:vscode_extension.bzl", "validate_vscode_extension")
 
@@ -12,9 +13,10 @@ visibility([
 
 _validators = {
     "cpan": validate_cpan,
-    "vscode-extension": validate_vscode_extension,
-    "swift": validate_swift,
     "julia": validate_julia,
+    "otp": validate_otp,
+    "swift": validate_swift,
+    "vscode-extension": validate_vscode_extension,
 }
 
 def validate(

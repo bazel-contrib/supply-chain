@@ -19,20 +19,11 @@ echo '{message}'
 exit /b {status}
 """.strip()
 
-_UNSUPPORTED_TYPES = [
-    "conan",
-    "otp",
-]
-
 def _purl_spec_test_impl(ctx):
     failures = []
     for test in tests:
         if test["test_group"] == "base":
             if test["test_type"] == "build":
-                if test["input"]["type"] in _UNSUPPORTED_TYPES:
-                    # TODO(yannic): support this.
-                    continue
-
                 actual, err = build(**test["input"])
                 if test["expected_failure"]:
                     if err:

@@ -2,6 +2,7 @@ exports_files(
     [
         "cpan.bzl",
         "julia.bzl",
+        "otp.bzl",
         "swift.bzl",
         "validation.bzl",
         "vscode_extension.bzl",
@@ -16,6 +17,7 @@ filegroup(
     srcs = [
         "cpan.bzl",
         "julia.bzl",
+        "otp.bzl",
         "swift.bzl",
         "validation.bzl",
         "vscode_extension.bzl",
