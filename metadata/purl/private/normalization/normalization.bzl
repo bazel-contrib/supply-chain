@@ -13,7 +13,7 @@ def normalize(
         qualifiers = {},
         subpath = None):
     if not type:
-        None, "Mandatory property 'type' not set"
+        return None, "Mandatory property 'type' not set"
 
     # TODO(yannic): Implement normalization.
 

@@ -103,7 +103,7 @@ def build(
         components.append("/")
 
     # Append the percent-encoded name to the PURL.
-    components.append(purl.name)
+    components.append(percent_encode(purl.name))
 
     # If the version is not empty:
     if purl.version:

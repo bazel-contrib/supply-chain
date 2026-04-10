@@ -50,8 +50,6 @@ def validate(
 
                 return "Qualifier key {} does not start with ASCII letter, got {}".format(key, c)
 
-    return None
-
     validator = _validators.get(type)
     if not validator:
         return None
