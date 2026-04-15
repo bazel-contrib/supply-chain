@@ -90,15 +90,16 @@ def _builder():
 
     Returns:
         A builder object with chainable methods:
-            - `type(type_name)`: Sets the package type (required). Must be lowercase ASCII.
-            - `namespace(namespace)`: Sets the namespace (optional). String or list of strings.
-            - `name(name)`: Sets the package name (required).
-            - `version(version)`: Sets the package version (optional).
-            - `add_qualifier(name, value)`: Adds a qualifier (optional, repeatable).
-                Key must start with ASCII letter and contain only lowercase letters,
-                numbers, '.', '-', '_'.
-            - `subpath(subpath)`: Sets the subpath (optional). List of path segments.
-            - `build()`: Constructs the final PURL string. Fails on validation errors.
+
+        - `type(type_name)`: Sets the package type (required). Must be lowercase ASCII.
+        - `namespace(namespace)`: Sets the namespace (optional). String or list of strings.
+        - `name(name)`: Sets the package name (required).
+        - `version(version)`: Sets the package version (optional).
+        - `add_qualifier(name, value)`: Adds a qualifier (optional, repeatable).
+          Key must start with ASCII letter and contain only lowercase letters,
+          numbers, '.', '-', '_'.
+        - `subpath(subpath)`: Sets the subpath (optional). List of path segments.
+        - `build()`: Constructs the final PURL string. Fails on validation errors.
     """
     return builder()
 
