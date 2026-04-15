@@ -74,36 +74,37 @@ Example - Simple PURL:
 
     my_purl = (purl.builder()
         .type("npm")
-        .name("lodash")
-        .version("4.17.21")
+        .name("foobar")
+        .version("12.3.1")
         .build())
-    # Result: pkg:npm/lodash@4.17.21
+    # Result: pkg:npm/foobar@12.3.1
 
-Example - PURL with namespace, qualifiers, and subpath:
+Example - Maven with namespace and qualifiers:
 
     load("@package_metadata//purl:purl.bzl", "purl")
 
     my_purl = (purl.builder()
         .type("maven")
-        .namespace("org.apache.commons")
-        .name("commons-lang3")
-        .version("3.12.0")
+        .namespace("org.apache.xmlgraphics")
+        .name("batik-anim")
+        .version("1.9.1")
         .add_qualifier("classifier", "sources")
-        .add_qualifier("type", "jar")
-        .subpath(["src", "main"])
+        .add_qualifier("repository_url", "https://repo.spring.io/release")
         .build())
-    # Result: pkg:maven/org.apache.commons/commons-lang3@3.12.0?classifier=sources&type=jar#src/main
+    # Result: pkg:maven/org.apache.xmlgraphics/batik-anim@1.9.1?classifier=sources&repository_url=https%3A%2F%2Frepo.spring.io%2Frelease
 
-Example - Multi-segment namespace:
+Example - Golang with namespace and subpath:
 
     load("@package_metadata//purl:purl.bzl", "purl")
 
     my_purl = (purl.builder()
         .type("golang")
-        .namespace("github.com/user/project")
-        .name("package")
+        .namespace("google.golang.org")
+        .name("genproto")
+        .version("abcdedf")
+        .subpath("googleapis/api/annotations")
         .build())
-    # Result: pkg:golang/github.com/user/project/package
+    # Result: pkg:golang/google.golang.org/genproto@abcdedf#googleapis/api/annotations
 
 
 

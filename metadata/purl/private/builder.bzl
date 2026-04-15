@@ -131,11 +131,15 @@ def build(
         ```starlark
         purl, err = build(
             type = "maven",
-            namespace = "org.apache.commons",
-            name = "commons-lang3",
-            version = "3.12.0",
+            namespace = "org.apache.xmlgraphics",
+            name = "batik-anim",
+            version = "1.9.1",
+            qualifiers = {
+                "classifier": "sources",
+                "repository_url": "https://repo.spring.io/release",
+            },
         )
-        # purl: pkg:maven/org.apache.commons/commons-lang3@3.12.0
+        # purl: pkg:maven/org.apache.xmlgraphics/batik-anim@1.9.1?classifier=sources&repository_url=https%3A%2F%2Frepo.spring.io%2Frelease
         # err: None
         ```
     """
@@ -241,49 +245,49 @@ def builder():
     The builder uses a fluent API pattern where methods can be chained together.
     Call `build()` at the end to construct the final PURL string.
 
-    Example:
-        ```starlark
-        purl = builder() \
-            .type("maven") \
-            .namespace("org.apache.commons") \
-            .name("commons-lang3") \
-            .version("3.12.0") \
-            .build()
-        # Result: pkg:maven/org.apache.commons/commons-lang3@3.12.0
-        ```
-
-    Example with qualifiers:
+    Example - Simple PURL:
         ```starlark
         purl = builder() \
             .type("npm") \
-            .name("express") \
-            .version("4.18.2") \
-            .add_qualifier("arch", "x64") \
-            .add_qualifier("os", "linux") \
+            .name("foobar") \
+            .version("12.3.1") \
             .build()
-        # Result: pkg:npm/express@4.18.2?arch=x64&os=linux
+        # Result: pkg:npm/foobar@12.3.1
         ```
 
-    Example with subpath:
+    Example - Maven with namespace and qualifiers:
         ```starlark
         purl = builder() \
-            .type("github") \
-            .namespace("curl") \
-            .name("curl") \
-            .version("7.72.0") \
-            .subpath(["lib", "vtls"]) \
+            .type("maven") \
+            .namespace("org.apache.xmlgraphics") \
+            .name("batik-anim") \
+            .version("1.9.1") \
+            .add_qualifier("classifier", "sources") \
+            .add_qualifier("repository_url", "https://repo.spring.io/release") \
             .build()
-        # Result: pkg:github/curl/curl@7.72.0#lib/vtls
+        # Result: pkg:maven/org.apache.xmlgraphics/batik-anim@1.9.1?classifier=sources&repository_url=https%3A%2F%2Frepo.spring.io%2Frelease
+        ```
+
+    Example - Golang with namespace and subpath:
+        ```starlark
+        purl = builder() \
+            .type("golang") \
+            .namespace("google.golang.org") \
+            .name("genproto") \
+            .version("abcdedf") \
+            .subpath("googleapis/api/annotations") \
+            .build()
+        # Result: pkg:golang/google.golang.org/genproto@abcdedf#googleapis/api/annotations
         ```
 
     Returns:
         A builder object with the following methods:
             - `type(type_name)`: Sets the package type (required). Must be lowercase ASCII.
-            - `namespace(namespace)`: Sets the namespace. Can be a string or list of strings for multi-segment namespaces.
+            - `namespace(namespace)`: Sets the namespace (optional). String with segments separated by '/'.
             - `name(name)`: Sets the package name (required).
             - `version(version)`: Sets the package version (optional).
             - `add_qualifier(name, value)`: Adds a qualifier key-value pair (optional). Key must start with ASCII letter and contain only lowercase letters, numbers, '.', '-', '_'.
-            - `subpath(subpath)`: Sets the subpath. Must be a list of strings representing path segments (optional).
+            - `subpath(subpath)`: Sets the subpath (optional). String with segments separated by '/'.
             - `build()`: Constructs and returns the PURL string. Fails if validation errors occur.
     """
 
