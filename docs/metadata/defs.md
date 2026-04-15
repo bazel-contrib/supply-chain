@@ -180,6 +180,9 @@ The `type` and `name` fields are required. All components are validated and
 normalized according to the PURL spec. Components are automatically percent-encoded
 where necessary, and qualifiers are sorted lexicographically in the output.
 
+For a list of supported PURL types and their specifications, see:
+https://github.com/package-url/purl-spec/blob/main/purl-types-index.json
+
 Example - Simple PURL:
 
     load("@package_metadata//purl:purl.bzl", "purl")
@@ -232,6 +235,8 @@ A builder object with chainable methods:
     Key must start with ASCII letter and contain only lowercase letters,
     numbers, '.', '-', '_'.
   - `subpath(subpath)`: Sets the subpath (optional). String with segments separated by '/'.
-  - `build()`: Constructs the final PURL string. Fails on validation errors.
+  - `build()`: Validates, normalizes, and constructs the final PURL string.
+    Performs both general and type-specific validation and normalization.
+    Fails if validation errors occur.
 
 
