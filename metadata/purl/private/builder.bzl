@@ -119,6 +119,9 @@ def build(
     2. Type-specific validation and normalization rules are applied based on the
        package type (e.g., case normalization for npm, path handling for golang)
 
+    For a list of supported PURL types and their specifications, see:
+    https://github.com/package-url/purl-spec/blob/main/purl-types-index.json
+
     Args:
         type: The package type (required). Must be lowercase ASCII string (e.g., "maven", "npm", "pypi").
         namespace: The package namespace (optional). String with segments separated by '/' (e.g., "org.apache.commons").
@@ -253,6 +256,9 @@ def builder():
     The `type` and `name` fields are required. All components are validated and
     normalized according to the PURL spec. Components are automatically percent-encoded
     where necessary, and qualifiers are sorted lexicographically in the output.
+
+    For a list of supported PURL types and their specifications, see:
+    https://github.com/package-url/purl-spec/blob/main/purl-types-index.json
 
     Example - Simple PURL:
 

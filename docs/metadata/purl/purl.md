@@ -68,6 +68,9 @@ The `type` and `name` fields are required. All components are validated and
 normalized according to the PURL spec. Components are automatically percent-encoded
 where necessary, and qualifiers are sorted lexicographically in the output.
 
+For a list of supported PURL types and their specifications, see:
+https://github.com/package-url/purl-spec/blob/main/purl-types-index.json
+
 Example - Simple PURL:
 
     load("@package_metadata//purl:purl.bzl", "purl")
