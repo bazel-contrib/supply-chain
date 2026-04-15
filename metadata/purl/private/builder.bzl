@@ -57,6 +57,37 @@ def build(
         version = None,
         qualifiers = {},
         subpath = None):
+    """Builds a Package URL (PURL) string from component parts.
+
+    This function validates, normalizes, and serializes the PURL components
+    according to the PURL specification (https://github.com/package-url/purl-spec).
+
+    Args:
+        type: The package type (required). Must be lowercase ASCII string (e.g., "maven", "npm", "pypi").
+        namespace: The package namespace (optional). Can be a string or list of strings for multi-segment namespaces.
+        name: The package name (required). Will be percent-encoded in the output.
+        version: The package version (optional). Will be percent-encoded in the output.
+        qualifiers: A dictionary of qualifier key-value pairs (optional). Keys must start with ASCII letter
+                    and contain only lowercase letters, numbers, '.', '-', '_'. Values will be percent-encoded.
+        subpath: A list of path segments (optional). Each segment will be percent-encoded.
+
+    Returns:
+        A tuple of (purl_string, error). On success, returns (purl_string, None).
+        On failure, returns (None, error_message).
+
+    Example:
+        ```starlark
+        purl, err = build(
+            type = "maven",
+            namespace = "org.apache.commons",
+            name = "commons-lang3",
+            version = "3.12.0",
+        )
+        # purl: pkg:maven/org.apache.commons/commons-lang3@3.12.0
+        # err: None
+        ```
+    """
+
     err = validate(
         type = type,
         namespace = namespace,
@@ -153,6 +184,57 @@ def build(
     return "".join(components), None
 
 def builder():
+    """Creates a fluent builder for constructing Package URLs (PURLs).
+
+    The builder uses a fluent API pattern where methods can be chained together.
+    Call `build()` at the end to construct the final PURL string.
+
+    Example:
+        ```starlark
+        purl = builder() \
+            .type("maven") \
+            .namespace("org.apache.commons") \
+            .name("commons-lang3") \
+            .version("3.12.0") \
+            .build()
+        # Result: pkg:maven/org.apache.commons/commons-lang3@3.12.0
+        ```
+
+    Example with qualifiers:
+        ```starlark
+        purl = builder() \
+            .type("npm") \
+            .name("express") \
+            .version("4.18.2") \
+            .add_qualifier("arch", "x64") \
+            .add_qualifier("os", "linux") \
+            .build()
+        # Result: pkg:npm/express@4.18.2?arch=x64&os=linux
+        ```
+
+    Example with subpath:
+        ```starlark
+        purl = builder() \
+            .type("github") \
+            .namespace("curl") \
+            .name("curl") \
+            .version("7.72.0") \
+            .subpath(["lib", "vtls"]) \
+            .build()
+        # Result: pkg:github/curl/curl@7.72.0#lib/vtls
+        ```
+
+    Returns:
+        A builder object with the following methods:
+            - `type(type_name)`: Sets the package type (required). Must be lowercase ASCII.
+            - `namespace(namespace)`: Sets the namespace. Can be a string or list of strings for multi-segment namespaces.
+            - `name(name)`: Sets the package name (required).
+            - `version(version)`: Sets the package version (optional).
+            - `add_qualifier(name, value)`: Adds a qualifier key-value pair (optional). Key must start with ASCII letter and contain only lowercase letters, numbers, '.', '-', '_'.
+            - `subpath(subpath)`: Sets the subpath. Must be a list of strings representing path segments (optional).
+            - `build()`: Constructs and returns the PURL string. Fails if validation errors occur.
+    """
+
     fields = {}
     self = struct(
         type = lambda type_name: _type(self, fields, type_name),
