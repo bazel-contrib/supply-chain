@@ -2,6 +2,10 @@
 
 load("//purl/private:builder.bzl", "build")
 load("//purl/private/tests:spec.bzl", "tests")
+load(
+    "//purl/private/tests:spec.custom.bzl",
+    "custom_tests",
+)
 
 visibility([
     "//purl/private/tests/...",
@@ -26,7 +30,9 @@ _UNSUPPORTED_TYPES = [
 
 def _purl_spec_test_impl(ctx):
     failures = []
-    for test in tests:
+    # Combine both auto-generated and custom tests
+    all_tests = tests + custom_tests
+    for test in all_tests:
         if test["test_group"] == "base":
             if test["test_type"] == "build":
                 if test["input"]["type"] in _UNSUPPORTED_TYPES:
