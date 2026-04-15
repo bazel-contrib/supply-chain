@@ -114,6 +114,11 @@ def build(
     This function validates, normalizes, and serializes the PURL components
     according to the PURL specification (https://github.com/package-url/purl-spec).
 
+    Validation and normalization are performed in two stages:
+    1. General validation checks required fields and qualifier key constraints
+    2. Type-specific validation and normalization rules are applied based on the
+       package type (e.g., case normalization for npm, path handling for golang)
+
     Args:
         type: The package type (required). Must be lowercase ASCII string (e.g., "maven", "npm", "pypi").
         namespace: The package namespace (optional). String with segments separated by '/' (e.g., "org.apache.commons").
