@@ -9,26 +9,78 @@ visibility([
 ])
 
 def _type(self, fields, type_name):
+    """Sets the package type (required).
+
+    Args:
+        type_name: The package type as a lowercase ASCII string (e.g., "maven", "npm", "pypi").
+
+    Returns:
+        The builder instance for method chaining.
+    """
     fields["type"] = type_name
     return self
 
 def _namespace(self, fields, namespace):
+    """Sets the package namespace (optional).
+
+    Args:
+        namespace: The namespace as a string with segments separated by '/' (e.g., "org.apache.commons").
+                   Multi-segment namespaces like "github.com/user/project" are supported.
+
+    Returns:
+        The builder instance for method chaining.
+    """
     fields["namespace"] = namespace
     return self
 
 def _name(self, fields, name):
+    """Sets the package name (required).
+
+    Args:
+        name: The package name. Will be percent-encoded in the final PURL.
+
+    Returns:
+        The builder instance for method chaining.
+    """
     fields["name"] = name
     return self
 
 def _version(self, fields, version):
+    """Sets the package version (optional).
+
+    Args:
+        version: The package version. Will be percent-encoded in the final PURL.
+
+    Returns:
+        The builder instance for method chaining.
+    """
     fields["version"] = version
     return self
 
 def _add_qualifier(self, fields, name, value):
+    """Adds a qualifier key-value pair (optional, repeatable).
+
+    Args:
+        name: The qualifier key. Must start with an ASCII letter and contain only
+              lowercase letters, numbers, '.', '-', '_'.
+        value: The qualifier value. Will be percent-encoded in the final PURL.
+
+    Returns:
+        The builder instance for method chaining.
+    """
     fields.setdefault("qualifiers", {})[name] = value
     return self
 
 def _subpath(self, fields, subpath):
+    """Sets the subpath (optional).
+
+    Args:
+        subpath: The subpath as a string with segments separated by '/' (e.g., "src/main").
+                 Each segment will be percent-encoded in the final PURL.
+
+    Returns:
+        The builder instance for method chaining.
+    """
     fields["subpath"] = subpath
     return self
 
@@ -64,12 +116,12 @@ def build(
 
     Args:
         type: The package type (required). Must be lowercase ASCII string (e.g., "maven", "npm", "pypi").
-        namespace: The package namespace (optional). Can be a string or list of strings for multi-segment namespaces.
+        namespace: The package namespace (optional). String with segments separated by '/' (e.g., "org.apache.commons").
         name: The package name (required). Will be percent-encoded in the output.
         version: The package version (optional). Will be percent-encoded in the output.
         qualifiers: A dictionary of qualifier key-value pairs (optional). Keys must start with ASCII letter
                     and contain only lowercase letters, numbers, '.', '-', '_'. Values will be percent-encoded.
-        subpath: A list of path segments (optional). Each segment will be percent-encoded.
+        subpath: The subpath (optional). String with segments separated by '/' (e.g., "src/main").
 
     Returns:
         A tuple of (purl_string, error). On success, returns (purl_string, None).

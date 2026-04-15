@@ -94,13 +94,13 @@ Example - PURL with namespace, qualifiers, and subpath:
         .build())
     # Result: pkg:maven/org.apache.commons/commons-lang3@3.12.0?classifier=sources&type=jar#src/main
 
-Example - Multi-segment namespaces:
+Example - Multi-segment namespace:
 
     load("@package_metadata//purl:purl.bzl", "purl")
 
     my_purl = (purl.builder()
         .type("golang")
-        .namespace(["github.com", "user", "project"])
+        .namespace("github.com/user/project")
         .name("package")
         .build())
     # Result: pkg:golang/github.com/user/project/package
@@ -112,13 +112,13 @@ Example - Multi-segment namespaces:
 A builder object with chainable methods:
 
   - `type(type_name)`: Sets the package type (required). Must be lowercase ASCII.
-  - `namespace(namespace)`: Sets the namespace (optional). String or list of strings.
+  - `namespace(namespace)`: Sets the namespace (optional). String with segments separated by '/'.
   - `name(name)`: Sets the package name (required).
   - `version(version)`: Sets the package version (optional).
   - `add_qualifier(name, value)`: Adds a qualifier (optional, repeatable).
     Key must start with ASCII letter and contain only lowercase letters,
     numbers, '.', '-', '_'.
-  - `subpath(subpath)`: Sets the subpath (optional). List of path segments.
+  - `subpath(subpath)`: Sets the subpath (optional). String with segments separated by '/'.
   - `build()`: Constructs the final PURL string. Fails on validation errors.
 
 
