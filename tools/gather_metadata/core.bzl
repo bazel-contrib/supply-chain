@@ -1,10 +1,21 @@
 """Rules and macros for collecting package_metadata providers."""
 
+load("@bazel_features//:features.bzl", "bazel_features")
 load(":providers.bzl", "TargetWithMetadataInfo", "TransitiveMetadataInfo")
 load(":rule_filters.bzl", "rule_to_excluded_attributes")
 load(":trace.bzl", "TraceInfo")
 
 DEBUG_LEVEL = 0
+
+def _is_exec_config(ctx):
+    """Determines whether the current configuration is an exec configuration."""
+    if bazel_features.rules.is_tool_configuration_public and ctx.configuration.is_tool_configuration():
+        return True
+    elif ctx.bin_dir.path.endswith("-exec/bin"):  # Bazel 9.0.0 or <8.7.0 with --experimental_platform_in_output_dir
+        return True
+    elif "-exec-" in ctx.bin_dir.path:
+        return True
+    return False
 
 def should_traverse(ctx, attr, user_filters = None):
     """Checks if the dependent attribute should be traversed.
@@ -128,9 +139,8 @@ def gather_metadata_info_common(
 
     # TODO(aiuto): Consider dropping this hack.
     # A hack until https://github.com/bazelbuild/rules_license/issues/89 is
-    # fully resolved. If exec is in the bin_dir path, then the current
-    # configuration is probably cfg = exec.
-    if "-exec-" in ctx.bin_dir.path:
+    # fully resolved.
+    if _is_exec_config(ctx):
         return [null_provider_instance or provider_factory()]
 
     # First we gather my direct metadata providers.

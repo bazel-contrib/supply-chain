@@ -24,6 +24,9 @@ bzl_library(
         "//:core_metadata",
     ],
     visibility = ["//visibility:public"],
+    deps = [
+        "@bazel_features//:features",
+    ],
 )
 
 # This target controls the value of the traced target used during dependency collection.
