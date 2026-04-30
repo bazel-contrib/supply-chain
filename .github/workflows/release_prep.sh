@@ -31,7 +31,7 @@ echo MODULE=$MODULE
 
 # NB: configuration for 'git archive' is in /.gitattributes
 echo git archive --format=tar --prefix=${PREFIX}/ ${TAG} | gzip > $ARCHIVE
-git archive --format=tar --prefix=${PREFIX}/ head | gzip > $ARCHIVE
+git archive --format=tar --prefix=${PREFIX}/ ${TAG} | gzip > $ARCHIVE
 SHA=$(shasum -a 256 $ARCHIVE | awk '{print $1}')
 
 cat << EOF

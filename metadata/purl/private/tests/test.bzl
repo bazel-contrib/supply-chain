@@ -2,6 +2,10 @@
 
 load("//purl/private:builder.bzl", "build")
 load("//purl/private/tests:spec.bzl", "tests")
+load(
+    "//purl/private/tests:spec.custom.bzl",
+    "custom_tests",
+)
 
 visibility([
     "//purl/private/tests/...",
@@ -19,24 +23,13 @@ echo '{message}'
 exit /b {status}
 """.strip()
 
-_UNSUPPORTED_TYPES = [
-    "conan",
-    "cpan",
-    "npm",
-    "otp",
-    "swift",
-    "vscode-extension",
-]
-
 def _purl_spec_test_impl(ctx):
     failures = []
-    for test in tests:
+    # Combine both auto-generated and custom tests
+    all_tests = tests + custom_tests
+    for test in all_tests:
         if test["test_group"] == "base":
             if test["test_type"] == "build":
-                if test["input"]["type"] in _UNSUPPORTED_TYPES:
-                    # TODO(yannic): support this.
-                    continue
-
                 actual, err = build(**test["input"])
                 if test["expected_failure"]:
                     if err:

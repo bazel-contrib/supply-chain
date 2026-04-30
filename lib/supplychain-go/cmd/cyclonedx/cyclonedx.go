@@ -80,10 +80,16 @@ func GenerateBOM(config sbom.GenConfig) (*cdx.BOM, error) {
 		}
 
 		purl := pkgMetadata.GetPURL()
+
+		fullName := purl.Name
+		if purl.Namespace != "" {
+			fullName = purl.Namespace + "/" + fullName
+		}
+
 		component := cdx.Component{
 			BOMRef:     purl.String(),
 			Type:       cdx.ComponentTypeLibrary,
-			Name:       purl.Name,
+			Name:       fullName,
 			PackageURL: purl.String(),
 		}
 

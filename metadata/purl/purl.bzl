@@ -42,6 +42,6 @@ def _bazel(name, version):
     return builder().type("bazel").name(name).version(version).build()
 
 purl = struct(
-    bazel = _bazel,
     builder = builder,
+    bazel = _bazel,
 )

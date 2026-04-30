@@ -1,8 +1,23 @@
 """Utils to validate [purl](https://github.com/package-url/purl-spec)s."""
 
+load("//purl/private/strings:strings.bzl", "strings")
+load("//purl/private/validation:cpan.bzl", "validate_cpan")
+load("//purl/private/validation:julia.bzl", "validate_julia")
+load("//purl/private/validation:otp.bzl", "validate_otp")
+load("//purl/private/validation:swift.bzl", "validate_swift")
+load("//purl/private/validation:vscode_extension.bzl", "validate_vscode_extension")
+
 visibility([
     "//purl/private",
 ])
+
+_validators = {
+    "cpan": validate_cpan,
+    "julia": validate_julia,
+    "otp": validate_otp,
+    "swift": validate_swift,
+    "vscode-extension": validate_vscode_extension,
+}
 
 def validate(
         *,
@@ -18,6 +33,43 @@ def validate(
     if not name:
         return "Mandatory property 'name' not set"
 
-    # TODO(yannic): Implement type-specific validation.
+    if qualifiers:
+        for key, value in qualifiers.items():
+            # 5.6.6
 
-    return None
+            if len(key) < 1:
+                return "Qualifier key must not be empty string"
+
+            # The key shall be composed only of lowercase ASCII letters and numbers,
+            # period '.', dash '-' and underscore '_'.
+            for c in strings.bytes.from_string(key):
+                if strings.ascii.is_alphanumeric(c):
+                    continue
+                elif c == 46:  # .
+                    continue
+                elif c == 45:  # -
+                    continue
+                elif c == 95:  # _
+                    continue
+
+                return "Qualifier key {} contains illegal character {}".format(key, c)
+
+            # A key shall start with an ASCII letter.
+            for c in strings.bytes.from_string(key[0]):
+                if strings.ascii.is_alpha(c):
+                    continue
+
+                return "Qualifier key {} does not start with ASCII letter, got {}".format(key, c)
+
+    validator = _validators.get(type)
+    if not validator:
+        return None
+
+    return validator(
+        type = type,
+        namespace = namespace,
+        name = name,
+        version = version,
+        qualifiers = qualifiers,
+        subpath = subpath,
+    )
