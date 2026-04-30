@@ -47,14 +47,8 @@ jobs:
           # TODO(yannic): Use `RUNNER_TOOL_CACHE` and cache between runs?
           curl -o "${RUNNER_TEMP}/buildozer" -L "https://github.com/bazelbuild/buildtools/releases/download/v7.3.1/buildozer-linux-amd64"
           chmod +x "${RUNNER_TEMP}/buildozer"
-          declare -A module2dir
-          module2dir["package_metadata"]="metadata"
-          module2dir["supply-chain-go"]="lib/supplychain-go"
-          module2dir["supply_chain_tools"]="tools"
-          module2dir["supply_chain_examples"]="examples"
-
           # Update `MODULE.bazel` and commit.
-          module_dir="${module2dir[${MODULE}]:-$MODULE}"
+          module_dir=$(./releasing/module_to_dir.sh "${MODULE}")
           "${RUNNER_TEMP}/buildozer" "set version ${VERSION}" "//${module_dir}/MODULE.bazel:${MODULE}" || true
           git add "${module_dir}/MODULE.bazel"
           git commit -m "Release `${MODULE}-${VERSION}`"
@@ -77,21 +71,23 @@ jobs:
       prerelease: true
       tag_name: "${{ inputs.module }}-${{ inputs.version }}"
 
-# Next PR, after we test process.
-#  publish:
-#    name: "Publish to BCR"
-#    needs:
-#      - "release"
-#
-#    permissions:
-#      attestations: write
-#      contents: write
-#      id-token: write
-#
-#    uses: "bazel-contrib/publish-to-bcr/.github/workflows/publish.yaml@v1.0.0"
-#    with:
-#      tag_name: "${{ inputs.module}}-${{ inputs.version }}"
-#      registry_fork: "bazel-contrib/bazel-central-registry"
-#      draft: false
-#    secrets:
-#      publish_token: "${{ secrets.BCR_PUBLISH_TOKEN }}"
+  publish:
+    name: "Publish to BCR"
+    needs:
+      - "release"
+
+    permissions:
+      attestations: write
+      contents: write
+      id-token: write
+
+    uses: "./.github/workflows/publish_to_bcr.yml"
+    with:
+      module_name: "${{ inputs.module}}"
+      module_version: "${{ inputs.version }}"
+      tag_name: "${{ inputs.module}}-${{ inputs.version }}"
+      registry_fork: "bazel-contrib/bazel-central-registry"
+      draft: false
+      open_pull_request: false
+    secrets:
+      publish_token: "${{ secrets.BCR_PUBLISH_TOKEN }}"
