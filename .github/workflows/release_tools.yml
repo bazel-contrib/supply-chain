@@ -57,11 +57,11 @@ jobs:
           module_dir="${module2dir[${MODULE}]:-$MODULE}"
           "${RUNNER_TEMP}/buildozer" "set version ${VERSION}" "//${module_dir}/MODULE.bazel:${MODULE}" || true
           git add "${module_dir}/MODULE.bazel"
-          git commit -m "Release `${module_name}-${VERSION}`"
+          git commit -m "Release `${MODULE}-${VERSION}`"
 
           # Push release tag.
-          git tag "${module_name}-${VERSION}" "HEAD"
-          git push origin "${module_name}-${VERSION}"
+          git tag "${MODULE}-${VERSION}" "HEAD"
+          git push origin "${MODULE}-${VERSION}"
 
   release:
     name: "Create GitHub release"
