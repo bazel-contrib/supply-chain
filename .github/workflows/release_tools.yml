@@ -74,7 +74,7 @@ jobs:
       # opt out, so use `echo || false` to make it a noop.
       bazel_test_command: echo "Already executed by step 'CI'" || false
       release_files: "${{ inputs.module }}-*.tar.gz"
-      prerelease: "true"
+      prerelease: true
       tag_name: "${{ inputs.module }}-${{ inputs.version }}"
 
 # Next PR, after we test process.
