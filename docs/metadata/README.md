@@ -107,6 +107,74 @@ If you are a module author and want to annotate your module, you will need to ta
 
   - Publish your module.
 
+### Registering PURL Types
+
+Modules can register or override PURL type handling with the `purl_types`
+module extension. A registered target must provide `PurlTypeInfo`, which
+carries the validation and normalization functions for that type.
+
+```starlark
+# MODULE.bazel
+bazel_dep(name = "package_metadata", version = "<check releases>")
+
+purl_types = use_extension("@package_metadata//purl:extensions.bzl", "purl_types")
+purl_types.type(
+    name = "ansible",
+    target = "//purl:ansible_type",
+)
+use_repo(purl_types, "package_metadata_purl_types")
+```
+
+```starlark
+# purl/BUILD.bazel
+load(":ansible_type.bzl", "ansible_type")
+
+ansible_type(
+    name = "ansible_type",
+    visibility = ["//visibility:public"],
+)
+```
+
+```starlark
+# purl/ansible_type.bzl
+load("@package_metadata//purl:providers.bzl", "PurlTypeInfo")
+
+def _validate_ansible(*, type, namespace, name, version, qualifiers, subpath):
+    if not namespace:
+        return "Ansible PURLs require a namespace"
+    if not name:
+        return "Mandatory property 'name' not set"
+    return None
+
+def _normalize_ansible(*, type, namespace, name, version, qualifiers, subpath):
+    return struct(
+        type = type.lower(),
+        namespace = namespace.lower() if namespace else namespace,
+        name = name.lower() if name else name,
+        version = version,
+        qualifiers = qualifiers,
+        subpath = subpath,
+    )
+
+def _ansible_type_impl(ctx):
+    return [
+        PurlTypeInfo(
+            validate = _validate_ansible,
+            normalize = _normalize_ansible,
+        ),
+    ]
+
+ansible_type = rule(
+    implementation = _ansible_type_impl,
+    provides = [PurlTypeInfo],
+)
+```
+
+If multiple modules register the same type, the root module's registration
+takes precedence over registrations from dependency modules. This lets a root
+module override a type supplied by a dependency without changing that
+dependency.
+
 ### As an organization
 
 > This is currently under active development.
