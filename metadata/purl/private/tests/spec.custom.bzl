@@ -115,4 +115,25 @@ custom_tests = [
         "test_group": "base",
         "test_type": "roundtrip",
     },
+    {
+        "description": ("OCI image with multiple qualifiers should " +
+                        "parse successfully"),
+        "expected_failure": False,
+        "expected_failure_reason": None,
+        "input": ("pkg:apk/wolfi/wolfi-baselayout@20230201-r29?arch=x86_64&origin=wolfi-baselayout"),
+        "expected_output": {
+            "name": "wolfi-baselayout",
+            "namespace": "wolfi",
+            "qualifiers": {
+                "arch": "x86_64",
+                "origin": "wolfi-baselayout",
+            },
+            "subpath": None,
+            "type": "apk",
+            "version": "20230201-r29",
+        },
+        "test_group": "base",
+        "test_type": "parse",
+
+    }
 ]

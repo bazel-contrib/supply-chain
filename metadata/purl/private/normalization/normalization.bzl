@@ -1,5 +1,6 @@
 """Utils to normalize [purl](https://github.com/package-url/purl-spec)s."""
 
+load("//purl/private:type_definitions.bzl", "TYPE_DEFINITIONS")
 load("//purl/private/normalization:bitbucket.bzl", "normalize_bitbucket")
 load("//purl/private/normalization:composer.bzl", "normalize_composer")
 load("//purl/private/normalization:github.bzl", "normalize_github")
@@ -74,6 +75,20 @@ def _normalize_type_specific(*, type, namespace, name, version, qualifiers, subp
         subpath = subpath,
     )
 
+def _lower_segments(segments):
+    return [segment.lower() for segment in segments] if segments else segments
+
+def _normalize_by_definition(type, purl):
+    definition = TYPE_DEFINITIONS.get(type, {})
+    return struct(
+        type = purl.type,
+        namespace = _lower_segments(purl.namespace) if definition.get("lower_namespace") else purl.namespace,
+        name = purl.name.lower() if definition.get("lower_name") else purl.name,
+        version = purl.version.lower() if definition.get("lower_version") and purl.version else purl.version,
+        qualifiers = purl.qualifiers,
+        subpath = _lower_segments(purl.subpath) if definition.get("lower_subpath") else purl.subpath,
+    )
+
 def normalize(
         *,
         type = None,
@@ -84,13 +99,16 @@ def normalize(
         subpath = None):
     if not type:
         return None, "Mandatory property 'type' not set"
+    if not name:
+        return None, "Mandatory property 'name' not set"
 
     normalized_type = type.lower()
-    return _normalize_type_specific(
+    purl = _normalize_type_specific(
         type = normalized_type,
         namespace = _namespace_to_segments(namespace),
         name = name,
         version = version,
         qualifiers = _normalize_qualifiers(qualifiers),
         subpath = _subpath_to_segments(subpath),
-    ), None
+    )
+    return _normalize_by_definition(normalized_type, purl), None

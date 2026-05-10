@@ -108,7 +108,8 @@ def build(
         name = None,
         version = None,
         qualifiers = {},
-        subpath = None):
+        subpath = None,
+        strict = True):
     """Builds a Package URL (PURL) string from component parts.
 
     This function validates, normalizes, and serializes the PURL components
@@ -159,6 +160,7 @@ def build(
         version = version,
         qualifiers = qualifiers,
         subpath = subpath,
+        strict = strict,
     )
     if err:
         return None, err

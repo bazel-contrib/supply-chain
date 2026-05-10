@@ -136,17 +136,17 @@ def parse(value, strict = True):
             return None, err
         namespace_value = "/".join(namespace_segments) if namespace_segments else None
 
-    if strict:
-        err = validate(
-            type = type,
-            namespace = namespace_value,
-            name = name,
-            version = version,
-            qualifiers = qualifiers,
-            subpath = subpath,
-        )
-        if err:
-            return None, err
+    err = validate(
+        type = type,
+        namespace = namespace_value,
+        name = name,
+        version = version,
+        qualifiers = qualifiers,
+        subpath = subpath,
+        strict = strict,
+    )
+    if err:
+        return None, err
 
     purl, err = normalize(
         type = type,
