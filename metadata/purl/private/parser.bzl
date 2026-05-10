@@ -77,7 +77,7 @@ def _as_dict(purl):
         "subpath": "/".join(purl.subpath) if purl.subpath else None,
     }
 
-def parse(value):
+def parse(value, strict = True):
     """Parses a PURL string into normalized components."""
 
     remainder, raw_subpath = _split_once_right(value, "#")
@@ -136,16 +136,17 @@ def parse(value):
             return None, err
         namespace_value = "/".join(namespace_segments) if namespace_segments else None
 
-    err = validate(
-        type = type,
-        namespace = namespace_value,
-        name = name,
-        version = version,
-        qualifiers = qualifiers,
-        subpath = subpath,
-    )
-    if err:
-        return None, err
+    if strict:
+        err = validate(
+            type = type,
+            namespace = namespace_value,
+            name = name,
+            version = version,
+            qualifiers = qualifiers,
+            subpath = subpath,
+        )
+        if err:
+            return None, err
 
     purl, err = normalize(
         type = type,
