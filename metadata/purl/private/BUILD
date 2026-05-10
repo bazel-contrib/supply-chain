@@ -1,5 +1,6 @@
 exports_files(
     [
+        "builtin_type.bzl",
         "builder.bzl",
         "parser.bzl",
         "type_definitions.bzl",
@@ -12,6 +13,7 @@ exports_files(
 filegroup(
     name = "srcs",
     srcs = [
+        "builtin_type.bzl",
         "builder.bzl",
         "parser.bzl",
         "type_definitions.bzl",

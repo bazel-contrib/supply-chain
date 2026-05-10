@@ -135,7 +135,7 @@ A builder object with chainable methods:
 <pre>
 load("@package_metadata//purl:purl.bzl", "purl")
 
-purl.parse(<a href="#purl.parse-value">value</a>)
+purl.parse(<a href="#purl.parse-value">value</a>, <a href="#purl.parse-strict">strict</a>)
 </pre>
 
 Parses a PURL string into normalized components.
@@ -145,6 +145,13 @@ Parses a PURL string into normalized components.
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="purl.parse-value"></a>value |  <p align="center"> - </p>   |  none |
+| <a id="purl.parse-value"></a>value |  The Package URL string to parse.   |  none |
+| <a id="purl.parse-strict"></a>strict |  If `True`, apply validation for the registered PURL type.   |  `True` |
+
+**RETURNS**
+
+A tuple of (components, error). On success, components is a dictionary
+  containing the normalized PURL fields and error is `None`. On failure,
+  components is `None` and error is a message describing the failure.
 
 

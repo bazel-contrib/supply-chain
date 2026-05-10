@@ -1,0 +1,12 @@
+module(
+    name = "purl_ansible_type_test",
+    version = "HEAD",
+)
+
+bazel_dep(name = "package_metadata", version = "HEAD")
+
+purl_types = use_extension("@package_metadata//purl:extensions.bzl", "purl_types")
+purl_types.type(
+    name = "ansible",
+    target = "//:ansible_type",
+)

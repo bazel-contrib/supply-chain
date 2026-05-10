@@ -78,7 +78,17 @@ def _as_dict(purl):
     }
 
 def parse(value, strict = True):
-    """Parses a PURL string into normalized components."""
+    """Parses a PURL string into normalized components.
+
+    Args:
+        value: The Package URL string to parse.
+        strict: If `True`, apply validation for the registered PURL type.
+
+    Returns:
+        A tuple of (components, error). On success, components is a dictionary
+        containing the normalized PURL fields and error is `None`. On failure,
+        components is `None` and error is a message describing the failure.
+    """
 
     remainder, raw_subpath = _split_once_right(value, "#")
     subpath = None

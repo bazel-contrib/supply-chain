@@ -6,6 +6,8 @@ module(
 bazel_dep(name = "rules_testing", version = "0.9.0")
 bazel_dep(name = "package_metadata", version = "HEAD")
 bazel_dep(name = "package_metadata_extensions", version = "HEAD")
+bazel_dep(name = "purl_ansible_type_test", version = "HEAD")
+bazel_dep(name = "rules_apko_test", version = "HEAD")
 
 local_path_override(
     module_name = "package_metadata",
@@ -16,3 +18,24 @@ local_path_override(
     module_name = "package_metadata_extensions",
     path = "../metadata-extensions",
 )
+
+local_path_override(
+    module_name = "purl_ansible_type_test",
+    path = "purl/ansible_type",
+)
+
+local_path_override(
+    module_name = "rules_apko_test",
+    path = "purl/rules_apko",
+)
+
+purl_types = use_extension("@package_metadata//purl:extensions.bzl", "purl_types")
+purl_types.type(
+    name = "apk",
+    target = "//purl/module_extension:apk_type",
+)
+purl_types.type(
+    name = "apko",
+    target = "//purl/module_extension:root_apko_type",
+)
+use_repo(purl_types, "package_metadata_purl_types")
