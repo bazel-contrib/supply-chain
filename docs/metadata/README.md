@@ -110,7 +110,10 @@ If you are a module author and want to annotate your module, you will need to ta
 ### Registering PURL Types
 
 Modules can register or override PURL type handling with the `purl_types`
-module extension. A registered target must provide `PurlTypeInfo`, which
+module extension. Built-in PURL types are registered through the same
+extension path, and dependency registrations are applied before root module
+registrations so the root module can override a type supplied by a dependency
+or a built-in type. A registered target must provide `PurlTypeInfo`, which
 carries the validation and normalization functions for that type.
 
 ```starlark

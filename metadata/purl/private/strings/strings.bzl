@@ -5,7 +5,7 @@ load("//purl/private/strings:bytes.bzl", "bytes")
 
 visibility([
     "//purl/private/...",
-    "//purl/types:__pkg__",
+    "//purl/types/...",
 ])
 
 strings = struct(

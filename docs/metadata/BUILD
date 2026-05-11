@@ -7,6 +7,7 @@ stardoc(
     input = "@package_metadata//:defs.bzl",
     deps = [
         "@package_metadata//:srcs",
+        "//metadata/purl:type_registries",
     ],
 )
 

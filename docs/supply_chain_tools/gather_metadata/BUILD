@@ -7,6 +7,7 @@ stardoc(
     input = "@supply_chain_tools//gather_metadata:gather_metadata.bzl",
     deps = [
         "@supply_chain_tools//gather_metadata",
+        "//metadata/purl:type_registries",
     ],
 )
 

@@ -18,6 +18,8 @@ def _purl_type_registry_repo_impl(ctx):
     build_lines = [
         'package(default_visibility = ["//visibility:public"])',
         "",
+        'exports_files(["validators.bzl", "normalizers.bzl"])',
+        "",
     ]
     defs_lines = [
         '"""Generated PURL type override registry."""',
