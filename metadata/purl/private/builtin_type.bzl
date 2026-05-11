@@ -6,7 +6,7 @@ load("//purl/private/validation:validation.bzl", "validate")
 
 visibility([
     "//purl/private/...",
-    "//purl/types:__pkg__",
+    "//purl/types/...",
 ])
 
 def _validate_builtin(*, type, namespace, name, version, qualifiers, subpath):
