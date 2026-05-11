@@ -1,25 +1,11 @@
 """Utils to normalize [purl](https://github.com/package-url/purl-spec)s."""
 
 load("//purl/private:type_definitions.bzl", "TYPE_DEFINITIONS")
-load("//purl/private/normalization:bitbucket.bzl", "normalize_bitbucket")
-load("//purl/private/normalization:composer.bzl", "normalize_composer")
-load("//purl/private/normalization:github.bzl", "normalize_github")
-load("//purl/private/normalization:huggingface.bzl", "normalize_huggingface")
-load("//purl/private/normalization:mlflow.bzl", "normalize_mlflow")
-load("//purl/private/normalization:pypi.bzl", "normalize_pypi")
+load("@package_metadata_purl_types//:normalizers.bzl", "TYPE_NORMALIZERS")
 
 visibility([
     "//purl/private",
 ])
-
-_normalizers = {
-    "bitbucket": normalize_bitbucket,
-    "composer": normalize_composer,
-    "github": normalize_github,
-    "huggingface": normalize_huggingface,
-    "mlflow": normalize_mlflow,
-    "pypi": normalize_pypi,
-}
 
 def _split_path(value):
     return [segment for segment in value.split("/") if segment] if value else None
@@ -55,7 +41,7 @@ def _subpath_to_segments(subpath):
     return segments if segments else None
 
 def _normalize_type_specific(*, type, namespace, name, version, qualifiers, subpath):
-    normalizer = _normalizers.get(type)
+    normalizer = TYPE_NORMALIZERS.get(type)
     if not normalizer:
         return struct(
             type = type,

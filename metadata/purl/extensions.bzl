@@ -5,6 +5,14 @@ load("//purl:type_names.bzl", "BUILTIN_PURL_TYPES")
 visibility("public")
 
 _REGISTRY_REPO_NAME = "package_metadata_purl_types"
+_NORMALIZER_FUNCTIONS = {
+    "bitbucket": "normalize_bitbucket",
+    "composer": "normalize_composer",
+    "github": "normalize_github",
+    "huggingface": "normalize_huggingface",
+    "mlflow": "normalize_mlflow",
+    "pypi": "normalize_pypi",
+}
 
 def _purl_type_registry_repo_impl(ctx):
     build_lines = [
@@ -20,9 +28,15 @@ def _purl_type_registry_repo_impl(ctx):
         '"""Generated PURL type validator registry."""',
         "",
     ]
+    normalizers_lines = [
+        '"""Generated PURL type normalizer registry."""',
+        "",
+    ]
 
     validator_loads = []
     validator_entries = []
+    normalizer_loads = []
+    normalizer_entries = []
 
     for type in sorted(ctx.attr.registrations.keys()):
         target = ctx.attr.registrations[type]
@@ -41,6 +55,11 @@ def _purl_type_registry_repo_impl(ctx):
             validator_loads.append('load("@package_metadata//purl/types:{}.bzl", "validate_{}")'.format(file_name, function_name))
             validator_entries.append('    "{}": validate_{},'.format(type, function_name))
 
+            normalizer_function = _NORMALIZER_FUNCTIONS.get(type)
+            if normalizer_function:
+                normalizer_loads.append('load("@package_metadata//purl/types:{}.bzl", "{}")'.format(file_name, normalizer_function))
+                normalizer_entries.append('    "{}": {},'.format(type, normalizer_function))
+
     defs_lines.append("}")
     defs_lines.append("")
 
@@ -55,9 +74,21 @@ def _purl_type_registry_repo_impl(ctx):
         validators_lines.append("TYPE_VALIDATORS = {}")
         validators_lines.append("")
 
+    if normalizer_loads:
+        normalizers_lines.extend(normalizer_loads)
+        normalizers_lines.append("")
+        normalizers_lines.append("TYPE_NORMALIZERS = {")
+        normalizers_lines.extend(normalizer_entries)
+        normalizers_lines.append("}")
+        normalizers_lines.append("")
+    else:
+        normalizers_lines.append("TYPE_NORMALIZERS = {}")
+        normalizers_lines.append("")
+
     ctx.file("BUILD.bazel", "\n".join(build_lines))
     ctx.file("defs.bzl", "\n".join(defs_lines))
     ctx.file("validators.bzl", "\n".join(validators_lines))
+    ctx.file("normalizers.bzl", "\n".join(normalizers_lines))
 
 _purl_type_registry_repo = repository_rule(
     implementation = _purl_type_registry_repo_impl,
