@@ -114,5 +114,5 @@ custom_tests = [
                   "uuid=fbe9abb3-538b-5e4e-ba9e-bc94f4f92ebc"),
         "test_group": "base",
         "test_type": "roundtrip",
-    }
+    },
 ]
