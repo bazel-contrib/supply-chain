@@ -2,6 +2,7 @@
 
 load("//purl/private:builder.bzl", "build")
 load("//purl/private:parser.bzl", "parse")
+load("//purl/private:type_definitions.bzl", "TYPE_DEFINITIONS")
 load("//purl/private/tests:spec.bzl", "tests")
 load(
     "//purl/private/tests:spec.custom.bzl",
@@ -24,8 +25,68 @@ echo '{message}'
 exit /b {status}
 """.strip()
 
+_COMMON_QUALIFIERS = {
+    "checksum": True,
+    "download_url": True,
+    "file_name": True,
+    "repository_url": True,
+    "vcs_url": True,
+    "vers": True,
+}
+
+def _split_once_left(value, separator):
+    parts = value.split(separator)
+    if len(parts) == 1:
+        return value, None
+    return parts[0], separator.join(parts[1:])
+
+def _split_once_right(value, separator):
+    parts = value.split(separator)
+    if len(parts) == 1:
+        return value, None
+    return separator.join(parts[:-1]), parts[-1]
+
+def _type_and_qualifier_keys(input):
+    if type(input) == type({}):
+        qualifiers = input.get("qualifiers")
+        return input.get("type"), qualifiers.keys() if qualifiers else []
+
+    purl, _ = _split_once_right(input, "#")
+    purl, qualifiers = _split_once_right(purl, "?")
+    if qualifiers == None:
+        return None, []
+
+    _, remainder = _split_once_left(purl, ":")
+    if remainder == None:
+        return None, []
+    remainder = remainder.lstrip("/")
+    purl_type, _ = _split_once_left(remainder, "/")
+
+    keys = []
+    for pair in qualifiers.split("&"):
+        key, _ = _split_once_left(pair, "=")
+        keys.append(key.lower())
+    return purl_type.lower(), keys
+
+def _has_unsupported_qualifier(test):
+    purl_type, keys = _type_and_qualifier_keys(test["input"])
+    if not keys:
+        return False
+
+    allowed = {
+        key: True
+        for key in TYPE_DEFINITIONS.get(purl_type, {}).get("qualifiers", [])
+    }
+    for key in keys:
+        if key not in _COMMON_QUALIFIERS and key not in allowed:
+            return True
+    return False
+
+def _strict(test):
+    return test["test_group"] == "base" and (test["expected_failure"] or not _has_unsupported_qualifier(test))
+
 def _check_build_test(test, failures):
-    actual, err = build(**test["input"])
+    actual, err = build(strict = _strict(test), **test["input"])
     if test["expected_failure"]:
         if err:
             return
@@ -49,7 +110,7 @@ def _check_build_test(test, failures):
             })
 
 def _check_parse_test(test, failures):
-    actual, err = parse(test["input"])
+    actual, err = parse(test["input"], strict = _strict(test))
     if test["expected_failure"]:
         if err:
             return
@@ -73,12 +134,12 @@ def _check_parse_test(test, failures):
             })
 
 def _check_roundtrip_test(test, failures):
-    parsed, err = parse(test["input"])
+    parsed, err = parse(test["input"], strict = _strict(test))
     if test["expected_failure"]:
         if err:
             return
 
-        _, err = build(**parsed)
+        _, err = build(strict = _strict(test), **parsed)
         if err:
             return
 
@@ -93,7 +154,7 @@ def _check_roundtrip_test(test, failures):
                 "message": "Expected no parse failure, got {}".format(err),
             })
             return
-        actual, err = build(**parsed)
+        actual, err = build(strict = _strict(test), **parsed)
         if err:
             failures.append({
                 "description": test["description"],

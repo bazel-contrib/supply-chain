@@ -2,6 +2,12 @@
 
 load("//purl/private:type_definitions.bzl", "TYPE_DEFINITIONS")
 load("//purl/private/strings:strings.bzl", "strings")
+load("//purl/private/validation:chrome_extension.bzl", "validate_chrome_extension")
+load("//purl/private/validation:cpan.bzl", "validate_cpan")
+load("//purl/private/validation:julia.bzl", "validate_julia")
+load("//purl/private/validation:otp.bzl", "validate_otp")
+load("//purl/private/validation:swift.bzl", "validate_swift")
+load("//purl/private/validation:vscode_extension.bzl", "validate_vscode_extension")
 
 visibility([
     "//purl/private",
@@ -9,6 +15,15 @@ visibility([
 
 def _has_value(value):
     return value != None and value != "" and value != []
+
+_COMMON_QUALIFIERS = {
+    "checksum": True,
+    "download_url": True,
+    "file_name": True,
+    "repository_url": True,
+    "vcs_url": True,
+    "vers": True,
+}
 
 def _is_lower_alpha(c):
     return c >= 97 and c <= 122
@@ -78,12 +93,6 @@ def _validate_type_definition(type, definition, namespace, name, version, qualif
         if not qualifiers or not _has_value(qualifiers.get(key)):
             return "{} PURLs require a '{}' qualifier".format(type, key)
 
-    if definition.get("cpan"):
-        if namespace != namespace.upper():
-            return "CPAN PURL namespace (author) must be uppercase"
-        if "::" in name:
-            return "CPAN PURL name must be a distribution name, not a module name (contains '::')"
-
     return None
 
 def _validate_defined_type(type, *, namespace, name, version, qualifiers, subpath):
@@ -95,6 +104,19 @@ def _validate_defined_type(type, *, namespace, name, version, qualifiers, subpat
         version,
         qualifiers,
         subpath,
+    )
+
+def _validate_with_specific(type, specific_validator, *, namespace, name, version, qualifiers, subpath):
+    err = _validate_defined_type(type, namespace = namespace, name = name, version = version, qualifiers = qualifiers, subpath = subpath)
+    if err:
+        return err
+    return specific_validator(
+        type = type,
+        namespace = namespace,
+        name = name,
+        version = version,
+        qualifiers = qualifiers,
+        subpath = subpath,
     )
 
 def _validate_alpm(*, type, namespace, name, version, qualifiers, subpath):
@@ -116,7 +138,7 @@ def _validate_cargo(*, type, namespace, name, version, qualifiers, subpath):
     return _validate_defined_type(type, namespace = namespace, name = name, version = version, qualifiers = qualifiers, subpath = subpath)
 
 def _validate_chrome_extension(*, type, namespace, name, version, qualifiers, subpath):
-    return _validate_defined_type(type, namespace = namespace, name = name, version = version, qualifiers = qualifiers, subpath = subpath)
+    return _validate_with_specific(type, validate_chrome_extension, namespace = namespace, name = name, version = version, qualifiers = qualifiers, subpath = subpath)
 
 def _validate_cocoapods(*, type, namespace, name, version, qualifiers, subpath):
     return _validate_defined_type(type, namespace = namespace, name = name, version = version, qualifiers = qualifiers, subpath = subpath)
@@ -131,7 +153,7 @@ def _validate_conda(*, type, namespace, name, version, qualifiers, subpath):
     return _validate_defined_type(type, namespace = namespace, name = name, version = version, qualifiers = qualifiers, subpath = subpath)
 
 def _validate_cpan(*, type, namespace, name, version, qualifiers, subpath):
-    return _validate_defined_type(type, namespace = namespace, name = name, version = version, qualifiers = qualifiers, subpath = subpath)
+    return _validate_with_specific(type, validate_cpan, namespace = namespace, name = name, version = version, qualifiers = qualifiers, subpath = subpath)
 
 def _validate_cran(*, type, namespace, name, version, qualifiers, subpath):
     return _validate_defined_type(type, namespace = namespace, name = name, version = version, qualifiers = qualifiers, subpath = subpath)
@@ -164,7 +186,7 @@ def _validate_huggingface(*, type, namespace, name, version, qualifiers, subpath
     return _validate_defined_type(type, namespace = namespace, name = name, version = version, qualifiers = qualifiers, subpath = subpath)
 
 def _validate_julia(*, type, namespace, name, version, qualifiers, subpath):
-    return _validate_defined_type(type, namespace = namespace, name = name, version = version, qualifiers = qualifiers, subpath = subpath)
+    return _validate_with_specific(type, validate_julia, namespace = namespace, name = name, version = version, qualifiers = qualifiers, subpath = subpath)
 
 def _validate_luarocks(*, type, namespace, name, version, qualifiers, subpath):
     return _validate_defined_type(type, namespace = namespace, name = name, version = version, qualifiers = qualifiers, subpath = subpath)
@@ -188,7 +210,7 @@ def _validate_opam(*, type, namespace, name, version, qualifiers, subpath):
     return _validate_defined_type(type, namespace = namespace, name = name, version = version, qualifiers = qualifiers, subpath = subpath)
 
 def _validate_otp(*, type, namespace, name, version, qualifiers, subpath):
-    return _validate_defined_type(type, namespace = namespace, name = name, version = version, qualifiers = qualifiers, subpath = subpath)
+    return _validate_with_specific(type, validate_otp, namespace = namespace, name = name, version = version, qualifiers = qualifiers, subpath = subpath)
 
 def _validate_pub(*, type, namespace, name, version, qualifiers, subpath):
     return _validate_defined_type(type, namespace = namespace, name = name, version = version, qualifiers = qualifiers, subpath = subpath)
@@ -206,10 +228,10 @@ def _validate_swid(*, type, namespace, name, version, qualifiers, subpath):
     return _validate_defined_type(type, namespace = namespace, name = name, version = version, qualifiers = qualifiers, subpath = subpath)
 
 def _validate_swift(*, type, namespace, name, version, qualifiers, subpath):
-    return _validate_defined_type(type, namespace = namespace, name = name, version = version, qualifiers = qualifiers, subpath = subpath)
+    return _validate_with_specific(type, validate_swift, namespace = namespace, name = name, version = version, qualifiers = qualifiers, subpath = subpath)
 
 def _validate_vscode_extension(*, type, namespace, name, version, qualifiers, subpath):
-    return _validate_defined_type(type, namespace = namespace, name = name, version = version, qualifiers = qualifiers, subpath = subpath)
+    return _validate_with_specific(type, validate_vscode_extension, namespace = namespace, name = name, version = version, qualifiers = qualifiers, subpath = subpath)
 
 def _validate_yocto(*, type, namespace, name, version, qualifiers, subpath):
     return _validate_defined_type(type, namespace = namespace, name = name, version = version, qualifiers = qualifiers, subpath = subpath)
@@ -314,6 +336,17 @@ def validate(
     validator = _validators.get(type)
     if not validator:
         return "Unknown PURL type {}".format(type) if strict else None
+
+    if strict and qualifiers:
+        definition = TYPE_DEFINITIONS.get(type, {})
+        allowed_qualifiers = {
+            key: True
+            for key in definition.get("qualifiers", [])
+        }
+        for key in qualifiers.keys():
+            key = key.lower()
+            if key not in _COMMON_QUALIFIERS and key not in allowed_qualifiers:
+                return "{} qualifier '{}' is not supported".format(type, key)
 
     return validator(
         type = type,
