@@ -46,3 +46,13 @@ def validate_with_specific(type, specific_validator, *, namespace, name, version
         qualifiers = qualifiers,
         subpath = subpath,
     )
+
+def identity_normalization(*, type, namespace, name, version, qualifiers, subpath):
+    return struct(
+        type = type,
+        namespace = namespace,
+        name = name,
+        version = version,
+        qualifiers = qualifiers,
+        subpath = subpath,
+    )

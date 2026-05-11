@@ -1,6 +1,12 @@
 exports_files(
     [
         "helpers.bzl",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+exports_files(
+    [
         "validation.bzl",
     ],
     visibility = [
@@ -17,5 +23,6 @@ filegroup(
     ],
     visibility = [
         "//purl/private:__pkg__",
+        "//purl/types:__pkg__",
     ],
 )

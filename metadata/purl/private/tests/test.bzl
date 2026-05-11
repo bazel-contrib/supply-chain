@@ -2,7 +2,6 @@
 
 load("//purl/private:builder.bzl", "build")
 load("//purl/private:parser.bzl", "parse")
-load("//purl/private:type_definitions.bzl", "TYPE_DEFINITIONS")
 load("//purl/private/tests:spec.bzl", "tests")
 load(
     "//purl/private/tests:spec.custom.bzl",
@@ -68,22 +67,15 @@ def _type_and_qualifier_keys(input):
         keys.append(key.lower())
     return purl_type.lower(), keys
 
-def _has_unsupported_qualifier(test):
-    purl_type, keys = _type_and_qualifier_keys(test["input"])
-    if not keys:
+def _strict(test):
+    if test["test_group"] != "base":
         return False
 
-    allowed = {
-        key: True
-        for key in TYPE_DEFINITIONS.get(purl_type, {}).get("qualifiers", [])
-    }
+    _, keys = _type_and_qualifier_keys(test["input"])
     for key in keys:
-        if key not in _COMMON_QUALIFIERS and key not in allowed:
-            return True
-    return False
-
-def _strict(test):
-    return test["test_group"] == "base" and (test["expected_failure"] or not _has_unsupported_qualifier(test))
+        if key not in _COMMON_QUALIFIERS:
+            return False
+    return True
 
 def _check_build_test(test, failures):
     actual, err = build(strict = _strict(test), **test["input"])

@@ -3,7 +3,7 @@
 Spec: https://github.com/package-url/purl-spec/blob/c756cacf766d4bf2711b248b935b3b80d1b1ba2e/types-doc/vscode-extension-definition.md
 """
 
-load("//purl/private/validation:helpers.bzl", "validate_with_specific")
+load("//purl/types:helpers.bzl", "validate_with_specific")
 
 visibility("public")
 

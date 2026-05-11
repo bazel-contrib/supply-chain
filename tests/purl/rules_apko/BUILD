@@ -1,6 +1,4 @@
-load(":dependency_apko_type.bzl", "dependency_apko_type")
-
-dependency_apko_type(
-    name = "dependency_apko_type",
+exports_files(
+    ["dependency_apko_type.bzl"],
     visibility = ["//visibility:public"],
 )

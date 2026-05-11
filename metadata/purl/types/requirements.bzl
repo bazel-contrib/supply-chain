@@ -1,13 +1,8 @@
-"""Machine-readable PURL type definitions.
+"""Built-in PURL type requirements."""
 
-Derived from https://github.com/package-url/purl-spec/tree/main/types.
-"""
+visibility("public")
 
-visibility([
-    "//purl/private/...",
-])
-
-TYPE_DEFINITIONS = {
+TYPE_REQUIREMENTS = {
     "alpm": {"namespace": "required", "lower_namespace": True, "lower_name": True, "qualifiers": ["arch"]},
     "apk": {"namespace": "required", "lower_namespace": True, "lower_name": True, "qualifiers": ["arch"]},
     "bazel": {"namespace": "prohibited"},

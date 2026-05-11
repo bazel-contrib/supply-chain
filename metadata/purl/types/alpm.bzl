@@ -1,6 +1,6 @@
 """Validation for alpm PURLs."""
 
-load("//purl/private/validation:helpers.bzl", "validate_defined_type")
+load("//purl/types:helpers.bzl", "validate_defined_type")
 
 visibility("public")
 

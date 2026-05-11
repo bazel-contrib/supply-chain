@@ -1,10 +1,52 @@
 """Bzlmod extensions for PURL type customization."""
 
-load("//purl:type_names.bzl", "BUILTIN_PURL_TYPES")
+load("//purl/types:requirements.bzl", "TYPE_REQUIREMENTS")
 
 visibility("public")
 
 _REGISTRY_REPO_NAME = "package_metadata_purl_types"
+
+_BUILTIN_PURL_TYPES = [
+    "alpm",
+    "apk",
+    "bazel",
+    "bitbucket",
+    "bitnami",
+    "cargo",
+    "chrome-extension",
+    "cocoapods",
+    "composer",
+    "conan",
+    "conda",
+    "cpan",
+    "cran",
+    "deb",
+    "docker",
+    "gem",
+    "generic",
+    "github",
+    "golang",
+    "hackage",
+    "hex",
+    "huggingface",
+    "julia",
+    "luarocks",
+    "maven",
+    "mlflow",
+    "npm",
+    "nuget",
+    "oci",
+    "opam",
+    "otp",
+    "pub",
+    "pypi",
+    "qpkg",
+    "rpm",
+    "swid",
+    "swift",
+    "vscode-extension",
+    "yocto",
+]
 _NORMALIZER_FUNCTIONS = {
     "bitbucket": "normalize_bitbucket",
     "composer": "normalize_composer",
@@ -21,11 +63,7 @@ def _purl_type_registry_repo_impl(ctx):
         'exports_files(["validators.bzl", "normalizers.bzl"])',
         "",
     ]
-    defs_lines = [
-        '"""Generated PURL type override registry."""',
-        "",
-        "PURL_TYPE_OVERRIDES = {",
-    ]
+
     validators_lines = [
         '"""Generated PURL type validator registry."""',
         "",
@@ -40,30 +78,20 @@ def _purl_type_registry_repo_impl(ctx):
     normalizer_loads = []
     normalizer_entries = []
 
-    for type in sorted(ctx.attr.registrations.keys()):
-        target = ctx.attr.registrations[type]
-        build_lines.extend([
-            "alias(",
-            '    name = "{}",'.format(type),
-            '    actual = "{}",'.format(target),
-            ")",
-            "",
-        ])
-        defs_lines.append('    "{}": Label("@{}//:{}"),'.format(type, _REGISTRY_REPO_NAME, type))
+    for type in sorted(ctx.attr.normalization_files.keys()):
+        file = ctx.attr.normalization_files[type]
+        function = ctx.attr.normalization_functions[type]
+        statement = 'load("{}", "{}")'.format(str(file), function)
+        if statement not in normalizer_loads:
+            normalizer_loads.append(statement)
+            normalizer_entries.append('    "{}": {},'.format(type, function))
 
-        if target.startswith("@package_metadata//purl/types:"):
-            function_name = type.replace("-", "_")
-            file_name = function_name
-            validator_loads.append('load("@package_metadata//purl/types:{}.bzl", "validate_{}")'.format(file_name, function_name))
-            validator_entries.append('    "{}": validate_{},'.format(type, function_name))
+    for type in sorted(ctx.attr.validation_files.keys()):
+        file = ctx.attr.validation_files[type]
+        function = ctx.attr.validation_functions[type]
+        validator_loads.append('load("{}", "{}")'.format(file, function))
+        validator_entries.append('    "{}": {},'.format(type, function))
 
-            normalizer_function = _NORMALIZER_FUNCTIONS.get(type)
-            if normalizer_function:
-                normalizer_loads.append('load("@package_metadata//purl/types:{}.bzl", "{}")'.format(file_name, normalizer_function))
-                normalizer_entries.append('    "{}": {},'.format(type, normalizer_function))
-
-    defs_lines.append("}")
-    defs_lines.append("")
 
     if validator_loads:
         validators_lines.extend(validator_loads)
@@ -88,39 +116,58 @@ def _purl_type_registry_repo_impl(ctx):
         normalizers_lines.append("")
 
     ctx.file("BUILD.bazel", "\n".join(build_lines))
-    ctx.file("defs.bzl", "\n".join(defs_lines))
     ctx.file("validators.bzl", "\n".join(validators_lines))
     ctx.file("normalizers.bzl", "\n".join(normalizers_lines))
 
 _purl_type_registry_repo = repository_rule(
     implementation = _purl_type_registry_repo_impl,
     attrs = {
-        "registrations": attr.string_dict(
-            doc = "Map of PURL type to target label providing PurlTypeInfo.",
-        ),
+        "normalization_files": attr.string_keyed_label_dict(),
+        "normalization_functions": attr.string_dict(),
+        "validation_files": attr.string_keyed_label_dict(),
+        "validation_functions": attr.string_dict(),
     },
 )
 
 def _purl_types_impl(ctx):
-    registrations = {
-        type: "@package_metadata//purl/types:{}".format(type)
-        for type in BUILTIN_PURL_TYPES
-    }
+    normalization_files = {}
+    normalization_functions = {}
+    validation_files = {}
+    validation_functions = {}
+
+    for type in _BUILTIN_PURL_TYPES:
+        normalization_files[type] = Label("//purl/types:{}.bzl".format(type.replace("-", "_")) if type in _NORMALIZER_FUNCTIONS else "//purl/types:helpers.bzl")
+        normalization_functions[type] = _NORMALIZER_FUNCTIONS[type].replace("-", "_") if type in _NORMALIZER_FUNCTIONS else "identity_normalization"
+        validation_files[type] = Label("//purl/types:{}.bzl".format(type.replace("-", "_")))
+        validation_functions[type] = "validate_{}".format(type.replace("-", "_"))
+
     for module in ctx.modules:
         if module.is_root:
             continue
         for tag in module.tags.type:
-            registrations[tag.name] = str(tag.target)
+            normalization_files[tag.name] = tag.normalize_file if tag.normalize_file != None else Label("//purl/types:helpers.bzl")
+            normalization_functions[tag.name] = tag.normalize_function if tag.normalize_function != None else "identity_normalization"
+
+            validation_files[tag.name] = tag.validation_file
+            validation_functions[tag.name] = tag.validation_function if tag.validation_function != None else ""
+
 
     for module in ctx.modules:
         if not module.is_root:
             continue
         for tag in module.tags.type:
-            registrations[tag.name] = str(tag.target)
+            normalization_files[tag.name] = tag.normalize_file if tag.normalize_file != None else Label("//purl/types:helpers.bzl")
+            normalization_functions[tag.name] = tag.normalize_function if tag.normalize_function != None else "identity_normalization"
+
+            validation_files[tag.name] = tag.validation_file
+            validation_functions[tag.name] = tag.validation_function if tag.validation_function != None else ""
 
     _purl_type_registry_repo(
         name = _REGISTRY_REPO_NAME,
-        registrations = registrations,
+        normalization_files = normalization_files,
+        normalization_functions = normalization_functions,
+        validation_files = validation_files,
+        validation_functions = validation_functions,
     )
 
 purl_types = module_extension(
@@ -132,8 +179,20 @@ purl_types = module_extension(
                     doc = "PURL type name to register or override.",
                     mandatory = True,
                 ),
-                "target": attr.label(
-                    doc = "Target that provides PurlTypeInfo.",
+                "normalize_file": attr.label(
+                    doc = "File to load the normalizer function from.",
+                    mandatory = False,
+                ),
+                "normalize_function": attr.string(
+                    doc = "Normalizer function name to load from the specified file. Will use the identity normalizer if not specified.",
+                    mandatory = False,
+                ),
+                "validation_file": attr.label(
+                    doc = "File to load the validator function from.",
+                    mandatory = True,
+                ),
+                "validation_function": attr.string(
+                    doc = "Validator function name to load from the validation_file.",
                     mandatory = True,
                 ),
             },

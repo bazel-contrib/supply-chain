@@ -1,7 +1,7 @@
 """Validation for pub PURLs."""
 
 load("//purl/private/strings:strings.bzl", "strings")
-load("//purl/private/validation:helpers.bzl", "validate_with_specific")
+load("//purl/types:helpers.bzl", "validate_with_specific")
 
 visibility("public")
 

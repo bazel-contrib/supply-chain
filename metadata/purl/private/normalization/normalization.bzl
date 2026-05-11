@@ -1,10 +1,11 @@
 """Utils to normalize [purl](https://github.com/package-url/purl-spec)s."""
 
-load("//purl/private:type_definitions.bzl", "TYPE_DEFINITIONS")
+load("//purl/types:requirements.bzl", "TYPE_REQUIREMENTS")
 load("@package_metadata_purl_types//:normalizers.bzl", "TYPE_NORMALIZERS")
 
 visibility([
     "//purl/private",
+    "//purl/types",
 ])
 
 def _split_path(value):
@@ -65,7 +66,7 @@ def _lower_segments(segments):
     return [segment.lower() for segment in segments] if segments else segments
 
 def _normalize_by_definition(type, purl):
-    definition = TYPE_DEFINITIONS.get(type, {})
+    definition = TYPE_REQUIREMENTS.get(type, {})
     return struct(
         type = purl.type,
         namespace = _lower_segments(purl.namespace) if definition.get("lower_namespace") else purl.namespace,

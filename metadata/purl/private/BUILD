@@ -1,9 +1,7 @@
 exports_files(
     [
-        "builtin_type.bzl",
         "builder.bzl",
         "parser.bzl",
-        "type_definitions.bzl",
     ],
     visibility = [
         "//purl:__subpackages__",
@@ -13,10 +11,8 @@ exports_files(
 filegroup(
     name = "srcs",
     srcs = [
-        "builtin_type.bzl",
         "builder.bzl",
         "parser.bzl",
-        "type_definitions.bzl",
     ] + [
         "//purl/private/normalization:srcs",
         "//purl/private/percent_encoding:srcs",

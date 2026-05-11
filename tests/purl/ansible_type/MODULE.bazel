@@ -8,5 +8,8 @@ bazel_dep(name = "package_metadata", version = "HEAD")
 purl_types = use_extension("@package_metadata//purl:extensions.bzl", "purl_types")
 purl_types.type(
     name = "ansible",
-    target = "//:ansible_type",
+    normalize_file = "//:ansible_type.bzl",
+    normalize_function = "normalize_ansible",
+    validation_file = "//:ansible_type.bzl",
+    validation_function = "validate_ansible",
 )

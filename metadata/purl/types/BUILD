@@ -1,18 +1,17 @@
-load("//purl/private:builtin_type.bzl", "builtin_type")
-load("//purl:type_names.bzl", "BUILTIN_PURL_TYPES")
-
-[
-    builtin_type(
-        name = type,
-        visibility = ["//visibility:public"],
-    )
-    for type in BUILTIN_PURL_TYPES
-]
+exports_files(
+    [
+        "helpers.bzl",
+        "requirements.bzl",
+    ],
+    visibility = ["//visibility:public"],
+)
 
 filegroup(
     name = "srcs",
     srcs = [
         "BUILD",
+        "helpers.bzl",
+        "requirements.bzl",
         "alpm.bzl",
         "apk.bzl",
         "bazel.bzl",

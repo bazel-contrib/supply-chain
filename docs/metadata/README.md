@@ -114,7 +114,8 @@ module extension. Built-in PURL types are registered through the same
 extension path, and dependency registrations are applied before root module
 registrations so the root module can override a type supplied by a dependency
 or a built-in type. A registered target must provide `PurlTypeInfo`, which
-carries the validation and normalization functions for that type.
+carries the validation and normalization functions for that type plus the
+machine-readable requirements metadata used by validation and normalization.
 
 ```starlark
 # MODULE.bazel
@@ -164,6 +165,11 @@ def _ansible_type_impl(ctx):
         PurlTypeInfo(
             validate = _validate_ansible,
             normalize = _normalize_ansible,
+            requirements = {
+                "namespace": "required",
+                "lower_namespace": True,
+                "lower_name": True,
+            },
         ),
     ]
 

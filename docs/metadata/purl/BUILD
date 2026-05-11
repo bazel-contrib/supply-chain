@@ -5,6 +5,8 @@ load("@stardoc//stardoc:stardoc.bzl", "stardoc")
 bzl_library(
     name = "type_registries",
     srcs = [
+        "@package_metadata//purl/types:requirements.bzl",
+        "@package_metadata//purl/types:helpers.bzl",
         "@package_metadata_purl_types//:normalizers.bzl",
         "@package_metadata_purl_types//:validators.bzl",
     ],

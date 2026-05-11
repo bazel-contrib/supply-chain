@@ -1,11 +1,12 @@
 """Utils to validate [purl](https://github.com/package-url/purl-spec)s."""
 
-load("//purl/private:type_definitions.bzl", "TYPE_DEFINITIONS")
+load("//purl/types:requirements.bzl", "TYPE_REQUIREMENTS")
 load("//purl/private/strings:strings.bzl", "strings")
 load("@package_metadata_purl_types//:validators.bzl", "TYPE_VALIDATORS")
 
 visibility([
     "//purl/private",
+    "//purl/types",
 ])
 
 _COMMON_QUALIFIERS = {
@@ -77,7 +78,7 @@ def validate(
         return "Unknown PURL type {}".format(type) if strict else None
 
     if strict and qualifiers:
-        definition = TYPE_DEFINITIONS.get(type, {})
+        definition = TYPE_REQUIREMENTS.get(type, {})
         allowed_qualifiers = {
             key: True
             for key in definition.get("qualifiers", [])

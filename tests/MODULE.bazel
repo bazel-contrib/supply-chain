@@ -32,10 +32,16 @@ local_path_override(
 purl_types = use_extension("@package_metadata//purl:extensions.bzl", "purl_types")
 purl_types.type(
     name = "apk",
-    target = "//purl/module_extension:apk_type",
+    validation_file = "//purl/module_extension:apk_override.bzl",
+    validation_function = "validate_apk",
+    normalize_file = "//purl/module_extension:apk_override.bzl",
+    normalize_function = "normalize_apk",
 )
 purl_types.type(
     name = "apko",
-    target = "//purl/module_extension:root_apko_type",
+    normalize_file = "//purl/module_extension:root_apko_override.bzl",
+    normalize_function = "normalize_root_apko",
+    validation_file = "//purl/module_extension:root_apko_override.bzl",
+    validation_function = "validate_root_apko",
 )
 use_repo(purl_types, "package_metadata_purl_types")

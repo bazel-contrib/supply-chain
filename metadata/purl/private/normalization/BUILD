@@ -4,6 +4,7 @@ exports_files(
     ],
     visibility = [
         "//purl/private:__pkg__",
+        "//purl/types:__pkg__",
     ],
 )
 
@@ -14,5 +15,6 @@ filegroup(
     ],
     visibility = [
         "//purl/private:__pkg__",
+        "//purl/types:__pkg__",
     ],
 )

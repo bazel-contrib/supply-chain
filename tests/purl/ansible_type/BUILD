@@ -1,6 +1,4 @@
-load(":ansible_type.bzl", "ansible_type")
-
-ansible_type(
-    name = "ansible_type",
+exports_files(
+    ["ansible_type.bzl"],
     visibility = ["//visibility:public"],
 )

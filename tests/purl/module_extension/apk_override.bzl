@@ -1,14 +1,12 @@
 """APK PURL type override used by module extension tests."""
 
-load("@package_metadata//purl:providers.bzl", "PurlTypeInfo")
-
 _APK_QUALIFIERS = {
     "arch": True,
     "distro": True,
     "upstream": True,
 }
 
-def _validate_apk(*, type, namespace, name, version, qualifiers, subpath):
+def validate_apk(*, type, namespace, name, version, qualifiers, subpath):
     if type != "apk":
         return "Expected apk PURL type, got {}".format(type)
     if not namespace:
@@ -23,7 +21,7 @@ def _validate_apk(*, type, namespace, name, version, qualifiers, subpath):
 
     return None
 
-def _normalize_apk(*, type, namespace, name, version, qualifiers, subpath):
+def normalize_apk(*, type, namespace, name, version, qualifiers, subpath):
     return struct(
         type = type.lower(),
         namespace = namespace.lower() if namespace else namespace,
@@ -32,18 +30,3 @@ def _normalize_apk(*, type, namespace, name, version, qualifiers, subpath):
         qualifiers = qualifiers,
         subpath = subpath,
     )
-
-def _apk_type_impl(ctx):
-    return [
-        PurlTypeInfo(
-            validate = _validate_apk,
-            normalize = _normalize_apk,
-        ),
-    ]
-
-apk_type = rule(
-    implementation = _apk_type_impl,
-    provides = [
-        PurlTypeInfo,
-    ],
-)

@@ -8,5 +8,8 @@ bazel_dep(name = "package_metadata", version = "HEAD")
 purl_types = use_extension("@package_metadata//purl:extensions.bzl", "purl_types")
 purl_types.type(
     name = "apko",
-    target = "//:dependency_apko_type",
+    normalize_file = "//:apko_override.bzl",
+    normalize_function = "normalize_apko",
+    validation_file = "//:apko_override.bzl",
+    validation_function = "validate_apko",
 )
