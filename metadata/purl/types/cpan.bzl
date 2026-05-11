@@ -3,11 +3,11 @@
 Spec: https://github.com/package-url/purl-spec/blob/c756cacf766d4bf2711b248b935b3b80d1b1ba2e/types-doc/cpan-definition.md
 """
 
-visibility([
-    "//purl/private/validation/...",
-])
+load("//purl/private/validation:helpers.bzl", "validate_with_specific")
 
-def validate_cpan(*, type, namespace, name, version, qualifiers, subpath):
+visibility("public")
+
+def _validate_cpan_specific(*, type, namespace, name, version, qualifiers, subpath):
     """Validates CPAN PURLs.
 
     CPAN PURLs must have a namespace (author) and the name must be a distribution
@@ -42,3 +42,6 @@ def validate_cpan(*, type, namespace, name, version, qualifiers, subpath):
                 "not a module name (contains '::')")
 
     return None
+
+def validate_cpan(*, type, namespace, name, version, qualifiers, subpath):
+    return validate_with_specific(type, _validate_cpan_specific, namespace = namespace, name = name, version = version, qualifiers = qualifiers, subpath = subpath)

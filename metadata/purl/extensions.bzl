@@ -16,6 +16,13 @@ def _purl_type_registry_repo_impl(ctx):
         "",
         "PURL_TYPE_OVERRIDES = {",
     ]
+    validators_lines = [
+        '"""Generated PURL type validator registry."""',
+        "",
+    ]
+
+    validator_loads = []
+    validator_entries = []
 
     for type in sorted(ctx.attr.registrations.keys()):
         target = ctx.attr.registrations[type]
@@ -28,11 +35,29 @@ def _purl_type_registry_repo_impl(ctx):
         ])
         defs_lines.append('    "{}": Label("@{}//:{}"),'.format(type, _REGISTRY_REPO_NAME, type))
 
+        if target.startswith("@package_metadata//purl/types:"):
+            function_name = type.replace("-", "_")
+            file_name = function_name
+            validator_loads.append('load("@package_metadata//purl/types:{}.bzl", "validate_{}")'.format(file_name, function_name))
+            validator_entries.append('    "{}": validate_{},'.format(type, function_name))
+
     defs_lines.append("}")
     defs_lines.append("")
 
+    if validator_loads:
+        validators_lines.extend(validator_loads)
+        validators_lines.append("")
+        validators_lines.append("TYPE_VALIDATORS = {")
+        validators_lines.extend(validator_entries)
+        validators_lines.append("}")
+        validators_lines.append("")
+    else:
+        validators_lines.append("TYPE_VALIDATORS = {}")
+        validators_lines.append("")
+
     ctx.file("BUILD.bazel", "\n".join(build_lines))
     ctx.file("defs.bzl", "\n".join(defs_lines))
+    ctx.file("validators.bzl", "\n".join(validators_lines))
 
 _purl_type_registry_repo = repository_rule(
     implementation = _purl_type_registry_repo_impl,

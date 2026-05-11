@@ -5,3 +5,6 @@ module(
 
 # This is a fundamental module that's depended on by virtually every bazel
 # module and **MUST NOT** have any dependencies.
+
+purl_types = use_extension("//purl:extensions.bzl", "purl_types")
+use_repo(purl_types, "package_metadata_purl_types")

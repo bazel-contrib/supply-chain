@@ -2,12 +2,11 @@
 """
 
 load("//purl/private/strings:strings.bzl", "strings")
+load("//purl/private/validation:helpers.bzl", "validate_with_specific")
 
-visibility([
-    "//purl/private/validation/...",
-])
+visibility("public")
 
-def validate_chrome_extension(*, type, namespace, name, version, qualifiers, subpath):
+def _validate_chrome_extension_specific(*, type, namespace, name, version, qualifiers, subpath):
     # https://github.com/package-url/purl-spec/blob/d4710aaa445aea991383385251c166c1bb26f9ba/types/chrome-extension-definition.json#L13
     if namespace:
         return "Chrome extension PURLs must not have a namespace"
@@ -33,3 +32,6 @@ def validate_chrome_extension(*, type, namespace, name, version, qualifiers, sub
                     return "Chrome extension version segments must be numeric"
 
     return None
+
+def validate_chrome_extension(*, type, namespace, name, version, qualifiers, subpath):
+    return validate_with_specific(type, _validate_chrome_extension_specific, namespace = namespace, name = name, version = version, qualifiers = qualifiers, subpath = subpath)

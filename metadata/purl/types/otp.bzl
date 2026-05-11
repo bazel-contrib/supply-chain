@@ -3,11 +3,11 @@
 Spec: https://github.com/package-url/purl-spec/blob/c756cacf766d4bf2711b248b935b3b80d1b1ba2e/types-doc/otp-definition.md
 """
 
-visibility([
-    "//purl/private/validation/...",
-])
+load("//purl/private/validation:helpers.bzl", "validate_with_specific")
 
-def validate_otp(*, type, namespace, name, version, qualifiers, subpath):
+visibility("public")
+
+def _validate_otp_specific(*, type, namespace, name, version, qualifiers, subpath):
     """Validates OTP PURLs.
 
     OTP PURLs must NOT have a namespace component.
@@ -29,3 +29,6 @@ def validate_otp(*, type, namespace, name, version, qualifiers, subpath):
         return "OTP PURLs must not have a namespace"
 
     return None
+
+def validate_otp(*, type, namespace, name, version, qualifiers, subpath):
+    return validate_with_specific(type, _validate_otp_specific, namespace = namespace, name = name, version = version, qualifiers = qualifiers, subpath = subpath)
