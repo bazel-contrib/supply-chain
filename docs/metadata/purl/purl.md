@@ -123,8 +123,38 @@ A builder object with chainable methods:
     Key must start with ASCII letter and contain only lowercase letters,
     numbers, '.', '-', '_'.
   - `subpath(subpath)`: Sets the subpath (optional). String with segments separated by '/'.
+  - `strict(strict)`: Enables or disables strict validation. Defaults to True.
   - `build()`: Validates, normalizes, and constructs the final PURL string.
     Performs both general and type-specific validation and normalization.
     Fails if validation errors occur.
+
+
+<a id="purl.parse"></a>
+
+## purl.parse
+
+<pre>
+load("@package_metadata//purl:purl.bzl", "purl")
+
+purl.parse(<a href="#purl.parse-value">value</a>, <a href="#purl.parse-strict">strict</a>)
+</pre>
+
+Parses a PURL string into normalized components.
+
+The parsing flow implements ECMA-427 1st edition, December 2025,
+§5.6 "Rules for each PURL component".
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="purl.parse-value"></a>value |  The PURL string to parse.   |  none |
+| <a id="purl.parse-strict"></a>strict |  Whether malformed percent escapes and unknown qualifier keys should fail parsing.   |  `False` |
+
+**RETURNS**
+
+A tuple of (purl_components, error). On success, error is None.
 
 
