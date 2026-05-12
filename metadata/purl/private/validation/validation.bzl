@@ -68,7 +68,7 @@ def validate(
         version = None,
         qualifiers = {},
         subpath = None,
-        strict = True):
+        strict = False):
     # Spec §5: Validate required fields are present.
     if not type:
         return "Mandatory property 'type' not set"

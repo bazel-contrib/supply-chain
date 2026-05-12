@@ -82,7 +82,7 @@ def _to_dict(purl):
         "subpath": "/".join(purl.subpath) if purl.subpath else None,
     }
 
-def parse(value, strict = True):
+def parse(value, strict = False):
     """Parses a PURL string into normalized components.
 
     The parsing flow implements ECMA-427 1st edition, December 2025,
