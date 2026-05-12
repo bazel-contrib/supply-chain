@@ -5,7 +5,7 @@ set -o errexit -o nounset -o pipefail
 # Passed as argument when invoking the script. E.g supply_chain_tools-1.2.3
 TAG="${1}"
 
-case "${TAG}" in 
+case "${TAG}" in
   v[0-9]* )
     # The prefix is chosen to match what GitHub generates for source archives
     # This guarantees that users can easily switch from a released artifact to a source archive
@@ -28,6 +28,14 @@ esac
 echo git archive --format=tar --prefix=${PREFIX}/ ${TAG} | gzip > $ARCHIVE
 git archive --format=tar --prefix=${PREFIX}/ ${TAG} | gzip > $ARCHIVE
 SHA=$(shasum -a 256 $ARCHIVE | awk '{print $1}')
+
+# Add generated API docs to the release, see https://github.com/bazelbuild/bazel-central-registry/issues/5593
+docs="$(mktemp -d)"; targets="$(mktemp)"
+bazel --output_base="$docs" query --output=label --output_file="$targets" 'kind("starlark_doc_extract rule", //...)'
+bazel --output_base="$docs" build --target_pattern_file="$targets"
+tar --create --auto-compress \
+    --directory "$(bazel --output_base="$docs" info bazel-bin)" \
+    --file "$GITHUB_WORKSPACE/${ARCHIVE%.tar.gz}.docs.tar.gz" .
 
 cat << EOF
 ## Using Bzlmod with Bazel 6 or greater
