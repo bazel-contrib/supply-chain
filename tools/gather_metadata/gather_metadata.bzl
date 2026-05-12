@@ -64,7 +64,7 @@ def _write_metadata_info_impl(target, ctx):
         content = content,
     )
 
-    return [OutputGroupInfo(licenses = depset([out]))]
+    return [OutputGroupInfo(metadata = depset([out]))]
 
 gather_metadata_info_and_write = aspect(
     doc = """Collects TransitiveMetadataInfo providers and writes JSON representation to a file.
@@ -72,22 +72,24 @@ gather_metadata_info_and_write = aspect(
     Usage:
       bazel build //some:target \
           --aspects=@supply_chain_tools//gather_metadata:gather_metadata.bzl%gather_metadata_info_and_write \
-          --output_groups=licenses
+          --output_groups=metadata
 
     Output format:
-      Target-centric JSON with the structure:
+      Graph-only JSON with the structure:
       {
+        "schema_version": "1.0",
         "root_target": "//some:target",
-        "targets": [
+        "nodes": [
           {
             "label": "//some:target",
-            "bazel_package": "//some",
-            "attributes": {
-              "package_name": "...",
-              "package_version": "...",
-              "licenses": [...]
-            },
-            "direct_dependencies": [...]
+            "metadata_file": "bazel-bin/some/target.package-metadata.json"
+          }
+        ],
+        "edges": [
+          {
+            "from": "//some:target",
+            "to": "//dep:target",
+            "type": "depends_on"
           }
         ]
       }

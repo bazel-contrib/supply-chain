@@ -19,7 +19,7 @@ The system consists of three main components:
 ```bash
 bazel build //your:target \
   --aspects=@supply_chain_tools//gather_metadata:gather_metadata.bzl%gather_metadata_info_and_write \
-  --output_groups=licenses
+  --output_groups=metadata
 ```
 
 This generates `bazel-bin/your/target_metadata_info.json` with the dependency graph.

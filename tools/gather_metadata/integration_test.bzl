@@ -82,8 +82,8 @@ def _multiple_metadata_types_test_impl(ctx):
     all_targets = info.transitive.to_list()
 
     # Find a target with multiple metadata providers
-    for twmi in all_targets:
-        metadata_list = twmi.metadata.to_list()
+    for target_info in all_targets:
+        metadata_list = target_info.metadata.to_list()
         if len(metadata_list) > 1:
             # Found a target with multiple metadata types
             asserts.true(
@@ -119,7 +119,7 @@ def _diamond_dependency_test_impl(ctx):
     info = target_under_test[TransitiveMetadataInfo]
 
     all_targets = info.transitive.to_list()
-    target_labels = [str(twmi.target) for twmi in all_targets]
+    target_labels = [str(target_info.target) for target_info in all_targets]
 
     # Check for uniqueness (depset should deduplicate)
     unique_labels = {}
