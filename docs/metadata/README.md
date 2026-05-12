@@ -31,7 +31,9 @@ The rules and providers in this module have two primary audiences:
 
 ### As module author
 
-If you are a module author and want to annotate your module, you will need to take the following steps:
+If you are a module author and want to annotate your module, you will need :
+
+  - Choose the appropriate package-url(PURL) type from the [standard list](https://github.com/package-url/purl-spec/tree/main/types-doc) related to the module technology if available. If no package type is already defined, use the `generic` type and provide the appropriate qualifiers to unambiguously identify the package.
 
   - Add a dependency on `package_metadata` to your `MODULE.bazel` file.
 
