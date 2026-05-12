@@ -9,7 +9,7 @@ This page covers our roadmap for 2026.
         - Finish purl work
         - Need to update documentation to remove experimental disclaimer
     - Get tooling module to 1.0
-        - Antonio is working on proposal to redo tooling
+        - Antonio is working on overhauling the tooling
         - Should we split it into a third module?
             - Package_metadata, supply-chain-go, supply-chain-tools (+ language-specific libraries)
     - Bzlmod integration
