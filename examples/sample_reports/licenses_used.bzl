@@ -174,8 +174,8 @@ def _licenses_used_impl(ctx):
             )
 
     if hasattr(target_metadata_info, "transitive"):
-        for trans in target_metadata_info.transitive.to_list():
-            _handle_transitive_collector(trans, command, inputs, report, attribute_to_consumers)
+        for transitive_item in target_metadata_info.transitive.to_list():
+            _handle_transitive_collector(transitive_item, command, inputs, report, attribute_to_consumers)
     if DEBUG_LEVEL > 1:
         # buildifier: disable=print
         print(json.encode_indent(attribute_to_consumers))

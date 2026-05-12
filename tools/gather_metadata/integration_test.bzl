@@ -30,7 +30,7 @@ def _simple_target_test_impl(ctx):
     asserts.true(
         env,
         hasattr(info, "transitive"),
-        "TransitiveMetadataInfo should have 'trans' field",
+        "TransitiveMetadataInfo should have 'transitive' field",
     )
     asserts.true(
         env,

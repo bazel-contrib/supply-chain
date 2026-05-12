@@ -7,34 +7,44 @@ import json
 import os
 import sys
 
-from typing import List
+from typing import Any, List
 
 
-def _print(f, value):
-    if type(value) == list:
-        f.write("[\n")
-        for element in value:
-            _print(f, element)
-            f.write(",")
-        f.write("]\n")
-    elif type(value) == dict:
-        f.write("{\n")
-        for k, v in value.items():
-            f.write(f'"{k}": ')
-            _print(f, v)
-            f.write(",")
-        f.write("}\n")
-    elif type(value) == str:
-        f.write(f'"{value}"\n')
-    elif type(value) == bool:
-        if value:
-            f.write("True\n")
-        else:
-            f.write("False\n")
-    elif value is None:
-        f.write("None\n")
-    else:
-        print(value)
+INDENT_SIZE = 4
+
+
+def _format_starlark(value: Any, indent: int = 0) -> str:
+    """Format Python values as Starlark literals with stable formatting."""
+    prefix = " " * indent
+    next_prefix = " " * (indent + INDENT_SIZE)
+
+    if isinstance(value, list):
+        if not value:
+            return "[]"
+
+        lines = [f"{next_prefix}{_format_starlark(element, indent + INDENT_SIZE)}," for element in value]
+        return "[\n" + "\n".join(lines) + f"\n{prefix}]"
+
+    if isinstance(value, dict):
+        if not value:
+            return "{}"
+
+        lines = []
+        for key in sorted(value.keys()):
+            formatted_value = _format_starlark(value[key], indent + INDENT_SIZE)
+            lines.append(f'{next_prefix}"{key}": {formatted_value},')
+        return "{\n" + "\n".join(lines) + f"\n{prefix}}}"
+
+    if isinstance(value, str):
+        return json.dumps(value, ensure_ascii=True)
+
+    if isinstance(value, bool):
+        return "True" if value else "False"
+
+    if value is None:
+        return "None"
+
+    raise TypeError(f"Unsupported value in spec tests: {value!r}")
 
 
 def _run(args) -> int:
@@ -67,8 +77,9 @@ visibility([
 """
         )
 
-        f.write(f"tests =")
-        _print(f, tests)
+        f.write("tests = ")
+        f.write(_format_starlark(tests))
+        f.write("\n")
 
     return 0
 
