@@ -81,19 +81,19 @@ def _handle_provider(metadata_provider, command, inputs, report):
                 for f in metadata_provider.files.to_list():
                     report.append("    file: %s" % f.short_path)
 
-def _handle_trans_collector(t_m_i, command, inputs, report):
+def _handle_transitive_collector(target_metadata_info, command, inputs, report):
     """Process a TransitiveMetadataInfo.
 
     Args:
-        t_m_i: A provider instance
+        target_metadata_info: A provider instance
         command: (in/out) list of command line args we are building
         inputs: (in/out) list of files needed for that command line
         report: (in/out) list of things we want to say to the user.
                 This is for illustrating how to use these rules, and
                 is not needed for the SBOM.
     """
-    if hasattr(t_m_i, "metadata"):
-        for metadata in t_m_i.metadata.to_list():
+    if hasattr(target_metadata_info, "metadata"):
+        for metadata in target_metadata_info.metadata.to_list():
             _handle_provider(metadata, command, inputs, report)
 
 def _sbom_impl(ctx):
@@ -109,8 +109,8 @@ def _sbom_impl(ctx):
     out = []
     if TransitiveMetadataInfo not in ctx.attr.target:
         fail("Missing metadata for %s" % ctx.attr.target)
-    t_m_i = ctx.attr.target[TransitiveMetadataInfo]
-    print(t_m_i)
+    target_metadata_info = ctx.attr.target[TransitiveMetadataInfo]
+    print(target_metadata_info)
 
     inputs = []
     report = []
@@ -118,16 +118,16 @@ def _sbom_impl(ctx):
     command.append("--output '%s'" % ctx.outputs.out.path)
 
     report.append("Target: %s" % str(ctx.attr.target.label))
-    if hasattr(t_m_i, "target"):
-        report.append("Gathered target: %s" % str(t_m_i.target))
-        command.append("--target '%s'" % str(t_m_i.target))
-    if hasattr(t_m_i, "metadata"):
+    if hasattr(target_metadata_info, "target"):
+        report.append("Gathered target: %s" % str(target_metadata_info.target))
+        command.append("--target '%s'" % str(target_metadata_info.target))
+    if hasattr(target_metadata_info, "metadata"):
         print("TOP HAS DIRECTS")
-        for direct in t_m_i.directs.to_list():
+        for direct in target_metadata_info.directs.to_list():
             _handle_provider(direct, command, inputs, report)
-    if hasattr(t_m_i, "transitive"):
-        for trans in t_m_i.transitive.to_list():
-            _handle_trans_collector(trans, command, inputs, report)
+    if hasattr(target_metadata_info, "transitive"):
+        for trans in target_metadata_info.transitive.to_list():
+            _handle_transitive_collector(trans, command, inputs, report)
 
     # TBD: Run the SBOM generator here.
     print("RUN THE SBOM\n  %s\n" % " ".join(command))

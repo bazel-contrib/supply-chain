@@ -180,14 +180,14 @@ def _test_transitive_metadata_field_name(ctx):
     env = unittest.begin(ctx)
 
     # Test with null instance
-    tmi = TransitiveMetadataInfo(
+    target_metadata_info = TransitiveMetadataInfo(
         transitive = depset(),
         top_level_target = None,
     )
 
     # Verify 'transitive' field exists
-    asserts.true(env, hasattr(tmi, "transitive"), "Should have 'transitive' field")
-    asserts.equals(env, 0, len(tmi.transitive.to_list()))
+    asserts.true(env, hasattr(target_metadata_info, "transitive"), "Should have 'transitive' field")
+    asserts.equals(env, 0, len(target_metadata_info.transitive.to_list()))
 
     return unittest.end(env)
 

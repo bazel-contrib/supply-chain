@@ -101,11 +101,11 @@ def _handle_attribute_provider(metadata_provider, target = None, command = None,
             value = getattr(metadata_provider, field)
             report.append("%s: %s" % (field, value))
 
-def _handle_trans_collector(t_m_i, command, inputs, report, attribute_to_consumers):
+def _handle_transitive_collector(target_metadata_info, command, inputs, report, attribute_to_consumers):
     """Process a TransitiveMetadataInfo.
 
     Args:
-        t_m_i: A provider instance
+        target_metadata_info: A provider instance
         command: (in/out) list of command line args we are building
         inputs: (in/out) list of files needed for that command line
         report: (in/out) list of things we want to say to the user.
@@ -114,20 +114,20 @@ def _handle_trans_collector(t_m_i, command, inputs, report, attribute_to_consume
         attribute_to_consumers: Map of attribute providers back to the
                  packages that use them.
     """
-    if hasattr(t_m_i, "metadata"):
-        report.append("Target %s" % t_m_i.target)
-        command.append("-target %s" % t_m_i.target)
-        for metadata in t_m_i.metadata.to_list():
+    if hasattr(target_metadata_info, "metadata"):
+        report.append("Target %s" % target_metadata_info.target)
+        command.append("-target %s" % target_metadata_info.target)
+        for metadata in target_metadata_info.metadata.to_list():
             _handle_attribute_provider(
                 metadata,
-                target = t_m_i.target,
+                target = target_metadata_info.target,
                 command = command,
                 inputs = inputs,
                 report = report,
                 attribute_to_consumers = attribute_to_consumers,
             )
-        if hasattr(t_m_i, "trans"):
-            fail("TransititiveMetadataInfo contains both metadata and trans." + str(t_m_i))
+        if hasattr(target_metadata_info, "transitive"):
+            fail("TransititiveMetadataInfo contains both metadata and trans." + str(target_metadata_info))
 
 def _licenses_used_impl(ctx):
     # Gather all metadata and make a report from that
@@ -141,10 +141,10 @@ def _licenses_used_impl(ctx):
 
     if TransitiveMetadataInfo not in ctx.attr.target:
         fail("Missing metadata for %s" % ctx.attr.target)
-    t_m_i = ctx.attr.target[TransitiveMetadataInfo]
+    target_metadata_info = ctx.attr.target[TransitiveMetadataInfo]
     if DEBUG_LEVEL > 0:
         # buildifier: disable=print
-        print(t_m_i)
+        print(target_metadata_info)
 
     inputs = []
     report = []
@@ -154,28 +154,28 @@ def _licenses_used_impl(ctx):
     command.append("--output '%s'" % ctx.outputs.out.path)
 
     report.append("Top label: %s" % str(ctx.attr.target.label))
-    if hasattr(t_m_i, "target"):
-        report.append("Target: %s" % str(t_m_i.target))
-        command.append("--target '%s'" % str(t_m_i.target))
+    if hasattr(target_metadata_info, "target"):
+        report.append("Target: %s" % str(target_metadata_info.target))
+        command.append("--target '%s'" % str(target_metadata_info.target))
 
     # It is possible for the top level target to have metadata, but rare.
-    if hasattr(t_m_i, "metadata"):
+    if hasattr(target_metadata_info, "metadata"):
         if DEBUG_LEVEL > 0:
             # buildifier: disable=print
             print("TOP HAS DIRECTS")
-        for direct in t_m_i.metadata.to_list():
+        for direct in target_metadata_info.metadata.to_list():
             _handle_attribute_provider(
                 metadata = direct,
-                target = t_m_i.target,
+                target = target_metadata_info.target,
                 command = command,
                 inputs = inputs,
                 report = report,
                 attribute_to_consumers = attribute_to_consumers,
             )
 
-    if hasattr(t_m_i, "transitive"):
-        for trans in t_m_i.transitive.to_list():
-            _handle_trans_collector(trans, command, inputs, report, attribute_to_consumers)
+    if hasattr(target_metadata_info, "transitive"):
+        for trans in target_metadata_info.transitive.to_list():
+            _handle_transitive_collector(trans, command, inputs, report, attribute_to_consumers)
     if DEBUG_LEVEL > 1:
         # buildifier: disable=print
         print(json.encode_indent(attribute_to_consumers))

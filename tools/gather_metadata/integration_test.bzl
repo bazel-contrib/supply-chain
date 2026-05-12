@@ -29,7 +29,7 @@ def _simple_target_test_impl(ctx):
     # Verify basic structure
     asserts.true(
         env,
-        hasattr(info, "trans"),
+        hasattr(info, "transitive"),
         "TransitiveMetadataInfo should have 'trans' field",
     )
     asserts.true(
@@ -163,7 +163,7 @@ def _empty_metadata_test_impl(ctx):
         env,
         0,
         len(all_targets),
-        "Target with no metadata should have empty trans",
+        "Target with no metadata should have empty transitive",
     )
 
     return analysistest.end(env)
