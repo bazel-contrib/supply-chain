@@ -4,4 +4,4 @@
 
   - [@package_metadata](./metadata)
   - [@package_metadata_extensions](./metadata-extensions)
-  - [@supply_chain_tools](./tools)
+  - [@supply_chain_tools](./supply_chain_tools)
