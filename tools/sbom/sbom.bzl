@@ -13,7 +13,7 @@ def _sbom_impl(ctx):
     transitive_inputs = []
     config = { "deps": [] }
     seen_metadata = {}
-    for transitive_metadata in transitive_metadata_info.trans.to_list():
+    for transitive_metadata in transitive_metadata_info.transitive.to_list():
         for m in transitive_metadata.metadata.to_list():
             if hasattr(m, "metadata"):
                 path = m.metadata.path

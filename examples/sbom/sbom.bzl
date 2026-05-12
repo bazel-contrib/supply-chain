@@ -125,8 +125,8 @@ def _sbom_impl(ctx):
         print("TOP HAS DIRECTS")
         for direct in t_m_i.directs.to_list():
             _handle_provider(direct, command, inputs, report)
-    if hasattr(t_m_i, "trans"):
-        for trans in t_m_i.trans.to_list():
+    if hasattr(t_m_i, "transitive"):
+        for trans in t_m_i.transitive.to_list():
             _handle_trans_collector(trans, command, inputs, report)
 
     # TBD: Run the SBOM generator here.

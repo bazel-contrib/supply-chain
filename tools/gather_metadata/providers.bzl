@@ -9,20 +9,19 @@ TargetWithMetadataInfo = provider(
     fields = {
         "target": "Label: A target which will be associated with some metadata.",
         "metadata": "depset(): [list] of my direct collected leaf attribute providers",
+        "direct_deps": "list<Label>: Direct dependencies of this target (for graph edges)",
     },
 )
 
 TransitiveMetadataInfo = provider(
     doc = """The transitive set of TargetWithMetadataInfo objects.""",
     fields = {
-        "trans": "depset(): transitive collection of TWMI",
+        "transitive": "depset(): transitive collection of TWMI",
         "top_level_target": "Label: The top level target label we are examining.",
-        "traces": "list(string) - diagnostic for tracing a dependency relationship to a target.",
     },
 )
 
 null_transitive_metadata_info = TransitiveMetadataInfo(
-    trans = depset(),
+    transitive = depset(),
     top_level_target = None,
-    traces = [],
 )
