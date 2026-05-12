@@ -24,7 +24,7 @@ The intended use cases are:
 
 ## How to participate
 
-- [Slack](https://bazelbuild.slack.com/archives/C04AZC3E729)
+- Slack: [#supply-chain-security](https://bazelbuild.slack.com/archives/C04AZC3E729)
 - Mailing list: [bazel-supply-chain-security@bazel.build](https://groups.google.com/a/bazel.build/g/bazel-supply-chain-security)
 - Weekly meeting every Thursday at 8:30am EST / 02:30pm CET ([Add to calendar](https://calendar.google.com/calendar/event?action=TEMPLATE&tmeid=MXA1ZXJlZ3Mxa24xcTl1c3NocXQ1dnFwNXRfMjAyNTEyMThUMTMzMDAwWiBjXzYxNTYxMjA0MmE4YjUyODgxYWJkYjk3NDcyNDdmZDEyYjA5NDhhYWFhNTFkNDE5YmUzNWE3ODgyNWRkM2RhNmRAZw&tmsrc=c_615612042a8b52881abdb9747247fd12b0948aaaa51d419be35a78825dd3da6d%40group.calendar.google.com&scp=ALL) / [meet ID](https://meet.google.com/qop-eyei-cfh) / [meeting notes](https://docs.google.com/document/d/1WhScaOLERet4Fxi4fa2Lpke2MgJZGvEE4EXeq6yb0LU/edit?usp=sharing))
 
