@@ -211,6 +211,44 @@ def _test_transitive_metadata_flattening(ctx):
 
 transitive_metadata_flattening_test = unittest.make(_test_transitive_metadata_flattening)
 
+def _test_target_with_metadata_info_depset_compatibility(ctx):
+    """Test that TargetWithMetadataInfo can be added to depsets.
+
+    This is a regression test for the error:
+    "Error in depset: depset elements must not be mutable values"
+
+    TargetWithMetadataInfo providers are stored in depsets (see core.bzl:211),
+    so all their fields must be immutable. The direct_deps field must be a
+    tuple, not a list.
+    """
+    env = unittest.begin(ctx)
+
+    # Create a TargetWithMetadataInfo with tuple direct_deps (immutable)
+    # In real code, this is created in core.bzl:204-208
+    target_info = TargetWithMetadataInfo(
+        target = "//test:target",  # String representation of label
+        metadata = depset([]),      # Empty depset
+        direct_deps = tuple(["//dep:a", "//dep:b"]),  # MUST be tuple, not list
+    )
+
+    # This is the critical operation that would fail if direct_deps were a list
+    # This simulates what happens in core.bzl:211
+    info_depset = depset(direct = [target_info])
+
+    # Verify we can retrieve it
+    items = info_depset.to_list()
+    asserts.equals(env, 1, len(items))
+    asserts.equals(env, "//test:target", items[0].target)
+
+    # Verify direct_deps is accessible and correct
+    asserts.equals(env, 2, len(items[0].direct_deps))
+    asserts.equals(env, "//dep:a", items[0].direct_deps[0])
+    asserts.equals(env, "//dep:b", items[0].direct_deps[1])
+
+    return unittest.end(env)
+
+target_with_metadata_info_depset_compatibility_test = unittest.make(_test_target_with_metadata_info_depset_compatibility)
+
 # ============================================================================
 # Integration test: Complete graph with edges
 # ============================================================================
@@ -271,6 +309,7 @@ def serialization_test_suite(name):
         target_with_empty_direct_deps_test,
         transitive_metadata_field_name_test,
         transitive_metadata_flattening_test,
+        target_with_metadata_info_depset_compatibility_test,
         # Integration tests
         complete_graph_with_edges_test,
     )

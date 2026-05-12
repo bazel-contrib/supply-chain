@@ -198,18 +198,23 @@ def gather_metadata_info_common(
             # reason to allocate another collection provider around that.
             return transitive_depsets[0]
          """
-        return [provider_factory(transitive = depset(transitive = transitive_depsets))]
+        return [provider_factory(
+            transitive = depset(transitive = transitive_depsets),
+            top_level_target = target.label,
+        )]
 
     # Create a TWMI linking this target to the applicable metadata
     me = TargetWithMetadataInfo(
         target = target.label,
         metadata = depset(got_providers),
-        direct_deps = direct_deps,
+        direct_deps = tuple(direct_deps),  # Convert to tuple for immutability (required for depset)
     )
     if not transitive_depsets:
         return [provider_factory(
             transitive = depset(direct = [me]),
+            top_level_target = target.label,
         )]
     return [provider_factory(
         transitive = depset(direct = [me], transitive = transitive_depsets),
+        top_level_target = target.label,
     )]
