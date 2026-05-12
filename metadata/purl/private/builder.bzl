@@ -84,6 +84,18 @@ def _subpath(self, fields, subpath):
     fields["subpath"] = subpath
     return self
 
+def _strict(self, fields, strict):
+    """Sets whether strict validation is enabled.
+
+    Args:
+        strict: If True, only common and type-specific qualifiers are accepted.
+
+    Returns:
+        The builder instance for method chaining.
+    """
+    fields["strict"] = strict
+    return self
+
 def _build(self, fields):
     purl, err = build(
         type = fields.get("type", None),
@@ -92,6 +104,7 @@ def _build(self, fields):
         version = fields.get("version", None),
         qualifiers = fields.get("qualifiers", None),
         subpath = fields.get("subpath", None),
+        strict = fields.get("strict", True),
     )
 
     if err:
@@ -108,7 +121,8 @@ def build(
         name = None,
         version = None,
         qualifiers = {},
-        subpath = None):
+        subpath = None,
+        strict = True):
     """Builds a Package URL (PURL) string from component parts.
 
     This function validates, normalizes, and serializes the PURL components
@@ -130,6 +144,8 @@ def build(
         qualifiers: A dictionary of qualifier key-value pairs (optional). Keys must start with ASCII letter
                     and contain only lowercase letters, numbers, '.', '-', '_'. Values will be percent-encoded.
         subpath: The subpath (optional). String with segments separated by '/' (e.g., "src/main").
+        strict: Whether to reject qualifier keys that are not common qualifiers
+                or type-specific qualifiers declared by the PURL type definition.
 
     Returns:
         A tuple of (purl_string, error). On success, returns (purl_string, None).
@@ -159,6 +175,7 @@ def build(
         version = version,
         qualifiers = qualifiers,
         subpath = subpath,
+        strict = strict,
     )
     if err:
         return None, err
@@ -311,6 +328,7 @@ def builder():
           Key must start with ASCII letter and contain only lowercase letters,
           numbers, '.', '-', '_'.
         - `subpath(subpath)`: Sets the subpath (optional). String with segments separated by '/'.
+        - `strict(strict)`: Enables or disables strict validation. Defaults to True.
         - `build()`: Validates, normalizes, and constructs the final PURL string.
           Performs both general and type-specific validation and normalization.
           Fails if validation errors occur.
@@ -324,6 +342,7 @@ def builder():
         version = lambda version: _version(self, fields, version),
         add_qualifier = lambda name, value: _add_qualifier(self, fields, name, value),
         subpath = lambda subpath: _subpath(self, fields, subpath),
+        strict = lambda strict: _strict(self, fields, strict),
         build = lambda: _build(self, fields),
     )
     return self

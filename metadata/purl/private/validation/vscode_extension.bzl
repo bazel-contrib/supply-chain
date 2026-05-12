@@ -7,7 +7,7 @@ visibility([
     "//purl/private/validation/...",
 ])
 
-def validate_vscode_extension(*, type, namespace, name, version, qualifiers, subpath):
+def validate_vscode_extension(*, type, namespace, name, version, qualifiers, subpath, strict):
     """Validates VS Code Extension PURLs.
 
     VS Code Extension PURLs must have a namespace (publisher).

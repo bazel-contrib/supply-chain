@@ -250,4 +250,68 @@ custom_tests = [
         "test_group": "base",
         "test_type": "build",
     },
+    # Strict qualifier validation tests
+    {
+        "description": "Strict parse rejects unknown npm qualifier",
+        "expected_failure": True,
+        "expected_failure_reason": "Unknown qualifier rejected in strict mode",
+        "expected_output": None,
+        "input": "pkg:npm/left-pad@1.3.0?not_allowed=true",
+        "test_group": "base",
+        "test_type": "parse",
+    },
+    {
+        "description": "Strict build rejects unknown npm qualifier",
+        "expected_failure": True,
+        "expected_failure_reason": "Unknown qualifier rejected in strict mode",
+        "expected_output": None,
+        "input": {
+            "name": "left-pad",
+            "namespace": None,
+            "qualifiers": {
+                "not_allowed": "true",
+            },
+            "subpath": None,
+            "type": "npm",
+            "version": "1.3.0",
+        },
+        "test_group": "base",
+        "test_type": "build",
+    },
+    {
+        "description": "Advanced parse allows unknown npm qualifier",
+        "expected_failure": False,
+        "expected_failure_reason": None,
+        "expected_output": {
+            "name": "left-pad",
+            "namespace": None,
+            "qualifiers": {
+                "not_allowed": "true",
+            },
+            "subpath": None,
+            "type": "npm",
+            "version": "1.3.0",
+        },
+        "input": "pkg:npm/left-pad@1.3.0?not_allowed=true",
+        "test_group": "advanced",
+        "test_type": "parse",
+    },
+    {
+        "description": "Advanced build allows unknown npm qualifier",
+        "expected_failure": False,
+        "expected_failure_reason": None,
+        "expected_output": "pkg:npm/left-pad@1.3.0?not_allowed=true",
+        "input": {
+            "name": "left-pad",
+            "namespace": None,
+            "qualifiers": {
+                "not_allowed": "true",
+            },
+            "subpath": None,
+            "type": "npm",
+            "version": "1.3.0",
+        },
+        "test_group": "advanced",
+        "test_type": "build",
+    },
 ]

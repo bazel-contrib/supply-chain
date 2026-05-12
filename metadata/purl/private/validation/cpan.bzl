@@ -7,7 +7,7 @@ visibility([
     "//purl/private/validation/...",
 ])
 
-def validate_cpan(*, type, namespace, name, version, qualifiers, subpath):
+def validate_cpan(*, type, namespace, name, version, qualifiers, subpath, strict):
     """Validates CPAN PURLs.
 
     CPAN PURLs must have a namespace (author) and the name must be a distribution

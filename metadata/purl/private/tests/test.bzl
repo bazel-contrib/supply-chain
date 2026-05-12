@@ -1,6 +1,7 @@
 """Test runner for PURL spec tests."""
 
 load("//purl/private:builder.bzl", "build")
+load("//purl/private:parser.bzl", "parse")
 load("//purl/private/tests:spec.bzl", "tests")
 load(
     "//purl/private/tests:spec.custom.bzl",
@@ -24,7 +25,9 @@ exit /b {status}
 """.strip()
 
 def _check_build_test(test, failures):
-    actual, err = build(**test["input"])
+    input = dict(test["input"])
+    input["strict"] = test["test_group"] == "base"
+    actual, err = build(**input)
     if test["expected_failure"]:
         if err:
             return
@@ -48,12 +51,60 @@ def _check_build_test(test, failures):
             })
 
 def _check_parse_test(test, failures):
-    # TODO(yannic): support this.
-    pass
+    actual, err = parse(test["input"], strict = test["test_group"] == "base")
+    if test["expected_failure"]:
+        if err:
+            return
+
+        failures.append({
+            "description": test["description"],
+            "message": "Expected failure: {}".format(test["expected_failure_reason"]),
+        })
+    else:
+        if err:
+            failures.append({
+                "description": test["description"],
+                "message": "Expected no failure, got {}".format(err),
+            })
+            return
+        expected = test["expected_output"]
+        if expected != actual:
+            failures.append({
+                "description": test["description"],
+                "message": "Expected {}, got {}".format(expected, actual),
+            })
+
+def _roundtrip(input, strict):
+    components, err = parse(input, strict = strict)
+    if err:
+        return None, err
+
+    components["strict"] = strict
+    return build(**components)
 
 def _check_roundtrip_test(test, failures):
-    # TODO(yannic): support this.
-    pass
+    actual, err = _roundtrip(test["input"], strict = test["test_group"] == "base")
+    if test["expected_failure"]:
+        if err:
+            return
+
+        failures.append({
+            "description": test["description"],
+            "message": "Expected failure: {}".format(test["expected_failure_reason"]),
+        })
+    else:
+        if err:
+            failures.append({
+                "description": test["description"],
+                "message": "Expected no failure, got {}".format(err),
+            })
+            return
+        expected = test["expected_output"]
+        if expected != actual:
+            failures.append({
+                "description": test["description"],
+                "message": "Expected {}, got {}".format(expected, actual),
+            })
 
 def _purl_spec_test_impl(ctx):
     failures = []

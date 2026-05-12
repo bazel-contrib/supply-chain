@@ -1,10 +1,13 @@
 exports_files(
     [
         "alpm.bzl",
+        "chrome_extension.bzl",
         "cpan.bzl",
         "hackage.bzl",
+        "identity.bzl",
         "julia.bzl",
         "otp.bzl",
+        "qualifiers.bzl",
         "pub.bzl",
         "pypi.bzl",
         "swift.bzl",
@@ -20,10 +23,13 @@ filegroup(
     name = "srcs",
     srcs = [
         "alpm.bzl",
+        "chrome_extension.bzl",
         "cpan.bzl",
         "hackage.bzl",
+        "identity.bzl",
         "julia.bzl",
         "otp.bzl",
+        "qualifiers.bzl",
         "pub.bzl",
         "pypi.bzl",
         "swift.bzl",
