@@ -1,6 +1,6 @@
 # Module `@package_metadata`
 
-General-purpose rules for injecting supply-chain metadata into Bazel projects (e.g., for generating [SBOM](https://www.ntia.gov/page/software-bill-materials)s for shipped software artifacts). 
+General-purpose rules for injecting supply-chain metadata into Bazel projects (e.g., for generating [SBOM](https://www.ntia.gov/page/software-bill-materials)s for shipped software artifacts).
 
 
 ## Stability
@@ -73,7 +73,27 @@ If you are a module author and want to annotate your module, you will need to ta
 
     There are three options to annotate targets:
 
-      - Add `package_metadata` to all targets individually:
+      - Module Level: Add `default_package_metadata` to `REPO.bazel`
+
+        It requires changing a single file only.
+
+        ```starlark
+        repo(default_package_metadata = ["//:package_metadata"])
+        ```
+
+        This provides a simple way to annotate all targets in a package, while preserving the ability to annotate some packages or targets in the package with a different metadata using the methods above.
+
+      - Package level: Add `default_package_metadata` to all packages
+
+        Similar approach to adding `default_package_metadata` to `REPO.bazel`, but on a per package level.
+
+        ```starlark
+        package(default_package_metadata = ["//:package_metadata"])
+        ```
+
+        This provides a simple way to annotate all targets in a package, while preserving the ability to annotate some targets in the package with a different metadata using the method above.
+
+      - Target level: Add `package_metadata` to all targets individually:
 
         ```starlark
         foo_library(
@@ -87,23 +107,6 @@ If you are a module author and want to annotate your module, you will need to ta
 
         While this allows very fine grained control over the metadata of a target, it's also very tedious to modify all targets in a module. This method should therefore be reserved for targets with different metadata.
 
-      - Add `default_package_metadata` to all packages
-
-        ```starlark
-        package(default_package_metadata = ["//:package_metadata"])
-        ```
-
-        This provides a simple way to annotate all targets in a package, while preserving the ability to annotate some targets in the package with a different metadata using the method above.
-
-      - Add `default_package_metadata` to `REPO.bazel`
-
-        This method is very similar to adding `default_package_metadata` to all packages, but it requires changing a single file only.
-
-        ```starlark
-        repo(default_package_metadata = ["//:package_metadata"])
-        ```
-
-        This provides a simple way to annotate all targets in a package, while preserving the ability to annotate some packages or targets in the package with a different metadata using the methods above.
 
   - Publish your module.
 
