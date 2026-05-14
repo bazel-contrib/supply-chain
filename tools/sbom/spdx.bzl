@@ -1,7 +1,11 @@
 load("providers.bzl", "SbomInfo")
 
 def _spdx_impl(ctx):
-    out_path = ctx.attr.out.name if ctx.attr.out != None else "%s.txt" % ctx.attr.name
+    out_path = ctx.attr.out.name if ctx.attr.out != None else \
+        "%s.txt" % ctx.attr.name if ctx.attr.format == "tag-value" else \
+        "%s.json" % ctx.attr.name if ctx.attr.format == "json" else \
+        "%s.yaml" % ctx.attr.name if ctx.attr.format == "yaml"
+
     out = ctx.actions.declare_file(out_path)
     inputs = depset(
         [],
