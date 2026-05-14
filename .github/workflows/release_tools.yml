@@ -87,6 +87,6 @@ jobs:
       module_version: "${{ inputs.version }}"
       tag_name: "${{ inputs.module}}-${{ inputs.version }}"
       registry_fork: "bazel-contrib/bazel-central-registry"
-      open_pull_request: false
+      open_pull_request: true
     secrets:
       publish_token: "${{ secrets.BCR_PUBLISH_TOKEN }}"
