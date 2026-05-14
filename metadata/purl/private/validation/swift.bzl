@@ -7,7 +7,7 @@ visibility([
     "//purl/private/validation/...",
 ])
 
-def validate_swift(*, type, namespace, name, version, qualifiers, subpath, strict):
+def validate_swift(*, type, namespace, name, version, qualifiers, subpath):
     """Validates Swift PURLs.
 
     Swift PURLs must have a namespace.

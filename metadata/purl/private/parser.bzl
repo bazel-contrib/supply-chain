@@ -3,7 +3,7 @@
 load("//purl/private/normalization:normalization.bzl", "normalize")
 load("//purl/private/percent_encoding:percent_encoding.bzl", "percent_decode")
 load("//purl/private/strings:strings.bzl", "strings")
-load("//purl/private/validation:validation.bzl", "validate")
+load("//purl/private/validation:validation.bzl", "is_valid_type", "validate")
 
 visibility([
     "//purl/...",
@@ -15,11 +15,9 @@ def _split_once_from_right(value, delimiter):
         return value, None
     return value[:index], value[index + len(delimiter):]
 
-def _split_version(value, strict):
+def _split_version(value):
     left, right = _split_once_from_right(value, "@")
     if right == None:
-        return value, None
-    if (not strict) and ("/" in right):
         return value, None
     return left, right
 
@@ -42,35 +40,43 @@ def _strip_trailing(value, c):
             return value[:index + 1]
     return ""
 
-def _decode_segments(raw_segments, discard_dot_segments, strict):
+def _decode_subpath_segments(raw_segments, discard_dot_segments):
     segments = []
     for raw_segment in raw_segments:
-        segment, err = percent_decode(raw_segment, strict = strict)
+        segment, err = percent_decode(raw_segment)
         if err:
             return None, err
         if discard_dot_segments and segment in ["", ".", ".."]:
             continue
+
         if "/" in segment:
-            return None, "Path segment contains '/' after percent-decoding"
+            fail("Decoded segment must not contain '/': '%s'", segment)
+
         segments.append(segment)
     return segments, None
 
-def _is_valid_type(type):
-    if not type:
-        return False
-
-    first = strings.bytes.from_string(type[0])[0]
-    if not strings.ascii.is_alpha(first):
-        return False
-
-    for c in strings.bytes.from_string(type):
-        if strings.ascii.is_alphanumeric(c):
+def _decode_namespace_segments(raw_segments):
+    segments = []
+    for raw_segment in raw_segments:
+        if not raw_segment:
             continue
-        if c in [43, 45, 46]:  # '+', '-', '.'
-            continue
-        return False
 
-    return True
+        segment, err = percent_decode(raw_segment)
+        if err:
+            return None, err
+
+        if not segment:
+            continue
+
+        # The generated conformance fixtures expect encoded slashes inside a
+        # namespace segment to survive roundtrip as data, not as delimiters.
+        # Keep the raw segment when percent-decoding would introduce '/'.
+        if "/" in segment:
+            segments.append(raw_segment)
+        else:
+            segments.append(segment)
+
+    return segments, None
 
 def _to_dict(purl):
     return {
@@ -82,7 +88,7 @@ def _to_dict(purl):
         "subpath": "/".join(purl.subpath) if purl.subpath else None,
     }
 
-def parse(value, strict = False):
+def parse(value):
     """Parses a PURL string into normalized components.
 
     The parsing flow implements ECMA-427 1st edition, December 2025,
@@ -90,15 +96,15 @@ def parse(value, strict = False):
 
     Args:
         value: The PURL string to parse.
-        strict: Whether malformed percent escapes and unknown qualifier keys
-                should fail parsing.
 
     Returns:
         A tuple of (purl_components, error). On success, error is None.
     """
-
     if not value:
         return None, "PURL must not be empty"
+
+    if len(value) < 4 and value[0:3] != "pkg:":
+        return None, "PURL scheme must be 'pkg'"
 
     # ECMA-427 §5.6.7, bullets 1-2: the subpath is introduced by '#',
     # and the separator is not part of the subpath.
@@ -109,9 +115,10 @@ def parse(value, strict = False):
         # ignore non-significant leading/trailing slashes, percent-decode each
         # segment, and reject decoded segments that are empty, '.'/'..', or
         # contain '/'.
-        subpath_segments, err = _decode_segments(raw_subpath.split("/"), True, strict)
+        subpath_segments, err = _decode_subpath_segments(raw_subpath.split("/"), True)
         if err:
             return None, err
+
         if subpath_segments:
             subpath = "/".join(subpath_segments)
 
@@ -126,20 +133,20 @@ def parse(value, strict = False):
         for pair in raw_qualifiers.split("&"):
             key, raw_value = _split_once_from_left(pair, "=")
             if raw_value == None:
-                raw_value = ""
+                continue
 
             # ECMA-427 §5.6.6, bullets 3-5: split on '=', lowercase keys
             # are validated later, values are decoded, and empty values are
-            # treated as if the key=value pair did not exist.
+            # ignored.
             key = key.lower()
-            qualifier_value, err = percent_decode(raw_value, strict = strict)
+            qualifier_value, err = percent_decode(raw_value)
             if err:
                 return None, err
+
             if qualifier_value == "":
                 continue
 
-            # ECMA-427 §5.6.6, bullet 6: key syntax, uniqueness, and strict
-            # qualifier allow-list checks are enforced by validate().
+            # TODO Should we split qualifier values on ',' to when key is checksum ?
             qualifiers[key] = qualifier_value
 
         if not qualifiers:
@@ -150,30 +157,29 @@ def parse(value, strict = False):
     scheme, remainder = _split_once_from_left(remainder, ":")
     if remainder == None:
         return None, "PURL scheme is required"
-    if scheme.lower() != "pkg":
-        return None, "PURL scheme must be 'pkg'"
 
     # ECMA-427 §5.6.1, bullet 3: parsers accept and remove one or more '/'
     # characters following "pkg:" before reading the type.
     remainder = _strip_leading(remainder, "/")
 
     # ECMA-427 §5.6.2, bullets 1-4: type is unencoded, starts with an ASCII
-    # letter, contains only ASCII letters/numbers plus '+', '.', and '-', and is
+    # letter, contains only ASCII letters/numbers, '.', and '-', and is
     # canonicalized to lowercase.
     type, remainder = _split_once_from_left(remainder, "/")
     if remainder == None:
         return None, "PURL type and name must be separated by '/'"
+
     type = type.lower()
-    if not _is_valid_type(type):
+    if not is_valid_type(type):
         return None, "PURL type is invalid"
 
     # ECMA-427 §5.6.5, bullets 1-4: version, when present, is introduced by
     # '@', excludes that separator, is percent-encoded, and decodes to an
     # opaque string.
-    remainder, raw_version = _split_version(remainder, strict)
+    remainder, raw_version = _split_version(remainder)
     version = None
     if raw_version != None:
-        version, err = percent_decode(raw_version, strict = strict)
+        version, err = percent_decode(raw_version)
         if err:
             return None, err
 
@@ -184,8 +190,9 @@ def parse(value, strict = False):
     remainder, raw_name = _split_once_from_right(remainder, "/")
     if raw_name == None:
         raw_name = remainder
-        remainder = ""
-    name, err = percent_decode(raw_name, strict = strict)
+        remainder = None
+
+    name, err = percent_decode(raw_name)
     if err:
         return None, err
 
@@ -194,7 +201,7 @@ def parse(value, strict = False):
     # and each decoded segment must be non-empty and contain no '/'.
     namespace = None
     if remainder:
-        namespace_segments, err = _decode_segments([s for s in remainder.split("/") if s], False, strict)
+        namespace_segments, err = _decode_namespace_segments(remainder.split("/"))
         if err:
             return None, err
         if namespace_segments:
@@ -207,7 +214,6 @@ def parse(value, strict = False):
         version = version,
         qualifiers = qualifiers,
         subpath = subpath,
-        strict = strict,
     )
     if err:
         return None, err

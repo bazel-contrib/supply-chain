@@ -8,7 +8,6 @@ load("//purl/private/validation:hackage.bzl", "validate_hackage")
 load("//purl/private/validation:identity.bzl", "validate_identity")
 load("//purl/private/validation:julia.bzl", "validate_julia")
 load("//purl/private/validation:otp.bzl", "validate_otp")
-load("//purl/private/validation:qualifiers.bzl", "validate_strict_qualifiers")
 load("//purl/private/validation:pub.bzl", "validate_pub")
 load("//purl/private/validation:pypi.bzl", "validate_pypi")
 load("//purl/private/validation:swift.bzl", "validate_swift")
@@ -67,8 +66,7 @@ def validate(
         name = None,
         version = None,
         qualifiers = {},
-        subpath = None,
-        strict = False):
+        subpath = None):
     # Spec §5: Validate required fields are present.
     if not type:
         return "Mandatory property 'type' not set"
@@ -103,11 +101,6 @@ def validate(
 
                 return "Qualifier key {} does not start with ASCII letter, got {}".format(key, c)
 
-    if strict:
-        err = validate_strict_qualifiers(type, qualifiers)
-        if err:
-            return err
-
     validator = _validators.get(type.lower())
     if not validator:
         return None
@@ -119,5 +112,21 @@ def validate(
         version = version,
         qualifiers = qualifiers,
         subpath = subpath,
-        strict = strict,
     )
+
+def is_valid_type(type):
+    if not type:
+        return False
+
+    first = strings.bytes.from_string(type[0])[0]
+    if not strings.ascii.is_alpha(first):
+        return False
+
+    for c in strings.bytes.from_string(type):
+        if strings.ascii.is_alphanumeric(c):
+            continue
+        if c in [45, 46]:  # '-', '.'
+            continue
+        return False
+
+    return True

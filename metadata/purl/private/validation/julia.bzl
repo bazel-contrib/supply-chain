@@ -7,7 +7,7 @@ visibility([
     "//purl/private/validation/...",
 ])
 
-def validate_julia(*, type, namespace, name, version, qualifiers, subpath, strict):
+def validate_julia(*, type, namespace, name, version, qualifiers, subpath):
     """Validates Julia PURLs.
 
     Julia PURLs must have either a version or a uuid qualifier (or

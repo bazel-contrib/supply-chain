@@ -45,13 +45,11 @@ def _hex_value(c):
         return strings.bytes.from_string(c)[0] - strings.bytes.from_string("a")[0] + 10
     return None
 
-def percent_decode(value, strict = True):
+def percent_decode(value):
     """Decodes percent-encoded bytes in the provided string.
 
     Args:
       value (string): The string to decode.
-      strict (bool): Whether malformed percent escapes are errors. When false,
-                     malformed '%' characters are left untouched.
 
     Returns:
       A tuple of (decoded_string, error). On success, error is None.
@@ -69,18 +67,12 @@ def percent_decode(value, strict = True):
             continue
 
         if i + 2 >= len(value):
-            if strict:
-                return None, "Incomplete percent-encoded sequence"
-            bytes.append(strings.bytes.from_string(c)[0])
-            continue
+            return None, "Incomplete percent-encoded sequence"
 
         high = _hex_value(value[i + 1])
         low = _hex_value(value[i + 2])
         if high == None or low == None:
-            if strict:
-                return None, "Invalid percent-encoded sequence"
-            bytes.append(strings.bytes.from_string(c)[0])
-            continue
+            return None, "Invalid percent-encoded sequence"
 
         bytes.append((high * 16) + low)
         skip_until = i + 3

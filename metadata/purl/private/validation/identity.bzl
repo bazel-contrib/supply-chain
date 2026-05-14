@@ -4,5 +4,5 @@ visibility([
     "//purl/private/validation/...",
 ])
 
-def validate_identity(*, type, namespace, name, version, qualifiers, subpath, strict):
+def validate_identity(*, type, namespace, name, version, qualifiers, subpath):
     return None

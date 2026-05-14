@@ -7,7 +7,7 @@ visibility([
     "//purl/private/validation/...",
 ])
 
-def validate_alpm(*, type, namespace, name, version, qualifiers, subpath, strict):
+def validate_alpm(*, type, namespace, name, version, qualifiers, subpath):
     """Validates ALPM PURLs."""
     if not namespace:
         return "ALPM PURLs require a namespace (vendor)"

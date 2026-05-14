@@ -26,7 +26,6 @@ exit /b {status}
 
 def _check_build_test(test, failures):
     input = dict(test["input"])
-    input["strict"] = test["test_group"] == "base"
     actual, err = build(**input)
     if test["expected_failure"]:
         if err:
@@ -51,7 +50,7 @@ def _check_build_test(test, failures):
             })
 
 def _check_parse_test(test, failures):
-    actual, err = parse(test["input"], strict = test["test_group"] == "base")
+    actual, err = parse(test["input"])
     if test["expected_failure"]:
         if err:
             return
@@ -74,16 +73,15 @@ def _check_parse_test(test, failures):
                 "message": "Expected {}, got {}".format(expected, actual),
             })
 
-def _roundtrip(input, strict):
-    components, err = parse(input, strict = strict)
+def _roundtrip(input):
+    components, err = parse(input)
     if err:
         return None, err
 
-    components["strict"] = strict
     return build(**components)
 
 def _check_roundtrip_test(test, failures):
-    actual, err = _roundtrip(test["input"], strict = test["test_group"] == "base")
+    actual, err = _roundtrip(test["input"])
     if test["expected_failure"]:
         if err:
             return

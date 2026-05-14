@@ -10,7 +10,7 @@ def _is_chrome_id_char(c):
 def _is_digit(c):
     return c >= "0" and c <= "9"
 
-def validate_chrome_extension(*, type, namespace, name, version, qualifiers, subpath, strict):
+def validate_chrome_extension(*, type, namespace, name, version, qualifiers, subpath):
     if len(name) != 32:
         return "Chrome extension names must be 32 characters"
     for c in name.elems():

@@ -7,7 +7,7 @@ visibility([
     "//purl/private/validation/...",
 ])
 
-def validate_otp(*, type, namespace, name, version, qualifiers, subpath, strict):
+def validate_otp(*, type, namespace, name, version, qualifiers, subpath):
     """Validates OTP PURLs.
 
     OTP PURLs must NOT have a namespace component.

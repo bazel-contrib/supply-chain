@@ -7,7 +7,7 @@ visibility([
     "//purl/private/validation/...",
 ])
 
-def validate_pub(*, type, namespace, name, version, qualifiers, subpath, strict):
+def validate_pub(*, type, namespace, name, version, qualifiers, subpath):
     """Validates Pub PURLs."""
     if namespace:
         return "Pub PURLs must not have a namespace"

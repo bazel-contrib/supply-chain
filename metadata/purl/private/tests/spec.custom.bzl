@@ -250,68 +250,198 @@ custom_tests = [
         "test_group": "base",
         "test_type": "build",
     },
-    # Strict qualifier validation tests
+    # https://github.com/package-url/purl-spec/pull/793
     {
-        "description": "Strict parse rejects unknown npm qualifier",
-        "expected_failure": True,
-        "expected_failure_reason": "Unknown qualifier rejected in strict mode",
-        "expected_output": None,
-        "input": "pkg:npm/left-pad@1.3.0?not_allowed=true",
-        "test_group": "base",
-        "test_type": "parse",
+       "description": "scheme followed by double slash should be accepted",
+       "test_group": "base",
+       "test_type": "parse",
+       "input": "pkg://npm/foo@1.0.0",
+       "expected_output": {
+           "type": "npm",
+           "namespace": None,
+           "name": "foo",
+           "version": "1.0.0",
+           "qualifiers": None,
+           "subpath": None
+       },
+       "expected_failure": False,
+       "expected_failure_reason": None
     },
     {
-        "description": "Strict build rejects unknown npm qualifier",
-        "expected_failure": True,
-        "expected_failure_reason": "Unknown qualifier rejected in strict mode",
-        "expected_output": None,
-        "input": {
-            "name": "left-pad",
-            "namespace": None,
-            "qualifiers": {
-                "not_allowed": "true",
-            },
-            "subpath": None,
-            "type": "npm",
-            "version": "1.3.0",
-        },
+       "description": "scheme followed by triple slash should be accepted",
+       "test_group": "base",
+       "test_type": "parse",
+       "input": "pkg:///pypi/requests@2.28.0",
+       "expected_output": {
+           "type": "pypi",
+           "namespace": None,
+           "name": "requests",
+           "version": "2.28.0",
+           "qualifiers": None,
+           "subpath": None
+       },
+       "expected_failure": False,
+       "expected_failure_reason": None
+    },
+    {
+       "description": "scheme with slashes roundtrips to canonical form without slashes",
+       "test_group": "base",
+       "test_type": "roundtrip",
+       "input": "pkg://generic/name@1.0",
+       "expected_output": "pkg:generic/name@1.0",
+       "expected_failure": False,
+       "expected_failure_reason": None
+    },
+    {
+       "description": "plus sign in type should be rejected",
+       "test_group": "base",
+       "test_type": "parse",
+       "input": "pkg:c++/stdlib@1.0",
+       "expected_output": None,
+       "expected_failure": True,
+       "expected_failure_reason": "Should fail to parse a PURL with plus sign in type"
+    },
+    {
+       "description": "plus sign in type should be rejected (build)",
+       "test_group": "base",
+       "test_type": "build",
+       "input": {
+           "type": "objective-c++",
+           "namespace": None,
+           "name": "foundation",
+           "version": "1.0",
+           "qualifiers": None,
+           "subpath": None
+       },
+       "expected_output": None,
+       "expected_failure": True,
+       "expected_failure_reason": "Should fail to build a PURL with plus sign in type"
+    },
+    {
+       "description": "colon in name should not be percent-encoded",
+       "test_group": "base",
+       "test_type": "build",
+       "input": {
+           "type": "generic",
+           "namespace": None,
+           "name": "std:io",
+           "version": "1.0",
+           "qualifiers": None,
+           "subpath": None
+       },
+       "expected_output": "pkg:generic/std:io@1.0",
+       "expected_failure": False,
+       "expected_failure_reason": None
+    },
+    {
+       "description": "colon in namespace should not be percent-encoded",
+       "test_group": "base",
+       "test_type": "build",
+       "input": {
+           "type": "generic",
+           "namespace": "org:example",
+           "name": "lib",
+           "version": None,
+           "qualifiers": None,
+           "subpath": None
+       },
+       "expected_output": "pkg:generic/org:example/lib",
+       "expected_failure": False,
+       "expected_failure_reason": None
+    },
+    {
+       "description": "colon in version should not be percent-encoded",
+       "test_group": "base",
+       "test_type": "roundtrip",
+       "input": "pkg:generic/foo@1.0:beta",
+       "expected_output": "pkg:generic/foo@1.0:beta",
+       "expected_failure": False,
+       "expected_failure_reason": None
+    },
+    {
+       "description": "encoded colon in name should decode and stay unencoded",
+       "test_group": "base",
+       "test_type": "roundtrip",
+       "input": "pkg:generic/std%3Aio@1.0",
+       "expected_output": "pkg:generic/std:io@1.0",
+       "expected_failure": False,
+       "expected_failure_reason": None
+    },
+    {
+       "description": "qualifier with empty value should be discarded",
+       "test_group": "base",
+       "test_type": "parse",
+       "input": "pkg:npm/foo@1.0?empty=&valid=yes",
+       "expected_output": {
+           "type": "npm",
+           "namespace": None,
+           "name": "foo",
+           "version": "1.0",
+           "qualifiers": {
+           "valid": "yes"
+         },
+           "subpath": None
+       },
+       "expected_failure": False,
+       "expected_failure_reason": None
+    },
+    {
+       "description": "multiple empty qualifiers should all be discarded",
+       "test_group": "base",
+       "test_type": "roundtrip",
+       "input": "pkg:npm/bar@2.0?a=&b=value&c=",
+       "expected_output": "pkg:npm/bar@2.0?b=value",
+       "expected_failure": False,
+       "expected_failure_reason": None
+    },
+    {
+       "description": "all-empty qualifiers should result in no query string",
+       "test_group": "base",
+       "test_type": "roundtrip",
+       "input": "pkg:npm/baz@3.0?empty=&also_empty=",
+       "expected_output": "pkg:npm/baz@3.0",
+       "expected_failure": False,
+       "expected_failure_reason": None
+    },
+    {
+       "description": "namespace segments should preserve literal slashes",
+       "test_group": "base",
+       "test_type": "build",
+       "input": {
+           "type": "maven",
+           "namespace": "org.apache/commons",
+           "name": "lang",
+           "version": "3.12",
+           "qualifiers": None,
+           "subpath": None
+       },
+       "expected_output": "pkg:maven/org.apache/commons/lang@3.12",
+       "expected_failure": False,
+       "expected_failure_reason": None
+    },
+    {
+        "description": "special characters in namespace segments should be encoded per-segment",
         "test_group": "base",
         "test_type": "build",
-    },
-    {
-        "description": "Advanced parse allows unknown npm qualifier",
-        "expected_failure": False,
-        "expected_failure_reason": None,
-        "expected_output": {
-            "name": "left-pad",
-            "namespace": None,
-            "qualifiers": {
-                "not_allowed": "true",
-            },
-            "subpath": None,
-            "type": "npm",
-            "version": "1.3.0",
-        },
-        "input": "pkg:npm/left-pad@1.3.0?not_allowed=true",
-        "test_group": "advanced",
-        "test_type": "parse",
-    },
-    {
-        "description": "Advanced build allows unknown npm qualifier",
-        "expected_failure": False,
-        "expected_failure_reason": None,
-        "expected_output": "pkg:npm/left-pad@1.3.0?not_allowed=true",
         "input": {
-            "name": "left-pad",
-            "namespace": None,
-            "qualifiers": {
-                "not_allowed": "true",
-            },
-            "subpath": None,
-            "type": "npm",
-            "version": "1.3.0",
+           "type": "generic",
+           "namespace": "org name/sub dir",
+           "name": "lib",
+           "version": None,
+           "qualifiers": None,
+           "subpath": None
         },
-        "test_group": "advanced",
-        "test_type": "build",
+        "expected_output": "pkg:generic/org%20name/sub%20dir/lib",
+        "expected_failure": False,
+        "expected_failure_reason": None
     },
+    {
+        "description": "namespace with encoded slash in segment should roundtrip correctly",
+        "test_group": "base",
+        "test_type": "roundtrip",
+        "input": "pkg:generic/a%2Fb/c/name",
+        "expected_output": "pkg:generic/a%2Fb/c/name",
+        "expected_failure": False,
+        "expected_failure_reason": None
+    }
 ]

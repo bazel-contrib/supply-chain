@@ -2,7 +2,8 @@
 
 load("//purl/private/normalization:normalization.bzl", "normalize")
 load("//purl/private/percent_encoding:percent_encoding.bzl", "percent_encode")
-load("//purl/private/validation:validation.bzl", "validate")
+load("//purl/private/strings:strings.bzl", "strings")
+load("//purl/private/validation:validation.bzl", "is_valid_type", "validate")
 
 visibility([
     "//purl/...",
@@ -84,18 +85,6 @@ def _subpath(self, fields, subpath):
     fields["subpath"] = subpath
     return self
 
-def _strict(self, fields, strict):
-    """Sets whether strict validation is enabled.
-
-    Args:
-        strict: If True, only common and type-specific qualifiers are accepted.
-
-    Returns:
-        The builder instance for method chaining.
-    """
-    fields["strict"] = strict
-    return self
-
 def _build(self, fields):
     purl, err = build(
         type = fields.get("type", None),
@@ -104,7 +93,6 @@ def _build(self, fields):
         version = fields.get("version", None),
         qualifiers = fields.get("qualifiers", None),
         subpath = fields.get("subpath", None),
-        strict = fields.get("strict", True),
     )
 
     if err:
@@ -114,6 +102,23 @@ def _build(self, fields):
 def _is_type(actual, expected):
     return type(actual) == type(expected)
 
+def _percent_encode_namespace_segment(segment):
+    parts = []
+    skip_until = -1
+    start = 0
+    for i in range(len(segment)):
+        if i < skip_until:
+            continue
+
+        if (i + 2 < len(segment)) and segment[i] == "%" and segment[i + 1] == "2" and segment[i + 2] in ["F", "f"]:
+            parts.append(percent_encode(segment[start:i]))
+            parts.append("%2F")
+            skip_until = i + 3
+            start = i + 3
+
+    parts.append(percent_encode(segment[start:]))
+    return "".join(parts)
+
 def build(
         *,
         type = None,
@@ -121,8 +126,7 @@ def build(
         name = None,
         version = None,
         qualifiers = {},
-        subpath = None,
-        strict = True):
+        subpath = None):
     """Builds a Package URL (PURL) string from component parts.
 
     This function validates, normalizes, and serializes the PURL components
@@ -144,8 +148,6 @@ def build(
         qualifiers: A dictionary of qualifier key-value pairs (optional). Keys must start with ASCII letter
                     and contain only lowercase letters, numbers, '.', '-', '_'. Values will be percent-encoded.
         subpath: The subpath (optional). String with segments separated by '/' (e.g., "src/main").
-        strict: Whether to reject qualifier keys that are not common qualifiers
-                or type-specific qualifiers declared by the PURL type definition.
 
     Returns:
         A tuple of (purl_string, error). On success, returns (purl_string, None).
@@ -168,6 +170,9 @@ def build(
         ```
     """
 
+    if not is_valid_type(type):
+        return None, "Invalid type: '{}'".format(type)
+
     err = validate(
         type = type,
         namespace = namespace,
@@ -175,7 +180,6 @@ def build(
         version = version,
         qualifiers = qualifiers,
         subpath = subpath,
-        strict = strict,
     )
     if err:
         return None, err
@@ -205,7 +209,7 @@ def build(
     # If the namespace is not empty:
     if purl.namespace:
         # Percent-encode each segment.
-        segments = [percent_encode(v) for v in purl.namespace]
+        segments = [_percent_encode_namespace_segment(v) for v in purl.namespace]
 
         # Join the segments with '/'.
         # Append this to the PURL.
@@ -328,7 +332,6 @@ def builder():
           Key must start with ASCII letter and contain only lowercase letters,
           numbers, '.', '-', '_'.
         - `subpath(subpath)`: Sets the subpath (optional). String with segments separated by '/'.
-        - `strict(strict)`: Enables or disables strict validation. Defaults to True.
         - `build()`: Validates, normalizes, and constructs the final PURL string.
           Performs both general and type-specific validation and normalization.
           Fails if validation errors occur.
@@ -342,7 +345,6 @@ def builder():
         version = lambda version: _version(self, fields, version),
         add_qualifier = lambda name, value: _add_qualifier(self, fields, name, value),
         subpath = lambda subpath: _subpath(self, fields, subpath),
-        strict = lambda strict: _strict(self, fields, strict),
         build = lambda: _build(self, fields),
     )
     return self
