@@ -27,12 +27,6 @@ def create_test_fixtures():
         tags = ["manual"],
     )
 
-    # Diamond pattern:
-    #     test_target_with_deps
-    #       /              \
-    #    test_dep_b    test_dep_c
-    #       \              /    \
-    #      test_leaf_dep_d   test_leaf_dep_e
     native.filegroup(
         name = "test_target_with_deps",
         srcs = [":test_dep_b", ":test_dep_c"],

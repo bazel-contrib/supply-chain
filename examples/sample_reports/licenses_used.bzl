@@ -105,7 +105,7 @@ def _handle_transitive_collector(target_metadata_info, command, inputs, report, 
     """Process a TransitiveMetadataInfo.
 
     Args:
-        target_metadata_info: A provider instance
+        target_metadata_info: A TransitiveMetadataInfo provider instance
         command: (in/out) list of command line args we are building
         inputs: (in/out) list of files needed for that command line
         report: (in/out) list of things we want to say to the user.
@@ -127,7 +127,7 @@ def _handle_transitive_collector(target_metadata_info, command, inputs, report, 
                 attribute_to_consumers = attribute_to_consumers,
             )
         if hasattr(target_metadata_info, "transitive"):
-            fail("TransititiveMetadataInfo contains both metadata and trans." + str(target_metadata_info))
+            fail("TransititiveMetadataInfo contains both metadata and transitive: " + str(target_metadata_info))
 
 def _licenses_used_impl(ctx):
     # Gather all metadata and make a report from that
