@@ -5,13 +5,6 @@ This repository contains Bazel modules for injecting and collecting supply-chain
   - [Documentation](./docs)
   - Modules
     - [@package_metadata](./metadata)
-  - Contact:
-    - [Slack](https://bazelbuild.slack.com/archives/C04AZC3E729)
-    - There is a working group which meets weekly on Thursdays at 2:30pm CET / 8:30am EST. [Meet link](https://meet.google.com/qop-eyei-cfh).
-      - If you would like to participate, reach out on the slack channel for an invitation.
-      - [Meeting notes](https://docs.google.com/document/d/1WhScaOLERet4Fxi4fa2Lpke2MgJZGvEE4EXeq6yb0LU)
-    - Mailing list: [bazel-supply-chain-security@bazel.build](https://groups.google.com/a/bazel.build/g/bazel-supply-chain-security)
-
 
 This project is the successor to [rules_license](https://github.com/bazelbuild/rules_license).
 
@@ -26,19 +19,20 @@ The intended use cases are:
   set of packages used by a target.
 - producing SBOMs for built artifacts.
 
-WARNING: The code here is still in active initial development and will churn a lot.
+> [!WARNING]
+> The code here is still in active initial development and will churn a lot.
 
+## How to participate
+
+- Slack: [#supply-chain-security](https://bazelbuild.slack.com/archives/C04AZC3E729)
+- Mailing list: [bazel-supply-chain-security@bazel.build](https://groups.google.com/a/bazel.build/g/bazel-supply-chain-security)
+- Weekly meeting every Thursday at 8:30am EST / 02:30pm CET ([Add to calendar](https://calendar.google.com/calendar/event?action=TEMPLATE&tmeid=MXA1ZXJlZ3Mxa24xcTl1c3NocXQ1dnFwNXRfMjAyNTEyMThUMTMzMDAwWiBjXzYxNTYxMjA0MmE4YjUyODgxYWJkYjk3NDcyNDdmZDEyYjA5NDhhYWFhNTFkNDE5YmUzNWE3ODgyNWRkM2RhNmRAZw&tmsrc=c_615612042a8b52881abdb9747247fd12b0948aaaa51d419be35a78825dd3da6d%40group.calendar.google.com&scp=ALL) / [meet ID](https://meet.google.com/qop-eyei-cfh) / [meeting notes](https://docs.google.com/document/d/1WhScaOLERet4Fxi4fa2Lpke2MgJZGvEE4EXeq6yb0LU/edit?usp=sharing))
 
 ## Roadmap
 
-In flux.
-
-### Q3 2025
-
-The immediate concern is feature parity with rules_license and providing a smooth migration path.
+See [this page](roadmap.md).
 
 ## Background reading:
-
 
 These is for learning about the problem space, and our approach to solutions. Concrete specifications will always appear in checked in code rather than documents.
 - [License Checking with Bazel](https://docs.google.com/document/d/1uwBuhAoBNrw8tmFs-NxlssI6VRolidGYdYqagLqHWt8/edit#).

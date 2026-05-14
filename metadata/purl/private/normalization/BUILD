@@ -1,6 +1,10 @@
 exports_files(
     [
+        "alpm.bzl",
+        "hackage.bzl",
         "normalization.bzl",
+        "pub.bzl",
+        "pypi.bzl",
     ],
     visibility = [
         "//purl/private:__pkg__",
@@ -10,7 +14,11 @@ exports_files(
 filegroup(
     name = "srcs",
     srcs = [
+        "alpm.bzl",
+        "hackage.bzl",
         "normalization.bzl",
+        "pub.bzl",
+        "pypi.bzl",
     ],
     visibility = [
         "//purl/private:__pkg__",

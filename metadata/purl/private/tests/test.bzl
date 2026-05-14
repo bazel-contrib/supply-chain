@@ -23,48 +23,52 @@ echo '{message}'
 exit /b {status}
 """.strip()
 
+def _check_build_test(test, failures):
+    actual, err = build(**test["input"])
+    if test["expected_failure"]:
+        if err:
+            return
+
+        failures.append({
+            "description": test["description"],
+            "message": "Expected failure: {}".format(test["expected_failure_reason"]),
+        })
+    else:
+        if err:
+            failures.append({
+                "description": test["description"],
+                "message": "Expected no failure, got {}".format(err),
+            })
+            return
+        expected = test["expected_output"]
+        if expected != actual:
+            failures.append({
+                "description": test["description"],
+                "message": "Expected {}, got {}".format(expected, actual),
+            })
+
+def _check_parse_test(test, failures):
+    # TODO(yannic): support this.
+    pass
+
+def _check_roundtrip_test(test, failures):
+    # TODO(yannic): support this.
+    pass
+
 def _purl_spec_test_impl(ctx):
     failures = []
-    # Combine both auto-generated and custom tests
     all_tests = tests + custom_tests
     for test in all_tests:
-        if test["test_group"] == "base":
-            if test["test_type"] == "build":
-                actual, err = build(**test["input"])
-                if test["expected_failure"]:
-                    if err:
-                        continue
-
-                    failures.append({
-                        "description": test["description"],
-                        "message": "Expected failure: {}".format(test["expected_failure_reason"]),
-                    })
-                else:
-                    if err:
-                        failures.append({
-                            "description": test["description"],
-                            "message": "Expected no failure, got {}".format(err),
-                        })
-                        continue
-                    expected = test["expected_output"]
-                    if expected != actual:
-                        failures.append({
-                            "description": test["description"],
-                            "message": "Expected {}, got {}".format(expected, actual),
-                        })
-            elif test["test_type"] == "parse":
-                # TODO(yannic): support this.
-                pass
-            elif test["test_type"] == "roundtrip":
-                # TODO(yannic): support this.
-                pass
-            else:
-                fail("Unexpected test type {}".format(test["test_type"]))
-        elif test["test_group"] == "advanced":
-            # TODO(yannic): support this.
-            pass
-        else:
+        if test["test_group"] not in ["base", "advanced"]:
             fail("Unexpected test group {}".format(test["test_group"]))
+        if test["test_type"] == "build":
+            _check_build_test(test, failures)
+        elif test["test_type"] == "parse":
+            _check_parse_test(test, failures)
+        elif test["test_type"] == "roundtrip":
+            _check_roundtrip_test(test, failures)
+        else:
+            fail("Unexpected test type {}".format(test["test_type"]))
 
     content = _bash_executable if (ctx.configuration.host_path_separator == ":") else _bat_executable
 
