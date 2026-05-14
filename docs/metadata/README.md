@@ -81,7 +81,7 @@ If you are a module author and want to annotate your module, you will need to ta
         repo(default_package_metadata = ["//:package_metadata"])
         ```
 
-        This provides a simple way to annotate all targets in a package, while preserving the ability to annotate some packages or targets in the package with a different metadata using the methods above.
+        This provides a simple way to annotate all targets in a module, while preserving the ability to annotate some packages or targets in the package with a different metadata using the methods above.
 
       - Package level: Add `default_package_metadata` to all packages
 
