@@ -1,0 +1,461 @@
+# Reusable workflow that can be referenced by repositories in their `.github/workflows/publish.yaml`.
+#
+# This workflow uses an Action within this repo to generate a BCR entry for
+# a tagged release, uploads attestations for the generated source.json and MODULE.bazel files to the release,
+# and opens up a pull request against the Bazel Central Registry (https://github.com/bazelbuild/bazel-central-registry).
+#
+# The workflow requires the following permissions to be set on the invoking job:
+#
+# permissions:
+#   id-token: write        # Needed to attest provenance
+#   attestations: write    # Needed to attest provenance
+#   contents: write        # Needed to upload release files
+#
+# The workflow additionally requires a Classic Personal Access Token (PAT) to be supplied in the `publish_token`
+# input. The PAT is necessary to push to your BCR fork as well as to open up a pull request against a registry.
+# At the moment, fine-grained PATs are not supported because they cannot open pull requests against public
+# repositories, although this is on GitHub's roadmap: https://github.com/github/roadmap/issues/600.
+#
+# The module repository must contain a .bcr folder containing Publish to BCR templates.
+# See https://github.com/bazel-contrib/publish-to-bcr/tree/main/templates.
+#
+# Repositories containing multiple modules that are versioned together will have all modules included in
+# the published entry. This is controlled via the `moduleRoots` property in .bcr/config.yml.
+
+on:
+  # Make this workflow reusable, see
+  # https://github.blog/2022-02-10-using-reusable-workflows-github-actions
+  workflow_call:
+    inputs:
+      open_pull_request:
+        description: |
+          Whether to open a pull request against the registry after pushing an entry
+          to the registry fork. When disabled, a step will run outputting a URL to
+          manually create the pull request.
+
+          This should typically be left enabled but can be disabled to support a
+          fine-grained access token as the `publish_token` secret. Fine-grained PATs
+          do not currently support opening pull requests against public repos.
+          See https://github.com/github/roadmap/issues/600.
+        default: true
+        type: boolean
+      module_name:
+        required: true
+        description: The name of the module in the Bazel registry.
+        type: string
+      module_version:
+        required: true
+        description: The version of the module.
+        type: string
+      tag_name:
+        required: true
+        description: The git tag within repository identifying the release
+        type: string
+      registry_fork:
+        required: true
+        description: The Bazel registry fork to push to when opening up a pull request, e.g. "mycompany/bazel-central-registry"
+        type: string
+      registry:
+        description: The Bazel registry to open up a pull request against. Defaults to the Bazel Central Registry.
+        default: bazelbuild/bazel-central-registry
+        type: string
+      repository:
+        description: The Bazel module repository to publish an entry for. Defaults the the repository the action runs in.
+        default: ${{ github.repository }}
+        type: string
+      registry_branch:
+        description: The branch of the Bazel registry to open a PR against. Defaults to main.
+        default: main
+        type: string
+      templates_ref:
+        description: |
+          The git ref to read BCR templates (.bcr folder) rather than reading them from `tag_name`.
+          Use this to republish a release whose templates had errors.
+        type: string
+      attest:
+        description: |
+          Whether to produce and upload attestations for genrated entry files and create attestations.json.
+          Attestations will be uploaded to the release associated with the `tag_name`.
+
+          If you are not using the reusable release workflow from https://github.com/bazel-contrib/.github/.github/workflows/release_ruleset.yaml
+          to produce attestations, you may want to skip this.
+        default: true
+        type: boolean
+      draft:
+        description: |
+          Whether to open the pull request as a draft.
+
+          This is set to true by default because the Bazel Central Registry has a mechanism to auto-approve a PR
+          when marked as ready for review by the author, which is whomever the PAT belongs to. This is a work-around
+          for an author not being able to approve their own PR.
+          If using a bot account as the author, consider setting draft to false because a human author can approve it.
+          See https://github.com/bazel-contrib/publish-to-bcr/issues/261.
+        default: true
+        type: boolean
+      author_name:
+        description: |
+          Commit author name for the BCR entry. Defaults to the actor running the GitHub Actions workflow.
+        default: ${{ github.actor }}
+        type: string
+      author_email:
+        description: |
+          Commit author email for the BCR entry. Defaults to the actor running the GitHub Actions workflow.
+        default: ${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com
+        type: string
+      # Default the committer to the GitHub Actions bot
+      # https://github.com/orgs/community/discussions/26560#discussioncomment-3531273
+      committer_name:
+        description: |
+          Name of the git committer. Defaults to the GitHub Action bot's name.
+        default: "github-actions[bot]"
+        type: string
+      committer_email:
+        description: |
+          Email of the git committer. Defaults to the GitHub Action bot's email.
+        default: "41898282+github-actions[bot]@users.noreply.github.com"
+        type: string
+      tag_prefix:
+        description: |
+          The prefix to remove from the tag name to calculate the version.
+          For example, with prefix 'v' and tag 'v1.2.3', the version becomes '1.2.3'.
+          With prefix 'bazel-v' and tag 'bazel-v1.2.3', the version becomes '1.2.3'.
+        default: "v"
+        type: string
+      environment:
+        type: string
+        description: |
+          Name of the deployment environment to use for secrets. Deployment environments cannot be
+          directly passed to reusable workflows: https://github.com/actions/runner/issues/1490.
+        required: false
+        default: "" # Default to no environment
+      download_default_release_artifacts:
+        description: |
+          Download the release archive and any release attestations uploaded as workflow run artifacts
+          by the reusable release_ruleset workflow.
+
+          https://github.com/bazel-contrib/.github/blob/master/.github/workflows/release_ruleset.yaml
+
+          This allows the publish workflow to calculate integrity checksums from the files locally
+          rather than attempting to download them from the release.
+
+          This must be enabled when using GitHub immutable releases. Otherwise, artifact downloads using
+          release urls will fail since the release has not been finalized.
+
+          If not using the reusable release workflow or the workflow run artifacts cannot be found, this
+          will be a no-op and artifacts downloads will fall back to using release urls.
+        default: true
+        type: boolean
+      release_artifacts_run_id:
+        description: |
+          The GitHub workflow run id to download release artifacts and attestations from when
+          `download_default_release_artifacts` is enabled. Defaults to the current workflow run.
+
+          Set the run id manually if not invoking the reusable publish workflow using `workflow_call`
+          from the same workflow where the release runs. For example, if running publish in a workflow
+          triggered by the release workflow completion (i.e., on: workflow_run: types: ["completed"]), then
+          pass `github.event.workflow_run.id`.
+
+          If publishes are run manually using `workflow_dispatch`, the run id of the target release
+          should be configured as a manual input to the dispatch.
+        default: ${{ github.run_id }}
+        type: string
+    secrets:
+      publish_token:
+        required: true
+        description: |
+          A Personal Access Token (PAT) used for pushing to a registry fork and opening up a pull request.
+          If a deployment environment is used, the secret will be referenced from the environment.
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    env:
+      REGISTRY_BRANCH: ${{ inputs.registry_branch }}
+      REGISTRY: ${{ inputs.registry }}
+      REGISTRY_FORK: ${{ inputs.registry_fork }}
+      TAG_NAME: ${{ inputs.tag_name }}
+    steps:
+    - name: Checkout the module repository
+      uses: actions/checkout@v4.3.1
+      with:
+        ref: ${{ inputs.templates_ref || inputs.tag_name }}
+        repository: ${{ inputs.repository }}
+        path: this
+        persist-credentials: false
+
+    - name: Checkout BCR
+      uses: actions/checkout@v4.3.1
+      with:
+        repository: ${{ inputs.registry }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+        path: bazel-central-registry
+        persist-credentials: false
+
+    - name: Write release version
+      env:
+        VERSION: ${{ inputs.module_version }}
+      run: |
+        echo Version: $VERSION
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+    # Download release artifacts published by the reusable release_ruleset workflow.
+    # https://github.com/bazel-contrib/.github/.github/workflows/release_ruleset.yaml
+    - name: Download release files
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      if: ${{ inputs.download_default_release_artifacts }}
+      # Don't fail if the artifact name cannot be found in case a different release workflow
+      # was used. Computing integrity hashes will fall back to downloading the release archive
+      # from the release itself.
+      continue-on-error: true
+      with:
+        run-id: ${{ inputs.release_artifacts_run_id }}
+        name: release_files
+        path: local_artifacts/release_files
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+
+    # Download release attestations published by the reusable release_ruleset workflow.
+    # https://github.com/bazel-contrib/.github/.github/workflows/release_ruleset.yaml
+    - name: Download release attestations
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      if: ${{ inputs.download_default_release_artifacts && inputs.attest }}
+      # Don't fail if the artifact name cannot be found in case a different release workflow
+      # was used. Computing integrity hashes will fall back to downloading the release attestations
+      # from the release itself.
+      continue-on-error: true
+      with:
+        run-id: ${{ inputs.release_artifacts_run_id }}
+        name: attestations
+        path: local_artifacts/release_attestation_files
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+
+    # Remove any pre-existing attestations.template.json files so that the following (dummy) entry
+    # creation for generating attestations will succeed without trying to substitute and verify
+    # existing attestations. Any existing templates will be restored when the final entry is created.
+    # TODO: need to do this across every submodule .bcr
+    - name: Remove attestations.template.json
+      if: ${{ inputs.attest }}
+      working-directory: this/.bcr
+      run: find . -type f -name 'attestations.template.json' -delete
+
+    # Create an initial entry so that we can attest the generated source.json and MODULE.bazel
+    # files. These are needed to solve a chicken and egg problem where the attestations are referenced
+    # by attestations.template.json entry file, which is included in the entry published later on.
+    # This entry will be discarded.
+    - name: Create entry
+      id: create-entry
+      if: ${{ inputs.attest }}
+      # Ideally this should reference the action at the matching SHA with the reusable workflow.
+      # However all the context is the caller repo (like this workflow is inlined)
+      # https://github.com/orgs/community/discussions/18602
+      # https://github.com/orgs/community/discussions/63863
+      uses: bazel-contrib/publish-to-bcr@bde22e6f14b0b5882f73a12434d2d1c2ec410317
+      with:
+        attest: true
+        attestations-dest: attestations
+        tag: ${{ inputs.tag_name }}
+        module-version: ${{ env.VERSION }}
+        local-registry: bazel-central-registry
+        templates-dir: this/.bcr/${{ inputs.module_name }}
+        local-artifact-path: local_artifacts/release_files
+
+    # Upload the attestations to the release. This will override attestations that
+    # were already uploaded on a previous run.
+    - name: Upload attestations to release
+      if: ${{ inputs.attest }}
+      uses: softprops/action-gh-release@v1
+      with:
+        files: attestations/*
+        repository: ${{ inputs.repository }}
+        tag_name: ${{ inputs.tag_name }}
+        # When working with a draft release we must set draft: true for the upload
+        # to work. When it's not a draft, setting it to true still works.
+        draft: true
+
+    # Publish to BCR can run substitutions on an attestations.template.json file. Add a default
+    # template here rather than requiring users to add one the module repo's .bcr templates folder.
+    - name: Create attestations template
+      if: ${{ inputs.attest }}
+      working-directory: this/.bcr/${{ inputs.module_name }}
+      # Ideally this would be in its own file, but it's not currently trivial to source files from a
+      # reusable workflow in a different repository:
+      # https://github.com/orgs/community/discussions/63863
+      # https://github.com/orgs/community/discussions/18602
+      run: |
+        # Determine whether this is a multi-module repo because it affects the names of the
+        # uploaded attestaton files.
+        if [ -f "config.yml" ]; then
+            readarray -t MODULE_ROOTS < <(cat "config.yml" | yq --unwrapScalar '.moduleRoots.[] // "."')
+        elif [ -f "config.yaml" ]; then
+            readarray -t MODULE_ROOTS < <(cat "config.yaml" | yq --unwrapScalar '.moduleRoots.[] // "."')
+        else
+            MODULE_ROOTS=(".")
+        fi
+
+        # Read comma-delimited module names into an array
+        IFS=',' read -r -a MODULE_NAMES <<< "${{ steps.create-entry.outputs.module-names }}"
+
+        for i in "${!MODULE_ROOTS[@]}"; do
+            MODULE_ROOT="${MODULE_ROOTS[$i]}"
+            if [ ! -f "${MODULE_ROOT}/attestations.template.json" ]; then
+                # Multi-module repos upload attestations with the module name as a prefix
+                if [ "${#MODULE_ROOTS[@]}" -gt "1" ]; then
+                  PREFIX="${MODULE_NAMES[$i]}."
+                else
+                  PREFIX=""
+                fi
+                RELEASE_ARCHIVE_URL=$(cat "${MODULE_ROOT}/source.template.json" | jq --raw-output '.url')
+                cat <<EOF >"${MODULE_ROOT}/attestations.template.json"
+        {
+            "mediaType": "application/vnd.build.bazel.registry.attestation+json;version=1.0.0",
+            "attestations": {
+                "source.json": {
+                    "url": "https://github.com/{OWNER}/{REPO}/releases/download/{TAG}/${PREFIX}source.json.intoto.jsonl",
+                    "integrity": ""
+                },
+                "MODULE.bazel": {
+                    "url": "https://github.com/{OWNER}/{REPO}/releases/download/{TAG}/${PREFIX}MODULE.bazel.intoto.jsonl",
+                    "integrity": ""
+                },
+                "$(basename ${RELEASE_ARCHIVE_URL})": {
+                    "url": "${RELEASE_ARCHIVE_URL}.intoto.jsonl",
+                    "integrity": ""
+                }
+            }
+        }
+        EOF
+            fi
+        done
+
+    - name: Discard previous entry
+      if: ${{ inputs.attest }}
+      working-directory: bazel-central-registry
+      run: |
+            git checkout -- ./
+            git clean -ffxd
+
+    - name: Create final entry
+      id: create-final-entry
+      uses: bazel-contrib/publish-to-bcr@bde22e6f14b0b5882f73a12434d2d1c2ec410317
+      with:
+        tag: ${{ inputs.tag_name }}
+        module-version: ${{ env.VERSION }}
+        local-registry: bazel-central-registry
+        templates-dir: this/.bcr/${{ inputs.module_name }}
+        local-artifact-path: |
+          attestations
+          local_artifacts/release_files
+          local_artifacts/release_attestation_files
+
+    - name: Push to fork
+      id: push-to-fork
+      working-directory: bazel-central-registry
+      env:
+        # Set the author to the actor of this workflow. Use the github-provided
+        # noreply email address: https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-personal-account-on-github/managing-email-preferences/setting-your-commit-email-address.
+        AUTHOR_NAME: ${{ inputs.author_name }}
+        AUTHOR_EMAIL: ${{ inputs.author_email }}
+        COMMITTER_NAME: ${{ inputs.committer_name }}
+        COMMITTER_EMAIL: ${{ inputs.committer_email }}
+      run: |
+        set -o errexit -o nounset -o pipefail
+
+        # Use an authorized remote url to push to the fork
+        git remote add authed-fork https://x-access-token:${{ secrets.publish_token }}@github.com/${REGISTRY_FORK}.git
+
+        BRANCH="${{ steps.create-final-entry.outputs.module-names }}-${TAG_NAME}"
+        git checkout -b "${BRANCH}"
+        git add .
+        git -c "author.name=${AUTHOR_NAME}" \
+          -c "author.email=${AUTHOR_EMAIL}" \
+          -c "committer.name=${COMMITTER_NAME}" \
+          -c "committer.email=${COMMITTER_EMAIL}" \
+          commit \
+          -m "${{ steps.create-final-entry.outputs.short-description }}"
+        git push --force authed-fork "${BRANCH}"
+
+        echo "branch=${BRANCH}" >> $GITHUB_OUTPUT
+
+    - name: Prepare PR variables
+      id: pr-vars
+      env:
+        REPOSITORY: ${{ inputs.repository }}
+      run: |
+        set -o errexit -o nounset -o pipefail
+
+        TITLE="${{ steps.create-final-entry.outputs.short-description }}"
+        echo "title=${TITLE}" >> $GITHUB_OUTPUT
+
+        echo "body<<EOF" >> $GITHUB_OUTPUT
+        echo -e "Release: https://github.com/${REPOSITORY}/releases/tag/${TAG_NAME}\n" >> $GITHUB_OUTPUT
+        echo "_Automated by [Publish to BCR](https://github.com/bazel-contrib/publish-to-bcr)_" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+
+    - name: Open pull request
+      if: ${{ inputs.open_pull_request }}
+      env:
+        DRAFT: ${{ inputs.draft }}
+      working-directory: bazel-central-registry
+      run: |
+        set -o errexit -o nounset -o pipefail
+
+        FORK_OWNER="${REGISTRY_FORK%%/*}"
+        BRANCH="${{ steps.push-to-fork.outputs.branch }}"
+        MAINTAINER_CAN_MODIFY=true
+
+        REQUEST_BODY=$(jq --null-input \
+          --arg title "${{ steps.pr-vars.outputs.title }}" \
+          --arg body "${{ steps.pr-vars.outputs.body }}" \
+          --arg head "${FORK_OWNER}:${BRANCH}" \
+          --arg base ${REGISTRY_BRANCH} \
+          --argjson draft "${DRAFT}" \
+          --argjson maintainer_can_modify "${MAINTAINER_CAN_MODIFY}" \
+          '{title: $title, body: $body, head: $head, base: $base, maintainer_can_modify: $maintainer_can_modify, draft: $draft}')
+
+        # Make a request to the GitHub API directly rather than using the gh cli
+        # because authorizing with the cli using `gh auth login --with-token` requires
+        # additional permissions on the PAT.
+        # API docs: https://docs.github.com/en/rest/pulls/pulls?apiVersion=2022-11-28#create-a-pull-request
+        RESPONSE_BODY=$(mktemp)
+        RESPONSE_CODE=$(curl \
+          --location \
+          --silent \
+          --output "${RESPONSE_BODY}" \
+          --write-out "%{http_code}" \
+          --request POST \
+          --header "Accept: application/vnd.github+json" \
+          --header "Authorization: Bearer ${{ secrets.publish_token }}" \
+          --header "X-GitHub-Api-Version: 2022-11-28" \
+          https://api.github.com/repos/${REGISTRY}/pulls \
+          --data "${REQUEST_BODY}"
+        )
+
+        if [[ "${RESPONSE_CODE}" == 201 ]]; then
+          PULL_REQUEST_URL=$(jq --raw-output .html_url <"${RESPONSE_BODY}")
+          echo "Created pull request ${PULL_REQUEST_URL}"
+          echo "${PULL_REQUEST_URL}" >> $GITHUB_STEP_SUMMARY
+        elif [[ "${RESPONSE_CODE}" == 422 && "$(jq -r ".errors[0].message" <"${RESPONSE_BODY}")" == *"already exists"* ]]; then
+          echo "A pull request for branch ${BRANCH} on ${REGISTRY_FORK} already exists."
+        else
+          echo "Failed to create pull request; received status ${RESPONSE_CODE}"
+          cat "${RESPONSE_BODY}"
+          rm "${RESPONSE_BODY}"
+          exit 1
+        fi
+
+        rm "${RESPONSE_BODY}"
+
+    - name: Open pull request manually
+      if: ${{ !inputs.open_pull_request }}
+      run: |
+        set -o errexit -o nounset -o pipefail
+
+        FORK_OWNER="${REGISTRY_FORK%%/*}"
+        FORK_REPO="${REGISTRY_FORK##*/}"
+        TITLE=$(jq --raw-input --raw-output @uri <<<"${{ steps.pr-vars.outputs.title }}")
+        BODY=$(jq --raw-input --raw-output --slurp @uri <<<"${{ steps.pr-vars.outputs.body }}")
+
+        echo "Skipped creating a pull request because create_pull_request is false."
+        echo -e "Create the pull request manually by visiting:"
+
+        # https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/using-query-parameters-to-create-a-pull-request
+        echo "https://github.com/${REGISTRY}/compare/${REGISTRY_BRANCH}...${FORK_OWNER}:${FORK_REPO}:${{ steps.push-to-fork.outputs.branch }}?title=${TITLE}&body=${BODY}&quick_pull=1"

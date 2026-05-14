@@ -7,6 +7,7 @@ TAG="${1}"
 
 case "${TAG}" in 
   v[0-9]* )
+    # This is the legacy workflow that releases everything at once
     # The prefix is chosen to match what GitHub generates for source archives
     # This guarantees that users can easily switch from a released artifact to a source archive
     # with minimal differences in their code (e.g. strip_prefix remains the same)
@@ -14,19 +15,24 @@ case "${TAG}" in
     PREFIX="supply-chain-${TAG:1}"
     ARCHIVE="supply-chain-$TAG.tar.gz"
     MODULE="package_metadata"
-    STRIP_PREFIX="${PREFIX}/metadata",
+    STRIP_PREFIX="${PREFIX}/metadata"
+    # NB: configuration for 'git archive' is in /.gitattributes
+    git archive --format=tar --prefix=${PREFIX}/ ${TAG} | gzip > $ARCHIVE
     ;;
   * )
+    # New workflow that lets us release each submodule seperately.
+    # Split the tag at the last - into module and version.
     VERSION=$(echo "$TAG" | sed -e 's/^.*-//')
-    MODULE=$(echo "$TAG" | sed -e 's/-[0-9]*.*$//')
+    MODULE=$(echo "$TAG" | sed -e 's/-[^-]*$//')
+    MODULE_DIR=$(releasing/module_to_dir.sh "${MODULE}")
     PREFIX="${TAG}"
     ARCHIVE="${TAG}.tar.gz"
-    STRIP_PREFIX="${PREFIX}",
+    STRIP_PREFIX="${PREFIX}/${MODULE_DIR}"
+    # NB: configuration for 'git archive' is in /.gitattributes
+    git archive --format=tar --prefix=${PREFIX}/ ${TAG} ${MODULE_DIR} | gzip > $ARCHIVE
+    ;;
 esac
 
-# NB: configuration for 'git archive' is in /.gitattributes
-echo git archive --format=tar --prefix=${PREFIX}/ ${TAG} | gzip > $ARCHIVE
-git archive --format=tar --prefix=${PREFIX}/ ${TAG} | gzip > $ARCHIVE
 SHA=$(shasum -a 256 $ARCHIVE | awk '{print $1}')
 
 cat << EOF
