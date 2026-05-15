@@ -174,6 +174,11 @@ def parse(value):
     if not is_valid_type(type):
         return None, "PURL type is invalid"
 
+    if type == "npm" and remainder.startswith("@"):
+        # Special case for npm scoped packages, which have an unencoded '@' at the start of the namespace.
+        remainder = "%40" + remainder[1:]
+
+
     # ECMA-427 §5.6.5, bullets 1-4: version, when present, is introduced by
     # '@', excludes that separator, is percent-encoded, and decodes to an
     # opaque string.
