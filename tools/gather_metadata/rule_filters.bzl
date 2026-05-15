@@ -13,7 +13,7 @@ would ignore all attributes prefixed with a _.
 
 # Rule kinds with attributes the aspect currently needs to ignore
 rule_to_excluded_attributes = {
-    "*": ["linter"],
+    "*": ["linter", "_*"],
     "cc_binary": ["_*"],
     "cc_embed_data": ["_*"],
     "cc_grpc_library": ["_*", "current_cc_toolchain"],
