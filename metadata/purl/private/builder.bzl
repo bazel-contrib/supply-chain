@@ -211,11 +211,6 @@ def build(
         # Percent-encode each segment.
         segments = [_percent_encode_namespace_segment(v) for v in purl.namespace]
 
-        if purl.type.lower() == "npm" and len(segments) > 0 and segments[0].startswith("@"):
-            # For npm, if the first segment of the namespace '@', do not percent-encode the '@' character.
-            segments[0] = "@" + segments[0][3:]
-
-
         # Join the segments with '/'.
         # Append this to the PURL.
         components.append("/".join(segments))
