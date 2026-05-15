@@ -129,7 +129,7 @@ def metadata_info_to_json(metadata_info):
     # Build the output structure
     output = {
         "schema_version": "1.0",
-        "root_target": str(metadata_info.top_level_target) if metadata_info.top_level_target else "",
+        "root_target": _label_to_string(metadata_info.top_level_target) if metadata_info.top_level_target else "",
         "nodes": nodes,
         "edges": edges,
     }

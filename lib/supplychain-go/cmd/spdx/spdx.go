@@ -16,27 +16,46 @@ import (
 )
 
 func main() {
-	var outPath, configPath, format string
+	var outPath, graphPath, classificationsPath, format string
 	flag.StringVar(&outPath, "out", "", "The path to write the generated SPDX SBOM.")
-	flag.StringVar(&configPath, "config", "", "The path to the SBOM generation configuration file.")
+	flag.StringVar(&graphPath, "graph", "", "The path to the graph JSON file.")
+	flag.StringVar(&classificationsPath, "classifications", "", "The path to the classifications JSON file.")
 	flag.StringVar(&format, "format", "json", "The output format of the SPDX SBOM.")
 	flag.Parse()
-	var config sbom.GenConfig
 
-	configBytes, err := os.ReadFile(configPath)
-	if err != nil {
-		panic(err)
+	if graphPath == "" || classificationsPath == "" {
+		panic("both --graph and --classifications flags are required")
 	}
 
-	json.Unmarshal(configBytes, &config)
+	// Read graph
+	graphBytes, err := os.ReadFile(graphPath)
+	if err != nil {
+		panic(fmt.Errorf("reading graph: %w", err))
+	}
 
-	out, err := os.OpenFile(outPath, os.O_WRONLY|os.O_CREATE, 0664)
+	var graph sbom.GraphConfig
+	if err := json.Unmarshal(graphBytes, &graph); err != nil {
+		panic(fmt.Errorf("parsing graph: %w", err))
+	}
+
+	// Read classifications
+	classBytes, err := os.ReadFile(classificationsPath)
+	if err != nil {
+		panic(fmt.Errorf("reading classifications: %w", err))
+	}
+
+	var classifications sbom.Classifications
+	if err := json.Unmarshal(classBytes, &classifications); err != nil {
+		panic(fmt.Errorf("parsing classifications: %w", err))
+	}
+
+	out, err := os.OpenFile(outPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0664)
 	if err != nil {
 		panic(err)
 	}
 	defer out.Close()
 
-	doc, err := GenerateDocument(config)
+	doc, err := GenerateDocument(graph, classifications)
 	if err != nil {
 		panic(err)
 	}
@@ -59,16 +78,27 @@ func main() {
 	}
 }
 
-func GenerateDocument(config sbom.GenConfig) (*spdx.Document, error) {
-	spdxPackages := make([]*spdx.Package, len(config.Deps))
+func GenerateDocument(graph sbom.GraphConfig, classifications sbom.Classifications) (*spdx.Document, error) {
+	spdxPackages := make([]*spdx.Package, 0)
+	labelToID := make(map[string]string)
+	idx := 0
 
-	for i, dep := range config.Deps {
-		pkgMetadata, err := supplychain.ReadPackageMetadataFromFile(dep.Metadata)
+	// Helper function to create package from node
+	createPackage := func(node *sbom.NodeConfig) (*spdx.Package, error) {
+		if node.MetadataFile == "" {
+			return nil, nil
+		}
+
+		pkgMetadata, err := supplychain.ReadPackageMetadataFromFile(node.MetadataFile)
 		if err != nil {
 			return nil, err
 		}
-		spdxPackages[i] = &spdx.Package{
-			PackageSPDXIdentifier: common.ElementID(fmt.Sprintf("dep-%d", i)),
+
+		elementID := fmt.Sprintf("dep-%d", idx)
+		idx++
+
+		pkg := &spdx.Package{
+			PackageSPDXIdentifier: common.ElementID(elementID),
 			PackageExternalReferences: []*spdx.PackageExternalReference{
 				{
 					Category: "PACKAGE-MANAGER",
@@ -78,12 +108,73 @@ func GenerateDocument(config sbom.GenConfig) (*spdx.Document, error) {
 			},
 			PackageName: pkgMetadata.GetPURL().Name,
 		}
+
+		labelToID[node.Label] = elementID
+		return pkg, nil
+	}
+
+	// Add root component
+	if classifications.RootComponent != nil {
+		pkg, err := createPackage(classifications.RootComponent)
+		if err != nil {
+			return nil, err
+		}
+		if pkg != nil {
+			spdxPackages = append(spdxPackages, pkg)
+		}
+	}
+
+	// Add all dependencies (direct + transitive)
+	for i := range classifications.Dependencies.Direct {
+		pkg, err := createPackage(&classifications.Dependencies.Direct[i])
+		if err != nil {
+			return nil, err
+		}
+		if pkg != nil {
+			spdxPackages = append(spdxPackages, pkg)
+		}
+	}
+	for i := range classifications.Dependencies.Transitive {
+		pkg, err := createPackage(&classifications.Dependencies.Transitive[i])
+		if err != nil {
+			return nil, err
+		}
+		if pkg != nil {
+			spdxPackages = append(spdxPackages, pkg)
+		}
+	}
+
+	// Build Relationships from graph edges
+	relationships := make([]*spdx.Relationship, 0, len(graph.Edges))
+	for _, edge := range graph.Edges {
+		fromID, fromOk := labelToID[edge.From]
+		toID, toOk := labelToID[edge.To]
+
+		if fromOk && toOk {
+			relationships = append(relationships, &spdx.Relationship{
+				RefA:         common.MakeDocElementID("", fromID),
+				RefB:         common.MakeDocElementID("", toID),
+				Relationship: "DEPENDS_ON",
+			})
+		}
+	}
+
+	// Add DESCRIBES relationship from DOCUMENT to root component
+	if classifications.RootComponent != nil {
+		if rootID, ok := labelToID[classifications.RootComponent.Label]; ok {
+			relationships = append(relationships, &spdx.Relationship{
+				RefA:         common.MakeDocElementID("", "DOCUMENT"),
+				RefB:         common.MakeDocElementID("", rootID),
+				Relationship: "DESCRIBES",
+			})
+		}
 	}
 
 	doc := spdx.Document{
 		SPDXIdentifier: "DOCUMENT",
 		SPDXVersion:    "SPDX-2.3",
 		Packages:       spdxPackages,
+		Relationships:  relationships,
 		CreationInfo:   &spdx.CreationInfo{},
 	}
 

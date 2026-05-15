@@ -15,8 +15,10 @@ def _cyclonedx_impl(ctx):
         inputs = inputs,
         executable = ctx.attr._cyclonedx[DefaultInfo].files_to_run,
         arguments = [
-            "--config",
-            ctx.attr.sbom[SbomInfo].config.path,
+            "--graph",
+            ctx.attr.sbom[SbomInfo].graph.path,
+            "--classifications",
+            ctx.attr.sbom[SbomInfo].classifications.path,
             "--out",
             out.path,
             "--format",

@@ -1,10 +1,12 @@
 load("providers.bzl", "SbomInfo")
 
 def _spdx_impl(ctx):
-    out_path = ctx.attr.out.name if ctx.attr.out != None else \
-        "%s.txt" % ctx.attr.name if ctx.attr.format == "tag-value" else \
-        "%s.json" % ctx.attr.name if ctx.attr.format == "json" else \
-        "%s.yaml" % ctx.attr.name if ctx.attr.format == "yaml"
+    out_path = (
+        ctx.attr.out.name if ctx.attr.out != None else
+        "%s.txt" % ctx.attr.name if ctx.attr.format == "tag-value" else
+        "%s.json" % ctx.attr.name if ctx.attr.format == "json" else
+        "%s.yaml" % ctx.attr.name
+    )
 
     out = ctx.actions.declare_file(out_path)
     inputs = depset(
@@ -19,8 +21,10 @@ def _spdx_impl(ctx):
         inputs = inputs,
         executable = ctx.attr._spdx[DefaultInfo].files_to_run,
         arguments = [
-            "--config",
-            ctx.attr.sbom[SbomInfo].config.path,
+            "--graph",
+            ctx.attr.sbom[SbomInfo].graph.path,
+            "--classifications",
+            ctx.attr.sbom[SbomInfo].classifications.path,
             "--out",
             out.path,
             "--format",
