@@ -7064,7 +7064,7 @@ tests = [
     {
         "description": "check for null type",
         "expected_failure": True,
-        "expected_failure_reason": "Should fail to build a PURL from None type",
+        "expected_failure_reason": "Should fail to build a PURL from null type",
         "expected_output": None,
         "input": {
             "name": "nginx",
