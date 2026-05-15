@@ -143,6 +143,11 @@ Parses a PURL string into normalized components.
 The parsing flow implements ECMA-427 1st edition, December 2025,
 §5.6 "Rules for each PURL component".
 
+See https://ecma-international.org/wp-content/uploads/ECMA-427_1st_edition_december_2025.pdf
+
+It parses the components in reverse order of their appearance in the PURL string, as recommended by
+https://github.com/PaawanBarach/purl-spec/blob/main/docs/how-to-parse.md
+
 
 **PARAMETERS**
 
