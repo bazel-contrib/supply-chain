@@ -10,7 +10,8 @@ visibility([
 ])
 
 def normalize_pub(components):
-    """Normalizes Pub PURL components."""
+    # https://github.com/package-url/purl-spec/blob/main/types/pub-definition.json#L20-L22
+    # "Replace non-[a-z] letters, non-[0-9] digits with underscore _"
     result = []
     for c in strings.bytes.from_string(components["name"].lower()):
         if (c >= 97 and c <= 122) or (c >= 48 and c <= 57) or c == 95:
