@@ -81,8 +81,21 @@ def _get_transitive_metadata(
 
         attr_value = getattr(ctx.rule.attr, name)
 
-        # Make scalers into a lists for convenience.
-        if type(attr_value) != type([]):
+        # Flatten any attribute type into a flat list of targets.
+        if type(attr_value) == type({}):
+            # Dict-typed attrs: collect all targets from keys and values.
+            flat = []
+            for k, v in attr_value.items():
+                if type(k) == "Target":
+                    flat.append(k)
+                elif type(k) == type([]):
+                    flat.extend(k)
+                if type(v) == "Target":
+                    flat.append(v)
+                elif type(v) == type([]):
+                    flat.extend(v)
+            attr_value = flat
+        elif type(attr_value) != type([]):
             attr_value = [attr_value]
 
         for dep in attr_value:
