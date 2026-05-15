@@ -1,7 +1,7 @@
 """Module defining urils for [purl](https://github.com/package-url/purl-spec)s."""
 
 load("//purl/private:builder.bzl", "builder")
-load("//purl/private:parser.bzl", _parse = "parse")
+load("//purl/private:parser.bzl", "parse")
 
 visibility("public")
 
@@ -45,5 +45,5 @@ def _bazel(name, version):
 purl = struct(
     builder = builder,
     bazel = _bazel,
-    parse = _parse,
+    parse = parse,
 )

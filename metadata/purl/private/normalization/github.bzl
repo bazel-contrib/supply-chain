@@ -1,4 +1,7 @@
-"""Normalization for GitHub PURLs."""
+"""Normalization for GitHub PURLs.
+
+Spec: https://github.com/package-url/purl-spec/blob/main/types/github-definition.json
+"""
 
 visibility([
     "//purl/private/normalization/...",

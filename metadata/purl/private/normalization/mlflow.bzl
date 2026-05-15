@@ -1,4 +1,7 @@
-"""Normalization for MLflow PURLs."""
+"""Normalization for MLflow PURLs.
+
+Spec: https://github.com/package-url/purl-spec/blob/main/types/mlflow-definition.json
+"""
 
 visibility([
     "//purl/private/normalization/...",

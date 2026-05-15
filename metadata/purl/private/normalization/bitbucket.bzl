@@ -1,4 +1,7 @@
-"""Normalization for Bitbucket PURLs."""
+"""Normalization for Bitbucket PURLs.
+
+Spec: https://github.com/package-url/purl-spec/blob/main/types/bitbucket-definition.json
+"""
 
 visibility([
     "//purl/private/normalization/...",

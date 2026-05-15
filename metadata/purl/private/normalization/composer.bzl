@@ -1,4 +1,7 @@
-"""Normalization for Composer PURLs."""
+"""Normalization for Composer PURLs.
+
+Spec: https://github.com/package-url/purl-spec/blob/main/types/composer-definition.json
+"""
 
 visibility([
     "//purl/private/normalization/...",

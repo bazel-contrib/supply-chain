@@ -1,4 +1,7 @@
-"""Normalization for Hugging Face PURLs."""
+"""Normalization for Hugging Face PURLs.
+
+Spec: https://github.com/package-url/purl-spec/blob/main/types/huggingface-definition.json
+"""
 
 visibility([
     "//purl/private/normalization/...",
