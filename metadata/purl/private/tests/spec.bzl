@@ -2132,7 +2132,7 @@ tests = [
         "test_type": "build",
     },
     {
-        "description": "valid npm purl without version and with subpath, scope unencoded 1",
+        "description": "valid npm purl without version and with subpath, scope unencoded",
         "expected_failure": False,
         "expected_failure_reason": None,
         "expected_output": "pkg:npm/%40babel/core#googleapis/api/annotations",
@@ -2141,7 +2141,7 @@ tests = [
         "test_type": "roundtrip",
     },
     {
-        "description": "valid npm purl without version and with subpath, scope unencoded 2",
+        "description": "valid npm purl without version and with subpath, scope unencoded",
         "expected_failure": False,
         "expected_failure_reason": None,
         "expected_output": {
@@ -2157,7 +2157,7 @@ tests = [
         "test_type": "parse",
     },
     {
-        "description": "valid npm purl without version and with subpath, scope encoded 3",
+        "description": "valid npm purl without version and with subpath, scope unencoded",
         "expected_failure": False,
         "expected_failure_reason": None,
         "expected_output": {
@@ -3577,7 +3577,7 @@ tests = [
         "test_type": "parse",
     },
     {
-        "description": "invalid julia purl build test - None name",
+        "description": "invalid julia purl build test - null name",
         "expected_failure": True,
         "expected_failure_reason": "Should fail to build a PURL from invalid input components",
         "expected_output": None,
@@ -7062,7 +7062,7 @@ tests = [
         "test_type": "parse",
     },
     {
-        "description": "check for None type",
+        "description": "check for null type",
         "expected_failure": True,
         "expected_failure_reason": "Should fail to build a PURL from None type",
         "expected_output": None,
@@ -7132,7 +7132,7 @@ tests = [
         "expected_failure": True,
         "expected_failure_reason": "Should fail to parse a PURL from invalid purl input",
         "expected_output": None,
-        "input": "pkg:npm/myartifact@1.0.0?in%20production=True",
+        "input": "pkg:npm/myartifact@1.0.0?in%20production=true",
         "test_group": "base",
         "test_type": "parse",
     },
@@ -7145,7 +7145,7 @@ tests = [
             "name": "myartifact",
             "namespace": None,
             "qualifiers": {
-                "in production": "True",
+                "in production": "true",
             },
             "subpath": None,
             "type": "npm",
