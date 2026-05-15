@@ -1,6 +1,7 @@
 exports_files(
     [
         "alpm.bzl",
+        "chrome_extension.bzl",
         "cpan.bzl",
         "hackage.bzl",
         "julia.bzl",
@@ -20,6 +21,7 @@ filegroup(
     name = "srcs",
     srcs = [
         "alpm.bzl",
+        "chrome_extension.bzl",
         "cpan.bzl",
         "hackage.bzl",
         "julia.bzl",

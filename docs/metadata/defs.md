@@ -240,3 +240,36 @@ A builder object with chainable methods:
     Fails if validation errors occur.
 
 
+<a id="purl.parse"></a>
+
+## purl.parse
+
+<pre>
+load("@package_metadata//:defs.bzl", "purl")
+
+purl.parse(<a href="#purl.parse-value">value</a>)
+</pre>
+
+Parses a PURL string into normalized components.
+
+The parsing flow implements ECMA-427 1st edition, December 2025,
+§5.6 "Rules for each PURL component".
+
+See https://ecma-international.org/wp-content/uploads/ECMA-427_1st_edition_december_2025.pdf
+
+It parses the components in reverse order of their appearance in the PURL string, as recommended by
+https://github.com/PaawanBarach/purl-spec/blob/main/docs/how-to-parse.md
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="purl.parse-value"></a>value |  The PURL string to parse.   |  none |
+
+**RETURNS**
+
+A tuple of (purl_components, error). On success, error is None.
+
+

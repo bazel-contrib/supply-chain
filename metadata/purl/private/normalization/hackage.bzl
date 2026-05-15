@@ -8,6 +8,7 @@ visibility([
 ])
 
 def normalize_hackage(components):
-    """Normalizes Hackage PURL components."""
+    # https://github.com/package-url/purl-spec/blob/main/types/hackage-definition.json#L19-L21
+    # "Apply kebab-case"
     components["name"] = components["name"].replace("_", "-").replace(" ", "-")
     return components

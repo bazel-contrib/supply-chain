@@ -27,5 +27,7 @@ def validate_swift(*, type, namespace, name, version, qualifiers, subpath):
     # https://github.com/package-url/purl-spec/blob/c756cacf766d4bf2711b248b935b3b80d1b1ba2e/types-doc/swift-definition.md#L22-L24
     if not namespace:
         return "Swift PURLs require a namespace"
+    if "/" not in namespace:
+        return "Swift PURLs require a source host and user/organization namespace"
 
     return None

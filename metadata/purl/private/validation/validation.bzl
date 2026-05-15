@@ -2,6 +2,7 @@
 
 load("//purl/private/strings:strings.bzl", "strings")
 load("//purl/private/validation:alpm.bzl", "validate_alpm")
+load("//purl/private/validation:chrome_extension.bzl", "validate_chrome_extension")
 load("//purl/private/validation:cpan.bzl", "validate_cpan")
 load("//purl/private/validation:hackage.bzl", "validate_hackage")
 load("//purl/private/validation:julia.bzl", "validate_julia")
@@ -17,6 +18,7 @@ visibility([
 
 _validators = {
     "alpm": validate_alpm,
+    "chrome-extension": validate_chrome_extension,
     "cpan": validate_cpan,
     "hackage": validate_hackage,
     "julia": validate_julia,
@@ -81,3 +83,20 @@ def validate(
         qualifiers = qualifiers,
         subpath = subpath,
     )
+
+def is_valid_type(type):
+    if not type:
+        return False
+
+    first = strings.bytes.from_string(type[0])[0]
+    if not strings.ascii.is_alpha(first):
+        return False
+
+    for c in strings.bytes.from_string(type):
+        if strings.ascii.is_alphanumeric(c):
+            continue
+        if c in [45, 46]:  # '-', '.'
+            continue
+        return False
+
+    return True

@@ -2,7 +2,8 @@
 
 load("//purl/private/normalization:normalization.bzl", "normalize")
 load("//purl/private/percent_encoding:percent_encoding.bzl", "percent_encode")
-load("//purl/private/validation:validation.bzl", "validate")
+load("//purl/private/strings:strings.bzl", "strings")
+load("//purl/private/validation:validation.bzl", "is_valid_type", "validate")
 
 visibility([
     "//purl/...",
@@ -101,6 +102,23 @@ def _build(self, fields):
 def _is_type(actual, expected):
     return type(actual) == type(expected)
 
+def _percent_encode_namespace_segment(segment):
+    parts = []
+    skip_until = -1
+    start = 0
+    for i in range(len(segment)):
+        if i < skip_until:
+            continue
+
+        if (i + 2 < len(segment)) and segment[i] == "%" and segment[i + 1] == "2" and segment[i + 2] in ["F", "f"]:
+            parts.append(percent_encode(segment[start:i]))
+            parts.append("%2F")
+            skip_until = i + 3
+            start = i + 3
+
+    parts.append(percent_encode(segment[start:]))
+    return "".join(parts)
+
 def build(
         *,
         type = None,
@@ -152,6 +170,9 @@ def build(
         ```
     """
 
+    if not is_valid_type(type):
+        return None, "Invalid type: '{}'".format(type)
+
     err = validate(
         type = type,
         namespace = namespace,
@@ -188,7 +209,12 @@ def build(
     # If the namespace is not empty:
     if purl.namespace:
         # Percent-encode each segment.
-        segments = [percent_encode(v) for v in purl.namespace]
+        segments = [_percent_encode_namespace_segment(v) for v in purl.namespace]
+
+        if purl.type.lower() == "npm" and len(segments) > 0 and segments[0].startswith("@"):
+            # For npm, if the first segment of the namespace '@', do not percent-encode the '@' character.
+            segments[0] = "@" + segments[0][3:]
+
 
         # Join the segments with '/'.
         # Append this to the PURL.

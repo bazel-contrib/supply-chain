@@ -1,7 +1,12 @@
 exports_files(
     [
         "alpm.bzl",
+        "bitbucket.bzl",
+        "composer.bzl",
+        "github.bzl",
         "hackage.bzl",
+        "huggingface.bzl",
+        "mlflow.bzl",
         "normalization.bzl",
         "pub.bzl",
         "pypi.bzl",
@@ -15,7 +20,12 @@ filegroup(
     name = "srcs",
     srcs = [
         "alpm.bzl",
+        "bitbucket.bzl",
+        "composer.bzl",
+        "github.bzl",
         "hackage.bzl",
+        "huggingface.bzl",
+        "mlflow.bzl",
         "normalization.bzl",
         "pub.bzl",
         "pypi.bzl",

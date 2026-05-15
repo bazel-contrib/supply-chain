@@ -1,7 +1,12 @@
 """Utils to normalize [purl](https://github.com/package-url/purl-spec)s."""
 
 load("//purl/private/normalization:alpm.bzl", "normalize_alpm")
+load("//purl/private/normalization:bitbucket.bzl", "normalize_bitbucket")
+load("//purl/private/normalization:composer.bzl", "normalize_composer")
+load("//purl/private/normalization:github.bzl", "normalize_github")
 load("//purl/private/normalization:hackage.bzl", "normalize_hackage")
+load("//purl/private/normalization:huggingface.bzl", "normalize_huggingface")
+load("//purl/private/normalization:mlflow.bzl", "normalize_mlflow")
 load("//purl/private/normalization:pub.bzl", "normalize_pub")
 load("//purl/private/normalization:pypi.bzl", "normalize_pypi")
 
@@ -11,7 +16,12 @@ visibility([
 
 _normalizers = {
     "alpm": normalize_alpm,
+    "bitbucket": normalize_bitbucket,
+    "composer": normalize_composer,
+    "github": normalize_github,
     "hackage": normalize_hackage,
+    "huggingface": normalize_huggingface,
+    "mlflow": normalize_mlflow,
     "pub": normalize_pub,
     "pypi": normalize_pypi,
 }

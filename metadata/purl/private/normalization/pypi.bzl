@@ -8,6 +8,8 @@ visibility([
 ])
 
 def normalize_pypi(components):
-    """Normalizes PyPI PURL components."""
-    components["name"] = components["name"].lower().replace("_", "-")
+    # https://github.com/package-url/purl-spec/blob/main/types/pypi-definition.json#L20-L23
+    # "Replace underscore _ with dash -",
+    # "Replace dot . with underscore _ when used in distribution (sdist, wheel) names"
+    components["name"] = components["name"].lower().replace("_", "-").replace(".", "_")
     return components
