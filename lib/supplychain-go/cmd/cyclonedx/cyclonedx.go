@@ -29,7 +29,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Read graph
 	graphBytes, err := os.ReadFile(graphPath)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error reading graph: %v\n", err)
@@ -42,7 +41,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Read classifications
 	classBytes, err := os.ReadFile(classificationsPath)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error reading classifications: %v\n", err)

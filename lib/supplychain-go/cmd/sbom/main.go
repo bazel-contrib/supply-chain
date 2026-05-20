@@ -23,7 +23,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Read graph-only format
 	inputBytes, err := os.ReadFile(inputPath)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error reading input file: %v\n", err)
@@ -36,14 +35,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Compute SBOM-specific classifications
 	classifications, err := sbom.ComputeClassifications(graphConfig, allowMissingRootMetadata)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
 	}
 
-	// Write classifications (ONLY the new data, no duplication)
 	outputBytes, err := json.MarshalIndent(classifications, "", "  ")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error encoding classifications: %v\n", err)

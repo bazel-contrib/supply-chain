@@ -27,7 +27,6 @@ func main() {
 		panic("both --graph and --classifications flags are required")
 	}
 
-	// Read graph
 	graphBytes, err := os.ReadFile(graphPath)
 	if err != nil {
 		panic(fmt.Errorf("reading graph: %w", err))
@@ -38,7 +37,6 @@ func main() {
 		panic(fmt.Errorf("parsing graph: %w", err))
 	}
 
-	// Read classifications
 	classBytes, err := os.ReadFile(classificationsPath)
 	if err != nil {
 		panic(fmt.Errorf("reading classifications: %w", err))
