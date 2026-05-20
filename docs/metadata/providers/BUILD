@@ -22,5 +22,6 @@ load("@stardoc//stardoc:stardoc.bzl", "stardoc")
         "package_metadata_info",
         "package_metadata_override_info",
         "package_metadata_toolchain_info",
+        "target_metadata_info",
     ]
 ]
