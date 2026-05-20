@@ -17,6 +17,7 @@ go_library(
     srcs = [
         "package_attribute.go",
         "package_metadata.go",
+        "target_metadata.go",
     ],
     importpath = "github.com/bazel-contrib/supply-chain/lib/supplychain-go",
     visibility = ["//visibility:public"],
