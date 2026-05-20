@@ -12,31 +12,44 @@ import (
 )
 
 func main() {
-	var outPath, configPath, format string
+	var outPath, graphPath, classificationsPath, format string
 	flag.StringVar(&outPath, "out", "", "The path to write the generated CycloneDX SBOM.")
-	flag.StringVar(&configPath, "config", "", "The path to the SBOM generation configuration file.")
+	flag.StringVar(&graphPath, "graph", "", "The path to the graph JSON file.")
+	flag.StringVar(&classificationsPath, "classifications", "", "The path to the classifications JSON file.")
 	flag.StringVar(&format, "format", "json", "The output format of the CycloneDX SBOM (json or xml).")
 	flag.Parse()
-
-	if configPath == "" {
-		fmt.Fprintln(os.Stderr, "Error: --config flag is required")
-		os.Exit(1)
-	}
 
 	if outPath == "" {
 		fmt.Fprintln(os.Stderr, "Error: --out flag is required")
 		os.Exit(1)
 	}
 
-	configBytes, err := os.ReadFile(configPath)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error reading config file: %v\n", err)
+	if graphPath == "" || classificationsPath == "" {
+		fmt.Fprintln(os.Stderr, "Error: both --graph and --classifications flags are required")
 		os.Exit(1)
 	}
 
-	var config sbom.GenConfig
-	if err := json.Unmarshal(configBytes, &config); err != nil {
-		fmt.Fprintf(os.Stderr, "Error parsing config file: %v\n", err)
+	graphBytes, err := os.ReadFile(graphPath)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error reading graph: %v\n", err)
+		os.Exit(1)
+	}
+
+	var graph sbom.GraphConfig
+	if err := json.Unmarshal(graphBytes, &graph); err != nil {
+		fmt.Fprintf(os.Stderr, "Error parsing graph: %v\n", err)
+		os.Exit(1)
+	}
+
+	classBytes, err := os.ReadFile(classificationsPath)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error reading classifications: %v\n", err)
+		os.Exit(1)
+	}
+
+	var classifications sbom.Classifications
+	if err := json.Unmarshal(classBytes, &classifications); err != nil {
+		fmt.Fprintf(os.Stderr, "Error parsing classifications: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -47,7 +60,7 @@ func main() {
 	}
 	defer out.Close()
 
-	bom, err := GenerateBOM(config)
+	bom, err := GenerateBOM(graph, classifications)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error generating BOM: %v\n", err)
 		os.Exit(1)
@@ -70,13 +83,20 @@ func main() {
 	}
 }
 
-func GenerateBOM(config sbom.GenConfig) (*cdx.BOM, error) {
-	components := make([]cdx.Component, 0, len(config.Deps))
+func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications) (*cdx.BOM, error) {
+	components := make([]cdx.Component, 0)
+	labelToBOMRef := make(map[string]string)
+	var rootComponent *cdx.Component
 
-	for _, dep := range config.Deps {
-		pkgMetadata, err := supplychain.ReadPackageMetadataFromFile(dep.Metadata)
+	// Helper function to create component from node
+	createComponent := func(node *sbom.NodeConfig, scope string) (cdx.Component, error) {
+		if node.MetadataFile == "" {
+			return cdx.Component{}, fmt.Errorf("node %s has no metadata file", node.Label)
+		}
+
+		pkgMetadata, err := supplychain.ReadPackageMetadataFromFile(node.MetadataFile)
 		if err != nil {
-			return nil, fmt.Errorf("error reading metadata file %s: %w", dep.Metadata, err)
+			return cdx.Component{}, fmt.Errorf("error reading metadata file %s: %w", node.MetadataFile, err)
 		}
 
 		purl := pkgMetadata.GetPURL()
@@ -86,11 +106,12 @@ func GenerateBOM(config sbom.GenConfig) (*cdx.BOM, error) {
 			fullName = purl.Namespace + "/" + fullName
 		}
 
+		bomRef := purl.String()
 		component := cdx.Component{
-			BOMRef:     purl.String(),
+			BOMRef:     bomRef,
 			Type:       cdx.ComponentTypeLibrary,
 			Name:       fullName,
-			PackageURL: purl.String(),
+			PackageURL: bomRef,
 		}
 
 		// Add version if available
@@ -98,7 +119,64 @@ func GenerateBOM(config sbom.GenConfig) (*cdx.BOM, error) {
 			component.Version = purl.Version
 		}
 
-		components = append(components, component)
+		// Add scope if provided
+		if scope != "" {
+			component.Scope = cdx.Scope(scope)
+		}
+
+		labelToBOMRef[node.Label] = bomRef
+		return component, nil
+	}
+
+	// Handle root component
+	if classifications.RootComponent != nil {
+		comp, err := createComponent(classifications.RootComponent, "")
+		if err != nil {
+			return nil, err
+		}
+		rootComponent = &comp
+	}
+
+	// Add direct dependencies with scope="direct"
+	for i := range classifications.Dependencies.Direct {
+		comp, err := createComponent(&classifications.Dependencies.Direct[i], "direct")
+		if err != nil {
+			return nil, err
+		}
+		components = append(components, comp)
+	}
+
+	// Add transitive dependencies with scope="transitive"
+	for i := range classifications.Dependencies.Transitive {
+		comp, err := createComponent(&classifications.Dependencies.Transitive[i], "transitive")
+		if err != nil {
+			return nil, err
+		}
+		components = append(components, comp)
+	}
+
+	// Build Dependencies from graph edges
+	depMap := make(map[string][]string) // parent BOMRef -> []child BOMRefs
+	for _, edge := range graph.Edges {
+		fromRef, fromOk := labelToBOMRef[edge.From]
+		toRef, toOk := labelToBOMRef[edge.To]
+
+		if fromOk && toOk {
+			depMap[fromRef] = append(depMap[fromRef], toRef)
+		}
+	}
+
+	// Convert to CycloneDX Dependencies format
+	var dependencies *[]cdx.Dependency
+	if len(depMap) > 0 {
+		deps := make([]cdx.Dependency, 0, len(depMap))
+		for parentRef, childRefs := range depMap {
+			deps = append(deps, cdx.Dependency{
+				Ref:          parentRef,
+				Dependencies: &childRefs,
+			})
+		}
+		dependencies = &deps
 	}
 
 	bom := cdx.NewBOM()
@@ -108,8 +186,10 @@ func GenerateBOM(config sbom.GenConfig) (*cdx.BOM, error) {
 		bom.Components = &components
 	}
 
-	// Add metadata with tool information
-	bom.Metadata = &cdx.Metadata{
+	bom.Dependencies = dependencies
+
+	// Add metadata with tool information and root component
+	metadata := &cdx.Metadata{
 		Tools: &cdx.ToolsChoice{
 			Components: &[]cdx.Component{
 				{
@@ -119,6 +199,13 @@ func GenerateBOM(config sbom.GenConfig) (*cdx.BOM, error) {
 			},
 		},
 	}
+
+	// Set the root component in metadata if we have one
+	if rootComponent != nil {
+		metadata.Component = rootComponent
+	}
+
+	bom.Metadata = metadata
 
 	return bom, nil
 }
