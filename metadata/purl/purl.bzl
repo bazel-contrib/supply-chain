@@ -1,7 +1,6 @@
 """Module defining urils for [purl](https://github.com/package-url/purl-spec)s."""
 
-load("//purl/private:builder.bzl", "builder")
-load("//purl/private:parser.bzl", "parse")
+load("@purl.bzl", _builder = "builder", _parse = "parse")
 
 visibility("public")
 
@@ -16,7 +15,7 @@ def _bazel(name, version):
     Example:
 
     ```starlark
-    load("@package_metadata//purl:purl.bzl", "purl")
+    load("@purl.bzl", "purl")
 
     package_metadata(
         name = "package_metadata",
@@ -40,10 +39,10 @@ def _bazel(name, version):
         `pkg:bazel/bar@1.2.3`).
     """
 
-    return builder().type("bazel").name(name).version(version).build()
+    return _builder().type("bazel").name(name).version(version).build()
 
 purl = struct(
-    builder = builder,
+    builder = _builder,
     bazel = _bazel,
-    parse = parse,
+    parse = _parse,
 )

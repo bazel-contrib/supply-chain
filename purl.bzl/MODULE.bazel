@@ -1,0 +1,4 @@
+module(
+    name = "purl.bzl",
+    version = "",  # Automatically updated by release pipeline.
+)
