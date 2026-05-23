@@ -134,7 +134,7 @@ This is **NOT** supported in `WORKSPACE` mode.
 Example:
 
 ```starlark
-load("@package_metadata//purl:purl.bzl", "purl")
+load("@purl.bzl", "purl")
 
 package_metadata(
     name = "package_metadata",
