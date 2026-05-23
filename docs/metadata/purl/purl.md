@@ -9,7 +9,7 @@ Module defining urils for [purl](https://github.com/package-url/purl-spec)s.
 <pre>
 load("@package_metadata//purl:purl.bzl", "purl")
 
-purl.bazel(<a href="#purl.bazel-name">name</a>, <a href="#purl.bazel-version">version</a>)
+purl.bazel(<a href="#purl.bazel-name">name</a>, <a href="#purl.bazel-version">version</a>, <a href="#purl.bazel-registry">registry</a>)
 </pre>
 
 Defines a `purl` for a Bazel module.
@@ -42,6 +42,7 @@ package_metadata(
 | :------------- | :------------- | :------------- |
 | <a id="purl.bazel-name"></a>name |  The name of the Bazel module. Typically [module_name()](https://bazel.build/rules/lib/globals/build#module_name).   |  none |
 | <a id="purl.bazel-version"></a>version |  The version of the Bazel module. Typically [module_version()](https://bazel.build/rules/lib/globals/build#module_version). May be empty or `None`.   |  none |
+| <a id="purl.bazel-registry"></a>registry |  The URL of the registry that hosts the Bazel module. Defaults to https://bcr.bazel.build.   |  `"https://bcr.bazel.build"` |
 
 **RETURNS**
 
