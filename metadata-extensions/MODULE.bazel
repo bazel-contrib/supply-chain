@@ -21,5 +21,5 @@ local_path_override(
 
 local_path_override(
     module_name = "purl.bzl",
-    path = "../purl.bzl",
+    path = "../purl",
 )

@@ -3,7 +3,6 @@ module(
     version = "HEAD",
 )
 
-
 bazel_dep(
     name = "bazel_skylib",
     version = "1.8.2",
@@ -39,7 +38,7 @@ local_path_override(
 
 local_path_override(
     module_name = "purl.bzl",
-    path = "../purl.bzl",
+    path = "../purl",
 )
 
 local_path_override(

@@ -12,5 +12,5 @@ bazel_dep(
 )
 local_path_override(
     module_name = "purl.bzl",
-    path = "../purl.bzl",
+    path = "../purl",
 )
