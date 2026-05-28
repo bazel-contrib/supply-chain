@@ -2,10 +2,7 @@ load("@package_metadata//licenses/rules:license.bzl", "license")
 load("@package_metadata//purl:purl.bzl", "purl")
 load("@package_metadata//rules:package_metadata.bzl", "package_metadata")
 
-package(
-    default_package_metadata = [":package_metadata"],
-    default_visibility = ["//visibility:public"],
-)
+package(default_package_metadata = [":package_metadata"])
 
 package_metadata(
     name = "package_metadata",

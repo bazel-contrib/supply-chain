@@ -7,7 +7,7 @@ visibility("public")
 
 _DEFAULT_REGISTRY = "https://bcr.bazel.build"
 
-def bazel(name, version, registry = _DEFAULT_REGISTRY):
+def _bazel(name, version, registry = _DEFAULT_REGISTRY):
     """Defines a `purl` for a Bazel module.
 
     This is typically used to construct `purl` for `package_metadata` targets in
@@ -50,5 +50,8 @@ def bazel(name, version, registry = _DEFAULT_REGISTRY):
 
     return builder.build()
 
-builder = _builder
-parse = _parse
+purl = struct(
+    bazel = _bazel,
+    builder = _builder,
+    parse = _parse,
+)
