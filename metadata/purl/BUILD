@@ -10,7 +10,7 @@ filegroup(
     srcs = [
         "purl.bzl",
     ] + [
-        "//purl/private:srcs",
+        "@purl.bzl//:srcs",
     ],
     visibility = ["//visibility:public"],
 )

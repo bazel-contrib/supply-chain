@@ -1,0 +1,18 @@
+module(
+    name = "purl.bzl",
+    version = "",  # Automatically updated by release pipeline.
+)
+
+bazel_dep(name = "package_metadata", version = "0.0.7")
+bazel_dep(name = "rules_license", version = "1.0.0")
+
+# For development, we use our sibling projects directly.
+local_path_override(
+    module_name = "package_metadata",
+    path = "../metadata",
+)
+
+local_path_override(
+    module_name = "rules_license",
+    path = "../rules_license",
+)
