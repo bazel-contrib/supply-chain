@@ -24,6 +24,7 @@ def validate_julia(*, type, namespace, name, version, qualifiers, subpath):
     Returns:
         An error string if validation fails, None otherwise.
     """
+
     # Spec requirement: Namespace is "Not allowed"
     # https://github.com/package-url/purl-spec/blob/c756cacf766d4bf2711b248b935b3b80d1b1ba2e/types-doc/julia-definition.md#L22
     if namespace:

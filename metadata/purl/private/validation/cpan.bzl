@@ -24,6 +24,7 @@ def validate_cpan(*, type, namespace, name, version, qualifiers, subpath):
     Returns:
         An error string if validation fails, None otherwise.
     """
+
     # Spec requirement: "It MUST be written uppercase and is required"
     # https://github.com/package-url/purl-spec/blob/c756cacf766d4bf2711b248b935b3b80d1b1ba2e/types-doc/cpan-definition.md#L22-L23
     if not namespace:

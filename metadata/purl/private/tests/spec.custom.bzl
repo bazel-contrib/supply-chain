@@ -15,7 +15,7 @@ custom_tests = [
                         "fail validation"),
         "expected_failure": True,
         "expected_failure_reason": ("CPAN namespace must be " +
-                                     "uppercase"),
+                                    "uppercase"),
         "expected_output": None,
         "input": "pkg:cpan/drolsky/DateTime@1.55",
         "test_group": "base",
@@ -26,7 +26,7 @@ custom_tests = [
                         "fail validation"),
         "expected_failure": True,
         "expected_failure_reason": ("CPAN namespace must be " +
-                                     "uppercase"),
+                                    "uppercase"),
         "expected_output": None,
         "input": "pkg:cpan/Drolsky/DateTime@1.55",
         "test_group": "base",
@@ -37,7 +37,7 @@ custom_tests = [
                         "should fail validation"),
         "expected_failure": True,
         "expected_failure_reason": ("CPAN namespace must be " +
-                                     "uppercase"),
+                                    "uppercase"),
         "expected_output": None,
         "input": {
             "name": "DateTime",
@@ -56,7 +56,7 @@ custom_tests = [
                         "validation"),
         "expected_failure": True,
         "expected_failure_reason": ("Julia PURLs must not have " +
-                                     "a namespace"),
+                                    "a namespace"),
         "expected_output": None,
         "input": ("pkg:julia/somenamespace/AWS@1.0.0?" +
                   "uuid=fbe9abb3-538b-5e4e-ba9e-bc94f4f92ebc"),
@@ -68,7 +68,7 @@ custom_tests = [
                         "validation"),
         "expected_failure": True,
         "expected_failure_reason": ("Julia PURLs must not have " +
-                                     "a namespace"),
+                                    "a namespace"),
         "expected_output": None,
         "input": {
             "name": "AWS",
