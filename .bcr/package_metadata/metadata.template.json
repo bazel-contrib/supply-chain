@@ -1,26 +1,26 @@
 {
   "homepage": "https://github.com/bazel-contrib/supply-chain",
   "maintainers": [
-        {
-            "email": "aiuto@datadoghq.com",
-            "github": "aiuto",
-            "name": "Tony Aiuto"
-        },
-        {
-            "email": "antonio@engflow.com",
-            "github": "TheGrizzlyDev",
-            "name": "Antonio Di Stefano"
-        },
-        {
-            "email": "fwe@google.com",
-            "github": "fweikert",
-            "name": "Florian Weikert"
-        },
-        {
-            "email": "yannic@engflow.com",
-            "github": "Yannic",
-            "name": "Yannic Bonenberger"
-        }
+    {
+      "email": "antonio@engflow.com",
+      "github": "TheGrizzlyDev",
+      "name": "Antonio Di Stefano"
+    },
+    {
+      "email": "fwe@google.com",
+      "github": "fweikert",
+      "name": "Florian Weikert"
+    },
+    {
+      "email": "tony.aiuto@datadoghq.com",
+      "github": "aiuto",
+      "name": "Tony Aiuto"
+    },
+    {
+      "email": "yannic@engflow.com",
+      "github": "Yannic",
+      "name": "Yannic Bonenberger"
+    }
   ],
   "repository": ["github:bazel-contrib/supply-chain"],
   "versions": [],
