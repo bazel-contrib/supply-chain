@@ -71,7 +71,7 @@ def _run(args) -> int:
 # Source: https://github.com/package-url/purl-spec
 
 visibility([
-    "//private/tests/...",
+    "//purl/private/tests/...",
 ])
 
 """
