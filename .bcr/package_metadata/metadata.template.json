@@ -2,9 +2,9 @@
   "homepage": "https://github.com/bazel-contrib/supply-chain",
   "maintainers": [
     {
-      "email": "aiuto@datadoghq.com",
+      "email": "tony.aiuto@datadoghq.com",
       "github": "aiuto",
-      "github_user_id": "3044252"
+      "name": "Tony Aiuto"
     },
     {
       "email": "antonio@engflow.com",
