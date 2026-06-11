@@ -2,8 +2,7 @@
 
 load("//purl/private/normalization:normalization.bzl", "normalize")
 load("//purl/private/percent_encoding:percent_encoding.bzl", "percent_encode")
-load("//purl/private/strings:strings.bzl", "strings")
-load("//purl/private/validation:validation.bzl", "is_valid_type", "validate")
+load("//purl/private/validation:validation.bzl", "validate")
 
 visibility([
     "//purl/...",
@@ -85,6 +84,18 @@ def _subpath(self, fields, subpath):
     fields["subpath"] = subpath
     return self
 
+def _disable_checks(self, fields):
+    """Disables built-in checks of the PURL builder.
+
+    **Use with care**. This may result in PURLs that are not canonical and that
+    parsers reject.
+
+    Returns:
+        The builder instance for method chaining.
+    """
+    fields["check"] = False
+    return self
+
 def _build(self, fields):
     purl, err = build(
         type = fields.get("type", None),
@@ -93,6 +104,7 @@ def _build(self, fields):
         version = fields.get("version", None),
         qualifiers = fields.get("qualifiers", None),
         subpath = fields.get("subpath", None),
+        check = fields.get("check", True),
     )
 
     if err:
@@ -126,7 +138,8 @@ def build(
         name = None,
         version = None,
         qualifiers = {},
-        subpath = None):
+        subpath = None,
+        check = True):
     """Builds a Package URL (PURL) string from component parts.
 
     This function validates, normalizes, and serializes the PURL components
@@ -170,9 +183,6 @@ def build(
         ```
     """
 
-    if not is_valid_type(type):
-        return None, "Invalid type: '{}'".format(type)
-
     err = validate(
         type = type,
         namespace = namespace,
@@ -180,6 +190,7 @@ def build(
         version = version,
         qualifiers = qualifiers,
         subpath = subpath,
+        check = check,
     )
     if err:
         return None, err
@@ -191,6 +202,7 @@ def build(
         version = version,
         qualifiers = qualifiers,
         subpath = subpath,
+        check = check,
     )
     if err:
         return None, err
@@ -214,7 +226,6 @@ def build(
         if purl.type.lower() == "npm" and len(segments) > 0 and segments[0].startswith("@"):
             # For npm, if the first segment of the namespace '@', do not percent-encode the '@' character.
             segments[0] = "@" + segments[0][3:]
-
 
         # Join the segments with '/'.
         # Append this to the PURL.
@@ -337,6 +348,7 @@ def builder():
           Key must start with ASCII letter and contain only lowercase letters,
           numbers, '.', '-', '_'.
         - `subpath(subpath)`: Sets the subpath (optional). String with segments separated by '/'.
+        - `disable_checks()`: Disables validation and normalization of the PURL.
         - `build()`: Validates, normalizes, and constructs the final PURL string.
           Performs both general and type-specific validation and normalization.
           Fails if validation errors occur.
@@ -350,6 +362,7 @@ def builder():
         version = lambda version: _version(self, fields, version),
         add_qualifier = lambda name, value: _add_qualifier(self, fields, name, value),
         subpath = lambda subpath: _subpath(self, fields, subpath),
+        disable_checks = lambda: _disable_checks(self, fields),
         build = lambda: _build(self, fields),
     )
     return self

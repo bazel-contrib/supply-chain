@@ -36,10 +36,13 @@ def validate(
         name = None,
         version = None,
         qualifiers = {},
-        subpath = None):
+        subpath = None,
+        check = True):
     # Spec §5: Validate required fields are present.
     if not type:
         return "Mandatory property 'type' not set"
+    if not is_valid_type(type):
+        return "Type '{}' is not a valid PURL type".format(type)
     if not name:
         return "Mandatory property 'name' not set"
 
@@ -70,6 +73,9 @@ def validate(
                     continue
 
                 return "Qualifier key {} does not start with ASCII letter, got {}".format(key, c)
+
+    if not check:
+        return None
 
     validator = _validators.get(type.lower())
     if not validator:

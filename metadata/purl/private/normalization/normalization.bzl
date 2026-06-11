@@ -33,21 +33,22 @@ def normalize(
         name = None,
         version = None,
         qualifiers = {},
-        subpath = None):
+        subpath = None,
+        check = True):
     if not type:
         return None, "Mandatory property 'type' not set"
 
     components = {
-        "type": type.lower(),
-        "namespace": namespace,
         "name": name,
-        "version": version,
+        "namespace": namespace,
         "qualifiers": qualifiers,
         "subpath": subpath,
+        "type": type.lower(),
+        "version": version,
     }
 
     normalizer = _normalizers.get(components["type"])
-    if normalizer:
+    if check and normalizer:
         components = normalizer(components)
 
     purl = struct(

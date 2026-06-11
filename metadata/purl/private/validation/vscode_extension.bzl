@@ -23,6 +23,7 @@ def validate_vscode_extension(*, type, namespace, name, version, qualifiers, sub
     Returns:
         An error string if validation fails, None otherwise.
     """
+
     # Spec requirement: Namespace is "Required" - represents the publisher/vendor
     # https://github.com/package-url/purl-spec/blob/c756cacf766d4bf2711b248b935b3b80d1b1ba2e/types-doc/vscode-extension-definition.md#L21-L22
     if not namespace:
