@@ -235,6 +235,7 @@ A builder object with chainable methods:
     Key must start with ASCII letter and contain only lowercase letters,
     numbers, '.', '-', '_'.
   - `subpath(subpath)`: Sets the subpath (optional). String with segments separated by '/'.
+  - `disable_checks()`: Disables validation and normalization of the PURL.
   - `build()`: Validates, normalizes, and constructs the final PURL string.
     Performs both general and type-specific validation and normalization.
     Fails if validation errors occur.
