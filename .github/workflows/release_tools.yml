@@ -83,8 +83,6 @@ jobs:
 
     uses: "bazel-contrib/publish-to-bcr/.github/workflows/publish.yaml@v1.3.0"
     with:
-      # module_name: "${{ inputs.module }}"
-      # module_version: "${{ inputs.version }}"
       tag_name: "${{ inputs.module }}-${{ inputs.version }}"
       tag_prefix: "${{ inputs.module }}-"
       registry_fork: "bazel-contrib/bazel-central-registry"
