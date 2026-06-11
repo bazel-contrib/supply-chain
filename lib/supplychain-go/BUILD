@@ -15,6 +15,8 @@ gazelle(name = "gazelle")
 go_library(
     name = "supplychain-go",
     srcs = [
+        "dependency.go",
+        "dependency_scope.go",
         "package_attribute.go",
         "package_metadata.go",
         "target_metadata.go",
@@ -29,7 +31,10 @@ go_library(
 
 go_test(
     name = "supplychain-go_test",
-    srcs = ["package_metadata_test.go"],
+    srcs = [
+        "package_metadata_test.go",
+        "target_metadata_test.go",
+    ],
     embed = [":supplychain-go"],
     deps = [
         "//label",
