@@ -1,9 +1,19 @@
 package sbom
 
 type GenConfig struct {
-	Deps []DepConfig `json:"deps"`
+	SchemaVersion string       `json:"schema_version"`
+	RootTarget    string       `json:"root_target"`
+	Nodes         []NodeConfig `json:"nodes"`
+	Edges         []EdgeConfig `json:"edges"`
 }
 
-type DepConfig struct {
-	Metadata string `json:"metadata"`
+type NodeConfig struct {
+	Label        string `json:"label"`
+	MetadataFile string `json:"metadata_file"`
+}
+
+type EdgeConfig struct {
+	From string `json:"from"`
+	To   string `json:"to"`
+	Type string `json:"type"`
 }

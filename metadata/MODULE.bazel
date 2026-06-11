@@ -4,4 +4,13 @@ module(
 )
 
 # This is a fundamental module that's depended on by virtually every bazel
-# module and **MUST NOT** have any dependencies.
+# module and **MUST NOT** have any other dependencies beyond `purl.bzl`.
+
+bazel_dep(
+    name = "purl.bzl",
+    version = "HEAD",  # Automatically updated by release pipeline.
+)
+local_path_override(
+    module_name = "purl.bzl",
+    path = "../purl",
+)

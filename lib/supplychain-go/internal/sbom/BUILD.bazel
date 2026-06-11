@@ -1,8 +1,21 @@
-load("@rules_go//go:def.bzl", "go_library")
+load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "sbom",
-    srcs = ["genconfig.go"],
+    srcs = [
+        "classify.go",
+        "genconfig.go",
+    ],
     importpath = "github.com/bazel-contrib/supply-chain/lib/supplychain-go/internal/sbom",
     visibility = ["//:__subpackages__"],
+)
+
+go_test(
+    name = "classify_test",
+    srcs = ["classify_test.go"],
+    deps = [
+        ":sbom",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+    ],
 )
