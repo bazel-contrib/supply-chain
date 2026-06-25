@@ -88,5 +88,6 @@ jobs:
       registry_fork: "bazel-contrib/bazel-central-registry"
       open_pull_request: true
       module_roots: "${{ inputs.module }}"
+      draft: false
     secrets:
       publish_token: "${{ secrets.BCR_PUBLISH_TOKEN }}"
