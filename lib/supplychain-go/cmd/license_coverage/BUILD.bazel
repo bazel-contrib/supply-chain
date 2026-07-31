@@ -1,0 +1,15 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "license_coverage_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/bazel-contrib/supply-chain/lib/supplychain-go/cmd/license_coverage",
+    visibility = ["//visibility:private"],
+    deps = ["//coverage"],
+)
+
+go_binary(
+    name = "license_coverage",
+    embed = [":license_coverage_lib"],
+    visibility = ["//visibility:public"],
+)

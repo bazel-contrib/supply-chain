@@ -8,15 +8,18 @@ import (
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	supplychain "github.com/bazel-contrib/supply-chain/lib/supplychain-go"
+	"github.com/bazel-contrib/supply-chain/lib/supplychain-go/coverage"
 	"github.com/bazel-contrib/supply-chain/lib/supplychain-go/internal/sbom"
 )
 
 func main() {
 	var outPath, graphPath, classificationsPath, format string
+	var coveragePath string
 	flag.StringVar(&outPath, "out", "", "The path to write the generated CycloneDX SBOM.")
 	flag.StringVar(&graphPath, "graph", "", "The path to the graph JSON file.")
 	flag.StringVar(&classificationsPath, "classifications", "", "The path to the classifications JSON file.")
 	flag.StringVar(&format, "format", "json", "The output format of the CycloneDX SBOM (json or xml).")
+	flag.StringVar(&coveragePath, "coverage", "", "Optional license coverage report JSON.")
 	flag.Parse()
 
 	if outPath == "" {
@@ -60,7 +63,11 @@ func main() {
 	}
 	defer out.Close()
 
-	bom, err := GenerateBOM(graph, classifications)
+	var report *coverage.Report
+	if coveragePath != "" {
+		report = loadCoverage(coveragePath)
+	}
+	bom, err := GenerateBOMWithCoverage(graph, classifications, report)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error generating BOM: %v\n", err)
 		os.Exit(1)
@@ -84,6 +91,13 @@ func main() {
 }
 
 func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications) (*cdx.BOM, error) {
+	return GenerateBOMWithCoverage(graph, classifications, nil)
+}
+
+// GenerateBOMWithCoverage emits CycloneDX license expressions when a
+// coverage report is supplied. GenerateBOM remains available for callers that
+// only need the graph-derived component inventory.
+func GenerateBOMWithCoverage(graph sbom.GraphConfig, classifications sbom.Classifications, report *coverage.Report) (*cdx.BOM, error) {
 	components := make([]cdx.Component, 0)
 	labelToBOMRef := make(map[string]string)
 	var rootComponent *cdx.Component
@@ -112,6 +126,11 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications) (
 			Type:       cdx.ComponentTypeLibrary,
 			Name:       fullName,
 			PackageURL: bomRef,
+		}
+		if report != nil {
+			if expression := report.LicenseExpression(bomRef); expression != "" {
+				component.Licenses = &cdx.Licenses{{Expression: expression}}
+			}
 		}
 
 		// Add version if available
@@ -208,4 +227,16 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications) (
 	bom.Metadata = metadata
 
 	return bom, nil
+}
+
+func loadCoverage(path string) *coverage.Report {
+	contents, err := os.ReadFile(path)
+	if err != nil {
+		panic(fmt.Errorf("reading coverage: %w", err))
+	}
+	var report coverage.Report
+	if err := json.Unmarshal(contents, &report); err != nil {
+		panic(fmt.Errorf("parsing coverage: %w", err))
+	}
+	return &report
 }

@@ -19,6 +19,12 @@ The intended use cases are:
   set of packages used by a target.
 - producing SBOMs for built artifacts.
 
+The Go tooling module also provides reusable license coverage, source-directory
+license resolution, and SPDX-aware policy evaluation. Those tools accept
+organization-owned policy files rather than embedding an allowlist, so the
+same implementation can be used for Go, Cargo, Maven, and other package
+ecosystems.
+
 > [!WARNING]
 > The code here is still in active initial development and will churn a lot.
 
