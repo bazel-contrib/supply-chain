@@ -5,13 +5,13 @@ matrix:
   - macos
   - windows
   bazel:
+  - 9.x
   - 8.x
   - 7.x
-  - 6.x
 tasks:
   verify_targets:
     name: Verify build targets
     platform: ${{ platform }}
     bazel: ${{ bazel }}
     build_targets:
-    - '@package_metadata//...'
+    - '@supply-chain-go//...'
