@@ -7,6 +7,7 @@ import (
 	"os"
 
 	supplychain "github.com/bazel-contrib/supply-chain/lib/supplychain-go"
+	"github.com/bazel-contrib/supply-chain/lib/supplychain-go/coverage"
 	"github.com/bazel-contrib/supply-chain/lib/supplychain-go/internal/sbom"
 	spdxJson "github.com/spdx/tools-golang/json"
 	"github.com/spdx/tools-golang/spdx"
@@ -17,10 +18,12 @@ import (
 
 func main() {
 	var outPath, graphPath, classificationsPath, format string
+	var coveragePath string
 	flag.StringVar(&outPath, "out", "", "The path to write the generated SPDX SBOM.")
 	flag.StringVar(&graphPath, "graph", "", "The path to the graph JSON file.")
 	flag.StringVar(&classificationsPath, "classifications", "", "The path to the classifications JSON file.")
 	flag.StringVar(&format, "format", "json", "The output format of the SPDX SBOM.")
+	flag.StringVar(&coveragePath, "coverage", "", "Optional license coverage report JSON.")
 	flag.Parse()
 
 	if graphPath == "" || classificationsPath == "" {
@@ -53,7 +56,11 @@ func main() {
 	}
 	defer out.Close()
 
-	doc, err := GenerateDocument(graph, classifications)
+	var report *coverage.Report
+	if coveragePath != "" {
+		report = loadCoverage(coveragePath)
+	}
+	doc, err := GenerateDocumentWithCoverage(graph, classifications, report)
 	if err != nil {
 		panic(err)
 	}
@@ -77,6 +84,13 @@ func main() {
 }
 
 func GenerateDocument(graph sbom.GraphConfig, classifications sbom.Classifications) (*spdx.Document, error) {
+	return GenerateDocumentWithCoverage(graph, classifications, nil)
+}
+
+// GenerateDocumentWithCoverage emits SPDX package license fields when a
+// coverage report is supplied. Keeping the original GenerateDocument API
+// preserves compatibility for callers that only need graph metadata.
+func GenerateDocumentWithCoverage(graph sbom.GraphConfig, classifications sbom.Classifications, report *coverage.Report) (*spdx.Document, error) {
 	spdxPackages := make([]*spdx.Package, 0)
 	labelToID := make(map[string]string)
 	idx := 0
@@ -105,6 +119,12 @@ func GenerateDocument(graph sbom.GraphConfig, classifications sbom.Classificatio
 				},
 			},
 			PackageName: pkgMetadata.GetPURL().Name,
+		}
+		if report != nil {
+			if expression := report.LicenseExpression(pkgMetadata.GetPURL().String()); expression != "" {
+				pkg.PackageLicenseDeclared = expression
+				pkg.PackageLicenseInfoFromFiles = []string{expression}
+			}
 		}
 
 		labelToID[node.Label] = elementID
@@ -177,4 +197,16 @@ func GenerateDocument(graph sbom.GraphConfig, classifications sbom.Classificatio
 	}
 
 	return &doc, nil
+}
+
+func loadCoverage(path string) *coverage.Report {
+	contents, err := os.ReadFile(path)
+	if err != nil {
+		panic(fmt.Errorf("reading coverage: %w", err))
+	}
+	var report coverage.Report
+	if err := json.Unmarshal(contents, &report); err != nil {
+		panic(fmt.Errorf("parsing coverage: %w", err))
+	}
+	return &report
 }

@@ -16,8 +16,11 @@ bzl_library(
     name = "sbom",
     srcs = [
         ":cyclonedx.bzl",
+        ":license_coverage.bzl",
+        ":license_policy.bzl",
         ":sbom.bzl",
         ":spdx.bzl",
+        ":supply_chain.bzl",
         "//gather_metadata",
         "//:core_metadata",
     ],
