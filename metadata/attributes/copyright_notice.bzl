@@ -82,5 +82,7 @@ def copyright_notice(
         # Common attributes.
         tags = tags,
         visibility = visibility,
-        package_metadata = [],
+        # This should be package_metadata, but we use the legacy name
+        # to support bazel 7.
+        applicable_licenses = [],
     )
