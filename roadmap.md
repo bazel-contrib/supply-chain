@@ -15,7 +15,7 @@ This page covers our roadmap for 2026.
     - Get 1.0 out to actual users
     - Every ruleset under bazel-contrib that pulls packages should use package_metadata
     - Add package_metadata to some core rule sets such as rules_cc, rules_java, rules_python, rules_shell, skylib, bazel-features, aspect rules, rules_pkg, protobuf
-    - Add package_metadata to some "package manager" rule sets (rules_go, rules_jvm_external, rules_rust, npm rules, rules_python, rules_swift, rules_zig)
+    - Add package_metadata to some "package manager" rule sets such as rules_go, rules_jvm_external, rules_rust, npm rules, rules_swift, rules_zig
     - Identify early adopters
         - EngFlow customers?
         - Google-owned OSS projects? Envoy, Pigweed
