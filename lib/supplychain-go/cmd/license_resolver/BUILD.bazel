@@ -1,0 +1,15 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "license_resolver_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/bazel-contrib/supply-chain/lib/supplychain-go/cmd/license_resolver",
+    visibility = ["//visibility:private"],
+    deps = ["//license_resolver"],
+)
+
+go_binary(
+    name = "license_resolver",
+    embed = [":license_resolver_lib"],
+    visibility = ["//visibility:public"],
+)
