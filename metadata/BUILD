@@ -1,3 +1,4 @@
+load("//attributes:copyright_notice.bzl", "copyright_notice")
 load("//licenses/rules:license.bzl", "license")
 load("//purl:purl.bzl", "purl")
 load("//rules:package_metadata.bzl", "package_metadata")
@@ -38,4 +39,12 @@ license(
     name = "license",
     kind = "//licenses/spdx:Apache-2.0",
     text = "LICENSE",
+)
+
+copyright_notice(
+    name = "copyright_notice",
+    text = [
+        "Copyright © 2026 The authors of this stuff.",
+        "Copyright © 1999 A. Cöntributor",
+    ],
 )
