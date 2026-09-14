@@ -9,11 +9,10 @@ def _package_metadata_impl(ctx):
     attributes = [a[PackageAttributeInfo] for a in ctx.attr.attributes]
 
     metadata = ctx.actions.declare_file("{}.package-metadata.json".format(ctx.attr.name))
-
     ctx.actions.write(
         output = metadata,
         content = json.encode({
-            "attributes": {a.kind: a.attributes.path for a in attributes},
+            "attributes": {a.kind: a.data.path for a in attributes},
             "label": str(ctx.label),
             "purl": ctx.attr.purl,
         }),
@@ -29,6 +28,7 @@ def _package_metadata_impl(ctx):
         ),
         PackageMetadataInfo(
             metadata = metadata,
+            attributes = attributes,
             files = [a.files for a in attributes],
         ),
     ]

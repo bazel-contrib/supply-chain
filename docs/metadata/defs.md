@@ -9,7 +9,7 @@ Public API of `@package_metadata`.
 <pre>
 load("@package_metadata//:defs.bzl", "PackageAttributeInfo")
 
-PackageAttributeInfo(<a href="#PackageAttributeInfo-kind">kind</a>, <a href="#PackageAttributeInfo-attributes">attributes</a>, <a href="#PackageAttributeInfo-files">files</a>)
+PackageAttributeInfo(<a href="#PackageAttributeInfo-kind">kind</a>, <a href="#PackageAttributeInfo-data">data</a>, <a href="#PackageAttributeInfo-files">files</a>)
 </pre>
 
 Provider for declaring metadata about a Bazel package.
@@ -21,7 +21,7 @@ Provider for declaring metadata about a Bazel package.
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="PackageAttributeInfo-kind"></a>kind | The identifier of the attribute.<br><br>This should generally be in reverse DNS format (e.g., `com.example.foo`). | none |
-| <a id="PackageAttributeInfo-attributes"></a>attributes | The [File](https://bazel.build/rules/lib/builtins/File) containing the attributes.<br><br>The format of this file depends on the `kind` of attribute. Please consult the documentation of the attribute. | none |
+| <a id="PackageAttributeInfo-data"></a>data | The [File](https://bazel.build/rules/lib/builtins/File) containing the attribute specific data.<br><br>The format of this file depends on the `kind` of attribute. Please consult the documentation of the attribute. | none |
 | <a id="PackageAttributeInfo-files"></a>files | A [depset](https://bazel.build/rules/lib/builtins/depset) of [File](https://bazel.build/rules/lib/builtins/File)s containing information about this attribute. | `[]` |
 
 
@@ -32,7 +32,7 @@ Provider for declaring metadata about a Bazel package.
 <pre>
 load("@package_metadata//:defs.bzl", "PackageMetadataInfo")
 
-PackageMetadataInfo(<a href="#PackageMetadataInfo-metadata">metadata</a>, <a href="#PackageMetadataInfo-files">files</a>)
+PackageMetadataInfo(<a href="#PackageMetadataInfo-metadata">metadata</a>, <a href="#PackageMetadataInfo-attributes">attributes</a>, <a href="#PackageMetadataInfo-files">files</a>)
 </pre>
 
 Provider for declaring metadata about a Bazel package.
@@ -44,6 +44,7 @@ Provider for declaring metadata about a Bazel package.
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="PackageMetadataInfo-metadata"></a>metadata | The [File](https://bazel.build/rules/lib/builtins/File) containing metadata about the package. | none |
+| <a id="PackageMetadataInfo-attributes"></a>attributes | A [depset](https://bazel.build/rules/lib/builtins/depset) of `PackageAttributeInfo` providers. | `[]` |
 | <a id="PackageMetadataInfo-files"></a>files | A [depset](https://bazel.build/rules/lib/builtins/depset) of [File](https://bazel.build/rules/lib/builtins/File)s with metadata about the package, including transitive files from all attributes of the package. | `[]` |
 
 
