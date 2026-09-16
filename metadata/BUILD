@@ -44,7 +44,6 @@ license(
 copyright_notice(
     name = "copyright_notice",
     text = [
-        "Copyright © 2026 The authors of this stuff.",
-        "Copyright © 1999 A. Cöntributor",
+        "Copyright © 2026 The bazel-contrib/supply-chain authors.",
     ],
 )
