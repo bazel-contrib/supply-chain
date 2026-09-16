@@ -89,7 +89,7 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications) (
 	var rootComponent *cdx.Component
 
 	// Helper function to create component from node
-	createComponent := func(node *sbom.NodeConfig, scope string) (cdx.Component, error) {
+	createComponent := func(node *sbom.NodeConfig) (cdx.Component, error) {
 		if node.MetadataFile == "" {
 			return cdx.Component{}, fmt.Errorf("node %s has no metadata file", node.Label)
 		}
@@ -119,18 +119,13 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications) (
 			component.Version = purl.Version
 		}
 
-		// Add scope if provided
-		if scope != "" {
-			component.Scope = cdx.Scope(scope)
-		}
-
 		labelToBOMRef[node.Label] = bomRef
 		return component, nil
 	}
 
 	// Handle root component
 	if classifications.RootComponent != nil {
-		comp, err := createComponent(classifications.RootComponent, "")
+		comp, err := createComponent(classifications.RootComponent)
 		if err != nil {
 			return nil, err
 		}
@@ -139,7 +134,7 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications) (
 
 	// Add direct dependencies with scope="direct"
 	for i := range classifications.Dependencies.Direct {
-		comp, err := createComponent(&classifications.Dependencies.Direct[i], "direct")
+		comp, err := createComponent(&classifications.Dependencies.Direct[i])
 		if err != nil {
 			return nil, err
 		}
@@ -148,7 +143,7 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications) (
 
 	// Add transitive dependencies with scope="transitive"
 	for i := range classifications.Dependencies.Transitive {
-		comp, err := createComponent(&classifications.Dependencies.Transitive[i], "transitive")
+		comp, err := createComponent(&classifications.Dependencies.Transitive[i])
 		if err != nil {
 			return nil, err
 		}
