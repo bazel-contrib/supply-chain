@@ -1,0 +1,15 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "coverage",
+    srcs = ["coverage.go"],
+    importpath = "github.com/bazel-contrib/supply-chain/lib/supplychain-go/coverage",
+    visibility = ["//visibility:public"],
+    deps = ["//:supplychain-go"],
+)
+
+go_test(
+    name = "coverage_test",
+    srcs = ["coverage_test.go"],
+    embed = [":coverage"],
+)
