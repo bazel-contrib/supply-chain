@@ -1,17 +1,23 @@
 load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
 load("@stardoc//stardoc:stardoc.bzl", "stardoc")
 
-stardoc(
-    name = "defs",
-    out = "defs.generated.md",
-    input = "@package_metadata//licenses:defs.bzl",
-    deps = [
-        "@package_metadata//licenses:srcs",
-    ],
-)
-
-diff_test(
-    name = "defs_test",
-    file1 = ":defs",
-    file2 = "defs.md",
-)
+[
+    [
+        stardoc(
+            name = file,
+            out = "{}.generated.md".format(file),
+            input = "@package_metadata//licenses:{}.bzl".format(file),
+            deps = [
+                "@package_metadata//licenses:srcs",
+            ],
+        ),
+        diff_test(
+            name = "{}_test".format(file),
+            file1 = ":{}".format(file),
+            file2 = "{}.md".format(file),
+        ),
+    ]
+    for file in [
+        "defs",
+    ]
+]
