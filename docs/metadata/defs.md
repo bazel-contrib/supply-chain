@@ -12,14 +12,20 @@ load("@package_metadata//:defs.bzl", "PackageAttributeInfo")
 PackageAttributeInfo(<a href="#PackageAttributeInfo-kind">kind</a>, <a href="#PackageAttributeInfo-attributes">attributes</a>, <a href="#PackageAttributeInfo-files">files</a>)
 </pre>
 
-Provider for declaring metadata about a Bazel package.
+Provider for declaring a single attribute of a Bazel package (e.g., the license
+it is available under or the copyright notice).
+
+Attributes are attached to a package by passing targets providing this to the
+`attributes` of a `package_metadata` target. Declaring one is the extension
+point for organizations that need to inject metadata beyond the attributes
+provided by `@package_metadata`.
 
 **FIELDS**
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="PackageAttributeInfo-kind"></a>kind | The identifier of the attribute.<br><br>This should generally be in reverse DNS format (e.g., `com.example.foo`). | none |
-| <a id="PackageAttributeInfo-attributes"></a>attributes | The [File](https://bazel.build/rules/lib/builtins/File) containing the attributes.<br><br>The format of this file depends on the `kind` of attribute. Please consult the documentation of the attribute. | none |
+| <a id="PackageAttributeInfo-attributes"></a>attributes | The [File](https://bazel.build/rules/lib/builtins/File) containing the attributes.<br><br>The format of this file depends on the `kind` of attribute. Please consult the documentation of the attribute (e.g., `license` documents the JSON object it writes). | none |
 | <a id="PackageAttributeInfo-files"></a>files | A [depset](https://bazel.build/rules/lib/builtins/depset) of [File](https://bazel.build/rules/lib/builtins/File)s containing information about this attribute. | `[]` |
 
 
@@ -54,6 +60,9 @@ PackageMetadataOverrideInfo(*, <a href="#PackageMetadataOverrideInfo-packages">p
 </pre>
 
 Defines an override for `PackageMetadataInfo` for a set of packages.
+
+This is typically used to attach metadata to a dependency that does not declare
+any itself.
 
 **FIELDS**
 
@@ -92,6 +101,55 @@ load("@package_metadata//:defs.bzl", "package_metadata")
 package_metadata(*, <a href="#package_metadata-name">name</a>, <a href="#package_metadata-purl">purl</a>, <a href="#package_metadata-attributes">attributes</a>, <a href="#package_metadata-visibility">visibility</a>, <a href="#package_metadata-tags">tags</a>)
 </pre>
 
+Rule for declaring `PackageMetadataInfo`, typically of a `bzlmod` module.
+
+A `package_metadata` target identifies a package and where it was retrieved
+from. Additional metadata (e.g., the license the package is under) is
+attached by passing `attributes`.
+
+Targets are associated with a `package_metadata` target module-wide via
+`repo(default_package_metadata = ...)` in `REPO.bazel`, package-wide via
+`package(default_package_metadata = ...)`, or individually via the
+`package_metadata` attribute of the target.
+
+Usage:
+
+```starlark
+load("@package_metadata//purl:purl.bzl", "purl")
+load("@package_metadata//rules:package_metadata.bzl", "package_metadata")
+
+package_metadata(
+    name = "package_metadata",
+    attributes = [
+        ":license",
+    ],
+    purl = purl.bazel(module_name(), module_version()),
+    visibility = ["//visibility:public"],
+)
+```
+
+Format: the `metadata` file of the `PackageMetadataInfo` of this rule holds
+a JSON object, encoded as UTF-8 and written without insignificant whitespace
+(the example below is indented for readability):
+
+```json
+{
+    "attributes": {
+        "build.bazel.attribute.license": "bazel-out/k8-fastbuild/bin/license.package-attribute.json"
+    },
+    "label": "@@//:package_metadata",
+    "purl": "pkg:bazel/package_metadata"
+}
+```
+
+| Field | Description |
+| :---- | :---------- |
+| `attributes` | The declared `attributes`, keyed by the `kind` of their `PackageAttributeInfo`. Values are the paths of the `attributes` files, relative to the execution root. |
+| `label` | The label of this `package_metadata` target. |
+| `purl` | The `purl` of this target, verbatim. |
+
+Since `attributes` is keyed by `kind`, declaring two attributes of the same
+`kind` on one target is not meaningful — only one of them is recorded.
 
 
 **PARAMETERS**
@@ -99,11 +157,11 @@ package_metadata(*, <a href="#package_metadata-name">name</a>, <a href="#package
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="package_metadata-name"></a>name |  <p align="center"> - </p>   |  none |
-| <a id="package_metadata-purl"></a>purl |  <p align="center"> - </p>   |  none |
-| <a id="package_metadata-attributes"></a>attributes |  <p align="center"> - </p>   |  `[]` |
-| <a id="package_metadata-visibility"></a>visibility |  <p align="center"> - </p>   |  `None` |
-| <a id="package_metadata-tags"></a>tags |  <p align="center"> - </p>   |  `None` |
+| <a id="package_metadata-name"></a>name |  A unique name for this target.   |  none |
+| <a id="package_metadata-purl"></a>purl |  Required. The [PURL](https://github.com/package-url/purl-spec) uniquely identifying this package.<br><br>For Bazel modules, this is typically constructed with `purl.bazel`.   |  none |
+| <a id="package_metadata-attributes"></a>attributes |  A list of `attributes` of the package (e.g., source location, license, ...).<br><br>Each element must be a target providing `PackageAttributeInfo` (e.g., a `license` target).   |  `[]` |
+| <a id="package_metadata-visibility"></a>visibility |  The visibility of this target.<br><br>`package_metadata` targets are typically `//visibility:public` so that consumers of the module can read the metadata.   |  `None` |
+| <a id="package_metadata-tags"></a>tags |  A list of arbitrary tags to apply to this target.   |  `None` |
 
 
 <a id="purl.bazel"></a>
@@ -178,41 +236,47 @@ https://github.com/package-url/purl-spec/blob/main/purl-types-index.json
 
 Example - Simple PURL:
 
-    load("@package_metadata//purl:purl.bzl", "purl")
+```starlark
+load("@package_metadata//purl:purl.bzl", "purl")
 
-    my_purl = (purl.builder()
-        .type("npm")
-        .name("foobar")
-        .version("12.3.1")
-        .build())
-    # Result: pkg:npm/foobar@12.3.1
+my_purl = (purl.builder()
+    .type("npm")
+    .name("foobar")
+    .version("12.3.1")
+    .build())
+# Result: pkg:npm/foobar@12.3.1
+```
 
 Example - Maven with namespace and qualifiers:
 
-    load("@package_metadata//purl:purl.bzl", "purl")
+```starlark
+load("@package_metadata//purl:purl.bzl", "purl")
 
-    my_purl = (purl.builder()
-        .type("maven")
-        .namespace("org.apache.xmlgraphics")
-        .name("batik-anim")
-        .version("1.9.1")
-        .add_qualifier("classifier", "sources")
-        .add_qualifier("repository_url", "https://repo.spring.io/release")
-        .build())
-    # Result: pkg:maven/org.apache.xmlgraphics/batik-anim@1.9.1?classifier=sources&repository_url=https%3A%2F%2Frepo.spring.io%2Frelease
+my_purl = (purl.builder()
+    .type("maven")
+    .namespace("org.apache.xmlgraphics")
+    .name("batik-anim")
+    .version("1.9.1")
+    .add_qualifier("classifier", "sources")
+    .add_qualifier("repository_url", "https://repo.spring.io/release")
+    .build())
+# Result: pkg:maven/org.apache.xmlgraphics/batik-anim@1.9.1?classifier=sources&repository_url=https%3A%2F%2Frepo.spring.io%2Frelease
+```
 
 Example - Golang with namespace and subpath:
 
-    load("@package_metadata//purl:purl.bzl", "purl")
+```starlark
+load("@package_metadata//purl:purl.bzl", "purl")
 
-    my_purl = (purl.builder()
-        .type("golang")
-        .namespace("google.golang.org")
-        .name("genproto")
-        .version("abcdedf")
-        .subpath("googleapis/api/annotations")
-        .build())
-    # Result: pkg:golang/google.golang.org/genproto@abcdedf#googleapis/api/annotations
+my_purl = (purl.builder()
+    .type("golang")
+    .namespace("google.golang.org")
+    .name("genproto")
+    .version("abcdedf")
+    .subpath("googleapis/api/annotations")
+    .build())
+# Result: pkg:golang/google.golang.org/genproto@abcdedf#googleapis/api/annotations
+```
 
 
 
@@ -251,8 +315,9 @@ The parsing flow implements ECMA-427 1st edition, December 2025,
 
 See https://ecma-international.org/wp-content/uploads/ECMA-427_1st_edition_december_2025.pdf
 
-It parses the components in reverse order of their appearance in the PURL string, as recommended by
-https://github.com/PaawanBarach/purl-spec/blob/main/docs/how-to-parse.md
+It parses the components in reverse order of their appearance in the PURL
+string: parsing right to left avoids ambiguity between the separators of the
+components.
 
 
 **PARAMETERS**
@@ -264,6 +329,20 @@ https://github.com/PaawanBarach/purl-spec/blob/main/docs/how-to-parse.md
 
 **RETURNS**
 
-A tuple of (purl_components, error). On success, error is None.
+A tuple of (purl_components, error). On success, error is `None` and
+  `purl_components` is a [dict](https://bazel.build/rules/lib/core/dict)
+  with the normalized, percent-decoded components of the PURL:
+
+  - `type`: The package type (e.g., `npm`). Always present.
+  - `namespace`: The namespace, with segments joined by '/' (e.g.,
+    `org.apache.xmlgraphics`), or `None`.
+  - `name`: The package name. Always present.
+  - `version`: The version (e.g., `1.9.1`), or `None`.
+  - `qualifiers`: A dict of qualifier key-value pairs, or `None`.
+  - `subpath`: The subpath, with segments joined by '/' (e.g.,
+    `googleapis/api/annotations`), or `None`.
+
+  On failure, `purl_components` is `None` and `error` is a message
+  describing why `value` is not a valid PURL.
 
 

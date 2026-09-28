@@ -2,7 +2,6 @@
 
 load("//purl/private/normalization:normalization.bzl", "normalize")
 load("//purl/private/percent_encoding:percent_encoding.bzl", "percent_decode")
-load("//purl/private/strings:strings.bzl", "strings")
 load("//purl/private/validation:validation.bzl", "is_valid_type", "validate")
 
 visibility([
@@ -73,12 +72,12 @@ def _decode_namespace_segments(raw_segments):
 
 def _to_dict(purl):
     return {
-        "type": purl.type,
-        "namespace": "/".join(purl.namespace) if purl.namespace else None,
         "name": purl.name,
-        "version": purl.version,
+        "namespace": "/".join(purl.namespace) if purl.namespace else None,
         "qualifiers": purl.qualifiers if purl.qualifiers else None,
         "subpath": "/".join(purl.subpath) if purl.subpath else None,
+        "type": purl.type,
+        "version": purl.version,
     }
 
 def parse(value):
@@ -89,14 +88,29 @@ def parse(value):
 
     See https://ecma-international.org/wp-content/uploads/ECMA-427_1st_edition_december_2025.pdf
 
-    It parses the components in reverse order of their appearance in the PURL string, as recommended by
-    https://github.com/PaawanBarach/purl-spec/blob/main/docs/how-to-parse.md
+    It parses the components in reverse order of their appearance in the PURL
+    string: parsing right to left avoids ambiguity between the separators of the
+    components.
 
     Args:
         value: The PURL string to parse.
 
     Returns:
-        A tuple of (purl_components, error). On success, error is None.
+        A tuple of (purl_components, error). On success, error is `None` and
+        `purl_components` is a [dict](https://bazel.build/rules/lib/core/dict)
+        with the normalized, percent-decoded components of the PURL:
+
+        - `type`: The package type (e.g., `npm`). Always present.
+        - `namespace`: The namespace, with segments joined by '/' (e.g.,
+          `org.apache.xmlgraphics`), or `None`.
+        - `name`: The package name. Always present.
+        - `version`: The version (e.g., `1.9.1`), or `None`.
+        - `qualifiers`: A dict of qualifier key-value pairs, or `None`.
+        - `subpath`: The subpath, with segments joined by '/' (e.g.,
+          `googleapis/api/annotations`), or `None`.
+
+        On failure, `purl_components` is `None` and `error` is a message
+        describing why `value` is not a valid PURL.
     """
     if not value:
         return None, "PURL must not be empty"
@@ -112,7 +126,7 @@ def parse(value):
 
     # ECMA-427 §5.6.1, bullet 3: PURL parsers shall accept URLs where the scheme and colon ':' are followed by
     # one or more slash '/' characters, such as 'pkg://', and shall ignore and remove all such '/' characters.
-    value = _strip_leading(value, '/')
+    value = _strip_leading(value, "/")
 
     # ECMA-427 §5.6.7, bullets 1-2: the subpath is introduced by '#',
     # and the separator is not part of the subpath.
@@ -135,6 +149,7 @@ def parse(value):
     qualifiers = None
     if raw_qualifiers != None:
         qualifiers = {}
+
         # ECMA-427 §5.6.6, bullet 2: qualifiers are one or more key=value
         # pairs separated by '&', which is not part of a qualifier.
         for pair in raw_qualifiers.split("&"):
@@ -177,7 +192,6 @@ def parse(value):
     if type == "npm" and remainder.startswith("@"):
         # Special case for npm scoped packages, which have an unencoded '@' at the start of the namespace.
         remainder = "%40" + remainder[1:]
-
 
     # ECMA-427 §5.6.5, bullets 1-4: version, when present, is introduced by
     # '@', excludes that separator, is percent-encoded, and decodes to an

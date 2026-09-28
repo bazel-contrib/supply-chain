@@ -15,7 +15,7 @@ The intended use cases are:
   - copyright information
   - ... and more TBD in the future
 - gathering license declarations into artifacts to ship with code
-- applying organization specific compliance constriants against the
+- applying organization specific compliance constraints against the
   set of packages used by a target.
 - producing SBOMs for built artifacts.
 

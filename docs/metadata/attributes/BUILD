@@ -6,9 +6,9 @@ load("@stardoc//stardoc:stardoc.bzl", "stardoc")
         stardoc(
             name = file,
             out = "{}.generated.md".format(file),
-            input = "@package_metadata//:{}.bzl".format(file),
+            input = "@package_metadata//attributes:{}.bzl".format(file),
             deps = [
-                "@package_metadata//:srcs",
+                "@package_metadata//attributes:srcs",
             ],
         ),
         diff_test(
@@ -18,6 +18,8 @@ load("@stardoc//stardoc:stardoc.bzl", "stardoc")
         ),
     ]
     for file in [
+        "copyright_notice",
+        "cpe",
         "defs",
     ]
 ]

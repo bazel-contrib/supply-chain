@@ -14,6 +14,9 @@ PackageMetadataOverrideInfo(*, <a href="#PackageMetadataOverrideInfo-packages">p
 
 Defines an override for `PackageMetadataInfo` for a set of packages.
 
+This is typically used to attach metadata to a dependency that does not declare
+any itself.
+
 **FIELDS**
 
 | Name  | Description |

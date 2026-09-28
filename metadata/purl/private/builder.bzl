@@ -301,41 +301,47 @@ def builder():
 
     Example - Simple PURL:
 
-        load("@package_metadata//purl:purl.bzl", "purl")
+    ```starlark
+    load("@package_metadata//purl:purl.bzl", "purl")
 
-        my_purl = (purl.builder()
-            .type("npm")
-            .name("foobar")
-            .version("12.3.1")
-            .build())
-        # Result: pkg:npm/foobar@12.3.1
+    my_purl = (purl.builder()
+        .type("npm")
+        .name("foobar")
+        .version("12.3.1")
+        .build())
+    # Result: pkg:npm/foobar@12.3.1
+    ```
 
     Example - Maven with namespace and qualifiers:
 
-        load("@package_metadata//purl:purl.bzl", "purl")
+    ```starlark
+    load("@package_metadata//purl:purl.bzl", "purl")
 
-        my_purl = (purl.builder()
-            .type("maven")
-            .namespace("org.apache.xmlgraphics")
-            .name("batik-anim")
-            .version("1.9.1")
-            .add_qualifier("classifier", "sources")
-            .add_qualifier("repository_url", "https://repo.spring.io/release")
-            .build())
-        # Result: pkg:maven/org.apache.xmlgraphics/batik-anim@1.9.1?classifier=sources&repository_url=https%3A%2F%2Frepo.spring.io%2Frelease
+    my_purl = (purl.builder()
+        .type("maven")
+        .namespace("org.apache.xmlgraphics")
+        .name("batik-anim")
+        .version("1.9.1")
+        .add_qualifier("classifier", "sources")
+        .add_qualifier("repository_url", "https://repo.spring.io/release")
+        .build())
+    # Result: pkg:maven/org.apache.xmlgraphics/batik-anim@1.9.1?classifier=sources&repository_url=https%3A%2F%2Frepo.spring.io%2Frelease
+    ```
 
     Example - Golang with namespace and subpath:
 
-        load("@package_metadata//purl:purl.bzl", "purl")
+    ```starlark
+    load("@package_metadata//purl:purl.bzl", "purl")
 
-        my_purl = (purl.builder()
-            .type("golang")
-            .namespace("google.golang.org")
-            .name("genproto")
-            .version("abcdedf")
-            .subpath("googleapis/api/annotations")
-            .build())
-        # Result: pkg:golang/google.golang.org/genproto@abcdedf#googleapis/api/annotations
+    my_purl = (purl.builder()
+        .type("golang")
+        .namespace("google.golang.org")
+        .name("genproto")
+        .version("abcdedf")
+        .subpath("googleapis/api/annotations")
+        .build())
+    # Result: pkg:golang/google.golang.org/genproto@abcdedf#googleapis/api/annotations
+    ```
 
     Returns:
         A builder object with chainable methods:

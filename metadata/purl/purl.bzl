@@ -1,4 +1,4 @@
-"""Module defining urils for [purl](https://github.com/package-url/purl-spec)s."""
+"""Module defining utils for [purl](https://github.com/package-url/purl-spec)s."""
 
 load("//purl/private:builder.bzl", "builder")
 load("//purl/private:parser.bzl", "parse")

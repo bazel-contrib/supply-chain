@@ -1,6 +1,6 @@
 <!-- Generated with Stardoc: http://skydoc.bazel.build -->
 
-Module defining urils for [purl](https://github.com/package-url/purl-spec)s.
+Module defining utils for [purl](https://github.com/package-url/purl-spec)s.
 
 <a id="purl.bazel"></a>
 
@@ -74,41 +74,47 @@ https://github.com/package-url/purl-spec/blob/main/purl-types-index.json
 
 Example - Simple PURL:
 
-    load("@package_metadata//purl:purl.bzl", "purl")
+```starlark
+load("@package_metadata//purl:purl.bzl", "purl")
 
-    my_purl = (purl.builder()
-        .type("npm")
-        .name("foobar")
-        .version("12.3.1")
-        .build())
-    # Result: pkg:npm/foobar@12.3.1
+my_purl = (purl.builder()
+    .type("npm")
+    .name("foobar")
+    .version("12.3.1")
+    .build())
+# Result: pkg:npm/foobar@12.3.1
+```
 
 Example - Maven with namespace and qualifiers:
 
-    load("@package_metadata//purl:purl.bzl", "purl")
+```starlark
+load("@package_metadata//purl:purl.bzl", "purl")
 
-    my_purl = (purl.builder()
-        .type("maven")
-        .namespace("org.apache.xmlgraphics")
-        .name("batik-anim")
-        .version("1.9.1")
-        .add_qualifier("classifier", "sources")
-        .add_qualifier("repository_url", "https://repo.spring.io/release")
-        .build())
-    # Result: pkg:maven/org.apache.xmlgraphics/batik-anim@1.9.1?classifier=sources&repository_url=https%3A%2F%2Frepo.spring.io%2Frelease
+my_purl = (purl.builder()
+    .type("maven")
+    .namespace("org.apache.xmlgraphics")
+    .name("batik-anim")
+    .version("1.9.1")
+    .add_qualifier("classifier", "sources")
+    .add_qualifier("repository_url", "https://repo.spring.io/release")
+    .build())
+# Result: pkg:maven/org.apache.xmlgraphics/batik-anim@1.9.1?classifier=sources&repository_url=https%3A%2F%2Frepo.spring.io%2Frelease
+```
 
 Example - Golang with namespace and subpath:
 
-    load("@package_metadata//purl:purl.bzl", "purl")
+```starlark
+load("@package_metadata//purl:purl.bzl", "purl")
 
-    my_purl = (purl.builder()
-        .type("golang")
-        .namespace("google.golang.org")
-        .name("genproto")
-        .version("abcdedf")
-        .subpath("googleapis/api/annotations")
-        .build())
-    # Result: pkg:golang/google.golang.org/genproto@abcdedf#googleapis/api/annotations
+my_purl = (purl.builder()
+    .type("golang")
+    .namespace("google.golang.org")
+    .name("genproto")
+    .version("abcdedf")
+    .subpath("googleapis/api/annotations")
+    .build())
+# Result: pkg:golang/google.golang.org/genproto@abcdedf#googleapis/api/annotations
+```
 
 
 
@@ -147,8 +153,9 @@ The parsing flow implements ECMA-427 1st edition, December 2025,
 
 See https://ecma-international.org/wp-content/uploads/ECMA-427_1st_edition_december_2025.pdf
 
-It parses the components in reverse order of their appearance in the PURL string, as recommended by
-https://github.com/PaawanBarach/purl-spec/blob/main/docs/how-to-parse.md
+It parses the components in reverse order of their appearance in the PURL
+string: parsing right to left avoids ambiguity between the separators of the
+components.
 
 
 **PARAMETERS**
@@ -160,6 +167,20 @@ https://github.com/PaawanBarach/purl-spec/blob/main/docs/how-to-parse.md
 
 **RETURNS**
 
-A tuple of (purl_components, error). On success, error is None.
+A tuple of (purl_components, error). On success, error is `None` and
+  `purl_components` is a [dict](https://bazel.build/rules/lib/core/dict)
+  with the normalized, percent-decoded components of the PURL:
+
+  - `type`: The package type (e.g., `npm`). Always present.
+  - `namespace`: The namespace, with segments joined by '/' (e.g.,
+    `org.apache.xmlgraphics`), or `None`.
+  - `name`: The package name. Always present.
+  - `version`: The version (e.g., `1.9.1`), or `None`.
+  - `qualifiers`: A dict of qualifier key-value pairs, or `None`.
+  - `subpath`: The subpath, with segments joined by '/' (e.g.,
+    `googleapis/api/annotations`), or `None`.
+
+  On failure, `purl_components` is `None` and `error` is a message
+  describing why `value` is not a valid PURL.
 
 

@@ -5,7 +5,9 @@ General-purpose rules for injecting supply-chain metadata into Bazel projects (e
 
 ## Stability
 
-This is a fundamental module of the Bazel ecosystem that most, if not all, other Bazel modules depend on. Thus stability is very important, and we promise to never change the public API.
+This is a fundamental module of the Bazel ecosystem that most, if not all, other Bazel modules depend on. Stability is therefore very important to us: once a symbol is declared stable, we will not make breaking changes to it.
+
+Stability is tracked per symbol, not for the module as a whole. Every symbol listed under [API Documentation](#api-documentation) is covered by the guarantee unless an exception is called out explicitly — either in this document (see [attributes](#as-module-author) and [the consumer-side API](#as-an-organization)) or in the symbol's own API documentation.
 
 
 ## Concepts
@@ -51,21 +53,26 @@ If you are a module author and want to annotate your module, you will need :
 
     package_metadata(
         name = "package_metadata",
-        purl = purl.bazel(module_name(), module_version()),
         attributes = [
             # ...
         ],
+        purl = purl.bazel(module_name(), module_version()),
         visibility = ["//visibility:public"],
     )
     ```
-
-    <!-- TODO(yannic): use PURL builder instead of a format string. -->
 
   - (optional) Add `attributes` to your `package_metadata` target(s).
 
     `package_metadata` itself only provides information about the identity of a module or package and where it was retrieved from. Additional metadata is provided as `attributes` to the `package_metadata` target (e.g., the license the packages are under, ...).
 
-    > Definition of attributes are currently under development and not ready for wider usage yet. Please avoid adding attributes to OSS modules for now.
+    The attributes provided by this module are:
+
+      - [license](./licenses/rules/license.md#license) — the license the package is available under.
+      - [copyright_notice](./attributes/copyright_notice.md#copyright_notice) — the copyright notices of the package.
+
+    Custom attributes are declared by writing a rule that provides [PackageAttributeInfo](./providers/package_attribute_info.md#PackageAttributeInfo). [`copyright_notice`](../../metadata/attributes/copyright_notice.bzl) is a minimal example to copy from.
+
+    > **IMPORTANT**: The extension point for custom attributes, and the attributes other than `license`, are still under development. Please avoid relying on them in modules published to a public registry for now.
 
   - Annotate all targets with `package_metadata`.
 
@@ -81,7 +88,7 @@ If you are a module author and want to annotate your module, you will need :
         repo(default_package_metadata = ["//:package_metadata"])
         ```
 
-        This provides a simple way to annotate all targets in a module, while preserving the ability to annotate some packages or targets in the package with a different metadata using the methods above.
+        This provides a simple way to annotate all targets in a module, while preserving the ability to annotate individual packages or targets with different metadata using the methods below.
 
       - Package level: Add `default_package_metadata` to all packages
 
@@ -91,7 +98,7 @@ If you are a module author and want to annotate your module, you will need :
         package(default_package_metadata = ["//:package_metadata"])
         ```
 
-        This provides a simple way to annotate all targets in a package, while preserving the ability to annotate some targets in the package with a different metadata using the method above.
+        This provides a simple way to annotate all targets in a package, while preserving the ability to annotate individual targets in the package with different metadata using the method below.
 
       - Target level: Add `package_metadata` to all targets individually:
 
@@ -112,12 +119,18 @@ If you are a module author and want to annotate your module, you will need :
 
 ### As an organization
 
-> This is currently under active development.
->
-> We will update this page after stabilizing the API.
+Organizations consume the metadata that module authors declare — to check compliance, or to produce provenance information for the artifacts they ship.
+
+The rules and providers in this module only *declare* metadata. Collecting it across a build graph and rendering it into a report (e.g., an SBOM) is the job of the [`@supply_chain_tools`](../../tools) module.
+
+One consumer-side rule is available already, in a separate module: to attach metadata to a dependency that does not declare any itself (e.g., a third-party module that has not adopted `package_metadata` yet), use [package_metadata_override](../metadata-extensions/rules/package_metadata_override.md#package_metadata_override) from [@package_metadata_extensions](../metadata-extensions). The providers it builds on, [PackageMetadataOverrideInfo](./providers/package_metadata_override_info.md#PackageMetadataOverrideInfo) and [PackageMetadataToolchainInfo](./providers/package_metadata_toolchain_info.md#PackageMetadataToolchainInfo), are part of `@package_metadata` itself.
+
+> **IMPORTANT**: The consumer-side API is under active development and changes more frequently than the declaration-side API described above. We will document it here after stabilizing it.
 
 
 ## API Documentation
+
+Where a package has a `defs.bzl` (e.g., `@package_metadata//:defs.bzl`), it re-exports the public symbols of that package. The pages below document each symbol under its canonical per-file path; both load paths are supported.
 
 ### Generic
 
@@ -127,6 +140,8 @@ If you are a module author and want to annotate your module, you will need :
 
   - [@package_metadata//providers:package_attribute_info.bzl](./providers/package_attribute_info.md)
   - [@package_metadata//providers:package_metadata_info.bzl](./providers/package_metadata_info.md)
+  - [@package_metadata//providers:package_metadata_override_info.bzl](./providers/package_metadata_override_info.md)
+  - [@package_metadata//providers:package_metadata_toolchain_info.bzl](./providers/package_metadata_toolchain_info.md)
 
 #### Rules
 
@@ -135,6 +150,11 @@ If you are a module author and want to annotate your module, you will need :
 #### Utils
 
   - [@package_metadata//purl:purl.bzl](./purl/purl.md)
+
+
+### Attributes
+
+  - [@package_metadata//attributes:copyright_notice.bzl](./attributes/copyright_notice.md)
 
 
 ### Licenses
