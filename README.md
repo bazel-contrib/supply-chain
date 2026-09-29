@@ -15,7 +15,7 @@ The intended use cases are:
   - copyright information
   - ... and more TBD in the future
 - gathering license declarations into artifacts to ship with code
-- applying organization specific compliance constriants against the
+- applying organization specific compliance constraints against the
   set of packages used by a target.
 - producing SBOMs for built artifacts.
 
@@ -34,7 +34,7 @@ See [this page](roadmap.md).
 
 ## Background reading:
 
-These is for learning about the problem space, and our approach to solutions. Concrete specifications will always appear in checked in code rather than documents.
+These are for learning about the problem space, and our approach to solutions. Concrete specifications will always appear in checked in code rather than documents.
 - [License Checking with Bazel](https://docs.google.com/document/d/1uwBuhAoBNrw8tmFs-NxlssI6VRolidGYdYqagLqHWt8/edit#).
 - [OSS Licenses and Bazel Dependency Management](https://docs.google.com/document/d/1oY53dQ0pOPEbEvIvQ3TvHcFKClkimlF9AtN89EPiVJU/edit#)
 - [Adding OSS license declarations to Bazel](https://docs.google.com/document/d/1XszGbpMYNHk_FGRxKJ9IXW10KxMPdQpF5wWbZFpA4C8/edit#heading=h.5mcn15i0e1ch)

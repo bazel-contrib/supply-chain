@@ -14,7 +14,8 @@ PackageMetadataOverrideInfo(*, <a href="#PackageMetadataOverrideInfo-packages">p
 
 Defines an override for `PackageMetadataInfo` for a set of packages.
 
-> **Fields in this provider are not covered by the stability guarantee.**
+This is typically used to attach metadata to a dependency that does not declare
+any itself.
 
 **FIELDS**
 

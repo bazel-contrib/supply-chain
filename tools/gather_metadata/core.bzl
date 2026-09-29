@@ -44,6 +44,46 @@ def should_traverse(ctx, attr, user_filters = None):
                 return False
     return True
 
+def _attr_targets(attr_value):
+    """Flattens a single rule attribute value into a list of its targets.
+
+    Rule attributes that carry dependency edges come in a few shapes, and each
+    needs to be flattened differently before we can walk the targets it points
+    at:
+
+      * ``label`` attributes resolve to a single ``Target``,
+      * ``label_list`` attributes resolve to a ``list`` of ``Target``s,
+      * ``label_keyed_string_dict`` (and dict-typed attributes in general)
+        resolve to a ``dict`` whose keys and/or values may be ``Target``s or
+        lists of ``Target``s.
+
+    Any other attribute type (e.g. strings, ints, bools and their list/dict
+    variants) carries no targets and flattens to an empty list.
+
+    Args:
+      attr_value: the value of a single rule attribute, as returned by
+        ``getattr(ctx.rule.attr, name)``.
+
+    Returns:
+      A flat list containing every ``Target`` found in ``attr_value``.
+    """
+    if type(attr_value) == "Target":
+        return [attr_value]
+    if type(attr_value) == type([]):
+        return [item for item in attr_value if type(item) == "Target"]
+    if type(attr_value) == type({}):
+        # Inspect both keys and values so that any dict-typed attribute (e.g.
+        # label_keyed_string_dict, whose keys are targets) is covered.
+        targets = []
+        for key, value in attr_value.items():
+            for entry in (key, value):
+                if type(entry) == "Target":
+                    targets.append(entry)
+                elif type(entry) == type([]):
+                    targets.extend([item for item in entry if type(item) == "Target"])
+        return targets
+    return []
+
 def _get_transitive_metadata(
         ctx,
         transitive_depsets,
@@ -72,22 +112,12 @@ def _get_transitive_metadata(
         if filter_func and not filter_func(ctx, name):
             continue
 
-        attr_value = getattr(ctx.rule.attr, name)
-
-        # Make scalers into a lists for convenience.
-        if type(attr_value) != type([]):
-            attr_value = [attr_value]
-
-        for dep in attr_value:
-            # Ignore anything that isn't a target
-            if type(dep) != "Target":
-                continue
-
-            # Targets can also include things like input files that won't have the
-            # aspect, so we additionally check for the aspect rather than assume
-            # it's on all targets.  Even some regular targets may be synthetic and
-            # not have the aspect. This provides protection against those outlier
-            # cases.
+        for dep in _attr_targets(getattr(ctx.rule.attr, name)):
+            # Targets can also include things like input files that won't have
+            # the aspect, so we additionally check for the aspect rather than
+            # assume it's on all targets. Even some regular targets may be
+            # synthetic and not have the aspect. This provides protection
+            # against those outlier cases.
             if provider in dep:
                 info = dep[provider]
                 if info != null_provider_instance:

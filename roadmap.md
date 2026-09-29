@@ -6,21 +6,22 @@ This page covers our roadmap for 2026.
 
 - Supply chain core
     - Get package_metadata to 1.0 (mostly done)
-        - Finish purl work
+        - ~Finish purl work~
         - Need to update documentation to remove experimental disclaimer
     - Get tooling module to 1.0
-        - Antonio is working on overhauling the tooling
-        - Should we split it into a third module?
-            - Package_metadata, supply-chain-go, supply-chain-tools (+ language-specific libraries)
-    - Bzlmod integration
+        - ~Antonio is working on overhauling the tooling~
+    - ~Bzlmod integration~
 - Adoption
     - Get 1.0 out to actual users
     - Every ruleset under bazel-contrib that pulls packages should use package_metadata
-    - Add package_metadata to some core rule sets (cc, java, python, shell, skylib, bazel-features, aspect rules, rules_pkg)
-    - Have something in the BCR to check (later enforce) presence of package_metadata
+    - Add package_metadata to some core rule sets such as rules_cc, rules_java, rules_python, rules_shell, skylib, bazel-features, aspect rules, rules_pkg, protobuf
+    - Add package_metadata to some "package manager" rule sets such as rules_go, rules_jvm_external, rules_rust, npm rules, rules_swift, rules_zig
     - Identify early adopters
         - EngFlow customers?
         - Google-owned OSS projects? Envoy, Pigweed
+        - Datadog agent?
+    - Have something in the BCR to check (later enforce) presence of package_metadata
+        - Include in registry.bazel.build
 
 ## Milestone M1.1 - BazelCon (October 2026)
 
