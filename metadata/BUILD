@@ -16,6 +16,7 @@ filegroup(
         "defs.bzl",
     ] + [
         "//attributes:srcs",
+        "//common:srcs",
         "//licenses:srcs",
         "//providers:srcs",
         "//purl:srcs",
