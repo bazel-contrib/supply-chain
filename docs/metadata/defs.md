@@ -91,32 +91,37 @@ Toolchain for `package_metadata`.
 | <a id="PackageMetadataToolchainInfo-metadata_overrides"></a>metadata_overrides | A sequence of `PackageMetadataOverrideInfo` providers. | `[]` |
 
 
-<a id="TargetMetadataInfo"></a>
+<a id="TargetInfo"></a>
 
-## TargetMetadataInfo
+## TargetInfo
 
 <pre>
-load("@package_metadata//:defs.bzl", "TargetMetadataInfo")
+load("@package_metadata//:defs.bzl", "TargetInfo")
 
-TargetMetadataInfo(<a href="#TargetMetadataInfo-metadata">metadata</a>, <a href="#TargetMetadataInfo-files">files</a>)
+TargetInfo(<a href="#TargetInfo-_init-metadata">metadata</a>, <a href="#TargetInfo-_init-files">files</a>)
 </pre>
 
-Provider for declaring metadata about a Bazel target.
+Provider for describing a single target.
 
 This includes the `PackageMetadataInfo`s directly attached to the target as well
-as information about dependencies of the target.
+as `TargetInfo` from dependencies of the target.
 
-`TargetMetadataInfo` provides information about a single node in the
+`TargetInfo` provides information about a single node in the
 (configured) target graph, including outgoing edges to its direct dependencies.
 
-> **Fields in this provider are not covered by the stability guarantee.**
-
-**FIELDS**
+**CONSTRUCTOR PARAMETERS**
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="TargetMetadataInfo-metadata"></a>metadata | The [File](https://bazel.build/rules/lib/builtins/File) containing metadata about the target. | none |
-| <a id="TargetMetadataInfo-files"></a>files | A [depset](https://bazel.build/rules/lib/builtins/depset) of [File](https://bazel.build/rules/lib/builtins/File)s with metadata about the target, including transitive files from all dependencies. | `[]` |
+| <a id="TargetInfo-_init-metadata"></a>metadata | <p align="center">-</p> | none |
+| <a id="TargetInfo-_init-files"></a>files | A [depset](https://bazel.build/rules/lib/builtins/depset) of [File](https://bazel.build/rules/lib/builtins/File)s with metadata about the target, including transitive files from all dependencies. | `[]` |
+
+**FIELDS**
+
+| Name  | Description |
+| :------------- | :------------- |
+| <a id="TargetInfo-files"></a>files |  A [depset](https://bazel.build/rules/lib/builtins/depset) of [File](https://bazel.build/rules/lib/builtins/File)s with metadata about the target, including transitive files from all dependencies.    |
+| <a id="TargetInfo-info"></a>info |  The [File](https://bazel.build/rules/lib/builtins/File) containing the information about the target.    |
 
 
 <a id="package_metadata"></a>
