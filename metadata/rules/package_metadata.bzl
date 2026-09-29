@@ -1,35 +1,26 @@
 """Declares rule `package_metadata`."""
 
+load("//common:common.bzl", "package_metadata_common")
 load("//providers:package_attribute_info.bzl", "PackageAttributeInfo")
 load("//providers:package_metadata_info.bzl", "PackageMetadataInfo")
 
 visibility("public")
 
 def _package_metadata_impl(ctx):
-    attributes = [a[PackageAttributeInfo] for a in ctx.attr.attributes]
-
-    metadata = ctx.actions.declare_file("{}.package-metadata.json".format(ctx.attr.name))
-
-    ctx.actions.write(
-        output = metadata,
-        content = json.encode({
-            "attributes": {a.kind: a.attributes.path for a in attributes},
-            "label": str(ctx.label),
-            "purl": ctx.attr.purl,
-        }),
+    info = package_metadata_common.create_package_metadata(
+        actions = ctx.actions,
+        label = ctx.label,
+        purl = ctx.attr.purl,
+        attributes = [a[PackageAttributeInfo] for a in ctx.attr.attributes],
     )
-
     return [
+        info,
         DefaultInfo(
             files = depset(
                 direct = [
-                    metadata,
+                    info.metadata,
                 ],
             ),
-        ),
-        PackageMetadataInfo(
-            metadata = metadata,
-            files = [a.files for a in attributes],
         ),
     ]
 

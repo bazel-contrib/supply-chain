@@ -149,6 +149,7 @@ Where a package has a `defs.bzl` (e.g., `@package_metadata//:defs.bzl`), it re-e
 
 #### Utils
 
+  - [@package_metadata//common:common.bzl](./common/common.md)
   - [@package_metadata//purl:purl.bzl](./purl/purl.md)
 
 
