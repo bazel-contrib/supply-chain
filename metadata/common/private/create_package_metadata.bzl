@@ -7,17 +7,19 @@ visibility([
 ])
 
 def create_package_metadata(*, actions, label, purl, attributes = []):
-    """Creates a PackageMetadataInfo provider with JSON metadata.
+    """Creates a `PackageMetadataInfo` provider with JSON metadata.
 
     This function generates a JSON file containing metadata about a Bazel package,
     including its PURL (Package URL), label, and attributes. The metadata is
     structured for consumption by supply chain analysis tools.
 
-    **Example:**
+    Example:
 
     ```starlark
+    load("@package_metadata//common:common.bzl", "package_metadata_common")
+
     def _my_rule_impl(ctx):
-        info = create_package_metadata(
+        info = package_metadata_common.create_package_metadata(
             actions = ctx.actions,
             label = ctx.label,
             purl = "pkg:npm/my-package@1.0.0",
@@ -33,14 +35,12 @@ def create_package_metadata(*, actions, label, purl, attributes = []):
             target being processed.
         purl: A string containing the [PURL](https://github.com/package-url/purl-spec)
             uniquely identifying this package (e.g., "pkg:npm/lodash@4.17.21").
-        attributes: A list of [PackageAttributeInfo](//providers:package_attribute_info.bzl)
-            providers representing package attributes (e.g., source location, license).
-            Defaults to an empty list.
+        attributes: A list of `PackageAttributeInfo` providers representing package
+            attributes (e.g., source location, license). Defaults to an empty list.
 
     Returns:
-        A [PackageMetadataInfo](//providers:package_metadata_info.bzl) provider
-        containing the generated metadata file and transitive files from all
-        attributes.
+        A `PackageMetadataInfo` provider containing the generated metadata file and
+        transitive files from all attributes.
     """
 
     metadata = actions.declare_file("{}.package-metadata.json".format(label.name))

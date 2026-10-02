@@ -4,7 +4,7 @@ exports_files(
         "package_metadata_info.bzl",
         "package_metadata_override_info.bzl",
         "package_metadata_toolchain_info.bzl",
-        "target_info.bzl",
+        "provenance_info.bzl",
     ],
     visibility = ["//visibility:public"],
 )
@@ -16,7 +16,7 @@ filegroup(
         "package_metadata_info.bzl",
         "package_metadata_override_info.bzl",
         "package_metadata_toolchain_info.bzl",
-        "target_info.bzl",
+        "provenance_info.bzl",
     ],
     visibility = ["//visibility:public"],
 )

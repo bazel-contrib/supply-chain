@@ -11,7 +11,6 @@ filegroup(
         "common.bzl",
     ] + [
         "//common/private:srcs",
-        "//providers:srcs",
     ],
     visibility = ["//visibility:public"],
 )

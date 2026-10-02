@@ -1,26 +1,28 @@
-"""Declares provider `TargetInfo`."""
+"""Declares provider `ProvenanceInfo`."""
 
 visibility("public")
 
-def _init(metadata, files = []):
+def _init(provenance, files = []):
     return {
         "files": depset(
             direct = [
-                metadata,
+                provenance,
             ],
             transitive = files,
         ),
-        "metadata": metadata,
+        "provenance": provenance,
     }
 
-TargetInfo, _create = provider(
+ProvenanceInfo, _create = provider(
     doc = """
-Provider for describing a single target.
+Provider for describing provenance info.
 
-This includes the `PackageMetadataInfo`s directly attached to the target as well
-as `TargetInfo` from dependencies of the target.
+This is typically emitted by every target in the dependency graph of an artifact
+and contains the `PackageMetadataInfo`s directly attached to the target as well
+as `ProvenanceInfo` from dependencies of the target and their relationship to
+the current `ProvenanceInfo`.
 
-`TargetInfo` provides information about a single node in the
+`ProvenanceInfo` provides information about a single node in the
 (configured) target graph, including outgoing edges to its direct dependencies.
 """.strip(),
     fields = {
@@ -29,9 +31,9 @@ A [depset](https://bazel.build/rules/lib/builtins/depset) of
 [File](https://bazel.build/rules/lib/builtins/File)s with metadata about the
 target, including transitive files from all dependencies.
 """.strip(),
-        "info": """
+        "provenance": """
 The [File](https://bazel.build/rules/lib/builtins/File) containing the
-information about the target.
+provenance information.
 """.strip(),
     },
     init = _init,
