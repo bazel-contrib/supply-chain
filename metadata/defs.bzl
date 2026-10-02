@@ -7,6 +7,7 @@ load("//providers:package_metadata_override_info.bzl", _PackageMetadataOverrideI
 load("//providers:package_metadata_toolchain_info.bzl", _PackageMetadataToolchainInfo = "PackageMetadataToolchainInfo")
 load("//purl:purl.bzl", _purl = "purl")
 load("//rules:package_metadata.bzl", _package_metadata = "package_metadata")
+load("//rules:package_metadata_toolchain.bzl", _package_metadata_toolchain = "package_metadata_toolchain")
 
 visibility("public")
 
@@ -18,6 +19,7 @@ PackageMetadataToolchainInfo = _PackageMetadataToolchainInfo
 
 # Rules
 package_metadata = _package_metadata
+package_metadata_toolchain = _package_metadata_toolchain
 
 # Utils
 package_metadata_common = _package_metadata_common
