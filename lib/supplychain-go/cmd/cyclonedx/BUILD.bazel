@@ -7,6 +7,7 @@ go_library(
     visibility = ["//visibility:private"],
     deps = [
         "//:supplychain-go",
+        "//coverage",
         "//internal/sbom",
         "@com_github_cyclonedx_cyclonedx_go//:cyclonedx-go",
     ],

@@ -1,0 +1,15 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "license_policy_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/bazel-contrib/supply-chain/lib/supplychain-go/cmd/license_policy",
+    visibility = ["//visibility:private"],
+    deps = ["//policy"],
+)
+
+go_binary(
+    name = "license_policy",
+    embed = [":license_policy_lib"],
+    visibility = ["//visibility:public"],
+)

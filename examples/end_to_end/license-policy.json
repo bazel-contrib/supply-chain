@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "allowed_license_identifiers": ["Apache-2.0"],
+  "allowed_license_exceptions": [],
+  "allowed_missing_license_purls": [],
+  "target_exceptions": []
+}

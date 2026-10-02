@@ -1,0 +1,24 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_bazel",
+    srcs = ["adapter.go"],
+    importpath = "github.com/bazel-contrib/supply-chain/lib/supplychain-go/go_bazel",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//:supplychain-go",
+        "//coverage",
+        "//license_resolver",
+    ],
+)
+
+go_test(
+    name = "go_bazel_test",
+    srcs = ["adapter_test.go"],
+    embed = [":go_bazel"],
+    deps = [
+        "//coverage",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+    ],
+)

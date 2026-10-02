@@ -14,4 +14,13 @@ Terminology
 
 ## Overview
 
-TODO
+The `end_to_end` package demonstrates the complete front-door workflow:
+
+```shell
+bazel build //end_to_end:license_compliance
+```
+
+That one target gathers the dependency graph, computes license coverage,
+evaluates the package against the example policy, and emits SPDX JSON and
+CycloneDX JSON documents. Organizations should replace the example policy with
+their reviewed allowlist and keep that file under their own security ownership.
