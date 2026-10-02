@@ -113,6 +113,20 @@ jobs:
             package: "examples"
             runner: "ubuntu-latest"
 
+          #
+          # @tests
+          #
+
+          - name: "Bazel 9.x: @tests (Linux x64)"
+            bazel_version: "9.x"
+            package: "tests"
+            runner: "ubuntu-latest"
+
+          - name: "Bazel 8.x: @tests (Linux x64)"
+            bazel_version: "8.x"
+            package: "tests"
+            runner: "ubuntu-latest"
+
     runs-on:
       - "${{ matrix.runner }}"
 
