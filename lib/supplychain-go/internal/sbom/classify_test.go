@@ -189,6 +189,38 @@ func TestComputeClassifications_RootTargetNotInNodes(t *testing.T) {
 	assert.Equal(t, "//dep:dep", classifications.Dependencies.Transitive[0].Label)
 }
 
+func TestComputeClassifications_DuplicateMetadataFile_CollapsesToSingleComponent(t *testing.T) {
+	// Two distinct Bazel targets (e.g. two files in the same third-party
+	// package) point at the same package_metadata file. They must collapse
+	// into a single SBOM component, and the dependency edge between them
+	// must not survive as a self-reference once collapsed.
+	graph := sbom.GraphConfig{
+		SchemaVersion: "1.0",
+		RootTarget:    "//app:binary",
+		Nodes: []sbom.NodeConfig{
+			{Label: "//app:binary", MetadataFile: "app.json"},
+			{Label: "//third_party/pkg:a.go", MetadataFile: "pkg.json"},
+			{Label: "//third_party/pkg:b.go", MetadataFile: "pkg.json"},
+		},
+		Edges: []sbom.EdgeConfig{
+			{From: "//app:binary", To: "//third_party/pkg:a.go", Type: "depends_on"},
+			{From: "//app:binary", To: "//third_party/pkg:b.go", Type: "depends_on"},
+			{From: "//third_party/pkg:a.go", To: "//third_party/pkg:b.go", Type: "depends_on"},
+		},
+	}
+
+	classifications, err := sbom.ComputeClassifications(graph, false)
+	require.NoError(t, err)
+
+	require.NotNil(t, classifications.RootComponent)
+	assert.Equal(t, "//app:binary", classifications.RootComponent.Label)
+
+	// Only one component should remain for the shared metadata file.
+	require.Len(t, classifications.Dependencies.Direct, 1)
+	assert.Equal(t, "//third_party/pkg:a.go", classifications.Dependencies.Direct[0].Label)
+	assert.Empty(t, classifications.Dependencies.Transitive)
+}
+
 func TestComputeClassifications_MalformedGraph_RootWithMetadataNoEdgesButOtherNodes(t *testing.T) {
 	// Root has metadata but no edges, yet other nodes exist - malformed graph
 	graph := sbom.GraphConfig{

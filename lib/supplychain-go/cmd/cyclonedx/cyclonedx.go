@@ -132,33 +132,56 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications) (
 		rootComponent = &comp
 	}
 
-	// Add direct dependencies with scope="direct"
-	for i := range classifications.Dependencies.Direct {
-		comp, err := createComponent(&classifications.Dependencies.Direct[i])
+	// Add direct and transitive dependencies, skipping any component whose
+	// BOMRef was already added (classification should already be unique per
+	// component, but a duplicate BOMRef is invalid CycloneDX, so guard here
+	// too).
+	seenBOMRef := make(map[string]bool)
+	addComponent := func(node *sbom.NodeConfig) error {
+		comp, err := createComponent(node)
 		if err != nil {
-			return nil, err
+			return err
 		}
+		if seenBOMRef[comp.BOMRef] {
+			return nil
+		}
+		seenBOMRef[comp.BOMRef] = true
 		components = append(components, comp)
+		return nil
 	}
 
-	// Add transitive dependencies with scope="transitive"
-	for i := range classifications.Dependencies.Transitive {
-		comp, err := createComponent(&classifications.Dependencies.Transitive[i])
-		if err != nil {
+	for i := range classifications.Dependencies.Direct {
+		if err := addComponent(&classifications.Dependencies.Direct[i]); err != nil {
 			return nil, err
 		}
-		components = append(components, comp)
+	}
+
+	for i := range classifications.Dependencies.Transitive {
+		if err := addComponent(&classifications.Dependencies.Transitive[i]); err != nil {
+			return nil, err
+		}
 	}
 
 	// Build Dependencies from graph edges
 	depMap := make(map[string][]string) // parent BOMRef -> []child BOMRefs
+	seenDep := make(map[string]map[string]bool)
 	for _, edge := range graph.Edges {
 		fromRef, fromOk := labelToBOMRef[edge.From]
 		toRef, toOk := labelToBOMRef[edge.To]
 
-		if fromOk && toOk {
-			depMap[fromRef] = append(depMap[fromRef], toRef)
+		if !fromOk || !toOk || fromRef == toRef {
+			// A self-reference can appear if two distinct graph nodes
+			// resolved to the same component (e.g. duplicate metadata).
+			continue
 		}
+		if seenDep[fromRef] == nil {
+			seenDep[fromRef] = make(map[string]bool)
+		}
+		if seenDep[fromRef][toRef] {
+			continue
+		}
+		seenDep[fromRef][toRef] = true
+		depMap[fromRef] = append(depMap[fromRef], toRef)
 	}
 
 	// Convert to CycloneDX Dependencies format

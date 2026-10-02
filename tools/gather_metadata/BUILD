@@ -2,10 +2,11 @@
 
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("@bazel_skylib//lib:unittest.bzl", "unittest")
+load(":attr_types_test.bzl", "attr_types_test_suite")
+load(":dedup_test.bzl", "dedup_test_suite")
+load(":filtering_test.bzl", "filtering_test_suite")
 load(":integration_test.bzl", "integration_test_suite")
 load(":serialization_integration_test.bzl", "serialization_integration_test_suite")
-load(":filtering_test.bzl", "filtering_test_suite")
-load(":attr_types_test.bzl", "attr_types_test_suite")
 
 package(
     default_package_metadata = ["//:package_metadata"],
@@ -41,12 +42,15 @@ filtering_test_suite(name = "filtering_tests")
 
 attr_types_test_suite(name = "attr_types_tests")
 
+dedup_test_suite(name = "dedup_tests")
+
 test_suite(
     name = "all_tests",
     tests = [
+        ":attr_types_tests",
+        ":dedup_tests",
+        ":filtering_tests",
         ":integration_tests",
         ":serialization_integration_tests",
-        ":filtering_tests",
-        ":attr_types_tests",
     ],
 )
