@@ -30,6 +30,7 @@ def _label_to_string(label):
         parts.append(":")
         parts.append(label.name)
         return "".join(parts)
+
     # External workspace: use str() which includes @workspace//
     return str(label)
 
@@ -72,13 +73,25 @@ def _build_edges(all_targets):
         List of edge dictionaries
     """
     edges = []
+    seen = {}
     for target_info in all_targets:
         if hasattr(target_info, "direct_deps") and target_info.direct_deps:
             from_label = _label_to_string(target_info.target)
             for dep in target_info.direct_deps:
+                to_label = _label_to_string(dep)
+                if from_label == to_label:
+                    # Can happen if a target is reachable from itself via two
+                    # distinct attributes that the dedup in core.bzl can't see
+                    # across (each attribute scan resets nothing, but belt and
+                    # suspenders here keeps the graph well-formed).
+                    continue
+                key = from_label + "\0" + to_label
+                if key in seen:
+                    continue
+                seen[key] = True
                 edges.append({
                     "from": from_label,
-                    "to": _label_to_string(dep),
+                    "to": to_label,
                     "type": "depends_on",
                 })
     return edges
@@ -120,8 +133,17 @@ def metadata_info_to_json(metadata_info):
     # Extract all targets from the transitive depset
     all_targets = metadata_info.transitive.to_list()
 
-    # Build nodes (sorted by label for deterministic output)
-    nodes = [_build_node(target_info) for target_info in sorted(all_targets, key = lambda x: str(x.target))]
+    # Build nodes (sorted by label for deterministic output). Guard against
+    # the same target label appearing more than once in the depset (e.g. if
+    # it was collected through more than one aspect path).
+    nodes = []
+    seen_labels = {}
+    for target_info in sorted(all_targets, key = lambda x: str(x.target)):
+        label = _label_to_string(target_info.target)
+        if label in seen_labels:
+            continue
+        seen_labels[label] = True
+        nodes.append(_build_node(target_info))
 
     # Build edges
     edges = _build_edges(all_targets)

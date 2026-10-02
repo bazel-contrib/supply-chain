@@ -144,17 +144,28 @@ func GenerateDocument(graph sbom.GraphConfig, classifications sbom.Classificatio
 
 	// Build Relationships from graph edges
 	relationships := make([]*spdx.Relationship, 0, len(graph.Edges))
+	seenRelationship := make(map[string]map[string]bool)
 	for _, edge := range graph.Edges {
 		fromID, fromOk := labelToID[edge.From]
 		toID, toOk := labelToID[edge.To]
 
-		if fromOk && toOk {
-			relationships = append(relationships, &spdx.Relationship{
-				RefA:         common.MakeDocElementID("", fromID),
-				RefB:         common.MakeDocElementID("", toID),
-				Relationship: "DEPENDS_ON",
-			})
+		if !fromOk || !toOk || fromID == toID {
+			// A self-reference can appear if two distinct graph nodes
+			// resolved to the same package (e.g. duplicate metadata).
+			continue
 		}
+		if seenRelationship[fromID] == nil {
+			seenRelationship[fromID] = make(map[string]bool)
+		}
+		if seenRelationship[fromID][toID] {
+			continue
+		}
+		seenRelationship[fromID][toID] = true
+		relationships = append(relationships, &spdx.Relationship{
+			RefA:         common.MakeDocElementID("", fromID),
+			RefB:         common.MakeDocElementID("", toID),
+			Relationship: "DEPENDS_ON",
+		})
 	}
 
 	// Add DESCRIBES relationship from DOCUMENT to root component

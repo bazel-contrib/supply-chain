@@ -107,6 +107,15 @@ def _get_transitive_metadata(
         filter_func: filter to determine to skip.
         direct_deps: (output) list of direct dependency labels for edge tracking
     """
+
+    # A single dependency Target can be reachable more than once: through
+    # more than one attribute (e.g. "deps" and "embed" both naming the same
+    # library), or because a generated attribute value legitimately repeats a
+    # label. Track labels already processed so each dependency contributes
+    # exactly one edge and one slice of transitive metadata, regardless of
+    # how many attributes/positions reference it.
+    seen_dep_labels = {}
+
     attrs = [attr for attr in dir(ctx.rule.attr)]
     for name in attrs:
         if filter_func and not filter_func(ctx, name):
@@ -119,9 +128,15 @@ def _get_transitive_metadata(
             # synthetic and not have the aspect. This provides protection
             # against those outlier cases.
             if provider in dep:
+                label_key = str(dep.label)
+                if label_key in seen_dep_labels:
+                    continue
+                seen_dep_labels[label_key] = True
+
                 info = dep[provider]
                 if info != null_provider_instance:
                     transitive_depsets.append(info.transitive)
+
                     # Track direct dependency for graph edges
                     if direct_deps != None:
                         direct_deps.append(dep.label)

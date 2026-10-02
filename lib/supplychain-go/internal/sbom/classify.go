@@ -1,6 +1,9 @@
 package sbom
 
-import "fmt"
+import (
+	"fmt"
+	"sort"
+)
 
 type GraphConfig struct {
 	SchemaVersion string       `json:"schema_version"`
@@ -20,6 +23,7 @@ type DependencyNodes struct {
 }
 
 func ComputeClassifications(graph GraphConfig, allowMissingRootMetadata bool) (Classifications, error) {
+	graph = deduplicateByMetadata(graph)
 	scopes, err := calculateScopes(graph.RootTarget, graph.Nodes, graph.Edges, allowMissingRootMetadata)
 	if err != nil {
 		return Classifications{}, err
@@ -32,6 +36,82 @@ func ComputeClassifications(graph GraphConfig, allowMissingRootMetadata bool) (C
 			Transitive: scopes.transitive,
 		},
 	}, nil
+}
+
+// deduplicateByMetadata collapses graph nodes that share the same non-empty
+// metadata file into a single canonical node.
+//
+// The graph has one node per Bazel target reached by the gather_metadata
+// aspect, but many distinct targets commonly carry the same package_metadata
+// (e.g. every file in a single third-party package, or multiple targets
+// annotated with the same license declaration). Without collapsing those
+// onto one identity, the SBOM generators downstream emit multiple components
+// with the same purl/name (duplicate refs), and any dependency edge between
+// two such targets turns into a self-referencing edge once both ends are
+// mapped to the same component.
+func deduplicateByMetadata(graph GraphConfig) GraphConfig {
+	sortedNodes := make([]NodeConfig, len(graph.Nodes))
+	copy(sortedNodes, graph.Nodes)
+	sort.Slice(sortedNodes, func(i, j int) bool { return sortedNodes[i].Label < sortedNodes[j].Label })
+
+	// Map every node's label to a canonical label. Nodes without metadata
+	// keep their own identity since there is nothing to merge them on.
+	canonicalByMetadata := make(map[string]string)
+	remap := make(map[string]string)
+	for _, node := range sortedNodes {
+		if node.MetadataFile == "" {
+			remap[node.Label] = node.Label
+			continue
+		}
+		canon, ok := canonicalByMetadata[node.MetadataFile]
+		if !ok {
+			canonicalByMetadata[node.MetadataFile] = node.Label
+			canon = node.Label
+		}
+		remap[node.Label] = canon
+	}
+
+	seenLabels := make(map[string]bool)
+	nodes := make([]NodeConfig, 0, len(sortedNodes))
+	for _, node := range sortedNodes {
+		// A label can legitimately appear only once per the aspect's own
+		// bookkeeping, but guard against literal duplicate entries (e.g. the
+		// same target reached and recorded twice) in addition to collapsing
+		// distinct labels that share metadata.
+		if remap[node.Label] != node.Label || seenLabels[node.Label] {
+			continue
+		}
+		seenLabels[node.Label] = true
+		nodes = append(nodes, node)
+	}
+
+	seenEdges := make(map[EdgeConfig]bool)
+	edges := make([]EdgeConfig, 0, len(graph.Edges))
+	for _, edge := range graph.Edges {
+		from, to := remapLabel(remap, edge.From), remapLabel(remap, edge.To)
+		if from == to {
+			// Collapsing duplicate nodes turned this into a self-reference.
+			continue
+		}
+		e := EdgeConfig{From: from, To: to, Type: edge.Type}
+		if seenEdges[e] {
+			continue
+		}
+		seenEdges[e] = true
+		edges = append(edges, e)
+	}
+
+	graph.Nodes = nodes
+	graph.Edges = edges
+	graph.RootTarget = remapLabel(remap, graph.RootTarget)
+	return graph
+}
+
+func remapLabel(remap map[string]string, label string) string {
+	if canon, ok := remap[label]; ok {
+		return canon
+	}
+	return label
 }
 
 type scopeResult struct {
