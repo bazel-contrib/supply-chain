@@ -4,7 +4,11 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"net/url"
 	"os"
+	"strconv"
+	"strings"
+	"time"
 
 	supplychain "github.com/bazel-contrib/supply-chain/lib/supplychain-go"
 	"github.com/bazel-contrib/supply-chain/lib/supplychain-go/internal/sbom"
@@ -16,11 +20,12 @@ import (
 )
 
 func main() {
-	var outPath, graphPath, classificationsPath, format string
+	var outPath, graphPath, classificationsPath, format, buildStatusPath string
 	flag.StringVar(&outPath, "out", "", "The path to write the generated SPDX SBOM.")
 	flag.StringVar(&graphPath, "graph", "", "The path to the graph JSON file.")
 	flag.StringVar(&classificationsPath, "classifications", "", "The path to the classifications JSON file.")
 	flag.StringVar(&format, "format", "json", "The output format of the SPDX SBOM.")
+	flag.StringVar(&buildStatusPath, "created_from_status_file", "", "Path to a Bazel volatile-status.txt file to read a BUILD_TIMESTAMP from for creationInfo.created. If unset, or the file has no BUILD_TIMESTAMP key, a fixed deterministic timestamp (the Unix epoch) is used instead, matching Bazel's own --nostamp default.")
 	flag.Parse()
 
 	if graphPath == "" || classificationsPath == "" {
@@ -53,7 +58,12 @@ func main() {
 	}
 	defer out.Close()
 
-	doc, err := GenerateDocument(graph, classifications)
+	created, err := readBuildTimestamp(buildStatusPath)
+	if err != nil {
+		panic(fmt.Errorf("reading build status file: %w", err))
+	}
+
+	doc, err := GenerateDocument(graph, classifications, created)
 	if err != nil {
 		panic(err)
 	}
@@ -76,10 +86,16 @@ func main() {
 	}
 }
 
-func GenerateDocument(graph sbom.GraphConfig, classifications sbom.Classifications) (*spdx.Document, error) {
+func GenerateDocument(graph sbom.GraphConfig, classifications sbom.Classifications, created time.Time) (*spdx.Document, error) {
 	spdxPackages := make([]*spdx.Package, 0)
 	labelToID := make(map[string]string)
 	idx := 0
+
+	// Identify the document as a whole (name/namespace, below) by its
+	// subject: preferably the root component; failing that (e.g.
+	// require_root_metadata = False and the root has no metadata), the
+	// first package created.
+	var subjectName, subjectPURL string
 
 	// Helper function to create package from node
 	createPackage := func(node *sbom.NodeConfig) (*spdx.Package, error) {
@@ -95,16 +111,22 @@ func GenerateDocument(graph sbom.GraphConfig, classifications sbom.Classificatio
 		elementID := fmt.Sprintf("dep-%d", idx)
 		idx++
 
+		purl := pkgMetadata.GetPURL()
+		if subjectPURL == "" {
+			subjectName = purl.Name
+			subjectPURL = purl.String()
+		}
+
 		pkg := &spdx.Package{
 			PackageSPDXIdentifier: common.ElementID(elementID),
 			PackageExternalReferences: []*spdx.PackageExternalReference{
 				{
 					Category: "PACKAGE-MANAGER",
 					RefType:  "purl",
-					Locator:  pkgMetadata.GetPURL().String(),
+					Locator:  purl.String(),
 				},
 			},
-			PackageName: pkgMetadata.GetPURL().Name,
+			PackageName: purl.Name,
 		}
 
 		labelToID[node.Label] = elementID
@@ -179,13 +201,66 @@ func GenerateDocument(graph sbom.GraphConfig, classifications sbom.Classificatio
 		}
 	}
 
+	if subjectName == "" {
+		subjectName = "sbom"
+		subjectPURL = "sbom"
+	}
+
 	doc := spdx.Document{
 		SPDXIdentifier: "DOCUMENT",
 		SPDXVersion:    "SPDX-2.3",
-		Packages:       spdxPackages,
-		Relationships:  relationships,
-		CreationInfo:   &spdx.CreationInfo{},
+		// 6.2: mandatory, and specifically "CC0-1.0" per the spec. This is
+		// the license of the SPDX *metadata* document itself, independent of
+		// the licenses of the packages it describes.
+		DataLicense:  "CC0-1.0",
+		DocumentName: subjectName,
+		// 6.5: mandatory, must be unique to this document. Derived
+		// deterministically from the subject's purl (rather than e.g. a
+		// random UUID) so that re-generating the SBOM for an unchanged
+		// dependency graph produces byte-identical output and stays
+		// Bazel-cacheable.
+		DocumentNamespace: "https://spdx.org/spdxdocs/" + url.PathEscape(subjectPURL),
+		Packages:          spdxPackages,
+		Relationships:     relationships,
+		CreationInfo: &spdx.CreationInfo{
+			Creators: []common.Creator{
+				{Creator: "Bazel Supply Chain Tools SPDX generator", CreatorType: "Tool"},
+			},
+			Created: created.Format(time.RFC3339),
+		},
 	}
 
 	return &doc, nil
+}
+
+// readBuildTimestamp reads a BUILD_TIMESTAMP key out of a Bazel
+// volatile-status.txt file (see ctx.version_file / --workspace_status_command),
+// for use as creationInfo.created. If path is empty, or the file has no
+// BUILD_TIMESTAMP key, it returns the Unix epoch: the same fixed value Bazel
+// itself substitutes for BUILD_TIMESTAMP when building without --stamp, so
+// SBOM generation stays deterministic and cacheable unless the caller
+// explicitly opts into a real timestamp via --stamp.
+func readBuildTimestamp(path string) (time.Time, error) {
+	if path == "" {
+		return time.Unix(0, 0).UTC(), nil
+	}
+
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return time.Time{}, err
+	}
+
+	for _, line := range strings.Split(string(data), "\n") {
+		key, value, found := strings.Cut(line, " ")
+		if !found || key != "BUILD_TIMESTAMP" {
+			continue
+		}
+		seconds, err := strconv.ParseInt(strings.TrimSpace(value), 10, 64)
+		if err != nil {
+			return time.Time{}, fmt.Errorf("parsing BUILD_TIMESTAMP %q: %w", value, err)
+		}
+		return time.Unix(seconds, 0).UTC(), nil
+	}
+
+	return time.Unix(0, 0).UTC(), nil
 }

@@ -1,0 +1,23 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
+
+go_library(
+    name = "schemavalidate_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/bazel-contrib/supply-chain/lib/supplychain-go/cmd/schemavalidate",
+    visibility = ["//visibility:private"],
+    deps = [
+        "@com_github_santhosh_tekuri_jsonschema_v5//:jsonschema",
+    ],
+)
+
+go_binary(
+    name = "schemavalidate",
+    embed = [":schemavalidate_lib"],
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "schemavalidate_test",
+    srcs = ["main_test.go"],
+    embed = [":schemavalidate_lib"],
+)

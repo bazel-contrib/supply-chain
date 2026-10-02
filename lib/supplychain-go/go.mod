@@ -5,6 +5,7 @@ go 1.24.2
 require (
 	github.com/CycloneDX/cyclonedx-go v0.9.3
 	github.com/package-url/packageurl-go v0.1.3
+	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
 	github.com/spdx/tools-golang v0.5.5
 	github.com/stretchr/testify v1.11.1
 )
