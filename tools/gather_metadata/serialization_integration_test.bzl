@@ -133,12 +133,12 @@ def serialization_integration_test_suite(name):
     native.filegroup(
         name = "unannotated_inner",
         srcs = [":test_target_with_deps"],
-        package_metadata = [],
+        applicable_licenses = [],
     )
     native.filegroup(
         name = "unannotated_outer",
         srcs = [":unannotated_inner"],
-        package_metadata = [],
+        applicable_licenses = [],
     )
     wrapper_path_test(
         name = "wrapper_path_test",
