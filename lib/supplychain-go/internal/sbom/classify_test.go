@@ -1,12 +1,61 @@
 package sbom_test
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/bazel-contrib/supply-chain/lib/supplychain-go/internal/sbom"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+func TestNormalizeGraph_PackagePathsAndAliases(t *testing.T) {
+	graph := sbom.GraphConfig{
+		RootTarget: "//app:root",
+		Nodes: []sbom.NodeConfig{
+			{Label: "//app:root", MetadataFile: "root.json"},
+			{Label: "//app:wrapper"},
+			{Label: "//app:internal"},
+			{Label: "//module:a", MetadataFile: "module.json"},
+			{Label: "//module:z", MetadataFile: "module.json"},
+			{Label: "//module:wrapper"},
+			{Label: "//transitive:dep", MetadataFile: "dep.json"},
+		},
+		Edges: []sbom.EdgeConfig{
+			{From: "//app:root", To: "//app:wrapper", Type: "depends_on"},
+			{From: "//app:wrapper", To: "//app:internal", Type: "depends_on"},
+			{From: "//app:internal", To: "//app:wrapper", Type: "depends_on"},
+			{From: "//app:internal", To: "//module:z", Type: "depends_on"},
+			{From: "//module:z", To: "//module:a", Type: "depends_on"},
+			{From: "//module:z", To: "//module:wrapper", Type: "depends_on"},
+			{From: "//module:wrapper", To: "//transitive:dep", Type: "depends_on"},
+			{From: "//module:a", To: "//transitive:dep", Type: "depends_on"},
+			{From: "//transitive:dep", To: "//module:z", Type: "depends_on"},
+		},
+	}
+	normalized := sbom.NormalizeGraph(graph)
+	require.Len(t, normalized.Nodes, 3)
+	assert.ElementsMatch(t, []sbom.EdgeConfig{
+		{From: "//app:root", To: "//module:a", Type: "depends_on"},
+		{From: "//module:a", To: "//transitive:dep", Type: "depends_on"},
+		{From: "//transitive:dep", To: "//module:a", Type: "depends_on"},
+	}, normalized.Edges)
+	assert.True(t, reflect.DeepEqual(normalized, sbom.NormalizeGraph(normalized)), "normalization must be idempotent")
+	classifications, err := sbom.ComputeClassifications(graph, false)
+	require.NoError(t, err)
+	require.Len(t, classifications.Dependencies.Direct, 1)
+	assert.Equal(t, "//module:a", classifications.Dependencies.Direct[0].Label)
+	require.Len(t, classifications.Dependencies.Transitive, 1)
+	assert.Equal(t, "//transitive:dep", classifications.Dependencies.Transitive[0].Label)
+
+	graph.Nodes[0].MetadataFile = ""
+	classifications, err = sbom.ComputeClassifications(graph, true)
+	require.NoError(t, err)
+	assert.Nil(t, classifications.RootComponent)
+	require.Len(t, classifications.Dependencies.Direct, 1)
+	assert.Equal(t, "//module:a", classifications.Dependencies.Direct[0].Label)
+	require.Len(t, classifications.Dependencies.Transitive, 1)
+}
 
 func TestComputeClassifications_WithRootMetadata(t *testing.T) {
 	graph := sbom.GraphConfig{

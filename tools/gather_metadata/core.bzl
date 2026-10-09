@@ -235,7 +235,9 @@ def gather_metadata_info_common(
     if not got_providers and not transitive_depsets:
         return [null_provider_instance or provider_factory()]
 
-    if not got_providers:
+    # Package graphs need intermediate targets even when they have no metadata.
+    # License-only collectors can still use the compact transitive representation.
+    if not got_providers and provider_factory != TransitiveMetadataInfo:
         """
         TODO: If there is only one, pass up the entire provider, not the extracted transitive
         if len(transitive_depsets) == 1 and transitive_depsets[0]:

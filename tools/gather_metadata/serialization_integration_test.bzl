@@ -126,5 +126,45 @@ def serialization_integration_test_suite(name):
             ":json_output_structure_test",
             ":label_canonicalization_test",
             ":edges_extracted_test",
+            ":wrapper_path_test",
         ],
     )
+
+    native.filegroup(
+        name = "unannotated_inner",
+        srcs = [":test_target_with_deps"],
+        package_metadata = [],
+    )
+    native.filegroup(
+        name = "unannotated_outer",
+        srcs = [":unannotated_inner"],
+        package_metadata = [],
+    )
+    wrapper_path_test(
+        name = "wrapper_path_test",
+        target_under_test = ":unannotated_outer",
+    )
+
+def _wrapper_path_test_impl(ctx):
+    env = analysistest.begin(ctx)
+    target = analysistest.target_under_test(env)
+    parsed = json.decode(metadata_info_to_json(target[TransitiveMetadataInfo])[0])
+    nodes = {node["label"]: node for node in parsed["nodes"]}
+    outer = str(target.label) if target.label.workspace_name else "//{}:{}".format(target.label.package, target.label.name)
+    package_prefix = outer[:-len(target.label.name)]
+    inner = package_prefix + "unannotated_inner"
+    leaf = package_prefix + "test_target_with_deps"
+    asserts.true(env, outer in nodes)
+    asserts.true(env, inner in nodes)
+    asserts.equals(env, "", nodes.get(outer, {}).get("metadata_file"))
+    asserts.equals(env, "", nodes.get(inner, {}).get("metadata_file"))
+    edges = [(edge["from"], edge["to"]) for edge in parsed["edges"]]
+    asserts.true(env, (outer, inner) in edges)
+    asserts.true(env, (inner, leaf) in edges)
+    asserts.equals(env, outer, parsed["root_target"])
+    return analysistest.end(env)
+
+wrapper_path_test = analysistest.make(
+    _wrapper_path_test_impl,
+    extra_target_under_test_aspects = [gather_metadata_info],
+)
