@@ -59,19 +59,25 @@ def package_metadata_toolchain(
     Usage:
 
     ```starlark
-    load("@package_metadata//rules:package_metadata_toolchain.bzl", "package_metadata_toolchain")
+    # metadata/overrides/BUILD.bazel
     load("@package_metadata_extensions//rules:package_metadata_override.bzl", "package_metadata_override")
 
     package_metadata_override(
         name = "legacy_dep_metadata",
         metadata = ":legacy_dep_package_metadata",
         targets = ["@legacy_dep//..."],
+        visibility = ["//metadata:__pkg__"],
     )
+    ```
+
+    ```starlark
+    # metadata/BUILD.bazel
+    load("@package_metadata//rules:package_metadata_toolchain.bzl", "package_metadata_toolchain")
 
     package_metadata_toolchain(
         name = "package_metadata_toolchain",
         overrides = [
-            ":legacy_dep_metadata",
+            "//metadata/overrides:legacy_dep_metadata",
         ],
     )
 
@@ -84,7 +90,7 @@ def package_metadata_toolchain(
 
     ```starlark
     # MODULE.bazel
-    register_toolchains("//:toolchain")
+    register_toolchains("//metadata:toolchain")
     ```
 
     The target provides `PackageMetadataToolchainInfo` as well as
@@ -98,6 +104,45 @@ def package_metadata_toolchain(
     configuration, this target is non-configurable: `overrides` does not accept
     `select`.
 
+    Overrides are additive: if more than one override matches a target, the
+    metadata of all matching overrides applies to it, in the order they are
+    listed in `overrides`, and replaces the metadata the target declares itself.
+    No override takes precedence over another. For example, given
+
+    ```starlark
+    package_metadata_override(
+        name = "default",
+        metadata = ":some_dep_package_metadata",
+        targets = ["@some_dep//..."],
+    )
+
+    package_metadata_override(
+        name = "single",
+        metadata = ":unencumbered_lib_package_metadata",
+        targets = ["@some_dep//lib:unencumbered_lib"],
+    )
+
+    package_metadata_toolchain(
+        name = "package_metadata_toolchain",
+        overrides = [":default", ":single"],
+    )
+    ```
+
+    `@some_dep//lib:unencumbered_lib` has the metadata of both `:default` and
+    `:single`. To apply only `:single` to it, exclude it from `:default` with a
+    negative pattern:
+
+    ```starlark
+    package_metadata_override(
+        name = "default",
+        metadata = ":some_dep_package_metadata",
+        targets = [
+            "@some_dep//...",
+            "-@some_dep//lib:unencumbered_lib",
+        ],
+    )
+    ```
+
     Args:
       name: A unique name for this target.
       overrides: A list of overrides to apply to the build.
@@ -105,6 +150,10 @@ def package_metadata_toolchain(
         Each element must be a target providing
         `PackageMetadataOverrideInfo` (e.g., a `package_metadata_override`
         target), declaring the metadata to use and the packages it applies to.
+
+        Overrides are additive: if more than one override matches a target,
+        the metadata of all matching overrides applies to it, in the order they
+        are listed here. See above for an example.
 
         An empty list declares a toolchain that applies no overrides, i.e., all
         targets keep the metadata they declare themselves.
