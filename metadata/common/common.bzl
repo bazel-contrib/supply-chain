@@ -6,9 +6,11 @@ These helpers are building blocks for rule authors who need to declare
 """
 
 load("//common/private:create_package_metadata.bzl", "create_package_metadata")
+load("//common/private:get_package_metadata.bzl", "get_package_metadata")
 
 visibility("public")
 
 package_metadata_common = struct(
     create_package_metadata = create_package_metadata,
+    get_package_metadata = get_package_metadata,
 )
