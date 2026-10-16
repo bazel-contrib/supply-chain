@@ -23,6 +23,7 @@ Usage:
 
 ```starlark
 load("@package_metadata//attributes:cpe.bzl", "cpe")
+load("@package_metadata//purl:purl.bzl", "purl")
 load("@package_metadata//rules:package_metadata.bzl", "package_metadata")
 
 package_metadata(
@@ -30,7 +31,7 @@ package_metadata(
     attributes = [
         ":cpe",
     ],
-    purl = "pkg:generic/ntp@4.2.8",
+    purl = purl.builder().type("generic").name("ntp").version("4.2.8").build(),
     visibility = ["//visibility:public"],
 )
 

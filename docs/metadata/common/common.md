@@ -26,12 +26,14 @@ Example:
 
 ```starlark
 load("@package_metadata//common:common.bzl", "package_metadata_common")
+load("@package_metadata//providers:package_attribute_info.bzl", "PackageAttributeInfo")
+load("@package_metadata//purl:purl.bzl", "purl")
 
 def _my_rule_impl(ctx):
     info = package_metadata_common.create_package_metadata(
         actions = ctx.actions,
         label = ctx.label,
-        purl = "pkg:npm/my-package@1.0.0",
+        purl = purl.builder().type("npm").name("my-package").version("1.0.0").build(),
         attributes = [a[PackageAttributeInfo] for a in ctx.attr.attributes],
     )
     return [info]
@@ -45,7 +47,7 @@ def _my_rule_impl(ctx):
 | :------------- | :------------- | :------------- |
 | <a id="package_metadata_common.create_package_metadata-actions"></a>actions |  The [actions](https://bazel.build/rules/lib/builtins/actions) object from the rule context, used to declare and write files.   |  none |
 | <a id="package_metadata_common.create_package_metadata-label"></a>label |  The [Label](https://bazel.build/rules/lib/builtins/Label) of the target being processed.   |  none |
-| <a id="package_metadata_common.create_package_metadata-purl"></a>purl |  A string containing the [PURL](https://github.com/package-url/purl-spec) uniquely identifying this package (e.g., "pkg:npm/lodash@4.17.21").   |  none |
+| <a id="package_metadata_common.create_package_metadata-purl"></a>purl |  A string containing the [PURL](https://github.com/package-url/purl-spec) uniquely identifying this package (e.g., "pkg:npm/lodash@4.17.21"). Typically constructed with `purl.builder` or `purl.bazel`.   |  none |
 | <a id="package_metadata_common.create_package_metadata-attributes"></a>attributes |  A list of `PackageAttributeInfo` providers representing package attributes (e.g., source location, license). Defaults to an empty list.   |  `[]` |
 
 **RETURNS**

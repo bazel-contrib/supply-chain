@@ -55,6 +55,7 @@ def copyright_notice(
 
     ```starlark
     load("@package_metadata//attributes:copyright_notice.bzl", "copyright_notice")
+    load("@package_metadata//purl:purl.bzl", "purl")
     load("@package_metadata//rules:package_metadata.bzl", "package_metadata")
 
     package_metadata(
@@ -62,7 +63,7 @@ def copyright_notice(
         attributes = [
             ":copyright_notice",
         ],
-        purl = "pkg:generic/example@1.0.0",
+        purl = purl.builder().type("generic").name("example").version("1.0.0").build(),
         visibility = ["//visibility:public"],
     )
 
