@@ -20,6 +20,7 @@ Usage:
 
 ```starlark
 load("@package_metadata//licenses/rules:license.bzl", "license")
+load("@package_metadata//purl:purl.bzl", "purl")
 load("@package_metadata//rules:package_metadata.bzl", "package_metadata")
 
 package_metadata(
@@ -27,7 +28,7 @@ package_metadata(
     attributes = [
         ":license",
     ],
-    purl = "pkg:generic/example@1.0.0",
+    purl = purl.builder().type("generic").name("example").version("1.0.0").build(),
     visibility = ["//visibility:public"],
 )
 
