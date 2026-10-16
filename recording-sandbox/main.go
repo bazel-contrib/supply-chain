@@ -14,13 +14,11 @@
 package main
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"io"
 	"os"
 	"os/exec"
-	"os/signal"
 	"regexp"
 	"strings"
 	"syscall"
@@ -35,48 +33,21 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		fmt.Fprintln(stderr, "usage: recording-sandbox BAZEL [STARTUP_OPTIONS...] COMMAND [ARGS...]")
 		return 2
 	}
+	traceePath, err := bundledTracee()
+	if err != nil {
+		fmt.Fprintln(stderr, "recording-sandbox:", err)
+		return 1
+	}
+	return runWithTracee(args, traceePath, stdin, stdout, stderr)
+}
+
+func runWithTracee(args []string, traceePath string, stdin io.Reader, stdout, stderr io.Writer) int {
 	binary, err := exec.LookPath(args[0])
 	if err != nil {
 		fmt.Fprintln(stderr, err)
 		return 127
 	}
-	invoke := func(argv []string) ([]byte, error) {
-		cmd := exec.Command(binary, argv...)
-		var output bytes.Buffer
-		cmd.Stdout, cmd.Stderr = &output, stderr
-		err := cmd.Run()
-		return output.Bytes(), err
-	}
-	argv, err := canonicalize(args[1:], invoke)
-	if err != nil {
-		fmt.Fprintln(stderr, "recording-sandbox:", err)
-		return exitCode(err)
-	}
-	cmd := exec.Command(binary, argv...)
-	cmd.Stdin, cmd.Stdout, cmd.Stderr = stdin, stdout, stderr
-	if err := cmd.Start(); err != nil {
-		fmt.Fprintln(stderr, "recording-sandbox:", err)
-		return exitCode(err)
-	}
-	// Also forward signals sent directly to the wrapper, rather than its
-	// terminal's process group (for example by a CI runner).
-	signals := make(chan os.Signal, 1)
-	signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
-	done := make(chan struct{})
-	go func() {
-		for {
-			select {
-			case sig := <-signals:
-				_ = cmd.Process.Signal(sig)
-			case <-done:
-				return
-			}
-		}
-	}()
-	err = cmd.Wait()
-	signal.Stop(signals)
-	close(done)
-	return exitCode(err)
+	return runTraced(binary, args[1:], traceePath, stdin, stdout, stderr)
 }
 
 func exitCode(err error) int {
@@ -93,7 +64,7 @@ func exitCode(err error) int {
 	return 1
 }
 
-type invokeFunc func([]string) ([]byte, error)
+type invokeFunc func(startup []string, commandArgs ...string) ([]byte, error)
 
 func canonicalize(args []string, invoke invokeFunc) ([]string, error) {
 	for _, arg := range args {
@@ -173,10 +144,9 @@ func canonicalize(args []string, invoke invokeFunc) ([]string, error) {
 			flags = append(flags, args[i])
 		}
 	}
-	canonicalArgs := append([]string{}, startup...)
-	canonicalArgs = append(canonicalArgs, "canonicalize-flags", "--for_command="+command, "--")
+	canonicalArgs := []string{"canonicalize-flags", "--for_command=" + command, "--"}
 	canonicalArgs = append(canonicalArgs, flags...)
-	output, err := invoke(canonicalArgs)
+	output, err := invoke(startup, canonicalArgs...)
 	if err != nil {
 		return nil, fmt.Errorf("canonicalize-flags: %w", err)
 	}
@@ -201,9 +171,7 @@ func canonicalize(args []string, invoke invokeFunc) ([]string, error) {
 var optionLine = regexp.MustCompile(`(?m)^  --(\[no\])?([a-zA-Z0-9_]+)(?: \[(-[a-zA-Z0-9])\])?(?: \(([^\n]*)\))?\r?$`)
 
 func loadOptions(invoke invokeFunc, startup []string, command string) (map[string]bool, error) {
-	args := append([]string{}, startup...)
-	args = append(args, "help", command, "--long")
-	output, err := invoke(args)
+	output, err := invoke(startup, "help", command, "--long")
 	if err != nil {
 		return nil, fmt.Errorf("help %s: %w", command, err)
 	}

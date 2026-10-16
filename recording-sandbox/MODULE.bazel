@@ -4,3 +4,29 @@ module(
 )
 
 bazel_dep(name = "rules_go", version = "0.60.0")
+bazel_dep(name = "platforms", version = "1.0.0")
+
+http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+# Official Tracee release bundles, including the static executable and eBPF assets.
+http_archive(
+    name = "tracee_linux_amd64",
+    urls = ["https://github.com/aquasecurity/tracee/releases/download/v0.24.1/tracee-x86_64.v0.24.1.tar.gz"],
+    sha256 = "8cc56bd8c8dd3efadb0441c84849592affc48a71d3afbe7751a9e2014ef9ec85",
+    build_file_content = """filegroup(
+    name = "bundle",
+    srcs = glob(["dist/**"]),
+    visibility = ["//visibility:public"],
+)""",
+)
+
+http_archive(
+    name = "tracee_linux_arm64",
+    urls = ["https://github.com/aquasecurity/tracee/releases/download/v0.24.1/tracee-aarch64.v0.24.1.tar.gz"],
+    sha256 = "adc67c40d5d6d122f81c6a6d0107ad78d51d6be49917929977d77ae720f261ae",
+    build_file_content = """filegroup(
+    name = "bundle",
+    srcs = glob(["dist/**"]),
+    visibility = ["//visibility:public"],
+)""",
+)
