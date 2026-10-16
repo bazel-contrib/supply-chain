@@ -77,6 +77,7 @@ func main() {
 }
 
 func GenerateDocument(graph sbom.GraphConfig, classifications sbom.Classifications) (*spdx.Document, error) {
+	graph = sbom.NormalizeGraph(graph)
 	spdxPackages := make([]*spdx.Package, 0)
 	labelToID := make(map[string]string)
 	idx := 0
