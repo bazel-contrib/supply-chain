@@ -8,6 +8,8 @@ bazel_dep(name = "package_metadata", version = "0.0.13")
 bazel_dep(name = "rules_license", version = "1.0.0")
 bazel_dep(name = "bazel_features", version = "1.46.0")
 bazel_dep(name = "bazel_skylib", version = "1.8.2")
+bazel_dep(name = "platforms", version = "1.0.0")
+bazel_dep(name = "rules_shell", version = "0.6.1")
 bazel_dep(name = "supply-chain-go", version = "0.0.6")
 
 # For development, we use our sibling projects directly.
@@ -24,4 +26,30 @@ local_path_override(
 local_path_override(
     module_name = "rules_license",
     path = "../rules_license",
+)
+
+sbom_validators = use_extension("//sbom:extensions.bzl", "sbom_validators")
+use_repo(
+    sbom_validators,
+    "cyclonedx_cli_linux_arm",
+    "cyclonedx_cli_linux_arm64",
+    "cyclonedx_cli_linux_x64",
+    "cyclonedx_cli_osx_arm64",
+    "cyclonedx_cli_osx_x64",
+    "cyclonedx_cli_win_arm64",
+    "cyclonedx_cli_win_x64",
+    "cyclonedx_cli_win_x86",
+    "spdx_tools_java",
+)
+
+register_toolchains(
+    "@cyclonedx_cli_linux_arm//:toolchain",
+    "@cyclonedx_cli_linux_arm64//:toolchain",
+    "@cyclonedx_cli_linux_x64//:toolchain",
+    "@cyclonedx_cli_osx_arm64//:toolchain",
+    "@cyclonedx_cli_osx_x64//:toolchain",
+    "@cyclonedx_cli_win_arm64//:toolchain",
+    "@cyclonedx_cli_win_x64//:toolchain",
+    "@cyclonedx_cli_win_x86//:toolchain",
+    "@spdx_tools_java//:toolchain",
 )

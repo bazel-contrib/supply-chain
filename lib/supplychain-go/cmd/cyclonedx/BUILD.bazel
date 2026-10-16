@@ -1,4 +1,4 @@
-load("@rules_go//go:def.bzl", "go_binary", "go_library")
+load("@rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
 
 go_library(
     name = "cyclonedx_lib",
@@ -16,4 +16,14 @@ go_binary(
     name = "cyclonedx",
     embed = [":cyclonedx_lib"],
     visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "cyclonedx_test",
+    srcs = ["cyclonedx_test.go"],
+    embed = [":cyclonedx_lib"],
+    deps = [
+        "//internal/sbom",
+        "@com_github_cyclonedx_cyclonedx_go//:cyclonedx-go",
+    ],
 )

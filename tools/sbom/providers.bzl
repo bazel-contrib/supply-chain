@@ -9,5 +9,5 @@ SbomInfo = provider(
     fields = {
         "graph": "File: The graph-only JSON from gather_metadata",
         "classifications": "File: The SBOM classifications JSON from cmd/sbom",
-    }
+    },
 )
