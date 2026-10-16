@@ -1,0 +1,55 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "remote-apis-proxy",
+    srcs = [
+        "backend.go",
+        "execution.go",
+        "filesystem.go",
+        "logging.go",
+        "rewrite.go",
+        "route.go",
+        "server.go",
+        "store.go",
+    ],
+    importpath = "github.com/bazel-contrib/supply-chain/recording-sandbox/internal/remote-apis-proxy",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "@com_github_bazelbuild_remote_apis//build/bazel/remote/execution/v2:go_default_library",
+        "@com_github_bazelbuild_remote_apis//build/bazel/semver",
+        "@com_google_cloud_go_longrunning//autogen/longrunningpb",
+        "@org_golang_google_genproto_googleapis_bytestream//:bytestream",
+        "@org_golang_google_genproto_googleapis_rpc//status",
+        "@org_golang_google_grpc//:grpc",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//credentials",
+        "@org_golang_google_grpc//credentials/insecure",
+        "@org_golang_google_grpc//metadata",
+        "@org_golang_google_grpc//status",
+        "@org_golang_google_protobuf//proto",
+        "@org_golang_google_protobuf//types/known/anypb",
+        "@org_golang_google_protobuf//types/known/emptypb",
+    ],
+)
+
+go_test(
+    name = "remote-apis-proxy_test",
+    srcs = [
+        "logging_test.go",
+        "proxy_test.go",
+    ],
+    embed = [":remote-apis-proxy"],
+    deps = [
+        "@com_github_bazelbuild_remote_apis//build/bazel/remote/execution/v2:go_default_library",
+        "@com_google_cloud_go_longrunning//autogen/longrunningpb",
+        "@org_golang_google_genproto_googleapis_bytestream//:bytestream",
+        "@org_golang_google_grpc//:grpc",
+        "@org_golang_google_grpc//codes",
+        "@org_golang_google_grpc//credentials/insecure",
+        "@org_golang_google_grpc//metadata",
+        "@org_golang_google_grpc//status",
+        "@org_golang_google_protobuf//proto",
+        "@org_golang_google_protobuf//types/known/anypb",
+        "@org_golang_google_protobuf//types/known/durationpb",
+    ],
+)

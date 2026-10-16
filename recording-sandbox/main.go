@@ -15,6 +15,7 @@ package main
 
 import (
 	"errors"
+	"flag"
 	"fmt"
 	"io"
 	"os"
@@ -29,8 +30,21 @@ func main() {
 }
 
 func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
+	if len(args) > 0 && args[0] == "--action" {
+		return runAction(args[1:], stdin, stdout, stderr)
+	}
+	if len(args) > 0 && args[0] == "--proxy" {
+		return runProxy(args[1:], stdout, stderr)
+	}
+	flags := flag.NewFlagSet("recording-sandbox", flag.ContinueOnError)
+	flags.SetOutput(stderr)
+	logActions := flags.Bool("log-actions", false, "log command prefixes and action input/output/environment/platform counts to stderr")
+	if err := flags.Parse(args); err != nil {
+		return 2
+	}
+	args = flags.Args()
 	if len(args) < 2 {
-		fmt.Fprintln(stderr, "usage: recording-sandbox BAZEL [STARTUP_OPTIONS...] COMMAND [ARGS...]")
+		fmt.Fprintln(stderr, "usage: recording-sandbox [--log-actions] BAZEL [STARTUP_OPTIONS...] COMMAND [ARGS...]")
 		return 2
 	}
 	traceePath, err := bundledTracee()
@@ -38,16 +52,16 @@ func run(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		fmt.Fprintln(stderr, "recording-sandbox:", err)
 		return 1
 	}
-	return runWithTracee(args, traceePath, stdin, stdout, stderr)
+	return runWithTracee(args, traceePath, stdin, stdout, stderr, *logActions)
 }
 
-func runWithTracee(args []string, traceePath string, stdin io.Reader, stdout, stderr io.Writer) int {
+func runWithTracee(args []string, traceePath string, stdin io.Reader, stdout, stderr io.Writer, logActions bool) int {
 	binary, err := exec.LookPath(args[0])
 	if err != nil {
 		fmt.Fprintln(stderr, err)
 		return 127
 	}
-	return runTraced(binary, args[1:], traceePath, stdin, stdout, stderr)
+	return runTraced(binary, args[1:], traceePath, stdin, stdout, stderr, logActions)
 }
 
 func exitCode(err error) int {

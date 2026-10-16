@@ -161,6 +161,7 @@ func TestDaemonKilledAfterShutdown(t *testing.T) {
 
 func fakeTracee(args []string) {
 	if os.Getenv("RECORDING_SANDBOX_TEST_TRACEE_FAIL") != "" {
+		fmt.Fprintln(os.Stderr, os.Getenv("RECORDING_SANDBOX_TEST_TRACEE_ERROR"))
 		os.Exit(9)
 	}
 	var address string
@@ -182,11 +183,35 @@ func fakeTracee(args []string) {
 	})
 	go http.Serve(listener, mux)
 	<-signals
-	if _, err := os.Stat(os.Getenv("RECORDING_SANDBOX_TRACE_FILE") + ".shutdown"); err != nil {
+	if _, err := os.Stat(os.Getenv("RECORDING_SANDBOX_TRACE_FILE") + ".shutdown"); err != nil && os.Getenv("RECORDING_SANDBOX_TEST_ACTION") == "" {
 		os.Exit(10) // Bazel must shut down before Tracee is stopped.
 	}
 	fmt.Println(`{"flushed":true}`)
 	os.Exit(0)
+}
+
+func TestActionMode(t *testing.T) {
+	binary, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+	root := t.TempDir()
+	t.Setenv("RECORDING_SANDBOX_TEST_LOG", filepath.Join(root, "calls.jsonl"))
+	t.Setenv("RECORDING_SANDBOX_TEST_ACTION", "1")
+	tracePath := filepath.Join(root, "outputs", "trace.jsonl")
+	var stdout, stderr bytes.Buffer
+	code := run([]string{"--action", "--tracee=" + binary, "--trace-output=" + tracePath, "--", binary, "payload", "two words"}, strings.NewReader("action input"), &stdout, &stderr)
+	if code != 0 || stdout.String() != "stdin: action input" || stderr.String() != "command stderr\n" {
+		t.Fatalf("action exit %d stdout %q stderr %q", code, &stdout, &stderr)
+	}
+	trace, err := os.ReadFile(tracePath)
+	if err != nil || string(trace) != "{\"ready\":true}\n{\"flushed\":true}\n" {
+		t.Fatalf("action trace %s: %v", trace, err)
+	}
+	calls := readCalls(t, filepath.Join(root, "calls.jsonl"))
+	if len(calls) != 2 || calls[0][0] != "--scope" || !reflect.DeepEqual(calls[1], []string{"payload", "two words"}) {
+		t.Fatalf("action was treated as a Bazel invocation: %q", calls)
+	}
 }
 
 func TestRun(t *testing.T) {
@@ -215,7 +240,7 @@ func TestRun(t *testing.T) {
 				t.Setenv("RECORDING_SANDBOX_TEST_COMMAND_FAIL", "1")
 			}
 			var stdout, stderr bytes.Buffer
-			code := runWithTracee([]string{binary, "--output_base=/user/output", "run", "--define=message=hello world", "//:app", "--", "hello world"}, binary, strings.NewReader("input"), &stdout, &stderr)
+			code := runWithTracee([]string{binary, "--output_base=/user/output", "run", "--define=message=hello world", "//:app", "--", "hello world"}, binary, strings.NewReader("input"), &stdout, &stderr, false)
 			if code != test.code {
 				t.Fatalf("code %d, want %d; stderr %q", code, test.code, &stderr)
 			}
@@ -289,11 +314,43 @@ func TestTraceeStartupFailure(t *testing.T) {
 	t.Setenv("RECORDING_SANDBOX_TRACE_FILE", t.TempDir()+"/trace.jsonl")
 	t.Setenv("RECORDING_SANDBOX_TEST_TRACEE_FAIL", "1")
 	var stderr bytes.Buffer
-	if code := runWithTracee([]string{binary, "build"}, binary, nil, io.Discard, &stderr); code != 1 || !strings.Contains(stderr.String(), "Tracee exited before becoming ready") {
+	if code := runWithTracee([]string{binary, "build"}, binary, nil, io.Discard, &stderr, false); code != 1 || !strings.Contains(stderr.String(), "Tracee exited before becoming ready") {
 		t.Fatalf("code %d, stderr %q", code, &stderr)
+	}
+	if strings.Contains(stderr.String(), "stopping Tracee:") || strings.Contains(stderr.String(), "host-granted") {
+		t.Fatalf("duplicate or misleading diagnostic: %q", &stderr)
 	}
 	if calls := readCalls(t, path); len(calls) != 1 || calls[0][0] != "--scope" {
 		t.Fatalf("Bazel executed despite Tracee failing to start: %q", calls)
+	}
+}
+
+func TestTraceeCapabilityFailure(t *testing.T) {
+	binary, _ := os.Executable()
+	path := t.TempDir() + "/calls.jsonl"
+	t.Setenv("RECORDING_SANDBOX_TEST_LOG", path)
+	t.Setenv("RECORDING_SANDBOX_TEST_TRACEE_FAIL", "1")
+	t.Setenv("RECORDING_SANDBOX_TEST_TRACEE_ERROR", `{"level":"fatal","error":"capabilities.(*Capabilities).EBPF: could not set capabilities: operation not permitted"}`)
+	for _, action := range []bool{false, true} {
+		t.Run(fmt.Sprint("action=", action), func(t *testing.T) {
+			tracePath := t.TempDir() + "/trace.jsonl"
+			t.Setenv("RECORDING_SANDBOX_TRACE_FILE", tracePath)
+			var stderr bytes.Buffer
+			var code int
+			if action {
+				code = run([]string{"--action", "--tracee=" + binary, "--trace-output=" + tracePath, "--", binary, "payload"}, nil, io.Discard, &stderr)
+			} else {
+				code = runWithTracee([]string{binary, "build"}, binary, nil, io.Discard, &stderr, false)
+			}
+			if code != 1 || !strings.Contains(stderr.String(), "host-granted Linux capabilities") || strings.Contains(stderr.String(), "stopping Tracee:") {
+				t.Fatalf("code %d, stderr %q", code, &stderr)
+			}
+		})
+	}
+	for _, call := range readCalls(t, path) {
+		if call[0] != "--scope" {
+			t.Fatalf("command executed despite Tracee capability failure: %q", call)
+		}
 	}
 }
 

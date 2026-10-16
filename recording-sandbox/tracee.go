@@ -14,6 +14,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"net"
@@ -24,12 +25,43 @@ import (
 	"sync"
 	"syscall"
 	"time"
+
+	"github.com/bazel-contrib/supply-chain/recording-sandbox/internal/remote-apis-proxy"
 )
 
 type child struct {
-	cmd  *exec.Cmd
-	done chan struct{}
-	err  error // Read only after done is closed.
+	cmd             *exec.Cmd
+	done            chan struct{}
+	err             error // Read only after done is closed.
+	failureReported bool
+	startupHint     func() string
+}
+
+// Keep a bounded tail because Tracee's startup errors arrive on stderr, while
+// its exit status alone cannot distinguish missing privileges from other errors.
+type traceeStderr struct {
+	io.Writer
+	mu   sync.Mutex
+	tail []byte
+}
+
+func (w *traceeStderr) Write(data []byte) (int, error) {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	w.tail = append(w.tail, data...)
+	if len(w.tail) > 8192 {
+		w.tail = append([]byte(nil), w.tail[len(w.tail)-8192:]...)
+	}
+	return w.Writer.Write(data)
+}
+
+func (w *traceeStderr) hint() string {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	if bytes.Contains(w.tail, []byte("could not set capabilities")) && bytes.Contains(w.tail, []byte("operation not permitted")) {
+		return "; Tracee needs host-granted Linux capabilities for eBPF. Configure the host and execution workers to launch the tracer with the required capabilities: https://aquasecurity.github.io/tracee/v0.24/docs/install/prerequisites/"
+	}
+	return ""
 }
 
 // Both subprocesses can log concurrently, including when the caller supplies
@@ -78,7 +110,7 @@ func (p *child) stop() error {
 }
 
 // RECORDING_SANDBOX_TRACE_FILE overrides the temporary JSONL output file.
-func runTraced(binary string, args []string, traceePath string, stdin io.Reader, stdout, stderr io.Writer) (code int) {
+func runTraced(binary string, args []string, traceePath string, stdin io.Reader, stdout, stderr io.Writer, logActions bool) (code int) {
 	stderr = &lockedWriter{Writer: stderr}
 	var err error
 	var output *os.File
@@ -95,43 +127,17 @@ func runTraced(binary string, args []string, traceePath string, stdin io.Reader,
 	defer output.Close()
 	fmt.Fprintln(stderr, "recording-sandbox: trace output:", output.Name())
 
-	// Pick a distinct loopback port for Tracee's readiness endpoint. Tracee
-	// opens the listener itself, so release our reservation just before start.
-	listener, err := net.Listen("tcp4", "127.0.0.1:0")
-	if err != nil {
-		fmt.Fprintln(stderr, "recording-sandbox:", err)
-		return 1
-	}
-	address := listener.Addr().String()
-	_ = listener.Close()
-	installDir, err := os.MkdirTemp("", "recording-sandbox-tracee-*")
-	if err != nil {
-		fmt.Fprintln(stderr, "recording-sandbox:", err)
-		return 1
-	}
-	defer os.RemoveAll(installDir)
-	traceCmd := exec.Command(traceePath,
-		"--scope", fmt.Sprintf("tree=%d", os.Getpid()),
-		"--events", "syscalls,sched_process_exec,sched_process_fork,sched_process_exit",
-		"--output", "json",
-		"--server", "http-address="+address,
-		"--server", "healthz",
-		"--install-path", installDir,
-	)
-	traceCmd.Stdout, traceCmd.Stderr = output, stderr
-	// Terminal interrupts go to the wrapper, which keeps Tracee alive until
-	// Bazel finishes and only then requests a flush and shutdown.
-	traceCmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
 	defer signal.Stop(signals)
-	trace, err := startChild(traceCmd)
+	trace, address, installDir, err := startTracee(traceePath, output, stderr)
 	if err != nil {
 		fmt.Fprintln(stderr, "recording-sandbox: starting Tracee:", err)
 		return exitCode(err)
 	}
+	defer os.RemoveAll(installDir)
 	defer func() {
-		if err := trace.stop(); err != nil {
+		if err := trace.stop(); err != nil && !trace.failureReported {
 			fmt.Fprintln(stderr, "recording-sandbox: stopping Tracee:", err)
 			if code == 0 {
 				code = 1
@@ -151,9 +157,13 @@ func runTraced(binary string, args []string, traceePath string, stdin io.Reader,
 		binary: binary, outputBase: outputBase, stderr: stderr,
 		signals: signals, traceDone: trace.done,
 	}
+	var proxy *remoteapisproxy.Proxy
 	// Shutdown must finish before Tracee is stopped so daemon termination and
 	// the last build events are included in the recording, even on failure.
 	defer func() {
+		if proxy != nil {
+			defer proxy.Close()
+		}
 		if err := session.close(); err != nil {
 			fmt.Fprintln(stderr, "recording-sandbox:", err)
 			if code == 0 {
@@ -165,6 +175,26 @@ func runTraced(binary string, args []string, traceePath string, stdin io.Reader,
 	if err != nil {
 		fmt.Fprintln(stderr, "recording-sandbox:", err)
 		return exitCode(err)
+	}
+	commandIndex := len(session.startup)
+	switch argv[commandIndex] {
+	case "build", "test", "run", "coverage":
+		var actionLog io.Writer
+		if logActions {
+			actionLog = stderr
+		}
+		proxy, err = startProxy(traceePath, output.Name()+".actions", actionLog)
+		if err != nil {
+			fmt.Fprintln(stderr, "recording-sandbox: starting execution proxy:", err)
+			return 1
+		}
+		var flags []string
+		flags, _, err = remoteapisproxy.RewriteFlags(argv[commandIndex+1:], proxy.Endpoint())
+		if err != nil {
+			fmt.Fprintln(stderr, err)
+			return 1
+		}
+		argv = append(argv[:commandIndex+1], flags...)
 	}
 	cmd := exec.Command(binary, session.args(session.startup, argv[len(session.startup):]...)...)
 	cmd.Stdin, cmd.Stdout, cmd.Stderr = stdin, stdout, stderr
@@ -181,6 +211,7 @@ func runTraced(binary string, args []string, traceePath string, stdin io.Reader,
 			// An incomplete recording must not be reported as a successful run.
 			_ = build.stop()
 			fmt.Fprintf(stderr, "recording-sandbox: Tracee exited during the build: %v\n", trace.err)
+			trace.failureReported = true
 			return 1
 		case <-build.done:
 			return exitCode(build.err)
@@ -198,7 +229,12 @@ func waitForTracee(trace *child, address string, signals <-chan os.Signal) error
 	for {
 		select {
 		case <-trace.done:
-			return fmt.Errorf("Tracee exited before becoming ready: %v", trace.err)
+			trace.failureReported = true
+			var hint string
+			if trace.startupHint != nil {
+				hint = trace.startupHint()
+			}
+			return fmt.Errorf("Tracee exited before becoming ready: %v%s", trace.err, hint)
 		case sig := <-signals:
 			return fmt.Errorf("interrupted while starting Tracee: %s", sig)
 		case <-timeout.C:
@@ -214,4 +250,35 @@ func waitForTracee(trace *child, address string, signals <-chan os.Signal) error
 			}
 		}
 	}
+}
+
+// startTracee is shared by build recording and the action payload. Pdeathsig
+// also stops the tracer if a remote worker forcibly kills the action wrapper.
+func startTracee(traceePath string, output *os.File, stderr io.Writer) (*child, string, string, error) {
+	listener, err := net.Listen("tcp4", "127.0.0.1:0")
+	if err != nil {
+		return nil, "", "", err
+	}
+	address := listener.Addr().String()
+	_ = listener.Close()
+	installDir, err := os.MkdirTemp("", "recording-sandbox-tracee-*")
+	if err != nil {
+		return nil, "", "", err
+	}
+	command := exec.Command(traceePath,
+		"--scope", fmt.Sprintf("tree=%d", os.Getpid()),
+		"--events", "syscalls,sched_process_exec,sched_process_fork,sched_process_exit",
+		"--output", "json", "--server", "http-address="+address,
+		"--server", "healthz", "--install-path", installDir,
+	)
+	diagnostics := &traceeStderr{Writer: stderr}
+	command.Stdout, command.Stderr = output, diagnostics
+	command.SysProcAttr = &syscall.SysProcAttr{Setpgid: true, Pdeathsig: syscall.SIGTERM}
+	trace, err := startChild(command)
+	if err != nil {
+		os.RemoveAll(installDir)
+		return nil, "", "", err
+	}
+	trace.startupHint = diagnostics.hint
+	return trace, address, installDir, nil
 }
