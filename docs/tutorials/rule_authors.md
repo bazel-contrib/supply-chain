@@ -14,8 +14,7 @@ If you only want to annotate your own module, see
   - [Step 2: Build the PURL with `purl.builder`](#step-2-build-the-purl-with-purlbuilder)
   - [Step 3: Annotate repositories created by repository rules](#step-3-annotate-repositories-created-by-repository-rules)
   - [Step 4: Annotate `BUILD` file overlays](#step-4-annotate-build-file-overlays)
-  - [Step 5 (optional): Write a rule that provides `PackageMetadataInfo`](#step-5-optional-write-a-rule-that-provides-packagemetadatainfo)
-  - [Step 6: Verify the metadata](#step-6-verify-the-metadata)
+  - [Step 5: Verify the metadata](#step-5-verify-the-metadata)
   - [Checklist](#checklist)
 
 
@@ -374,127 +373,7 @@ already a variable in your `.bzl` file, generate the overlay with
 [Step 3](#step-3-annotate-repositories-created-by-repository-rules).
 
 
-## Step 5 (optional): Write a rule that provides `PackageMetadataInfo`
-
-Most rule sets can generate `package_metadata` targets as shown above. If your
-rule set has its own rule that describes a package (e.g., an `npm_package` rule
-that already knows the package name and version), you can make that rule
-provide [`PackageMetadataInfo`](../metadata/providers/package_metadata_info.md#PackageMetadataInfo)
-directly with
-[`package_metadata_common.create_package_metadata`](../metadata/common/common.md#package_metadata_commoncreate_package_metadata).
-This writes the metadata in the same format as `package_metadata`, so tools
-treat both the same.
-
-```starlark
-# npm/npm_package_metadata.bzl
-"""Declares rule `npm_package_metadata`."""
-
-load("@package_metadata//common:common.bzl", "package_metadata_common")
-load("@package_metadata//providers:package_attribute_info.bzl", "PackageAttributeInfo")
-load("@package_metadata//providers:package_metadata_info.bzl", "PackageMetadataInfo")
-load("@package_metadata//purl:purl.bzl", "purl")
-
-def _npm_package_metadata_impl(ctx):
-    builder = (purl.builder()
-        .type("npm")
-        .name(ctx.attr.package)
-        .version(ctx.attr.version))
-    if ctx.attr.scope:
-        builder.namespace(ctx.attr.scope)
-
-    info = package_metadata_common.create_package_metadata(
-        actions = ctx.actions,
-        label = ctx.label,
-        purl = builder.build(),
-        attributes = [a[PackageAttributeInfo] for a in ctx.attr.attributes],
-    )
-
-    return [
-        info,
-        DefaultInfo(
-            files = depset(
-                direct = [
-                    info.metadata,
-                ],
-            ),
-        ),
-    ]
-
-_npm_package_metadata = rule(
-    implementation = _npm_package_metadata_impl,
-    attrs = {
-        "attributes": attr.label_list(
-            providers = [
-                PackageAttributeInfo,
-            ],
-        ),
-        "package": attr.string(
-            mandatory = True,
-        ),
-        "scope": attr.string(),
-        "version": attr.string(
-            mandatory = True,
-        ),
-    },
-    provides = [
-        PackageMetadataInfo,
-    ],
-)
-
-def npm_package_metadata(
-        *,
-        name,
-        package,
-        version,
-        scope = None,
-        attributes = [],
-        visibility = None,
-        tags = None):
-    _npm_package_metadata(
-        name = name,
-        package = package,
-        version = version,
-        scope = scope,
-        attributes = attributes,
-        visibility = visibility,
-        tags = tags,
-        # Required: without it, `default_package_metadata` applies to this
-        # target itself, which is a dependency cycle.
-        applicable_licenses = [],
-    )
-```
-
-```starlark
-npm_package_metadata(
-    name = "package_metadata",
-    scope = "@babel",
-    package = "core",
-    version = "7.26.0",
-)
-# purl: pkg:npm/%40babel/core@7.26.0
-```
-
-Two details matter here:
-
-  - **Clear `applicable_licenses` on the metadata target.** A target that
-    provides `PackageMetadataInfo` and is referenced from
-    `default_package_metadata` must not itself pick up
-    `default_package_metadata`, or analysis fails with a dependency cycle.
-    Wrap the rule in a macro that passes `applicable_licenses = []` (the legacy
-    name of `package_metadata`, which also works on Bazel 7), as all rules in
-    `@package_metadata` do. The same applies to custom attribute rules that
-    provide [`PackageAttributeInfo`](../metadata/providers/package_attribute_info.md#PackageAttributeInfo).
-
-  - **Honor consumer overrides when reading metadata.** If your rule *reads*
-    the metadata of other targets (e.g., to embed it in an artifact), resolve
-    it with
-    [`package_metadata_common.get_package_metadata`](../metadata/common/common.md#package_metadata_commonget_package_metadata)
-    so that overrides registered on the
-    [`package_metadata` toolchain](../metadata/rules/package_metadata_toolchain.md#package_metadata_toolchain)
-    take effect.
-
-
-## Step 6: Verify the metadata
+## Step 5: Verify the metadata
 
 Build the `package_metadata` target of a fetched repository and inspect the
 generated JSON:
@@ -534,5 +413,3 @@ components, or an error if it is not a valid PURL.
         license ID.
   - [ ] Generated `BUILD` files load `@package_metadata` through
         `str(Label(...))`.
-  - [ ] Custom rules providing `PackageMetadataInfo` or `PackageAttributeInfo`
-        pass `applicable_licenses = []`.
