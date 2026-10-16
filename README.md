@@ -5,6 +5,7 @@ This repository contains Bazel modules for injecting and collecting supply-chain
   - [Documentation](./docs)
   - Modules
     - [@package_metadata](./metadata)
+    - [@recording-sandbox](./recording-sandbox)
 
 This project is the successor to [rules_license](https://github.com/bazelbuild/rules_license).
 

@@ -52,6 +52,20 @@ jobs:
             runner: "ubuntu-latest"
 
           #
+          # @recording-sandbox
+          #
+
+          - name: "Bazel 9.x: @recording-sandbox (Linux x64)"
+            bazel_version: "9.x"
+            package: "recording-sandbox"
+            runner: "ubuntu-latest"
+
+          - name: "Bazel 8.x: @recording-sandbox (Linux x64)"
+            bazel_version: "8.x"
+            package: "recording-sandbox"
+            runner: "ubuntu-latest"
+
+          #
           # @supply-chain-go
           #
 
