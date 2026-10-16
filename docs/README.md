@@ -8,4 +8,4 @@
 
 ## Tutorials
 
-  - [Adding `package_metadata` as a rule author](./metadata/tutorials/rule_authors.md)
+  - [Adding `package_metadata` as a rule author](./tutorials/rule_authors.md)

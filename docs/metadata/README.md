@@ -120,7 +120,7 @@ If you are a module author and want to annotate your module, you will need :
 
   - Publish your module.
 
-If your rule set fetches third-party packages (e.g., through repository rules or module extensions), also annotate the repositories it creates. See [Tutorial: Adding `package_metadata` as a rule author](./tutorials/rule_authors.md).
+If your rule set fetches third-party packages (e.g., through repository rules or module extensions), also annotate the repositories it creates. See [Tutorial: Adding `package_metadata` as a rule author](../tutorials/rule_authors.md).
 
 ### As an organization
 

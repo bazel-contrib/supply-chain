@@ -3,7 +3,7 @@
 This repository contains Bazel modules for injecting and collecting supply-chain metadata into builds.
 
   - [Documentation](./docs)
-    - [Tutorial: Adding `package_metadata` as a rule author](./docs/metadata/tutorials/rule_authors.md)
+    - [Tutorial: Adding `package_metadata` as a rule author](./docs/tutorials/rule_authors.md)
   - Modules
     - [@package_metadata](./metadata)
     - [@package_metadata_extensions](./metadata-extensions)

@@ -7,7 +7,7 @@ rules create with `package_metadata`, so that consumers of your rule set can
 produce SBOMs and run license checks for everything they pull in through it.
 
 If you only want to annotate your own module, see
-[As module author](../README.md#as-module-author) — this tutorial builds on it.
+[As module author](../metadata/README.md#as-module-author) — this tutorial builds on it.
 
   - [Background](#background)
   - [Step 1: Depend on `@package_metadata`](#step-1-depend-on-package_metadata)
@@ -23,14 +23,14 @@ If you only want to annotate your own module, see
 
 A `package_metadata` target identifies one package by its
 [PURL](https://github.com/package-url/purl-spec) and carries `attributes`
-about it (e.g., its [license](../licenses/rules/license.md#license)). Targets are
+about it (e.g., its [license](../metadata/licenses/rules/license.md#license)). Targets are
 associated with it in one of three ways:
 
   - repo-wide, with `repo(default_package_metadata = [...])` in `REPO.bazel`,
   - package-wide, with `package(default_package_metadata = [...])`, or
   - per target, with the `package_metadata` attribute that every rule has.
 
-Tools such as [`@supply_chain_tools`](../../../tools) walk the dependency graph of
+Tools such as [`@supply_chain_tools`](../../tools) walk the dependency graph of
 a target and collect the metadata of every target they visit. Your rules do not
 need to do anything to be visited: tagging the targets is enough.
 
@@ -58,7 +58,7 @@ add anything else to your consumers' dependency graphs.
 
 The PURL is the identity of a package. SBOM tools and vulnerability scanners
 match on it, so it has to be canonical. Build it with
-[`purl.builder`](../purl/purl.md#purlbuilder) instead of formatting a string
+[`purl.builder`](../metadata/purl/purl.md#purlbuilder) instead of formatting a string
 yourself:
 
 ```starlark
@@ -107,7 +107,7 @@ Guidelines for choosing the components:
   - **`type`**: use the type of the ecosystem the package is fetched from, from
     the [list of PURL types](https://github.com/package-url/purl-spec/blob/main/purl-types-index.json)
     (e.g., `maven`, `npm`, `pypi`, `cargo`, `golang`, `github`). Bazel modules
-    have their own helper, [`purl.bazel`](../purl/purl.md#purlbazel). If no type
+    have their own helper, [`purl.bazel`](../metadata/purl/purl.md#purlbazel). If no type
     fits, use `generic` and add a `download_url` or `vcs_url` qualifier so the
     package can be identified unambiguously:
 
@@ -325,7 +325,7 @@ Things to keep in mind:
 
   - **Consumers can override what you declare.** If your metadata is missing or
     wrong for a package, consumers can replace it with
-    [`package_metadata_override`](../../metadata-extensions/rules/package_metadata_override.md#package_metadata_override)
+    [`package_metadata_override`](../metadata-extensions/rules/package_metadata_override.md#package_metadata_override)
     without patching your rule set. That is a fallback, not a substitute:
     declaring correct metadata in your rule set fixes it for everyone.
 
@@ -379,9 +379,9 @@ already a variable in your `.bzl` file, generate the overlay with
 Most rule sets can generate `package_metadata` targets as shown above. If your
 rule set has its own rule that describes a package (e.g., an `npm_package` rule
 that already knows the package name and version), you can make that rule
-provide [`PackageMetadataInfo`](../providers/package_metadata_info.md#PackageMetadataInfo)
+provide [`PackageMetadataInfo`](../metadata/providers/package_metadata_info.md#PackageMetadataInfo)
 directly with
-[`package_metadata_common.create_package_metadata`](../common/common.md#package_metadata_commoncreate_package_metadata).
+[`package_metadata_common.create_package_metadata`](../metadata/common/common.md#package_metadata_commoncreate_package_metadata).
 This writes the metadata in the same format as `package_metadata`, so tools
 treat both the same.
 
@@ -483,14 +483,14 @@ Two details matter here:
     Wrap the rule in a macro that passes `applicable_licenses = []` (the legacy
     name of `package_metadata`, which also works on Bazel 7), as all rules in
     `@package_metadata` do. The same applies to custom attribute rules that
-    provide [`PackageAttributeInfo`](../providers/package_attribute_info.md#PackageAttributeInfo).
+    provide [`PackageAttributeInfo`](../metadata/providers/package_attribute_info.md#PackageAttributeInfo).
 
   - **Honor consumer overrides when reading metadata.** If your rule *reads*
     the metadata of other targets (e.g., to embed it in an artifact), resolve
     it with
-    [`package_metadata_common.get_package_metadata`](../common/common.md#package_metadata_commonget_package_metadata)
+    [`package_metadata_common.get_package_metadata`](../metadata/common/common.md#package_metadata_commonget_package_metadata)
     so that overrides registered on the
-    [`package_metadata` toolchain](../rules/package_metadata_toolchain.md#package_metadata_toolchain)
+    [`package_metadata` toolchain](../metadata/rules/package_metadata_toolchain.md#package_metadata_toolchain)
     take effect.
 
 
@@ -516,7 +516,7 @@ $ bazel query 'deps(@guava//:jar)'
 @package_metadata//licenses/spdx:Apache-2.0
 ```
 
-To check a PURL in a test, [`purl.parse`](../purl/purl.md#purlparse) returns its
+To check a PURL in a test, [`purl.parse`](../metadata/purl/purl.md#purlparse) returns its
 components, or an error if it is not a valid PURL.
 
 
@@ -524,7 +524,7 @@ components, or an error if it is not a valid PURL.
 
   - [ ] `bazel_dep(name = "package_metadata", ...)` is a regular dependency of
         your module.
-  - [ ] Your own module is annotated (see [As module author](../README.md#as-module-author)).
+  - [ ] Your own module is annotated (see [As module author](../metadata/README.md#as-module-author)).
   - [ ] Every repository your rules create has a `package_metadata` target and
         sets `default_package_metadata` in `REPO.bazel` (or per package).
   - [ ] PURLs are built with `purl.builder` (or `purl.bazel`), using the
