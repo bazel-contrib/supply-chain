@@ -4,6 +4,11 @@
 
 load("//licenses/rules:license_kind.bzl", "license_kind")
 
+exports_files(
+    ["or_later.bzl"],
+    visibility = ["//visibility:public"],
+)
+
 license_kind(
     name = "0BSD",
     full_name = "BSD Zero Clause License",

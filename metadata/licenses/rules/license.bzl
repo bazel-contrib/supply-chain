@@ -1,8 +1,9 @@
 """Declares rule `license`."""
 
-load("//licenses/private:expression.bzl", "license_expression_ids", "parse_license_expression")
+load("//licenses/private:expression.bzl", "license_expression_ids", "parse_license_expression", "resolve_or_later")
 load("//licenses/providers:license_expression_info.bzl", "LicenseExpressionInfo")
 load("//licenses/providers:license_kind_info.bzl", "LicenseKindInfo")
+load("//licenses/spdx:or_later.bzl", "OR_LATER")
 load("//providers:package_attribute_info.bzl", "PackageAttributeInfo")
 
 visibility("public")
@@ -59,12 +60,16 @@ def _build_graph(tree, kinds):
                 "exception": {"identifier": exception.identifier, "name": exception.name},
             }
         else:
-            kind = kinds[node["id"]]
+            kind_id = resolve_or_later(node, OR_LATER)
+            kind = kinds[kind_id]
             if kind.exception:
                 fail("'{}' is a license exception and can only follow 'WITH'".format(kind.identifier))
-            info = LicenseExpressionInfo(kind = kind, or_later = node["or_later"])
+
+            # `<id>+` that resolved to its own identifier needs no flag.
+            or_later = node["or_later"] and kind_id == node["id"]
+            info = LicenseExpressionInfo(kind = kind, or_later = or_later)
             jsons[key] = {"kind": {"identifier": kind.identifier, "name": kind.name}}
-            if node["or_later"]:
+            if or_later:
                 jsons[key]["or_later"] = True
         built[key] = info
     return built["r"], jsons["r"]
@@ -88,7 +93,7 @@ def _license_impl(ctx):
         for k in ctx.attr.kinds:
             info = k[LicenseKindInfo]
             kinds[info.identifier] = info
-        for kind_id in license_expression_ids(tree):
+        for kind_id in license_expression_ids(tree, OR_LATER):
             if kind_id not in kinds:
                 fail("no license kind for '{}' in expression '{}'; pass it in `kinds`".format(kind_id, ctx.attr.expression))
         expression, attribute["expression"] = _build_graph(tree, kinds)
@@ -212,7 +217,7 @@ def license(
 
     | Field | Description |
     | :---- | :---------- |
-    | `expression` | A graph of the parsed SPDX license expression, present instead of `kind` if `expression` was declared. A node is either a leaf `{"kind": {"identifier", "name"}, "or_later"}` (`or_later` only if `+` was used) or `{"operand": "AND" or "OR" or "WITH", "operands": [...], "exception"}` (`exception`, a `{"identifier", "name"}` kind, only for `WITH`). |
+    | `expression` | A graph of the parsed SPDX license expression, present instead of `kind` if `expression` was declared. A node is either a leaf `{"kind": {"identifier", "name"}, "or_later"}` (`or_later` only if `+` was used and has no equivalent SPDX identifier) or `{"operand": "AND" or "OR" or "WITH", "operands": [...], "exception"}` (`exception`, a `{"identifier", "name"}` kind, only for `WITH`). |
     | `kind.identifier` | The `identifier` of the `kind` of this license. |
     | `kind.name` | The `full_name` of the `kind` of this license. |
     | `label` | The label of this `license` target. |
@@ -228,7 +233,9 @@ def license(
       expression: An [SPDX license expression](https://spdx.github.io/spdx-spec/v2.3.1/SPDX-license-expressions/)
         (e.g., `MIT OR (Apache-2.0 AND BSD-3-Clause)`, `GPL-2.0-only WITH
         Classpath-exception-2.0`). Parsed at analysis time; malformed
-        expressions fail the build.
+        expressions fail the build. `<id>+` is resolved to the equivalent SPDX
+        identifier when there is one (`GPL-3.0+` becomes `GPL-3.0-or-later`);
+        otherwise the license is kept and flagged as "or later".
       kinds: Additional `license_kind` targets referenced by `expression`, which
         are required for custom licenses (`LicenseRef-...`) and custom
         exceptions (`AdditionRef-...`, declared with `exception = True`). SPDX
@@ -250,7 +257,7 @@ def license(
         extra = {k: True for k in (kinds or [])}
         predeclared = [
             Label(_SPDX_PACKAGE + ":" + i)
-            for i in license_expression_ids(parse_license_expression(expression))
+            for i in license_expression_ids(parse_license_expression(expression), OR_LATER)
             if not i.startswith(("LicenseRef-", "AdditionRef-")) and ":" not in i
         ]
         kinds = list(kinds or []) + [k for k in predeclared if k not in extra]

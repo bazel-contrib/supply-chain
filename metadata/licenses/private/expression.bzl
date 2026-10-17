@@ -186,8 +186,14 @@ def parse_license_expression(expression):
         fail(result["error"])
     return result
 
-def license_expression_ids(tree):
-    """Returns the sorted, de-duplicated license and exception ids of a parsed expression."""
+def license_expression_ids(tree, or_later = {}):
+    """Returns the sorted, de-duplicated license and exception ids of a parsed expression.
+
+    Args:
+      tree: A parsed expression.
+      or_later: Maps a license id to the id that `<id>+` stands for. Leaves
+        using `+` with an id in this map are reported under the mapped id.
+    """
     ids = {}
     stack = [tree]
     for _ in range(100000):
@@ -200,5 +206,11 @@ def license_expression_ids(tree):
             stack.append(node["license"])
             ids[node["exception"]] = True
         else:
-            ids[node["id"]] = True
+            ids[resolve_or_later(node, or_later)] = True
     return sorted(ids)
+
+def resolve_or_later(node, or_later):
+    """Returns the license id of a leaf, resolving `<id>+` through `or_later`."""
+    if node["or_later"] and node["id"] in or_later:
+        return or_later[node["id"]]
+    return node["id"]

@@ -80,6 +80,7 @@ func GenerateDocument(graph sbom.GraphConfig, classifications sbom.Classificatio
 	spdxPackages := make([]*spdx.Package, 0)
 	labelToID := make(map[string]string)
 	idx := 0
+	licenses := newLicenseCollector()
 
 	// Helper function to create package from node
 	createPackage := func(node *sbom.NodeConfig) (*spdx.Package, error) {
@@ -90,6 +91,11 @@ func GenerateDocument(graph sbom.GraphConfig, classifications sbom.Classificatio
 		pkgMetadata, err := supplychain.ReadPackageMetadataFromFile(node.MetadataFile)
 		if err != nil {
 			return nil, err
+		}
+
+		licenseAttribute, err := supplychain.GetLicenseAttribute(pkgMetadata)
+		if err != nil {
+			return nil, fmt.Errorf("reading license of %s: %w", node.Label, err)
 		}
 
 		elementID := fmt.Sprintf("dep-%d", idx)
@@ -104,7 +110,9 @@ func GenerateDocument(graph sbom.GraphConfig, classifications sbom.Classificatio
 					Locator:  pkgMetadata.GetPURL().String(),
 				},
 			},
-			PackageName: pkgMetadata.GetPURL().Name,
+			PackageName:             pkgMetadata.GetPURL().Name,
+			PackageLicenseDeclared:  licenses.declared(licenseAttribute),
+			PackageLicenseConcluded: "NOASSERTION",
 		}
 
 		labelToID[node.Label] = elementID
@@ -184,6 +192,7 @@ func GenerateDocument(graph sbom.GraphConfig, classifications sbom.Classificatio
 		SPDXVersion:    "SPDX-2.3",
 		Packages:       spdxPackages,
 		Relationships:  relationships,
+		OtherLicenses:  licenses.otherLicenses(),
 		CreationInfo:   &spdx.CreationInfo{},
 	}
 

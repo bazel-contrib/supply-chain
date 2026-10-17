@@ -2,7 +2,7 @@ load("@package_metadata//licenses/rules:license.bzl", "license")
 load("@package_metadata//licenses/rules:license_kind.bzl", "license_kind")
 load("@package_metadata//purl:purl.bzl", "purl")
 load("@package_metadata//rules:package_metadata.bzl", "package_metadata")
-load("//:license_expression_analysis_test.bzl", "license_expression_failure_test", "license_expression_custom_kinds_test", "license_expression_graph_test")
+load("//:license_expression_analysis_test.bzl", "license_expression_failure_test", "license_expression_custom_kinds_test", "license_expression_graph_test", "license_expression_or_later_test")
 load("//:license_expression_test.bzl", "license_expression_test")
 load("//:purl_test.bzl", "purl_bazel_registry_test")
 
@@ -98,4 +98,9 @@ license_kind(
     name = "unflagged_exception",
     full_name = "Exception missing the exception flag",
     identifier = "AdditionRef-unflagged",
+)
+
+license_expression_or_later_test(
+    name = "license_expression_or_later_test",
+    expression = "GPL-3.0+ OR Apache-2.0+ OR LGPL-3.0-or-later",
 )
