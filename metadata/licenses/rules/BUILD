@@ -12,6 +12,7 @@ filegroup(
         "license.bzl",
         "license_kind.bzl",
     ] + [
+        "//licenses/private:srcs",
         "//licenses/providers:srcs",
         "//providers:srcs",
     ],

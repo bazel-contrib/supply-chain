@@ -21,6 +21,33 @@ def _run(args) -> int:
     with open(args.input) as f:
         licenses = json.load(f)
 
+    exceptions = []
+    if args.exceptions:
+        with open(args.exceptions) as f:
+            exceptions_list = json.load(f)
+        if exceptions_list["licenseListVersion"] != licenses["licenseListVersion"]:
+            print("The licenses and exceptions lists have different versions.")
+            return 1
+        exceptions = [
+            (
+                e["licenseExceptionId"],
+                e["name"],
+                e.get("isDeprecatedLicenseId", False),
+                True,
+            )
+            for e in exceptions_list["exceptions"]
+        ]
+
+    entries = [
+        (l["licenseId"], l["name"], l.get("isDeprecatedLicenseId", False), False)
+        for l in licenses["licenses"]
+    ] + exceptions
+    ids = [entry[0] for entry in entries]
+    duplicates = sorted({i for i in ids if ids.count(i) > 1})
+    if duplicates:
+        print(f"Identifiers used by both a license and an exception: {duplicates}")
+        return 1
+
     with open(args.output, "w") as f:
         f.write(
             f"""
@@ -32,16 +59,22 @@ load("//licenses/rules:license_kind.bzl", "license_kind")
 """.strip()
         )
 
-        for license in sorted(licenses["licenses"], key=lambda l: l["licenseId"]):
-            identifier = license["licenseId"].replace('"', '\\"')
-            full_name = license["name"].replace('"', '\\"')
+        for license_id, license_name, deprecated, is_exception in sorted(entries):
+            identifier = license_id.replace('"', '\\"')
+            full_name = license_name.replace('"', '\\"')
+
+            flags = ""
+            if deprecated:
+                flags += "\n    deprecated = True,"
+            if is_exception:
+                flags += "\n    exception = True,"
 
             f.write("\n")
             f.write("\n")
             f.write(
                 f"""
 license_kind(
-    name = "{identifier}",
+    name = "{identifier}",{flags}
     full_name = "{full_name}",
     identifier = "{identifier}",
     visibility = ["//visibility:public"],
@@ -70,6 +103,10 @@ def main(argv: List[str]) -> int:
         "--input",
         required=True,
         help="The JSON file containing all SPDX licenses. Download from https://raw.githubusercontent.com/spdx/license-list-data/main/json/licenses.json",
+    )
+    parser.add_argument(
+        "--exceptions",
+        help="The JSON file containing all SPDX license exceptions, of the same version as --input. Download from https://raw.githubusercontent.com/spdx/license-list-data/main/json/exceptions.json",
     )
     parser.add_argument(
         "--output", required=True, help="The BUILD file writing targets to."

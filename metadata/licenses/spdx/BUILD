@@ -12,6 +12,14 @@ license_kind(
 )
 
 license_kind(
+    name = "389-exception",
+    exception = True,
+    full_name = "389 Directory Server Exception",
+    identifier = "389-exception",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
     name = "3D-Slicer-1.0",
     full_name = "3D Slicer License v1.0",
     identifier = "3D-Slicer-1.0",
@@ -69,6 +77,7 @@ license_kind(
 
 license_kind(
     name = "AGPL-1.0",
+    deprecated = True,
     full_name = "Affero General Public License v1.0",
     identifier = "AGPL-1.0",
     visibility = ["//visibility:public"],
@@ -90,6 +99,7 @@ license_kind(
 
 license_kind(
     name = "AGPL-3.0",
+    deprecated = True,
     full_name = "GNU Affero General Public License v3.0",
     identifier = "AGPL-3.0",
     visibility = ["//visibility:public"],
@@ -362,6 +372,62 @@ license_kind(
 )
 
 license_kind(
+    name = "Asterisk-exception",
+    exception = True,
+    full_name = "Asterisk exception",
+    identifier = "Asterisk-exception",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "Asterisk-linking-protocols-exception",
+    exception = True,
+    full_name = "Asterisk linking protocols exception",
+    identifier = "Asterisk-linking-protocols-exception",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "Autoconf-exception-2.0",
+    exception = True,
+    full_name = "Autoconf exception 2.0",
+    identifier = "Autoconf-exception-2.0",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "Autoconf-exception-3.0",
+    exception = True,
+    full_name = "Autoconf exception 3.0",
+    identifier = "Autoconf-exception-3.0",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "Autoconf-exception-generic",
+    exception = True,
+    full_name = "Autoconf generic exception",
+    identifier = "Autoconf-exception-generic",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "Autoconf-exception-generic-3.0",
+    exception = True,
+    full_name = "Autoconf generic exception for GPL-3.0",
+    identifier = "Autoconf-exception-generic-3.0",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "Autoconf-exception-macro",
+    exception = True,
+    full_name = "Autoconf macro exception",
+    identifier = "Autoconf-exception-macro",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
     name = "BOLA-1.1",
     full_name = "Buena Onda License Agreement v1.1",
     identifier = "BOLA-1.1",
@@ -391,6 +457,7 @@ license_kind(
 
 license_kind(
     name = "BSD-2-Clause-FreeBSD",
+    deprecated = True,
     full_name = "BSD 2-Clause FreeBSD License",
     identifier = "BSD-2-Clause-FreeBSD",
     visibility = ["//visibility:public"],
@@ -398,6 +465,7 @@ license_kind(
 
 license_kind(
     name = "BSD-2-Clause-NetBSD",
+    deprecated = True,
     full_name = "BSD 2-Clause NetBSD License",
     identifier = "BSD-2-Clause-NetBSD",
     visibility = ["//visibility:public"],
@@ -712,6 +780,22 @@ license_kind(
 )
 
 license_kind(
+    name = "Bison-exception-1.24",
+    exception = True,
+    full_name = "Bison exception 1.24",
+    identifier = "Bison-exception-1.24",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "Bison-exception-2.2",
+    exception = True,
+    full_name = "Bison exception 2.2",
+    identifier = "Bison-exception-2.2",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
     name = "BitTorrent-1.0",
     full_name = "BitTorrent Open Source License v1.0",
     identifier = "BitTorrent-1.0",
@@ -757,6 +841,14 @@ license_kind(
     name = "Boehm-GC-without-fee",
     full_name = "Boehm-Demers-Weiser GC License (without fee)",
     identifier = "Boehm-GC-without-fee",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "Bootloader-exception",
+    exception = True,
+    full_name = "Bootloader Distribution Exception",
+    identifier = "Bootloader-exception",
     visibility = ["//visibility:public"],
 )
 
@@ -1356,6 +1448,22 @@ license_kind(
 )
 
 license_kind(
+    name = "CGAL-linking-exception",
+    exception = True,
+    full_name = "CGAL Linking Exception",
+    identifier = "CGAL-linking-exception",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "CLISP-exception-2.0",
+    exception = True,
+    full_name = "CLISP exception 2.0",
+    identifier = "CLISP-exception-2.0",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
     name = "CMU-Mach",
     full_name = "CMU Mach License",
     identifier = "CMU-Mach",
@@ -1450,6 +1558,22 @@ license_kind(
     name = "ClArtistic",
     full_name = "Clarified Artistic License",
     identifier = "ClArtistic",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "Classpath-exception-2.0",
+    exception = True,
+    full_name = "Classpath exception 2.0",
+    identifier = "Classpath-exception-2.0",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "Classpath-exception-2.0-short",
+    exception = True,
+    full_name = "Classpath exception 2.0 - short",
+    identifier = "Classpath-exception-2.0-short",
     visibility = ["//visibility:public"],
 )
 
@@ -1569,6 +1693,22 @@ license_kind(
     name = "DSDP",
     full_name = "DSDP License",
     identifier = "DSDP",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "DigiRule-FOSS-exception",
+    exception = True,
+    full_name = "DigiRule FOSS License Exception",
+    identifier = "DigiRule-FOSS-exception",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "Digia-Qt-LGPL-exception-1.1",
+    exception = True,
+    full_name = "Digia Qt LGPL Exception version 1.1",
+    identifier = "Digia-Qt-LGPL-exception-1.1",
     visibility = ["//visibility:public"],
 )
 
@@ -1755,6 +1895,14 @@ license_kind(
 )
 
 license_kind(
+    name = "FLTK-exception",
+    exception = True,
+    full_name = "FLTK exception",
+    identifier = "FLTK-exception",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
     name = "FSFAP",
     full_name = "FSF All Permissive License",
     identifier = "FSFAP",
@@ -1825,9 +1973,25 @@ license_kind(
 )
 
 license_kind(
+    name = "Fawkes-Runtime-exception",
+    exception = True,
+    full_name = "Fawkes Runtime Exception",
+    identifier = "Fawkes-Runtime-exception",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
     name = "Ferguson-Twofish",
     full_name = "Ferguson Twofish License",
     identifier = "Ferguson-Twofish",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "Font-exception-2.0",
+    exception = True,
+    full_name = "Font exception 2.0",
+    identifier = "Font-exception-2.0",
     visibility = ["//visibility:public"],
 )
 
@@ -1860,6 +2024,30 @@ license_kind(
 )
 
 license_kind(
+    name = "GCC-exception-2.0",
+    exception = True,
+    full_name = "GCC Runtime Library exception 2.0",
+    identifier = "GCC-exception-2.0",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "GCC-exception-2.0-note",
+    exception = True,
+    full_name = "GCC    Runtime Library exception 2.0 - note variant",
+    identifier = "GCC-exception-2.0-note",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "GCC-exception-3.1",
+    exception = True,
+    full_name = "GCC Runtime Library exception 3.1",
+    identifier = "GCC-exception-3.1",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
     name = "GCR-docs",
     full_name = "Gnome GCR Documentation License",
     identifier = "GCR-docs",
@@ -1875,6 +2063,7 @@ license_kind(
 
 license_kind(
     name = "GFDL-1.1",
+    deprecated = True,
     full_name = "GNU Free Documentation License v1.1",
     identifier = "GFDL-1.1",
     visibility = ["//visibility:public"],
@@ -1924,6 +2113,7 @@ license_kind(
 
 license_kind(
     name = "GFDL-1.2",
+    deprecated = True,
     full_name = "GNU Free Documentation License v1.2",
     identifier = "GFDL-1.2",
     visibility = ["//visibility:public"],
@@ -1973,6 +2163,7 @@ license_kind(
 
 license_kind(
     name = "GFDL-1.3",
+    deprecated = True,
     full_name = "GNU Free Documentation License v1.3",
     identifier = "GFDL-1.3",
     visibility = ["//visibility:public"],
@@ -2035,7 +2226,32 @@ license_kind(
 )
 
 license_kind(
+    name = "GNAT-exception",
+    exception = True,
+    full_name = "GNAT exception",
+    identifier = "GNAT-exception",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "GNOME-examples-exception",
+    exception = True,
+    full_name = "GNOME examples exception",
+    identifier = "GNOME-examples-exception",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "GNU-compiler-exception",
+    exception = True,
+    full_name = "GNU Compiler Exception",
+    identifier = "GNU-compiler-exception",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
     name = "GPL-1.0",
+    deprecated = True,
     full_name = "GNU General Public License v1.0 only",
     identifier = "GPL-1.0",
     visibility = ["//visibility:public"],
@@ -2043,6 +2259,7 @@ license_kind(
 
 license_kind(
     name = "GPL-1.0+",
+    deprecated = True,
     full_name = "GNU General Public License v1.0 or later",
     identifier = "GPL-1.0+",
     visibility = ["//visibility:public"],
@@ -2064,6 +2281,7 @@ license_kind(
 
 license_kind(
     name = "GPL-2.0",
+    deprecated = True,
     full_name = "GNU General Public License v2.0 only",
     identifier = "GPL-2.0",
     visibility = ["//visibility:public"],
@@ -2071,6 +2289,7 @@ license_kind(
 
 license_kind(
     name = "GPL-2.0+",
+    deprecated = True,
     full_name = "GNU General Public License v2.0 or later",
     identifier = "GPL-2.0+",
     visibility = ["//visibility:public"],
@@ -2092,6 +2311,7 @@ license_kind(
 
 license_kind(
     name = "GPL-2.0-with-GCC-exception",
+    deprecated = True,
     full_name = "GNU General Public License v2.0 w/GCC Runtime Library exception",
     identifier = "GPL-2.0-with-GCC-exception",
     visibility = ["//visibility:public"],
@@ -2099,6 +2319,7 @@ license_kind(
 
 license_kind(
     name = "GPL-2.0-with-autoconf-exception",
+    deprecated = True,
     full_name = "GNU General Public License v2.0 w/Autoconf exception",
     identifier = "GPL-2.0-with-autoconf-exception",
     visibility = ["//visibility:public"],
@@ -2106,6 +2327,7 @@ license_kind(
 
 license_kind(
     name = "GPL-2.0-with-bison-exception",
+    deprecated = True,
     full_name = "GNU General Public License v2.0 w/Bison exception",
     identifier = "GPL-2.0-with-bison-exception",
     visibility = ["//visibility:public"],
@@ -2113,6 +2335,7 @@ license_kind(
 
 license_kind(
     name = "GPL-2.0-with-classpath-exception",
+    deprecated = True,
     full_name = "GNU General Public License v2.0 w/Classpath exception",
     identifier = "GPL-2.0-with-classpath-exception",
     visibility = ["//visibility:public"],
@@ -2120,6 +2343,7 @@ license_kind(
 
 license_kind(
     name = "GPL-2.0-with-font-exception",
+    deprecated = True,
     full_name = "GNU General Public License v2.0 w/Font exception",
     identifier = "GPL-2.0-with-font-exception",
     visibility = ["//visibility:public"],
@@ -2127,6 +2351,7 @@ license_kind(
 
 license_kind(
     name = "GPL-3.0",
+    deprecated = True,
     full_name = "GNU General Public License v3.0 only",
     identifier = "GPL-3.0",
     visibility = ["//visibility:public"],
@@ -2134,8 +2359,41 @@ license_kind(
 
 license_kind(
     name = "GPL-3.0+",
+    deprecated = True,
     full_name = "GNU General Public License v3.0 or later",
     identifier = "GPL-3.0+",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "GPL-3.0-389-ds-base-exception",
+    exception = True,
+    full_name = "GPL-3.0 389 DS Base Exception",
+    identifier = "GPL-3.0-389-ds-base-exception",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "GPL-3.0-interface-exception",
+    exception = True,
+    full_name = "GPL-3.0 Interface Exception",
+    identifier = "GPL-3.0-interface-exception",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "GPL-3.0-linking-exception",
+    exception = True,
+    full_name = "GPL-3.0 Linking Exception",
+    identifier = "GPL-3.0-linking-exception",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "GPL-3.0-linking-source-exception",
+    exception = True,
+    full_name = "GPL-3.0 Linking Exception (with Corresponding Source)",
+    identifier = "GPL-3.0-linking-source-exception",
     visibility = ["//visibility:public"],
 )
 
@@ -2155,6 +2413,7 @@ license_kind(
 
 license_kind(
     name = "GPL-3.0-with-GCC-exception",
+    deprecated = True,
     full_name = "GNU General Public License v3.0 w/GCC Runtime Library exception",
     identifier = "GPL-3.0-with-GCC-exception",
     visibility = ["//visibility:public"],
@@ -2162,8 +2421,33 @@ license_kind(
 
 license_kind(
     name = "GPL-3.0-with-autoconf-exception",
+    deprecated = True,
     full_name = "GNU General Public License v3.0 w/Autoconf exception",
     identifier = "GPL-3.0-with-autoconf-exception",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "GPL-CC-1.0",
+    exception = True,
+    full_name = "GPL Cooperation Commitment 1.0",
+    identifier = "GPL-CC-1.0",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "GStreamer-exception-2005",
+    exception = True,
+    full_name = "GStreamer Exception (2005)",
+    identifier = "GStreamer-exception-2005",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "GStreamer-exception-2008",
+    exception = True,
+    full_name = "GStreamer Exception (2008)",
+    identifier = "GStreamer-exception-2008",
     visibility = ["//visibility:public"],
 )
 
@@ -2192,6 +2476,22 @@ license_kind(
     name = "Glulxe",
     full_name = "Glulxe License",
     identifier = "Glulxe",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "Gmsh-exception",
+    exception = True,
+    full_name = "Gmsh exception",
+    identifier = "Gmsh-exception",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "Google-Patent-WebM",
+    exception = True,
+    full_name = "Google Additional IP Rights Grant (Patents) - WebM",
+    identifier = "Google-Patent-WebM",
     visibility = ["//visibility:public"],
 )
 
@@ -2532,6 +2832,14 @@ license_kind(
 )
 
 license_kind(
+    name = "Independent-modules-exception",
+    exception = True,
+    full_name = "Independent Module Linking exception",
+    identifier = "Independent-modules-exception",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
     name = "Info-ZIP",
     full_name = "Info-ZIP License",
     identifier = "Info-ZIP",
@@ -2630,6 +2938,14 @@ license_kind(
 )
 
 license_kind(
+    name = "KiCad-libraries-exception",
+    exception = True,
+    full_name = "KiCad Libraries Exception",
+    identifier = "KiCad-libraries-exception",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
     name = "Knuth-CTAN",
     full_name = "Knuth CTAN License",
     identifier = "Knuth-CTAN",
@@ -2652,6 +2968,7 @@ license_kind(
 
 license_kind(
     name = "LGPL-2.0",
+    deprecated = True,
     full_name = "GNU Library General Public License v2 only",
     identifier = "LGPL-2.0",
     visibility = ["//visibility:public"],
@@ -2659,6 +2976,7 @@ license_kind(
 
 license_kind(
     name = "LGPL-2.0+",
+    deprecated = True,
     full_name = "GNU Library General Public License v2 or later",
     identifier = "LGPL-2.0+",
     visibility = ["//visibility:public"],
@@ -2680,6 +2998,7 @@ license_kind(
 
 license_kind(
     name = "LGPL-2.1",
+    deprecated = True,
     full_name = "GNU Lesser General Public License v2.1 only",
     identifier = "LGPL-2.1",
     visibility = ["//visibility:public"],
@@ -2687,6 +3006,7 @@ license_kind(
 
 license_kind(
     name = "LGPL-2.1+",
+    deprecated = True,
     full_name = "GNU Lesser General Public License v2.1 or later",
     identifier = "LGPL-2.1+",
     visibility = ["//visibility:public"],
@@ -2708,6 +3028,7 @@ license_kind(
 
 license_kind(
     name = "LGPL-3.0",
+    deprecated = True,
     full_name = "GNU Lesser General Public License v3.0 only",
     identifier = "LGPL-3.0",
     visibility = ["//visibility:public"],
@@ -2715,8 +3036,17 @@ license_kind(
 
 license_kind(
     name = "LGPL-3.0+",
+    deprecated = True,
     full_name = "GNU Lesser General Public License v3.0 or later",
     identifier = "LGPL-3.0+",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "LGPL-3.0-linking-exception",
+    exception = True,
+    full_name = "LGPL-3.0 Linking Exception",
+    identifier = "LGPL-3.0-linking-exception",
     visibility = ["//visibility:public"],
 )
 
@@ -2738,6 +3068,22 @@ license_kind(
     name = "LGPLLR",
     full_name = "Lesser General Public License For Linguistic Resources",
     identifier = "LGPLLR",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "LLGPL",
+    exception = True,
+    full_name = "LLGPL Preamble",
+    identifier = "LLGPL",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "LLVM-exception",
+    exception = True,
+    full_name = "LLVM Exception",
+    identifier = "LLVM-exception",
     visibility = ["//visibility:public"],
 )
 
@@ -2819,6 +3165,14 @@ license_kind(
 )
 
 license_kind(
+    name = "LZMA-exception",
+    exception = True,
+    full_name = "LZMA exception",
+    identifier = "LZMA-exception",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
     name = "Latex2e",
     full_name = "Latex2e License",
     identifier = "Latex2e",
@@ -2868,6 +3222,14 @@ license_kind(
 )
 
 license_kind(
+    name = "Libtool-exception",
+    exception = True,
+    full_name = "Libtool Exception",
+    identifier = "Libtool-exception",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
     name = "Linux-OpenIB",
     full_name = "Linux Kernel Variant of OpenIB.org license",
     identifier = "Linux-OpenIB",
@@ -2899,6 +3261,14 @@ license_kind(
     name = "Linux-man-pages-copyleft-var",
     full_name = "Linux man-pages Copyleft Variant",
     identifier = "Linux-man-pages-copyleft-var",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "Linux-syscall-note",
+    exception = True,
+    full_name = "Linux Syscall Note",
+    identifier = "Linux-syscall-note",
     visibility = ["//visibility:public"],
 )
 
@@ -3366,6 +3736,7 @@ license_kind(
 
 license_kind(
     name = "Net-SNMP",
+    deprecated = True,
     full_name = "Net-SNMP License",
     identifier = "Net-SNMP",
     visibility = ["//visibility:public"],
@@ -3393,6 +3764,15 @@ license_kind(
 )
 
 license_kind(
+    name = "Nokia-Qt-exception-1.1",
+    deprecated = True,
+    exception = True,
+    full_name = "Nokia Qt LGPL exception 1.1",
+    identifier = "Nokia-Qt-exception-1.1",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
     name = "Noweb",
     full_name = "Noweb License",
     identifier = "Noweb",
@@ -3401,6 +3781,7 @@ license_kind(
 
 license_kind(
     name = "Nunit",
+    deprecated = True,
     full_name = "Nunit License",
     identifier = "Nunit",
     visibility = ["//visibility:public"],
@@ -3428,9 +3809,25 @@ license_kind(
 )
 
 license_kind(
+    name = "OCCT-exception-1.0",
+    exception = True,
+    full_name = "Open CASCADE Exception 1.0",
+    identifier = "OCCT-exception-1.0",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
     name = "OCLC-2.0",
     full_name = "OCLC Research Public License 2.0",
     identifier = "OCLC-2.0",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "OCaml-LGPL-linking-exception",
+    exception = True,
+    full_name = "OCaml LGPL Linking Exception",
+    identifier = "OCaml-LGPL-linking-exception",
     visibility = ["//visibility:public"],
 )
 
@@ -3750,6 +4147,14 @@ license_kind(
 )
 
 license_kind(
+    name = "OpenJDK-assembly-exception-1.0",
+    exception = True,
+    full_name = "OpenJDK Assembly exception 1.0",
+    identifier = "OpenJDK-assembly-exception-1.0",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
     name = "OpenMDW-1.0",
     full_name = "OpenMDW License Agreement v1.0",
     identifier = "OpenMDW-1.0",
@@ -3792,6 +4197,14 @@ license_kind(
 )
 
 license_kind(
+    name = "PCRE2-exception",
+    exception = True,
+    full_name = "PCRE2 exception",
+    identifier = "PCRE2-exception",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
     name = "PDDL-1.0",
     full_name = "Open Data Commons Public Domain Dedication & License 1.0",
     identifier = "PDDL-1.0",
@@ -3816,6 +4229,14 @@ license_kind(
     name = "PPL",
     full_name = "Peer Production License",
     identifier = "PPL",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "PS-or-PDF-font-exception-20170817",
+    exception = True,
+    full_name = "PS/PDF font exception (2017-08-17)",
+    identifier = "PS-or-PDF-font-exception-20170817",
     visibility = ["//visibility:public"],
 )
 
@@ -3911,9 +4332,41 @@ license_kind(
 )
 
 license_kind(
+    name = "QPL-1.0-INRIA-2004-exception",
+    exception = True,
+    full_name = "INRIA QPL 1.0 2004 variant exception",
+    identifier = "QPL-1.0-INRIA-2004-exception",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
     name = "Qhull",
     full_name = "Qhull License",
     identifier = "Qhull",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "Qt-GPL-exception-1.0",
+    exception = True,
+    full_name = "Qt GPL exception 1.0",
+    identifier = "Qt-GPL-exception-1.0",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "Qt-LGPL-exception-1.1",
+    exception = True,
+    full_name = "Qt LGPL exception 1.1",
+    identifier = "Qt-LGPL-exception-1.1",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "Qwt-exception-1.0",
+    exception = True,
+    full_name = "Qwt exception 1.0",
+    identifier = "Qwt-exception-1.0",
     visibility = ["//visibility:public"],
 )
 
@@ -3942,6 +4395,14 @@ license_kind(
     name = "RPSL-1.0",
     full_name = "RealNetworks Public Source License v1.0",
     identifier = "RPSL-1.0",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "RRDtool-FLOSS-exception-2.0",
+    exception = True,
+    full_name = "RRDtool FLOSS exception 2.0",
+    identifier = "RRDtool-FLOSS-exception-2.0",
     visibility = ["//visibility:public"],
 )
 
@@ -3977,6 +4438,14 @@ license_kind(
     name = "Ruby-pty",
     full_name = "Ruby pty extension license",
     identifier = "Ruby-pty",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "SANE-exception",
+    exception = True,
+    full_name = "SANE Exception",
+    identifier = "SANE-exception",
     visibility = ["//visibility:public"],
 )
 
@@ -4054,6 +4523,22 @@ license_kind(
     name = "SHL-0.51",
     full_name = "Solderpad Hardware License, Version 0.51",
     identifier = "SHL-0.51",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "SHL-2.0",
+    exception = True,
+    full_name = "Solderpad Hardware License v2.0",
+    identifier = "SHL-2.0",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "SHL-2.1",
+    exception = True,
+    full_name = "Solderpad Hardware License v2.1",
+    identifier = "SHL-2.1",
     visibility = ["//visibility:public"],
 )
 
@@ -4156,6 +4641,14 @@ license_kind(
 )
 
 license_kind(
+    name = "SWI-exception",
+    exception = True,
+    full_name = "SWI exception",
+    identifier = "SWI-exception",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
     name = "SWL",
     full_name = "Scheme Widget Library (SWL) Software License Agreement",
     identifier = "SWL",
@@ -4205,6 +4698,14 @@ license_kind(
 )
 
 license_kind(
+    name = "Simple-Library-Usage-exception",
+    exception = True,
+    full_name = "Simple Library Usage Exception",
+    identifier = "Simple-Library-Usage-exception",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
     name = "Sleepycat",
     full_name = "Sleepycat License",
     identifier = "Sleepycat",
@@ -4215,6 +4716,14 @@ license_kind(
     name = "Soundex",
     full_name = "Soundex License",
     identifier = "Soundex",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "Spelling-Provider-LGPL-exception",
+    exception = True,
+    full_name = "Spelling Provider LGPL exception",
+    identifier = "Spelling-Provider-LGPL-exception",
     visibility = ["//visibility:public"],
 )
 
@@ -4241,6 +4750,7 @@ license_kind(
 
 license_kind(
     name = "StandardML-NJ",
+    deprecated = True,
     full_name = "Standard ML of New Jersey License",
     identifier = "StandardML-NJ",
     visibility = ["//visibility:public"],
@@ -4271,6 +4781,14 @@ license_kind(
     name = "SunPro",
     full_name = "SunPro License",
     identifier = "SunPro",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "Swift-exception",
+    exception = True,
+    full_name = "Swift Exception",
+    identifier = "Swift-exception",
     visibility = ["//visibility:public"],
 )
 
@@ -4387,6 +4905,14 @@ license_kind(
 )
 
 license_kind(
+    name = "Texinfo-exception",
+    exception = True,
+    full_name = "Texinfo exception",
+    identifier = "Texinfo-exception",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
     name = "ThirdEye",
     full_name = "ThirdEye License",
     identifier = "ThirdEye",
@@ -4397,6 +4923,14 @@ license_kind(
     name = "TrustedQSL",
     full_name = "TrustedQSL License",
     identifier = "TrustedQSL",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "UBDL-exception",
+    exception = True,
+    full_name = "Unmodified Binary Distribution exception",
+    identifier = "UBDL-exception",
     visibility = ["//visibility:public"],
 )
 
@@ -4474,6 +5008,14 @@ license_kind(
     name = "Unicode-TOU",
     full_name = "Unicode Terms of Use",
     identifier = "Unicode-TOU",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "Universal-FOSS-exception-1.0",
+    exception = True,
+    full_name = "Universal FOSS Exception, Version 1.0",
+    identifier = "Universal-FOSS-exception-1.0",
     visibility = ["//visibility:public"],
 )
 
@@ -4593,6 +5135,14 @@ license_kind(
     name = "Wsuipa",
     full_name = "Wsuipa License",
     identifier = "Wsuipa",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "WxWindows-exception-3.1",
+    exception = True,
+    full_name = "WxWindows Library Exception 3.1",
+    identifier = "WxWindows-exception-3.1",
     visibility = ["//visibility:public"],
 )
 
@@ -4780,6 +5330,7 @@ license_kind(
 
 license_kind(
     name = "bzip2-1.0.5",
+    deprecated = True,
     full_name = "bzip2 and libbzip2 License v1.0.5",
     identifier = "bzip2-1.0.5",
     visibility = ["//visibility:public"],
@@ -4821,6 +5372,14 @@ license_kind(
 )
 
 license_kind(
+    name = "cryptsetup-OpenSSL-exception",
+    exception = True,
+    full_name = "cryptsetup OpenSSL exception",
+    identifier = "cryptsetup-OpenSSL-exception",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
     name = "curl",
     full_name = "curl License",
     identifier = "curl",
@@ -4857,8 +5416,17 @@ license_kind(
 
 license_kind(
     name = "eCos-2.0",
+    deprecated = True,
     full_name = "eCos license version 2.0",
     identifier = "eCos-2.0",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "eCos-exception-2.0",
+    exception = True,
+    full_name = "eCos exception 2.0",
+    identifier = "eCos-exception-2.0",
     visibility = ["//visibility:public"],
 )
 
@@ -4870,9 +5438,33 @@ license_kind(
 )
 
 license_kind(
+    name = "erlang-otp-linking-exception",
+    exception = True,
+    full_name = "Erlang/OTP Linking Exception",
+    identifier = "erlang-otp-linking-exception",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
     name = "etalab-2.0",
     full_name = "Etalab Open License 2.0",
     identifier = "etalab-2.0",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "fmt-exception",
+    exception = True,
+    full_name = "fmt exception",
+    identifier = "fmt-exception",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "freertos-exception-2.0",
+    exception = True,
+    full_name = "FreeRTOS Exception 2.0",
+    identifier = "freertos-exception-2.0",
     visibility = ["//visibility:public"],
 )
 
@@ -4898,6 +5490,14 @@ license_kind(
 )
 
 license_kind(
+    name = "gnu-javamail-exception",
+    exception = True,
+    full_name = "GNU JavaMail exception",
+    identifier = "gnu-javamail-exception",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
     name = "gnuplot",
     full_name = "gnuplot License",
     identifier = "gnuplot",
@@ -4908,6 +5508,14 @@ license_kind(
     name = "gtkbook",
     full_name = "gtkbook License",
     identifier = "gtkbook",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "harbour-exception",
+    exception = True,
+    full_name = "harbour exception",
+    identifier = "harbour-exception",
     visibility = ["//visibility:public"],
 )
 
@@ -4926,6 +5534,14 @@ license_kind(
 )
 
 license_kind(
+    name = "i2p-gpl-java-exception",
+    exception = True,
+    full_name = "i2p GPL+Java Exception",
+    identifier = "i2p-gpl-java-exception",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
     name = "iMatix",
     full_name = "iMatix Standard Function Library Agreement",
     identifier = "iMatix",
@@ -4940,6 +5556,14 @@ license_kind(
 )
 
 license_kind(
+    name = "kvirc-openssl-exception",
+    exception = True,
+    full_name = "kvirc OpenSSL Exception",
+    identifier = "kvirc-openssl-exception",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
     name = "libpng-1.6.35",
     full_name = "PNG Reference Library License v1 (for libpng 0.5 through 1.6.35)",
     identifier = "libpng-1.6.35",
@@ -4950,6 +5574,14 @@ license_kind(
     name = "libpng-2.0",
     full_name = "PNG Reference Library version 2",
     identifier = "libpng-2.0",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "libpri-OpenH323-exception",
+    exception = True,
+    full_name = "libpri OpenH323 exception",
+    identifier = "libpri-OpenH323-exception",
     visibility = ["//visibility:public"],
 )
 
@@ -5010,6 +5642,14 @@ license_kind(
 )
 
 license_kind(
+    name = "mif-exception",
+    exception = True,
+    full_name = "Macros and Inline Functions Exception",
+    identifier = "mif-exception",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
     name = "mpi-permissive",
     full_name = "mpi Permissive License",
     identifier = "mpi-permissive",
@@ -5031,9 +5671,25 @@ license_kind(
 )
 
 license_kind(
+    name = "mxml-exception",
+    exception = True,
+    full_name = "mxml Exception",
+    identifier = "mxml-exception",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
     name = "ngrep",
     full_name = "ngrep License",
     identifier = "ngrep",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "openvpn-openssl-exception",
+    exception = True,
+    full_name = "OpenVPN OpenSSL Exception",
+    identifier = "openvpn-openssl-exception",
     visibility = ["//visibility:public"],
 )
 
@@ -5048,6 +5704,14 @@ license_kind(
     name = "pnmstitch",
     full_name = "pnmstitch License",
     identifier = "pnmstitch",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "polyparse-exception",
+    exception = True,
+    full_name = "Polyparse Exception",
+    identifier = "polyparse-exception",
     visibility = ["//visibility:public"],
 )
 
@@ -5080,6 +5744,22 @@ license_kind(
 )
 
 license_kind(
+    name = "romic-exception",
+    exception = True,
+    full_name = "Romic Exception",
+    identifier = "romic-exception",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "rsync-linking-exception",
+    exception = True,
+    full_name = "rsync Linking Exception",
+    identifier = "rsync-linking-exception",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
     name = "snprintf",
     full_name = "snprintf License",
     identifier = "snprintf",
@@ -5094,9 +5774,25 @@ license_kind(
 )
 
 license_kind(
+    name = "sqlitestudio-OpenSSL-exception",
+    exception = True,
+    full_name = "sqlitestudio OpenSSL exception",
+    identifier = "sqlitestudio-OpenSSL-exception",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
     name = "ssh-keyscan",
     full_name = "ssh-keyscan License",
     identifier = "ssh-keyscan",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "stunnel-exception",
+    exception = True,
+    full_name = "stunnel Exception",
+    identifier = "stunnel-exception",
     visibility = ["//visibility:public"],
 )
 
@@ -5115,9 +5811,25 @@ license_kind(
 )
 
 license_kind(
+    name = "u-boot-exception-2.0",
+    exception = True,
+    full_name = "U-Boot exception 2.0",
+    identifier = "u-boot-exception-2.0",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
     name = "ulem",
     full_name = "ulem License",
     identifier = "ulem",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "vsftpd-openssl-exception",
+    exception = True,
+    full_name = "vsftpd OpenSSL exception",
+    identifier = "vsftpd-openssl-exception",
     visibility = ["//visibility:public"],
 )
 
@@ -5137,8 +5849,17 @@ license_kind(
 
 license_kind(
     name = "wxWindows",
+    deprecated = True,
     full_name = "wxWindows Library License",
     identifier = "wxWindows",
+    visibility = ["//visibility:public"],
+)
+
+license_kind(
+    name = "x11vnc-openssl-exception",
+    exception = True,
+    full_name = "x11vnc OpenSSL Exception",
+    identifier = "x11vnc-openssl-exception",
     visibility = ["//visibility:public"],
 )
 

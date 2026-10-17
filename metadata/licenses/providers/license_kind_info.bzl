@@ -2,10 +2,12 @@
 
 visibility("public")
 
-def _init(identifier, name):
+def _init(identifier, name, *, deprecated = False, exception = False):
     return {
         "identifier": identifier,
         "name": name,
+        "deprecated": deprecated,
+        "exception": exception,
     }
 
 LicenseKindInfo, _create = provider(
@@ -25,6 +27,15 @@ license).
 A [string](https://bazel.build/rules/lib/core/string) containing the (human
 readable) name of the license (e.g., `Apache License 2.0`, `European Union
 Public License 1.1`)
+""".strip(),
+        "deprecated": """
+A [bool](https://bazel.build/rules/lib/core/bool) indicating that the license
+identifier is deprecated (e.g., SPDX `GPL-2.0` in favor of `GPL-2.0-only`).
+""".strip(),
+        "exception": """
+A [bool](https://bazel.build/rules/lib/core/bool) indicating that this is a
+license exception (e.g., `Classpath-exception-2.0`), which is only valid on the
+right-hand side of `WITH`, rather than a license.
 """.strip(),
     },
     init = _init,

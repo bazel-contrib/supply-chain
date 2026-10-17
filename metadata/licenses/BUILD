@@ -10,6 +10,7 @@ filegroup(
     srcs = [
         "defs.bzl",
     ] + [
+        "//licenses/private:srcs",
         "//licenses/providers:srcs",
         "//licenses/rules:srcs",
     ],

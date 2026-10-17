@@ -52,3 +52,20 @@ license_kind(
     full_name = "The ACME per seat license.",
     identifier = "ACME",
 )
+
+# A custom (non-SPDX) license. Custom license identifiers must start with
+# `LicenseRef-` to be usable in a license expression.
+license_kind(
+    name = "acme_commercial",
+    full_name = "ACME Commercial License",
+    identifier = "LicenseRef-acme-commercial",
+)
+
+# A custom license exception. Custom exception identifiers must start with
+# `AdditionRef-` and set `exception = True` to be usable after `WITH`.
+license_kind(
+    name = "acme_linking_exception",
+    exception = True,
+    full_name = "ACME Linking Exception",
+    identifier = "AdditionRef-acme-linking",
+)

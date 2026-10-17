@@ -18,6 +18,7 @@ load("@stardoc//stardoc:stardoc.bzl", "stardoc")
         ),
     ]
     for file in [
+        "license_expression_info",
         "license_kind_info",
     ]
 ]
