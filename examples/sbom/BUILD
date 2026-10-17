@@ -44,7 +44,7 @@ license(
 
 cc_library(
     name = "app",
-    package_metadata = [":app_metadata"],
+    applicable_licenses = [":app_metadata"],
     deps = [
         ":dual_custom",
         ":http_client",
@@ -68,7 +68,7 @@ license(
 
 cc_library(
     name = "http_client",
-    package_metadata = [":http_client_metadata"],
+    applicable_licenses = [":http_client_metadata"],
 )
 
 package_metadata(
@@ -86,7 +86,7 @@ license(
 
 cc_library(
     name = "dual_custom",
-    package_metadata = [":dual_custom_metadata"],
+    applicable_licenses = [":dual_custom_metadata"],
     deps = ["@legacy_gpl"],
 )
 
