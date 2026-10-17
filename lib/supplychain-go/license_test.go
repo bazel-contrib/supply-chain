@@ -34,14 +34,14 @@ func TestLicenseExpressionString(t *testing.T) {
 			Expected: "Apache-2.0 OR MIT",
 		},
 		{
-			Name: "nested with exception and or later",
+			Name: "nested with exception",
 			Input: `{"expression":{"operand":"AND","operands":[
 				{"operand":"OR","operands":[
 					{"kind":{"identifier":"MIT","name":"m"}},
 					{"kind":{"identifier":"LicenseRef-acme","name":"c"}}]},
-				{"operand":"WITH","operands":[{"kind":{"identifier":"GPL-2.0-only","name":"g"},"or_later":true}],
+				{"operand":"WITH","operands":[{"kind":{"identifier":"GPL-2.0-only","name":"g"}}],
 				 "exception":{"identifier":"Classpath-exception-2.0","name":"c"}}]},"label":"//:l"}`,
-			Expected: "(MIT OR LicenseRef-acme) AND GPL-2.0-only+ WITH Classpath-exception-2.0",
+			Expected: "(MIT OR LicenseRef-acme) AND GPL-2.0-only WITH Classpath-exception-2.0",
 		},
 	}
 	for _, c := range cases {

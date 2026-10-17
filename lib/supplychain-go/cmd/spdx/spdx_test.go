@@ -47,7 +47,7 @@ func TestGenerateDocumentLicenses(t *testing.T) {
 		{"kind":{"identifier":"MIT","name":"MIT License"}},
 		{"kind":{"identifier":"LicenseRef-acme","name":"ACME License"}}]},"label":"//dual:license"}`)
 	exception := writePackage(t, dir, "exception", `{"expression":{"operand":"WITH","operands":[
-		{"kind":{"identifier":"GPL-2.0-only","name":"GPL"},"or_later":true}],
+		{"kind":{"identifier":"GPL-2.0-only","name":"GPL"}}],
 		"exception":{"identifier":"AdditionRef-link","name":"Linking"}},"label":"//exception:license"}`)
 
 	doc, err := GenerateDocument(
@@ -70,7 +70,7 @@ func TestGenerateDocumentLicenses(t *testing.T) {
 		"single":    "MIT",
 		"custom":    "LicenseRef-acme",
 		"dual":      "MIT OR LicenseRef-acme",
-		"exception": "GPL-2.0-only+ WITH AdditionRef-link",
+		"exception": "GPL-2.0-only WITH AdditionRef-link",
 	}, declared)
 
 	// The custom license is defined once, with its text, and the custom

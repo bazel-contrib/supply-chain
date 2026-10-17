@@ -63,7 +63,6 @@ const (
 // nodes have exactly one operand (the licensed leaf) and an Exception.
 type LicenseExpression struct {
 	Kind      *LicenseKind        `json:"kind,omitempty"`
-	OrLater   bool                `json:"or_later,omitempty"`
 	Operand   LicenseOperand      `json:"operand,omitempty"`
 	Operands  []LicenseExpression `json:"operands,omitempty"`
 	Exception *LicenseKind        `json:"exception,omitempty"`
@@ -91,9 +90,6 @@ func (a *LicenseAttribute) Root() LicenseExpression {
 func (e LicenseExpression) String() string {
 	switch {
 	case e.Kind != nil:
-		if e.OrLater {
-			return e.Kind.Identifier + "+"
-		}
 		return e.Kind.Identifier
 	case e.Operand == LicenseWith:
 		return e.Operands[0].String() + " WITH " + e.Exception.Identifier
@@ -112,7 +108,7 @@ func (e LicenseExpression) String() string {
 // IsSingle returns whether the expression is a single license without any
 // operator.
 func (e LicenseExpression) IsSingle() bool {
-	return e.Kind != nil && !e.OrLater
+	return e.Kind != nil
 }
 
 // Kinds returns all license kinds and exceptions referenced by the

@@ -60,17 +60,13 @@ def _build_graph(tree, kinds):
                 "exception": {"identifier": exception.identifier, "name": exception.name},
             }
         else:
-            kind_id = resolve_or_later(node, OR_LATER)
-            kind = kinds[kind_id]
+            if node["or_later"] and node["id"] not in OR_LATER:
+                fail("'{id}+' is not a valid license: SPDX defines no 'or later' identifier for '{id}'".format(id = node["id"]))
+            kind = kinds[resolve_or_later(node, OR_LATER)]
             if kind.exception:
                 fail("'{}' is a license exception and can only follow 'WITH'".format(kind.identifier))
-
-            # `<id>+` that resolved to its own identifier needs no flag.
-            or_later = node["or_later"] and kind_id == node["id"]
-            info = LicenseExpressionInfo(kind = kind, or_later = or_later)
+            info = LicenseExpressionInfo(kind = kind)
             jsons[key] = {"kind": {"identifier": kind.identifier, "name": kind.name}}
-            if or_later:
-                jsons[key]["or_later"] = True
         built[key] = info
     return built["r"], jsons["r"]
 
@@ -217,7 +213,7 @@ def license(
 
     | Field | Description |
     | :---- | :---------- |
-    | `expression` | A graph of the parsed SPDX license expression, present instead of `kind` if `expression` was declared. A node is either a leaf `{"kind": {"identifier", "name"}, "or_later"}` (`or_later` only if `+` was used and has no equivalent SPDX identifier) or `{"operand": "AND" or "OR" or "WITH", "operands": [...], "exception"}` (`exception`, a `{"identifier", "name"}` kind, only for `WITH`). |
+    | `expression` | A graph of the parsed SPDX license expression, present instead of `kind` if `expression` was declared. A node is either a leaf `{"kind": {"identifier", "name"}}`  or `{"operand": "AND" or "OR" or "WITH", "operands": [...], "exception"}` (`exception`, a `{"identifier", "name"}` kind, only for `WITH`). |
     | `kind.identifier` | The `identifier` of the `kind` of this license. |
     | `kind.name` | The `full_name` of the `kind` of this license. |
     | `label` | The label of this `license` target. |
@@ -233,9 +229,9 @@ def license(
       expression: An [SPDX license expression](https://spdx.github.io/spdx-spec/v2.3.1/SPDX-license-expressions/)
         (e.g., `MIT OR (Apache-2.0 AND BSD-3-Clause)`, `GPL-2.0-only WITH
         Classpath-exception-2.0`). Parsed at analysis time; malformed
-        expressions fail the build. `<id>+` is resolved to the equivalent SPDX
-        identifier when there is one (`GPL-3.0+` becomes `GPL-3.0-or-later`);
-        otherwise the license is kept and flagged as "or later".
+        expressions fail the build. `<id>+` is resolved to its SPDX identifier
+        (`GPL-3.0+` becomes `GPL-3.0-or-later`); it is invalid if SPDX defines
+        no such identifier (e.g., `Apache-2.0+`).
       kinds: Additional `license_kind` targets referenced by `expression`, which
         are required for custom licenses (`LicenseRef-...`) and custom
         exceptions (`AdditionRef-...`, declared with `exception = True`). SPDX

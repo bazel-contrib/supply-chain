@@ -47,7 +47,6 @@ def _graph_impl(env, target):
     mit = root.operands[0]
     env.expect.that_str(mit.kind.identifier).equals("MIT")
     env.expect.that_bool(mit.kind.exception).equals(False)
-    env.expect.that_bool(mit.or_later).equals(False)
 
     with_node = root.operands[1]
     env.expect.that_str(with_node.operand).equals("WITH")
@@ -57,7 +56,6 @@ def _graph_impl(env, target):
 
     gpl = with_node.operands[0]
     env.expect.that_str(gpl.kind.identifier).equals("GPL-2.0-only")
-    env.expect.that_bool(gpl.or_later).equals(True)
 
 def license_expression_custom_kinds_test(*, name, expression, kinds):
     """Asserts a custom license and custom exception are resolved through `kinds`."""
@@ -87,7 +85,7 @@ def _custom_kinds_impl(env, target):
     env.expect.that_str(with_node.operands[0].kind.identifier).equals("LicenseRef-acme")
 
 def license_expression_or_later_test(*, name, expression):
-    """Asserts `<id>+` resolves to an SPDX identifier, or is flagged if it has none."""
+    """Asserts `<id>+` resolves to its standalone SPDX identifier."""
     license(
         name = name + "_license",
         expression = expression,
@@ -101,19 +99,10 @@ def license_expression_or_later_test(*, name, expression):
 
 def _or_later_impl(env, target):
     root = target[LicenseExpressionInfo]
-    env.expect.that_int(len(root.operands)).equals(3)
+    env.expect.that_int(len(root.operands)).equals(2)
 
-    # `GPL-3.0+` is the identifier `GPL-3.0-or-later`; no flag is needed.
-    gpl = root.operands[0]
-    env.expect.that_str(gpl.kind.identifier).equals("GPL-3.0-or-later")
-    env.expect.that_bool(gpl.or_later).equals(False)
-
-    # `Apache-2.0` has no `-or-later` identifier, so the flag is kept.
-    apache = root.operands[1]
-    env.expect.that_str(apache.kind.identifier).equals("Apache-2.0")
-    env.expect.that_bool(apache.or_later).equals(True)
+    # `GPL-3.0+` is the standalone identifier `GPL-3.0-or-later`.
+    env.expect.that_str(root.operands[0].kind.identifier).equals("GPL-3.0-or-later")
 
     # An explicit `-or-later` identifier is untouched.
-    lgpl = root.operands[2]
-    env.expect.that_str(lgpl.kind.identifier).equals("LGPL-3.0-or-later")
-    env.expect.that_bool(lgpl.or_later).equals(False)
+    env.expect.that_str(root.operands[1].kind.identifier).equals("LGPL-3.0-or-later")

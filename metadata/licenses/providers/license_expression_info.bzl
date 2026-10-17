@@ -22,19 +22,15 @@ for a leaf node.
         "kind": """
 The `LicenseKindInfo` of a leaf node, otherwise `None`.
 """.strip(),
-        "or_later": """
-Whether a leaf node carries the `+` ("or later") operator.
-""".strip(),
         "exception": """
 For `WITH` nodes, the `LicenseKindInfo` of the license exception (e.g.,
 `Classpath-exception-2.0`); otherwise `None`.
 """.strip(),
     },
-    init = lambda *, operand = None, operands = [], kind = None, or_later = False, exception = None: {
+    init = lambda *, operand = None, operands = [], kind = None, exception = None: {
         "operand": operand,
         "operands": operands,
         "kind": kind,
-        "or_later": or_later,
         "exception": exception,
     },
 )

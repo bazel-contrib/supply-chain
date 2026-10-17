@@ -34,7 +34,7 @@ license_expression_test(
 
 license(
     name = "expression_license",
-    expression = "MIT OR (Apache-2.0 AND GPL-2.0-only+ WITH Classpath-exception-2.0) OR LicenseRef-acme",
+    expression = "MIT OR (Apache-2.0 AND GPL-2.0-only WITH Classpath-exception-2.0) OR LicenseRef-acme",
     kinds = [":acme_kind"],
     tags = ["manual"],
 )
@@ -47,7 +47,7 @@ license_kind(
 
 license_expression_graph_test(
     name = "license_expression_graph_test",
-    expression = "MIT OR GPL-2.0-only+ WITH Classpath-exception-2.0",
+    expression = "MIT OR GPL-2.0-only WITH Classpath-exception-2.0",
 )
 
 license_expression_failure_test(
@@ -102,5 +102,17 @@ license_kind(
 
 license_expression_or_later_test(
     name = "license_expression_or_later_test",
-    expression = "GPL-3.0+ OR Apache-2.0+ OR LGPL-3.0-or-later",
+    expression = "GPL-3.0+ OR LGPL-3.0-or-later",
+)
+
+license_expression_failure_test(
+    name = "license_expression_or_later_without_identifier_test",
+    expression = "MIT OR Apache-2.0+",
+    message = "'Apache-2.0+' is not a valid license: SPDX defines no 'or later' identifier for 'Apache-2.0'",
+)
+
+license_expression_failure_test(
+    name = "license_expression_or_later_of_or_later_test",
+    expression = "GPL-3.0-or-later+",
+    message = "'GPL-3.0-or-later+' is not a valid license",
 )
