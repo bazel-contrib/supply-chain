@@ -1,0 +1,18 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "license_resolver",
+    srcs = ["resolver.go"],
+    importpath = "github.com/bazel-contrib/supply-chain/lib/supplychain-go/license_resolver",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_github_google_licenseclassifier_v2//:licenseclassifier",
+        "@com_github_google_licenseclassifier_v2//assets",
+    ],
+)
+
+go_test(
+    name = "license_resolver_test",
+    srcs = ["resolver_test.go"],
+    embed = [":license_resolver"],
+)
