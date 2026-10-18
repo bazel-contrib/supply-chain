@@ -66,7 +66,7 @@ example below is indented for readability):
 
 | Field | Description |
 | :---- | :---------- |
-| `expression` | A graph of the parsed SPDX license expression, present instead of `kind` if `expression` was declared. A node is either a leaf `{"kind": {"identifier", "name"}}`  or `{"operand": "AND" or "OR" or "WITH", "operands": [...], "exception"}` (`exception`, a `{"identifier", "name"}` kind, only for `WITH`). |
+| `expression` | A graph of the parsed SPDX license expression, present instead of `kind` if `expression` was declared. A node is either a leaf `{"kind": {"identifier", "name"}}`  or `{"operator": "AND" or "OR" or "WITH", "operands": [...], "exception"}` (`exception`, a `{"identifier", "name"}` kind, only for `WITH`). |
 | `kind.identifier` | The `identifier` of the `kind` of this license. |
 | `kind.name` | The `full_name` of the `kind` of this license. |
 | `label` | The label of this `license` target. |

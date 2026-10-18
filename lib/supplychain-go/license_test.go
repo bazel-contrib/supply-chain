@@ -28,18 +28,18 @@ func TestLicenseExpressionString(t *testing.T) {
 		},
 		{
 			Name: "or",
-			Input: `{"expression":{"operand":"OR","operands":[
+			Input: `{"expression":{"operator":"OR","operands":[
 				{"kind":{"identifier":"Apache-2.0","name":"a"}},
 				{"kind":{"identifier":"MIT","name":"m"}}]},"label":"//:l"}`,
 			Expected: "Apache-2.0 OR MIT",
 		},
 		{
 			Name: "nested with exception",
-			Input: `{"expression":{"operand":"AND","operands":[
-				{"operand":"OR","operands":[
+			Input: `{"expression":{"operator":"AND","operands":[
+				{"operator":"OR","operands":[
 					{"kind":{"identifier":"MIT","name":"m"}},
 					{"kind":{"identifier":"LicenseRef-acme","name":"c"}}]},
-				{"operand":"WITH","operands":[{"kind":{"identifier":"GPL-2.0-only","name":"g"}}],
+				{"operator":"WITH","operands":[{"kind":{"identifier":"GPL-2.0-only","name":"g"}}],
 				 "exception":{"identifier":"Classpath-exception-2.0","name":"c"}}]},"label":"//:l"}`,
 			Expected: "(MIT OR LicenseRef-acme) AND GPL-2.0-only WITH Classpath-exception-2.0",
 		},
@@ -52,9 +52,9 @@ func TestLicenseExpressionString(t *testing.T) {
 }
 
 func TestLicenseExpressionKinds(t *testing.T) {
-	a := parseLicense(t, `{"expression":{"operand":"OR","operands":[
+	a := parseLicense(t, `{"expression":{"operator":"OR","operands":[
 		{"kind":{"identifier":"MIT","name":"m"}},
-		{"operand":"WITH","operands":[{"kind":{"identifier":"MIT","name":"m"}}],
+		{"operator":"WITH","operands":[{"kind":{"identifier":"MIT","name":"m"}}],
 		 "exception":{"identifier":"AdditionRef-x","name":"x"}}]},"label":"//:l"}`)
 
 	kinds := a.Root().Kinds()

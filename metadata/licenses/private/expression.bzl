@@ -80,10 +80,10 @@ def _apply(operands, op, expression):
     left = operands.pop()
 
     if op == "WITH":
-        if "operand" in left or "operand" in right or right["or_later"] or right["ref"]:
+        if "operator" in left or "operator" in right or right["or_later"] or right["ref"]:
             return _error("'WITH' requires a license on the left and an exception id on the right in '{}'".format(expression))
         operands.append({
-            "operand": "WITH",
+            "operator": "WITH",
             "license": left,
             "exception": right["id"],
         })
@@ -91,21 +91,21 @@ def _apply(operands, op, expression):
 
     children = []
     for side in (left, right):
-        if side.get("operand") == op:
+        if side.get("operator") == op:
             children.extend(side["operands"])
         else:
             children.append(side)
-    operands.append({"operand": op, "operands": children})
+    operands.append({"operator": op, "operands": children})
 
 def try_parse_license_expression(expression):
     """Parses an SPDX license expression into a tree.
 
     Nodes are dicts, one of:
 
-    * A license: `{"id": str, "or_later": bool, "ref": bool}` (no `operand`), where
+    * A license: `{"id": str, "or_later": bool, "ref": bool}` (no `operator`), where
       `ref` is true for `LicenseRef-`/`DocumentRef-` identifiers.
-    * `{"operand": "WITH", "license": <license node>, "exception": str}`
-    * `{"operand": "AND" | "OR", "operands": [<node>, ...]}` (at least 2 operands)
+    * `{"operator": "WITH", "license": <license node>, "exception": str}`
+    * `{"operator": "AND" | "OR", "operands": [<node>, ...]}` (at least 2 operands)
 
     `WITH` binds tighter than `AND`, which binds tighter than `OR`. Operators
     are case-sensitive.
@@ -202,7 +202,7 @@ def license_expression_ids(tree, or_later = {}):
         node = stack.pop()
         if "operands" in node:
             stack.extend(node["operands"])
-        elif node.get("operand") == "WITH":
+        elif node.get("operator") == "WITH":
             stack.append(node["license"])
             ids[node["exception"]] = True
         else:

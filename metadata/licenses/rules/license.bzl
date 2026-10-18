@@ -17,7 +17,7 @@ def _children(node, key):
     """Returns `(child, key)` pairs; keys are paths, as dicts aren't hashable."""
     if "operands" in node:
         return [(o, "{}.{}".format(key, i)) for i, o in enumerate(node["operands"])]
-    if node.get("operand") == "WITH":
+    if node.get("operator") == "WITH":
         return [(node["license"], key + ".w")]
     return []
 
@@ -43,19 +43,19 @@ def _build_graph(tree, kinds):
         children = [built[k] for k in child_keys]
         child_jsons = [jsons[k] for k in child_keys]
         if "operands" in node:
-            info = LicenseExpressionInfo(operand = node["operand"], operands = children)
-            jsons[key] = {"operand": node["operand"], "operands": child_jsons}
-        elif node.get("operand") == "WITH":
+            info = LicenseExpressionInfo(operator = node["operator"], operands = children)
+            jsons[key] = {"operator": node["operator"], "operands": child_jsons}
+        elif node.get("operator") == "WITH":
             exception = kinds[node["exception"]]
             if not exception.exception:
                 fail("'{}' is not a license exception and cannot follow 'WITH'; declare its `license_kind` with `exception = True`".format(exception.identifier))
             info = LicenseExpressionInfo(
-                operand = "WITH",
+                operator = "WITH",
                 operands = children,
                 exception = exception,
             )
             jsons[key] = {
-                "operand": "WITH",
+                "operator": "WITH",
                 "operands": child_jsons,
                 "exception": {"identifier": exception.identifier, "name": exception.name},
             }
@@ -213,7 +213,7 @@ def license(
 
     | Field | Description |
     | :---- | :---------- |
-    | `expression` | A graph of the parsed SPDX license expression, present instead of `kind` if `expression` was declared. A node is either a leaf `{"kind": {"identifier", "name"}}`  or `{"operand": "AND" or "OR" or "WITH", "operands": [...], "exception"}` (`exception`, a `{"identifier", "name"}` kind, only for `WITH`). |
+    | `expression` | A graph of the parsed SPDX license expression, present instead of `kind` if `expression` was declared. A node is either a leaf `{"kind": {"identifier", "name"}}`  or `{"operator": "AND" or "OR" or "WITH", "operands": [...], "exception"}` (`exception`, a `{"identifier", "name"}` kind, only for `WITH`). |
     | `kind.identifier` | The `identifier` of the `kind` of this license. |
     | `kind.name` | The `full_name` of the `kind` of this license. |
     | `label` | The label of this `license` target. |

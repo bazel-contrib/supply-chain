@@ -48,22 +48,22 @@ func (k LicenseKind) IsCustom() bool {
 	return strings.HasPrefix(k.Identifier, "LicenseRef-") || strings.HasPrefix(k.Identifier, "AdditionRef-")
 }
 
-// LicenseOperand is the operator of a compound node of a `LicenseExpression`.
-type LicenseOperand string
+// LicenseOperator is the operator of a compound node of a `LicenseExpression`.
+type LicenseOperator string
 
 const (
-	LicenseAnd  LicenseOperand = "AND"
-	LicenseOr   LicenseOperand = "OR"
-	LicenseWith LicenseOperand = "WITH"
+	LicenseAnd  LicenseOperator = "AND"
+	LicenseOr   LicenseOperator = "OR"
+	LicenseWith LicenseOperator = "WITH"
 )
 
 // LicenseExpression is a node of a parsed SPDX license expression.
 //
-// A leaf has a Kind. A compound node has an Operand and Operands; `WITH`
+// A leaf has a Kind. A compound node has an Operator and Operands; `WITH`
 // nodes have exactly one operand (the licensed leaf) and an Exception.
 type LicenseExpression struct {
 	Kind      *LicenseKind        `json:"kind,omitempty"`
-	Operand   LicenseOperand      `json:"operand,omitempty"`
+	Operator  LicenseOperator     `json:"operator,omitempty"`
 	Operands  []LicenseExpression `json:"operands,omitempty"`
 	Exception *LicenseKind        `json:"exception,omitempty"`
 }
@@ -91,17 +91,17 @@ func (e LicenseExpression) String() string {
 	switch {
 	case e.Kind != nil:
 		return e.Kind.Identifier
-	case e.Operand == LicenseWith:
+	case e.Operator == LicenseWith:
 		return e.Operands[0].String() + " WITH " + e.Exception.Identifier
 	default:
 		parts := make([]string, len(e.Operands))
 		for i, o := range e.Operands {
 			parts[i] = o.String()
-			if (o.Operand == LicenseAnd || o.Operand == LicenseOr) && o.Operand != e.Operand {
+			if (o.Operator == LicenseAnd || o.Operator == LicenseOr) && o.Operator != e.Operator {
 				parts[i] = "(" + parts[i] + ")"
 			}
 		}
-		return strings.Join(parts, " "+string(e.Operand)+" ")
+		return strings.Join(parts, " "+string(e.Operator)+" ")
 	}
 }
 

@@ -41,7 +41,7 @@ def license_expression_graph_test(*, name, expression, kinds = None):
 
 def _graph_impl(env, target):
     root = target[LicenseExpressionInfo]
-    env.expect.that_str(root.operand).equals("OR")
+    env.expect.that_str(root.operator).equals("OR")
     env.expect.that_int(len(root.operands)).equals(2)
 
     mit = root.operands[0]
@@ -49,7 +49,7 @@ def _graph_impl(env, target):
     env.expect.that_bool(mit.kind.exception).equals(False)
 
     with_node = root.operands[1]
-    env.expect.that_str(with_node.operand).equals("WITH")
+    env.expect.that_str(with_node.operator).equals("WITH")
     env.expect.that_str(with_node.exception.identifier).equals("Classpath-exception-2.0")
     env.expect.that_bool(with_node.exception.exception).equals(True)
     env.expect.that_int(len(with_node.operands)).equals(1)
@@ -73,13 +73,13 @@ def license_expression_custom_kinds_test(*, name, expression, kinds):
 
 def _custom_kinds_impl(env, target):
     root = target[LicenseExpressionInfo]
-    env.expect.that_str(root.operand).equals("OR")
+    env.expect.that_str(root.operator).equals("OR")
 
     mit = root.operands[0]
     env.expect.that_str(mit.kind.identifier).equals("MIT")
 
     with_node = root.operands[1]
-    env.expect.that_str(with_node.operand).equals("WITH")
+    env.expect.that_str(with_node.operator).equals("WITH")
     env.expect.that_str(with_node.exception.identifier).equals("AdditionRef-acme-linking")
     env.expect.that_bool(with_node.exception.exception).equals(True)
     env.expect.that_str(with_node.operands[0].kind.identifier).equals("LicenseRef-acme")

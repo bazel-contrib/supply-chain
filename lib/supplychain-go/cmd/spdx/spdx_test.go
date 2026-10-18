@@ -43,10 +43,10 @@ func TestGenerateDocumentLicenses(t *testing.T) {
 	single := writePackage(t, dir, "single", `{"kind":{"identifier":"MIT","name":"MIT License"},"label":"//single:license"}`)
 	custom := writePackage(t, dir, "custom", fmt.Sprintf(
 		`{"kind":{"identifier":"LicenseRef-acme","name":"ACME License"},"label":"//custom:license","text":%q}`, textPath))
-	dual := writePackage(t, dir, "dual", `{"expression":{"operand":"OR","operands":[
+	dual := writePackage(t, dir, "dual", `{"expression":{"operator":"OR","operands":[
 		{"kind":{"identifier":"MIT","name":"MIT License"}},
 		{"kind":{"identifier":"LicenseRef-acme","name":"ACME License"}}]},"label":"//dual:license"}`)
-	exception := writePackage(t, dir, "exception", `{"expression":{"operand":"WITH","operands":[
+	exception := writePackage(t, dir, "exception", `{"expression":{"operator":"WITH","operands":[
 		{"kind":{"identifier":"GPL-2.0-only","name":"GPL"}}],
 		"exception":{"identifier":"AdditionRef-link","name":"Linking"}},"label":"//exception:license"}`)
 

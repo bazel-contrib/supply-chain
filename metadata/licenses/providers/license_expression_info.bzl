@@ -11,7 +11,7 @@ Leaf nodes reference a `LicenseKindInfo`; inner nodes combine other nodes with
 `AND`, `OR` or `WITH`.
 """.strip(),
     fields = {
-        "operand": """
+        "operator": """
 `None` for a leaf node, otherwise the string `AND`, `OR` or `WITH`.
 """.strip(),
         "operands": """
@@ -27,8 +27,8 @@ For `WITH` nodes, the `LicenseKindInfo` of the license exception (e.g.,
 `Classpath-exception-2.0`); otherwise `None`.
 """.strip(),
     },
-    init = lambda *, operand = None, operands = [], kind = None, exception = None: {
-        "operand": operand,
+    init = lambda *, operator = None, operands = [], kind = None, exception = None: {
+        "operator": operator,
         "operands": operands,
         "kind": kind,
         "exception": exception,

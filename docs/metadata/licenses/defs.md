@@ -9,7 +9,7 @@ Public API of `@package_metadata//licenses`.
 <pre>
 load("@package_metadata//licenses:defs.bzl", "LicenseExpressionInfo")
 
-LicenseExpressionInfo(*, <a href="#LicenseExpressionInfo-operand">operand</a>, <a href="#LicenseExpressionInfo-operands">operands</a>, <a href="#LicenseExpressionInfo-kind">kind</a>, <a href="#LicenseExpressionInfo-exception">exception</a>)
+LicenseExpressionInfo(*, <a href="#LicenseExpressionInfo-operator">operator</a>, <a href="#LicenseExpressionInfo-operands">operands</a>, <a href="#LicenseExpressionInfo-kind">kind</a>, <a href="#LicenseExpressionInfo-exception">exception</a>)
 </pre>
 
 A node in the graph of a parsed
@@ -22,7 +22,7 @@ Leaf nodes reference a `LicenseKindInfo`; inner nodes combine other nodes with
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="LicenseExpressionInfo-operand"></a>operand | `None` for a leaf node, otherwise the string `AND`, `OR` or `WITH`. | `None` |
+| <a id="LicenseExpressionInfo-operator"></a>operator | `None` for a leaf node, otherwise the string `AND`, `OR` or `WITH`. | `None` |
 | <a id="LicenseExpressionInfo-operands"></a>operands | A [list](https://bazel.build/rules/lib/core/list) of `LicenseExpressionInfo`: at least two for `AND`/`OR`, exactly one (the licensed leaf) for `WITH`, empty for a leaf node. | `[]` |
 | <a id="LicenseExpressionInfo-kind"></a>kind | The `LicenseKindInfo` of a leaf node, otherwise `None`. | `None` |
 | <a id="LicenseExpressionInfo-exception"></a>exception | For `WITH` nodes, the `LicenseKindInfo` of the license exception (e.g., `Classpath-exception-2.0`); otherwise `None`. | `None` |
@@ -114,7 +114,7 @@ example below is indented for readability):
 
 | Field | Description |
 | :---- | :---------- |
-| `expression` | A graph of the parsed SPDX license expression, present instead of `kind` if `expression` was declared. A node is either a leaf `{"kind": {"identifier", "name"}}`  or `{"operand": "AND" or "OR" or "WITH", "operands": [...], "exception"}` (`exception`, a `{"identifier", "name"}` kind, only for `WITH`). |
+| `expression` | A graph of the parsed SPDX license expression, present instead of `kind` if `expression` was declared. A node is either a leaf `{"kind": {"identifier", "name"}}`  or `{"operator": "AND" or "OR" or "WITH", "operands": [...], "exception"}` (`exception`, a `{"identifier", "name"}` kind, only for `WITH`). |
 | `kind.identifier` | The `identifier` of the `kind` of this license. |
 | `kind.name` | The `full_name` of the `kind` of this license. |
 | `label` | The label of this `license` target. |
