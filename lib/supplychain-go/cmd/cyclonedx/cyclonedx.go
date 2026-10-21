@@ -119,6 +119,20 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications) (
 			component.Version = purl.Version
 		}
 
+		// Project the hash attribute (if present) onto component.hashes.
+		if hashes, err := supplychain.GetPackageAttribute(pkgMetadata, supplychain.HashAttribute); err == nil && hashes != nil {
+			cdxHashes := make([]cdx.Hash, 0, len(*hashes))
+			for _, h := range *hashes {
+				cdxHashes = append(cdxHashes, cdx.Hash{
+					Algorithm: cdx.HashAlgorithm(h.Alg),
+					Value:     h.Content,
+				})
+			}
+			if len(cdxHashes) > 0 {
+				component.Hashes = &cdxHashes
+			}
+		}
+
 		labelToBOMRef[node.Label] = bomRef
 		return component, nil
 	}

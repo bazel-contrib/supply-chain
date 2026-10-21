@@ -3,6 +3,7 @@ exports_files(
         "copyright_notice.bzl",
         "cpe.bzl",
         "defs.bzl",
+        "hash.bzl",
     ],
     visibility = ["//visibility:public"],
 )
@@ -13,6 +14,7 @@ filegroup(
         "copyright_notice.bzl",
         "cpe.bzl",
         "defs.bzl",
+        "hash.bzl",
     ] + [
         "//providers:srcs",
     ],
