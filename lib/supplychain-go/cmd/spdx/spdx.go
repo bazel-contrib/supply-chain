@@ -107,6 +107,28 @@ func GenerateDocument(graph sbom.GraphConfig, classifications sbom.Classificatio
 			PackageName: pkgMetadata.GetPURL().Name,
 		}
 
+		// Project the hash attribute (if present) onto the package's
+		// checksums. The digest is identical to the CycloneDX hash; only the
+		// algorithm label differs (e.g. "SHA-256" -> "SHA256").
+		if hashes, err := supplychain.GetPackageAttribute(pkgMetadata, supplychain.HashAttribute); err == nil && hashes != nil {
+			checksums := make([]common.Checksum, 0, len(*hashes))
+			for _, h := range *hashes {
+				alg, ok := spdxChecksumAlgorithm(h.Alg)
+				if !ok {
+					// SPDX does not define this algorithm; skip it rather than
+					// emit an invalid checksum.
+					continue
+				}
+				checksums = append(checksums, common.Checksum{
+					Algorithm: alg,
+					Value:     h.Content,
+				})
+			}
+			if len(checksums) > 0 {
+				pkg.PackageChecksums = checksums
+			}
+		}
+
 		labelToID[node.Label] = elementID
 		return pkg, nil
 	}
@@ -188,4 +210,29 @@ func GenerateDocument(graph sbom.GraphConfig, classifications sbom.Classificatio
 	}
 
 	return &doc, nil
+}
+
+// spdxChecksumAlgorithm maps a CycloneDX `hash-alg` spelling (as carried by the
+// `build.bazel.attribute.hash` attribute) to the SPDX checksum algorithm. The
+// digest bytes are identical across both specs; only the label differs: the
+// SHA-1/256/384/512 family drops the hyphen in SPDX, while SHA3-*, BLAKE2b-*,
+// BLAKE3 and MD5 share the same spelling.
+func spdxChecksumAlgorithm(alg string) (common.ChecksumAlgorithm, bool) {
+	switch alg {
+	case "SHA-1":
+		return common.SHA1, true
+	case "SHA-256":
+		return common.SHA256, true
+	case "SHA-384":
+		return common.SHA384, true
+	case "SHA-512":
+		return common.SHA512, true
+	case "MD5":
+		return common.MD5, true
+	case "SHA3-256", "SHA3-384", "SHA3-512",
+		"BLAKE2b-256", "BLAKE2b-384", "BLAKE2b-512", "BLAKE3":
+		return common.ChecksumAlgorithm(alg), true
+	default:
+		return "", false
+	}
 }
