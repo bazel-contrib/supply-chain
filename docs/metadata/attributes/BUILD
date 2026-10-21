@@ -18,6 +18,7 @@ load("@stardoc//stardoc:stardoc.bzl", "stardoc")
         ),
     ]
     for file in [
+        "integrity",
         "copyright_notice",
         "cpe",
         "defs",
