@@ -9,7 +9,7 @@ Declares rule `license`.
 <pre>
 load("@package_metadata//licenses/rules:license.bzl", "license")
 
-license(*, <a href="#license-name">name</a>, <a href="#license-kind">kind</a>, <a href="#license-text">text</a>, <a href="#license-tags">tags</a>, <a href="#license-visibility">visibility</a>)
+license(*, <a href="#license-name">name</a>, <a href="#license-kind">kind</a>, <a href="#license-expression">expression</a>, <a href="#license-kinds">kinds</a>, <a href="#license-text">text</a>, <a href="#license-tags">tags</a>, <a href="#license-visibility">visibility</a>)
 </pre>
 
 Rule for declaring the license of a package or target.
@@ -43,7 +43,10 @@ A `license` target declares exactly one license kind. Since the
 `license` attribute per `package_metadata` target is meaningful; declare
 separate `package_metadata` targets for parts of a package that are under a
 different license. Packages available under a choice of licenses (e.g.,
-`MIT OR Apache-2.0`) and SPDX license exceptions are not modelled yet.
+`MIT OR Apache-2.0`) and SPDX license exceptions can be declared with
+`expression` instead of `kind`. The parsed expression is a graph of
+`LicenseKindInfo`s, also exposed through the `LicenseExpressionInfo`
+provider of the `license` target.
 
 Format: the `PackageAttributeInfo` of this rule has `kind`
 `build.bazel.attribute.license`, and its `attributes` file holds a JSON
@@ -63,6 +66,7 @@ example below is indented for readability):
 
 | Field | Description |
 | :---- | :---------- |
+| `expression` | A graph of the parsed SPDX license expression, present instead of `kind` if `expression` was declared. A node is either a leaf `{"kind": {"identifier", "name"}}`  or `{"operator": "AND" or "OR" or "WITH", "operands": [...], "exception"}` (`exception`, a `{"identifier", "name"}` kind, only for `WITH`). |
 | `kind.identifier` | The `identifier` of the `kind` of this license. |
 | `kind.name` | The `full_name` of the `kind` of this license. |
 | `label` | The label of this `license` target. |
@@ -75,7 +79,9 @@ example below is indented for readability):
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="license-name"></a>name |  A unique name for this target.   |  none |
-| <a id="license-kind"></a>kind |  Required. The kind of license this license is classified as.<br><br>This is typically a `license_kind` target. Targets for all SPDX licenses are predeclared in `@package_metadata//licenses/spdx`.   |  none |
+| <a id="license-kind"></a>kind |  The kind of license this license is classified as. Exactly one of `kind` and `expression` is required.<br><br>This is typically a `license_kind` target. Targets for all SPDX licenses are predeclared in `@package_metadata//licenses/spdx`.   |  `None` |
+| <a id="license-expression"></a>expression |  An [SPDX license expression](https://spdx.github.io/spdx-spec/v2.3.1/SPDX-license-expressions/) (e.g., `MIT OR (Apache-2.0 AND BSD-3-Clause)`, `GPL-2.0-only WITH Classpath-exception-2.0`). Parsed at analysis time; malformed expressions fail the build. `<id>+` is resolved to its SPDX identifier (`GPL-3.0+` becomes `GPL-3.0-or-later`); it is invalid if SPDX defines no such identifier (e.g., `Apache-2.0+`).   |  `None` |
+| <a id="license-kinds"></a>kinds |  Additional `license_kind` targets referenced by `expression`, which are required for custom licenses (`LicenseRef-...`) and custom exceptions (`AdditionRef-...`, declared with `exception = True`). SPDX license and exception identifiers are resolved automatically from `@package_metadata//licenses/spdx`.   |  `None` |
 | <a id="license-text"></a>text |  The [File](https://bazel.build/rules/lib/builtins/File) with the text of the license.<br><br>This is typically the `LICENSE` or `COPYING` file of the package. It is propagated to consumers so that it can be shipped alongside built artifacts.   |  `None` |
 | <a id="license-tags"></a>tags |  A list of arbitrary tags to apply to this target.   |  `None` |
 | <a id="license-visibility"></a>visibility |  The visibility of this target.   |  `None` |

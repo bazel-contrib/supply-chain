@@ -1,8 +1,11 @@
-load("@rules_go//go:def.bzl", "go_binary", "go_library")
+load("@rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
 
 go_library(
     name = "spdx_lib",
-    srcs = ["spdx.go"],
+    srcs = [
+        "license.go",
+        "spdx.go",
+    ],
     importpath = "github.com/bazel-contrib/supply-chain/lib/supplychain-go/cmd/spdx",
     visibility = ["//visibility:private"],
     deps = [
@@ -20,4 +23,15 @@ go_binary(
     name = "spdx",
     embed = [":spdx_lib"],
     visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "spdx_test",
+    srcs = ["spdx_test.go"],
+    embed = [":spdx_lib"],
+    deps = [
+        "//internal/sbom",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+    ],
 )

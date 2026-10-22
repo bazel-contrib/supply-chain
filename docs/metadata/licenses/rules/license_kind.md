@@ -9,7 +9,7 @@ Declares rule `license_kind`.
 <pre>
 load("@package_metadata//licenses/rules:license_kind.bzl", "license_kind")
 
-license_kind(*, <a href="#license_kind-name">name</a>, <a href="#license_kind-identifier">identifier</a>, <a href="#license_kind-full_name">full_name</a>, <a href="#license_kind-tags">tags</a>, <a href="#license_kind-visibility">visibility</a>)
+license_kind(*, <a href="#license_kind-name">name</a>, <a href="#license_kind-identifier">identifier</a>, <a href="#license_kind-full_name">full_name</a>, <a href="#license_kind-deprecated">deprecated</a>, <a href="#license_kind-exception">exception</a>, <a href="#license_kind-tags">tags</a>, <a href="#license_kind-visibility">visibility</a>)
 </pre>
 
 Rule for declaring `LicenseKindInfo`.
@@ -23,8 +23,8 @@ yourself is only necessary for licenses that are not in the SPDX list (e.g.,
 a commercial license).
 
 [SPDX license exceptions](https://spdx.org/licenses/exceptions-index.html)
-(e.g., `Classpath-exception-2.0`) are a separate list and are **not**
-predeclared.
+(e.g., `Classpath-exception-2.0`) are predeclared there as well, with
+`exception` set.
 
 Usage:
 
@@ -48,6 +48,8 @@ license_kind(
 | <a id="license_kind-name"></a>name |  A unique name for this target.   |  none |
 | <a id="license_kind-identifier"></a>identifier |  Required. The unique identifier of the license (e.g., `Apache-2.0`, `EUPL-1.1`).<br><br>This is typically the [SPDX identifier](https://spdx.org/licenses/) of the license, but may also be a non-standard value (e.g., in case of a commercial license). It is not validated.<br><br>This identifies a single license; it is not an SPDX license expression (e.g., `MIT OR Apache-2.0`, or `GPL-2.0-only WITH Classpath-exception-2.0`).   |  none |
 | <a id="license_kind-full_name"></a>full_name |  Required. The (human readable) name of the license (e.g., `Apache License 2.0`, `European Union Public License 1.1`).   |  none |
+| <a id="license_kind-deprecated"></a>deprecated |  Whether the identifier is deprecated.   |  `False` |
+| <a id="license_kind-exception"></a>exception |  Whether this is a license exception (used with `WITH` in license expressions) rather than a license.   |  `False` |
 | <a id="license_kind-tags"></a>tags |  A list of arbitrary tags to apply to this target.   |  `None` |
 | <a id="license_kind-visibility"></a>visibility |  The visibility of this target.   |  `None` |
 

@@ -119,6 +119,12 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications) (
 			component.Version = purl.Version
 		}
 
+		licenseAttribute, err := supplychain.GetLicenseAttribute(pkgMetadata)
+		if err != nil {
+			return cdx.Component{}, fmt.Errorf("error reading license of %s: %w", node.Label, err)
+		}
+		component.Licenses = licensesOf(licenseAttribute)
+
 		labelToBOMRef[node.Label] = bomRef
 		return component, nil
 	}
@@ -226,4 +232,25 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications) (
 	bom.Metadata = metadata
 
 	return bom, nil
+}
+
+// licensesOf converts the license attribute of a package to CycloneDX.
+//
+// A single license is represented as a license, using its SPDX identifier if
+// it is on the SPDX license list and its name otherwise. Anything else
+// (choices, combinations, exceptions) is an SPDX license expression.
+func licensesOf(attribute *supplychain.LicenseAttribute) *cdx.Licenses {
+	if attribute == nil {
+		return nil
+	}
+
+	root := attribute.Root()
+	if root.IsSingle() {
+		license := cdx.License{ID: root.Kind.Identifier}
+		if root.Kind.IsCustom() {
+			license = cdx.License{Name: root.Kind.Name}
+		}
+		return &cdx.Licenses{{License: &license}}
+	}
+	return &cdx.Licenses{{Expression: root.String()}}
 }

@@ -1,0 +1,7 @@
+module(
+    name = "dual_licensed",
+    version = "1.0.219",
+)
+
+bazel_dep(name = "package_metadata", version = "0.0.5")
+bazel_dep(name = "rules_cc", version = "0.2.13")

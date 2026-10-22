@@ -9,6 +9,8 @@ def _license_kind_impl(ctx):
         LicenseKindInfo(
             identifier = ctx.attr.identifier,
             name = ctx.attr.full_name,
+            deprecated = ctx.attr.deprecated,
+            exception = ctx.attr.exception,
         ),
     ]
 
@@ -17,6 +19,8 @@ def _license_kind_impl(ctx):
 _license_kind = rule(
     implementation = _license_kind_impl,
     attrs = {
+        "deprecated": attr.bool(),
+        "exception": attr.bool(),
         "full_name": attr.string(
             mandatory = True,
         ),
@@ -36,6 +40,8 @@ def license_kind(
         name,
         identifier,
         full_name,
+        deprecated = False,
+        exception = False,
         # Common attributes (subset since this target is non-configurable).
         tags = None,
         visibility = None):
@@ -50,8 +56,8 @@ def license_kind(
     a commercial license).
 
     [SPDX license exceptions](https://spdx.org/licenses/exceptions-index.html)
-    (e.g., `Classpath-exception-2.0`) are a separate list and are **not**
-    predeclared.
+    (e.g., `Classpath-exception-2.0`) are predeclared there as well, with
+    `exception` set.
 
     Usage:
 
@@ -80,6 +86,9 @@ def license_kind(
         Classpath-exception-2.0`).
       full_name: Required. The (human readable) name of the license (e.g.,
         `Apache License 2.0`, `European Union Public License 1.1`).
+      deprecated: Whether the identifier is deprecated.
+      exception: Whether this is a license exception (used with `WITH` in
+        license expressions) rather than a license.
       tags: A list of arbitrary tags to apply to this target.
       visibility: The visibility of this target.
     """
@@ -89,6 +98,8 @@ def license_kind(
         name = name,
         identifier = identifier,
         full_name = full_name,
+        deprecated = deprecated,
+        exception = exception,
 
         # Common attributes.
         tags = tags,
