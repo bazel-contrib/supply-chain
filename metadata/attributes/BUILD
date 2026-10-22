@@ -1,5 +1,6 @@
 exports_files(
     [
+        "integrity.bzl",
         "copyright_notice.bzl",
         "cpe.bzl",
         "defs.bzl",
@@ -10,6 +11,7 @@ exports_files(
 filegroup(
     name = "srcs",
     srcs = [
+        "integrity.bzl",
         "copyright_notice.bzl",
         "cpe.bzl",
         "defs.bzl",

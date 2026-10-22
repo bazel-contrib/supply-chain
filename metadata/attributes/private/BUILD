@@ -1,4 +1,5 @@
 load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
+load("//attributes:integrity.bzl", "integrity")
 load("//attributes:copyright_notice.bzl", "copyright_notice")
 load("//attributes:cpe.bzl", "cpe")
 
@@ -43,6 +44,26 @@ load("//attributes:cpe.bzl", "cpe")
     for name, identifiers in {
         "valid-1": [
             "cpe:2.3:a:ntp:ntp:4.2.8:p3:*:*:*:*:*:*",
+        ],
+    }.items()
+]
+
+[
+    [
+        integrity(
+            name = "integrity.{}".format(name),
+            values = values,
+        ),
+        diff_test(
+            name = "integrity.{}.test".format(name),
+            file1 = ":integrity.{}".format(name),
+            file2 = "testdata/integrity/{}.json".format(name),
+        ),
+    ]
+    for name, values in {
+        "valid-1": [
+            "sha1-he0IF6+DokrY2mjCtQlN5pgzmDw=",
+            "sha256-EbbT7lVO7feSmZBamPm5oE5JghC1nxUJTJFskdFQ51Q=",
         ],
     }.items()
 ]
