@@ -1,10 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	supplychain "github.com/bazel-contrib/supply-chain/lib/supplychain-go"
@@ -12,11 +14,12 @@ import (
 )
 
 func main() {
-	var outPath, graphPath, classificationsPath, format string
+	var outPath, graphPath, classificationsPath, format, validatorPath string
 	flag.StringVar(&outPath, "out", "", "The path to write the generated CycloneDX SBOM.")
 	flag.StringVar(&graphPath, "graph", "", "The path to the graph JSON file.")
 	flag.StringVar(&classificationsPath, "classifications", "", "The path to the classifications JSON file.")
 	flag.StringVar(&format, "format", "json", "The output format of the CycloneDX SBOM (json or xml).")
+	flag.StringVar(&validatorPath, "validator", "", "Optional runfiles path or executable path to the CycloneDX CLI validator.")
 	flag.Parse()
 
 	if outPath == "" {
@@ -53,25 +56,19 @@ func main() {
 		os.Exit(1)
 	}
 
-	out, err := os.OpenFile(outPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error opening output file: %v\n", err)
-		os.Exit(1)
-	}
-	defer out.Close()
-
 	bom, err := GenerateBOM(graph, classifications)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error generating BOM: %v\n", err)
 		os.Exit(1)
 	}
 
-	encoder := cdx.NewBOMEncoder(out, cdx.BOMFileFormatJSON)
+	var buf bytes.Buffer
+	encoder := cdx.NewBOMEncoder(&buf, cdx.BOMFileFormatJSON)
 	switch format {
 	case "json":
-		encoder = cdx.NewBOMEncoder(out, cdx.BOMFileFormatJSON)
+		encoder = cdx.NewBOMEncoder(&buf, cdx.BOMFileFormatJSON)
 	case "xml":
-		encoder = cdx.NewBOMEncoder(out, cdx.BOMFileFormatXML)
+		encoder = cdx.NewBOMEncoder(&buf, cdx.BOMFileFormatXML)
 	default:
 		fmt.Fprintf(os.Stderr, "Error: '%s' is not a supported format. Use 'json' or 'xml'\n", format)
 		os.Exit(1)
@@ -80,6 +77,18 @@ func main() {
 	if err := encoder.Encode(bom); err != nil {
 		fmt.Fprintf(os.Stderr, "Error encoding BOM: %v\n", err)
 		os.Exit(1)
+	}
+
+	if err := os.WriteFile(outPath, buf.Bytes(), 0644); err != nil {
+		fmt.Fprintf(os.Stderr, "Error writing output file: %v\n", err)
+		os.Exit(1)
+	}
+
+	if validatorPath != "" {
+		if err := sbom.RunValidator(validatorPath, "validate", "--input-file", outPath, "--input-format", format, "--input-version", "v1_6", "--fail-on-errors"); err != nil {
+			fmt.Fprintf(os.Stderr, "Error validating BOM: %v\n", err)
+			os.Exit(1)
+		}
 	}
 }
 
@@ -112,6 +121,22 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications) (
 			Type:       cdx.ComponentTypeLibrary,
 			Name:       fullName,
 			PackageURL: bomRef,
+		}
+
+		downloadLocation := ""
+		qualifiers := purl.Qualifiers.Map()
+		if qualifier := strings.TrimSpace(qualifiers["download_url"]); qualifier != "" {
+			downloadLocation = qualifier
+		} else if qualifier := strings.TrimSpace(qualifiers["url_download"]); qualifier != "" {
+			downloadLocation = qualifier
+		}
+		if downloadLocation != "" {
+			component.ExternalReferences = &[]cdx.ExternalReference{
+				{
+					Type: cdx.ERTypeDistribution,
+					URL:  downloadLocation,
+				},
+			}
 		}
 
 		// Add version if available
