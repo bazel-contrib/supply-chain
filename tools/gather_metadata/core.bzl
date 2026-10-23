@@ -1,7 +1,7 @@
 """Rules and macros for collecting package_metadata providers."""
 
 load("@bazel_features//:features.bzl", "bazel_features")
-load(":providers.bzl", "TargetWithMetadataInfo", "TransitiveMetadataInfo")
+load(":providers.bzl", "TargetWithMetadataInfo")
 load(":rule_filters.bzl", "rule_to_excluded_attributes")
 
 def _is_exec_config(ctx):
@@ -147,7 +147,8 @@ def gather_metadata_info_common(
         want_providers = None,
         provider_factory = None,
         null_provider_instance = None,
-        filter_func = None):
+        filter_func = None,
+        enable_intermediate_pruning = True):
     """Collect package metadata info from myself and my deps.
 
     Any single target might directly depend on a package metadata, or depend on
@@ -170,6 +171,9 @@ def gather_metadata_info_common(
       null_provider_instance: a singleton instance of the empty provider. Reusing a
           a singleton across a large graph can save significant memory.
       filter_func: a function that returns true IFF the dep edge should be ignored
+      enable_intermediate_pruning: if true, targets without direct metadata are
+          collapsed into the compact transitive representation. Package graphs
+          need these intermediate targets retained, so they should set this false.
 
     Returns:
       provider of parameterized type
@@ -235,7 +239,9 @@ def gather_metadata_info_common(
     if not got_providers and not transitive_depsets:
         return [null_provider_instance or provider_factory()]
 
-    if not got_providers:
+    # Package graphs need intermediate targets even when they have no metadata,
+    # so they disable the fast path. Others can use the compact representation.
+    if not got_providers and enable_intermediate_pruning:
         """
         TODO: If there is only one, pass up the entire provider, not the extracted transitive
         if len(transitive_depsets) == 1 and transitive_depsets[0]:
