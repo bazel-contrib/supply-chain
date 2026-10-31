@@ -1,8 +1,109 @@
+# An SBOM (SPDX and CycloneDX) of a single dependency graph that mixes every
+# kind of license declaration:
+#
+#   app                     Apache-2.0                          standard, single
+#   |- http_client          MIT                                 standard, single
+#   |- dual_custom          MIT OR LicenseRef-acme-commercial   choice with a custom license
+#   |  `- @legacy_gpl       GPL-2.0+ OR GPL-2.0-with-classpath-exception
+#   |                                                           `+` (kept as an or-later flag) and a
+#   |                                                           deprecated identifier
+#   |- @dual_licensed       Apache-2.0 OR MIT                   choice of standard licenses
+#   |- @crypto_suite        (Apache-2.0 AND BSD-3-Clause) OR MIT
+#   |                                                           expression, no custom licenses
+#   |- @classpath_runtime   GPL-2.0-only WITH Classpath-exception-2.0
+#   |                                                           standard exception
+#   `- @acme_plugin         (Apache-2.0 WITH LLVM-exception) OR
+#      |                    (LicenseRef-acme-commercial WITH AdditionRef-acme-linking)
+#      |                                                        custom license and custom exception
+#      `- @acme_sdk         LicenseRef-acme-commercial          custom, single
+#
+# The `@` dependencies come from the modules in //external_packages, which
+# exist to exercise these scenarios without depending on third parties.
+
+load("@package_metadata//licenses/rules:license.bzl", "license")
+load("@package_metadata//purl:purl.bzl", "purl")
+load("@package_metadata//rules:package_metadata.bzl", "package_metadata")
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
 load("@supply_chain_tools//sbom:cyclonedx.bzl", "cyclonedx")
 load("@supply_chain_tools//sbom:sbom.bzl", "sbom")
 load("@supply_chain_tools//sbom:spdx.bzl", "spdx")
 
 package(default_visibility = ["//visibility:public"])
+
+# The root of the graph.
+package_metadata(
+    name = "app_metadata",
+    attributes = [":app_license"],
+    purl = "pkg:generic/app@1.0.0",
+)
+
+license(
+    name = "app_license",
+    kind = "@package_metadata//licenses/spdx:Apache-2.0",
+)
+
+cc_library(
+    name = "app",
+    applicable_licenses = [":app_metadata"],
+    deps = [
+        ":dual_custom",
+        ":http_client",
+        "@acme_plugin",
+        "@classpath_runtime",
+        "@crypto_suite",
+        "@dual_licensed",
+    ],
+)
+
+package_metadata(
+    name = "http_client_metadata",
+    attributes = [":http_client_license"],
+    purl = "pkg:generic/http_client@2.0.0",
+)
+
+license(
+    name = "http_client_license",
+    kind = "@package_metadata//licenses/spdx:MIT",
+)
+
+cc_library(
+    name = "http_client",
+    applicable_licenses = [":http_client_metadata"],
+)
+
+package_metadata(
+    name = "dual_custom_metadata",
+    attributes = [":dual_custom_license"],
+    purl = "pkg:generic/dual_custom@0.3.0",
+)
+
+# A custom license declared by this organization (see //my_org/licenses).
+license(
+    name = "dual_custom_license",
+    expression = "MIT OR LicenseRef-acme-commercial",
+    kinds = ["//my_org/licenses:acme_commercial"],
+)
+
+cc_library(
+    name = "dual_custom",
+    applicable_licenses = [":dual_custom_metadata"],
+    deps = ["@legacy_gpl"],
+)
+
+sbom(
+    name = "app_sbom",
+    target = ":app",
+)
+
+spdx(
+    name = "app_spdx",
+    sbom = ":app_sbom",
+)
+
+cyclonedx(
+    name = "app_cyclonedx",
+    sbom = ":app_sbom",
+)
 
 sbom(
     name = "lib_with_third_party_deps_sbom",

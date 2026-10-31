@@ -3,6 +3,7 @@ module(
     version = "",  # Automatically updated by release pipeline.
 )
 
+bazel_dep(name = "jq.bzl", version = "0.7.1")
 bazel_dep(name = "rules_testing", version = "0.9.0")
 bazel_dep(name = "package_metadata", version = "HEAD")
 bazel_dep(name = "package_metadata_extensions", version = "HEAD")

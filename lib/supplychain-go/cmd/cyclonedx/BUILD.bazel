@@ -25,5 +25,7 @@ go_test(
     deps = [
         "//internal/sbom",
         "@com_github_cyclonedx_cyclonedx_go//:cyclonedx-go",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
     ],
 )

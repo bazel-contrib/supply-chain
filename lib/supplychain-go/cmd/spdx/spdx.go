@@ -92,6 +92,7 @@ func GenerateDocument(graph sbom.GraphConfig, classifications sbom.Classificatio
 	spdxPackages := make([]*spdx.Package, 0)
 	labelToID := make(map[string]string)
 	idx := 0
+	licenses := newLicenseCollector()
 
 	// Identify the document as a whole (name/namespace, below) by its
 	// subject: preferably the root component; failing that (e.g.
@@ -108,6 +109,11 @@ func GenerateDocument(graph sbom.GraphConfig, classifications sbom.Classificatio
 		pkgMetadata, err := supplychain.ReadPackageMetadataFromFile(node.MetadataFile)
 		if err != nil {
 			return nil, err
+		}
+
+		licenseAttribute, err := supplychain.GetLicenseAttribute(pkgMetadata)
+		if err != nil {
+			return nil, fmt.Errorf("reading license of %s: %w", node.Label, err)
 		}
 
 		elementID := fmt.Sprintf("dep-%d", idx)
@@ -131,7 +137,7 @@ func GenerateDocument(graph sbom.GraphConfig, classifications sbom.Classificatio
 			PackageSPDXIdentifier:   common.ElementID(elementID),
 			PackageDownloadLocation: downloadLocation,
 			PackageLicenseConcluded: "NOASSERTION",
-			PackageLicenseDeclared:  "NOASSERTION",
+			PackageLicenseDeclared:  licenses.declared(licenseAttribute),
 			PackageExternalReferences: []*spdx.PackageExternalReference{
 				{
 					Category: "PACKAGE-MANAGER",
@@ -235,6 +241,7 @@ func GenerateDocument(graph sbom.GraphConfig, classifications sbom.Classificatio
 		DocumentNamespace: "https://spdx.org/spdxdocs/" + url.PathEscape(subjectPURL),
 		Packages:          spdxPackages,
 		Relationships:     relationships,
+		OtherLicenses:     licenses.otherLicenses(),
 		CreationInfo: &spdx.CreationInfo{
 			Creators: []common.Creator{
 				{Creator: "Bazel Supply Chain Tools SPDX generator", CreatorType: "Tool"},
