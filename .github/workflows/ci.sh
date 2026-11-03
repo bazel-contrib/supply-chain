@@ -3,7 +3,7 @@
 set -o pipefail
 
 # Target patterns to test, space-separated. Defaults to everything in the
-# current module. The `tests` sub-modules additionally pass the module under
+# current module. The `tests` module additionally passes the module under
 # test (e.g. `@package_metadata//...`) so it gets built from an external
 # standpoint, like consumers and the BCR presubmit do.
 read -r -a targets <<< "${TARGETS:-//...}"

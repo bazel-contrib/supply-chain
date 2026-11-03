@@ -52,40 +52,6 @@ jobs:
             runner: "ubuntu-latest"
 
           #
-          # @package_metadata_tests
-          #
-          # `metadata/tests` is a Bazel module of its own that depends on
-          # `@package_metadata` through a `local_path_override`. Testing `//...`
-          # runs the tests, and `@package_metadata//...` builds the module under
-          # test from an external standpoint (as consumers and the BCR presubmit
-          # see it, i.e. without its `dev_dependency`s).
-          #
-
-          - name: "Bazel latest: @package_metadata_tests (Linux x64)"
-            bazel_version: "rolling"
-            package: "metadata/tests"
-            targets: "//... @package_metadata//..."
-            runner: "ubuntu-latest"
-
-          - name: "Bazel 9.x: @package_metadata_tests (Linux x64)"
-            bazel_version: "9.x"
-            package: "metadata/tests"
-            targets: "//... @package_metadata//..."
-            runner: "ubuntu-latest"
-
-          - name: "Bazel 8.x: @package_metadata_tests (Linux x64)"
-            bazel_version: "8.x"
-            package: "metadata/tests"
-            targets: "//... @package_metadata//..."
-            runner: "ubuntu-latest"
-
-          - name: "Bazel 7.x: @package_metadata_tests (Linux x64)"
-            bazel_version: "7.x"
-            package: "metadata/tests"
-            targets: "//... @package_metadata//..."
-            runner: "ubuntu-latest"
-
-          #
           # @supply-chain-go
           #
 
@@ -150,15 +116,23 @@ jobs:
           #
           # @tests
           #
+          # The `tests` module depends on the modules under test through
+          # `local_path_override`s. Testing `//...` runs the tests, and
+          # `@package_metadata//...` builds that module from an external
+          # standpoint (as consumers and the BCR presubmit see it, i.e. without
+          # its `dev_dependency`s).
+          #
 
           - name: "Bazel 9.x: @tests (Linux x64)"
             bazel_version: "9.x"
             package: "tests"
+            targets: "//... @package_metadata//..."
             runner: "ubuntu-latest"
 
           - name: "Bazel 8.x: @tests (Linux x64)"
             bazel_version: "8.x"
             package: "tests"
+            targets: "//... @package_metadata//..."
             runner: "ubuntu-latest"
 
     runs-on:
