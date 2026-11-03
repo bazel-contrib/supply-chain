@@ -5,13 +5,13 @@
 **/MODULE.bazel.lock
 
 # VSCode
-*/.vscode
+**/.vscode
 
 # JetBrains IDEs-
-.ijwb/
-.clwb/
-.idea/
-.bazelbsp/
+**/.ijwb/
+**/.clwb/
+**/.idea/
+**/.bazelbsp/
 
 # macOS-specific excludes
 .DS_Store
