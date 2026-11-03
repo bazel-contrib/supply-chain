@@ -1,7 +1,7 @@
 load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
-load("//attributes:integrity.bzl", "integrity")
-load("//attributes:copyright_notice.bzl", "copyright_notice")
-load("//attributes:cpe.bzl", "cpe")
+load("@package_metadata//attributes:copyright_notice.bzl", "copyright_notice")
+load("@package_metadata//attributes:cpe.bzl", "cpe")
+load("@package_metadata//attributes:integrity.bzl", "integrity")
 
 [
     [

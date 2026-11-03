@@ -4,7 +4,8 @@ module(
 )
 
 # This is a fundamental module that's depended on by virtually every bazel
-# module and **MUST NOT** have any non-dev dependencies.
-
-# Do not update to newer versions until you need a specific new feature.
-bazel_dep(name = "bazel_skylib", version = "1.8.2", dev_dependency = True)
+# module and **MUST NOT** have any dependencies.
+#
+# Tests that need a dependency (e.g. `bazel_skylib`) live in the separate
+# `@package_metadata_tests` module (`//tests`, see `.bazelignore`), so that no
+# test-only dependency leaks into this module.
