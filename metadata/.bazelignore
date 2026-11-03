@@ -1,0 +1,9 @@
+# Bazel's convenience symlinks. Bazel only skips them in the root module; when
+# this module is consumed through a `local_path_override` (e.g. from the
+# top-level `tests` module), stale symlinks left by a previous build would
+# otherwise be traversed by recursive target patterns such as
+# `@package_metadata//...`.
+bazel-bin
+bazel-out
+bazel-testlogs
+bazel-metadata
