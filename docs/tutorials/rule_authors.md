@@ -15,7 +15,6 @@ If you only want to annotate your own module, see
   - [Step 3: Annotate repositories created by repository rules](#step-3-annotate-repositories-created-by-repository-rules)
   - [Step 4: Annotate `BUILD` file overlays](#step-4-annotate-build-file-overlays)
   - [Step 5: Verify the metadata](#step-5-verify-the-metadata)
-  - [Checklist](#checklist)
 
 
 ## Background
@@ -397,19 +396,4 @@ $ bazel query 'deps(@guava//:jar)'
 
 To check a PURL in a test, [`purl.parse`](../metadata/purl/purl.md#purlparse) returns its
 components, or an error if it is not a valid PURL.
-
-
-## Checklist
-
-  - [ ] `bazel_dep(name = "package_metadata", ...)` is a regular dependency of
-        your module.
-  - [ ] Your own module is annotated (see [As module author](../metadata/README.md#as-module-author)).
-  - [ ] Every repository your rules create has a `package_metadata` target and
-        sets `default_package_metadata` in `REPO.bazel` (or per package).
-  - [ ] PURLs are built with `purl.builder` (or `purl.bazel`), using the
-        ecosystem's PURL type and the exact resolved version.
-  - [ ] `repository_url` is set for packages from non-default registries.
-  - [ ] Licenses are declared when the package manager reports a single SPDX
-        license ID.
-  - [ ] Generated `BUILD` files load `@package_metadata` through
         `str(Label(...))`.
