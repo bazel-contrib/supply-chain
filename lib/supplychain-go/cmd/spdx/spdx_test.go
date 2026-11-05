@@ -109,7 +109,11 @@ func TestGenerateDocument_RequiredFieldsPopulated(t *testing.T) {
 	if doc.CreationInfo.Created != wantCreated {
 		t.Errorf("CreationInfo.Created = %q, want %q", doc.CreationInfo.Created, wantCreated)
 	}
+	wantVersions := map[string]string{"app": "1.0.0", "dep": "v1.2.3"}
 	for _, pkg := range doc.Packages {
+		if pkg.PackageVersion != wantVersions[pkg.PackageName] {
+			t.Errorf("PackageVersion for %s = %q, want %q", pkg.PackageName, pkg.PackageVersion, wantVersions[pkg.PackageName])
+		}
 		if pkg.PackageDownloadLocation == "" {
 			t.Errorf("PackageDownloadLocation for %s is empty, want an SPDX sentinel value", pkg.PackageName)
 		}
@@ -141,6 +145,28 @@ func TestGenerateDocument_NoRootFallsBackToFirstPackage(t *testing.T) {
 	}
 	if doc.DocumentName != "dep" {
 		t.Errorf("DocumentName = %q, want %q", doc.DocumentName, "dep")
+	}
+}
+
+func TestGenerateDocument_PURLWithoutVersionLeavesPackageVersionEmpty(t *testing.T) {
+	dir := t.TempDir()
+	depMeta := writePackageMetadata(t, dir, "dep.json", "//lib:dep", "pkg:golang/github.com/example/dep")
+
+	graph := sbom.GraphConfig{
+		Nodes: []sbom.NodeConfig{{Label: "//lib:dep", MetadataFile: depMeta}},
+	}
+	classifications := sbom.Classifications{
+		Dependencies: sbom.DependencyNodes{
+			Direct: []sbom.NodeConfig{{Label: "//lib:dep", MetadataFile: depMeta}},
+		},
+	}
+
+	doc, err := GenerateDocument(graph, classifications, time.Unix(0, 0).UTC())
+	if err != nil {
+		t.Fatalf("GenerateDocument() error = %v", err)
+	}
+	if got := doc.Packages[0].PackageVersion; got != "" {
+		t.Errorf("PackageVersion = %q, want empty", got)
 	}
 }
 

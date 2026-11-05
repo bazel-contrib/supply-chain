@@ -139,7 +139,8 @@ func GenerateDocument(graph sbom.GraphConfig, classifications sbom.Classificatio
 					Locator:  purl.String(),
 				},
 			},
-			PackageName: purl.Name,
+			PackageName:    purl.Name,
+			PackageVersion: purl.Version,
 		}
 
 		labelToID[node.Label] = elementID
