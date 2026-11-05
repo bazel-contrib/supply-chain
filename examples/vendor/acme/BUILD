@@ -5,7 +5,7 @@ load("@package_metadata//licenses/rules:license.bzl", "license")
 load("@rules_cc//cc:cc_library.bzl", "cc_library")
 
 package(
-    default_applicable_licenses = [":package_data"],
+    default_package_metadata = [":package_data"],
     default_visibility = ["//visibility:public"],
 )
 
