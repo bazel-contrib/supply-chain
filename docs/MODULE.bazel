@@ -3,13 +3,19 @@ module(
     version = "HEAD",
 )
 
+# Must come first so that its C++ toolchain takes precedence over the one from
+# `rules_cc`, which doesn't support newer versions of Xcode.
+bazel_dep(
+    name = "apple_support",
+    version = "2.10.1",
+)
 bazel_dep(
     name = "bazel_skylib",
-    version = "1.8.2",
+    version = "1.9.2",
 )
 bazel_dep(
     name = "stardoc",
-    version = "0.8.0",
+    version = "0.8.1",
 )
 
 #
