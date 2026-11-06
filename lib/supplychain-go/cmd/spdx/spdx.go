@@ -5,27 +5,24 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"io"
 	"net/url"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
 
 	supplychain "github.com/bazel-contrib/supply-chain/lib/supplychain-go"
 	"github.com/bazel-contrib/supply-chain/lib/supplychain-go/internal/sbom"
-	spdxJson "github.com/spdx/tools-golang/json"
-	"github.com/spdx/tools-golang/spdx"
-	"github.com/spdx/tools-golang/spdx/v2/common"
-	spdxTV "github.com/spdx/tools-golang/tagvalue"
-	spdxYaml "github.com/spdx/tools-golang/yaml"
+	spdx "github.com/spdx/tools-golang/spdx/v3/v3_0"
 )
 
 func main() {
-	var outPath, graphPath, classificationsPath, format, buildStatusPath, validatorPath string
+	var outPath, graphPath, classificationsPath, buildStatusPath, validatorPath string
 	flag.StringVar(&outPath, "out", "", "The path to write the generated SPDX SBOM.")
 	flag.StringVar(&graphPath, "graph", "", "The path to the graph JSON file.")
 	flag.StringVar(&classificationsPath, "classifications", "", "The path to the classifications JSON file.")
-	flag.StringVar(&format, "format", "json", "The output format of the SPDX SBOM.")
 	flag.StringVar(&buildStatusPath, "created_from_status_file", "", "Path to a Bazel volatile-status.txt file to read a BUILD_TIMESTAMP from for creationInfo.created. If unset, or the file has no BUILD_TIMESTAMP key, a fixed deterministic timestamp (the Unix epoch) is used instead, matching Bazel's own --nostamp default.")
 	flag.StringVar(&validatorPath, "validator", "", "Optional runfiles path or executable path to the SPDX tools-java validator wrapper.")
 	flag.Parse()
@@ -70,16 +67,7 @@ func main() {
 			panic(err)
 		}
 	}
-	switch format {
-	case "json":
-		must(spdxJson.Write(doc, &buf))
-	case "yaml":
-		must(spdxYaml.Write(doc, &buf))
-	case "tag-value":
-		must(spdxTV.Write(doc, &buf))
-	default:
-		panic(fmt.Sprintf("'%s' is not a supported format", format))
-	}
+	must(writeDocument(doc, &buf))
 
 	must(os.WriteFile(outPath, buf.Bytes(), 0664))
 
@@ -88,11 +76,11 @@ func main() {
 	}
 }
 
+// GenerateDocument builds an SPDX 3.0.1 document from the graph.
 func GenerateDocument(graph sbom.GraphConfig, classifications sbom.Classifications, created time.Time) (*spdx.Document, error) {
 	graph = sbom.NormalizeGraph(graph)
-	spdxPackages := make([]*spdx.Package, 0)
-	labelToID := make(map[string]string)
-	idx := 0
+	labelToPackage := make(map[string]*spdx.Package)
+	var packages []*spdx.Package
 
 	// Identify the document as a whole (name/namespace, below) by its
 	// subject: preferably the root component; failing that (e.g.
@@ -100,19 +88,15 @@ func GenerateDocument(graph sbom.GraphConfig, classifications sbom.Classificatio
 	// first package created.
 	var subjectName, subjectPURL string
 
-	// Helper function to create package from node
-	createPackage := func(node *sbom.NodeConfig) (*spdx.Package, error) {
+	createPackage := func(node *sbom.NodeConfig) error {
 		if node.MetadataFile == "" {
-			return nil, nil
+			return nil
 		}
 
 		pkgMetadata, err := supplychain.ReadPackageMetadataFromFile(node.MetadataFile)
 		if err != nil {
-			return nil, err
+			return err
 		}
-
-		elementID := fmt.Sprintf("dep-%d", idx)
-		idx++
 
 		purl := pkgMetadata.GetPURL()
 		if subjectPURL == "" {
@@ -120,100 +104,62 @@ func GenerateDocument(graph sbom.GraphConfig, classifications sbom.Classificatio
 			subjectPURL = purl.String()
 		}
 
-		downloadLocation := "NOASSERTION"
 		qualifiers := purl.Qualifiers.Map()
-		if qualifier := strings.TrimSpace(qualifiers["download_url"]); qualifier != "" {
-			downloadLocation = qualifier
-		} else if qualifier := strings.TrimSpace(qualifiers["url_download"]); qualifier != "" {
-			downloadLocation = qualifier
+		downloadLocation := strings.TrimSpace(qualifiers["download_url"])
+		if downloadLocation == "" {
+			downloadLocation = strings.TrimSpace(qualifiers["url_download"])
 		}
 
 		pkg := &spdx.Package{
-			PackageSPDXIdentifier:   common.ElementID(elementID),
-			PackageDownloadLocation: downloadLocation,
-			PackageLicenseConcluded: "NOASSERTION",
-			PackageLicenseDeclared:  "NOASSERTION",
-			PackageExternalReferences: []*spdx.PackageExternalReference{
-				{
-					Category: "PACKAGE-MANAGER",
-					RefType:  "purl",
-					Locator:  purl.String(),
-				},
-			},
-			PackageName:    purl.Name,
-			PackageVersion: purl.Version,
+			ID:               fmt.Sprintf("dep-%d", len(packages)),
+			Name:             purl.Name,
+			Version:          purl.Version,
+			PackageURL:       spdx.URI(purl.String()),
+			DownloadLocation: spdx.URI(downloadLocation),
 		}
-
-		labelToID[node.Label] = elementID
-		return pkg, nil
+		packages = append(packages, pkg)
+		labelToPackage[node.Label] = pkg
+		return nil
 	}
 
-	// Add root component
 	if classifications.RootComponent != nil {
-		pkg, err := createPackage(classifications.RootComponent)
-		if err != nil {
+		if err := createPackage(classifications.RootComponent); err != nil {
 			return nil, err
-		}
-		if pkg != nil {
-			spdxPackages = append(spdxPackages, pkg)
 		}
 	}
-
-	// Add all dependencies (direct + transitive)
 	for i := range classifications.Dependencies.Direct {
-		pkg, err := createPackage(&classifications.Dependencies.Direct[i])
-		if err != nil {
+		if err := createPackage(&classifications.Dependencies.Direct[i]); err != nil {
 			return nil, err
-		}
-		if pkg != nil {
-			spdxPackages = append(spdxPackages, pkg)
 		}
 	}
 	for i := range classifications.Dependencies.Transitive {
-		pkg, err := createPackage(&classifications.Dependencies.Transitive[i])
-		if err != nil {
+		if err := createPackage(&classifications.Dependencies.Transitive[i]); err != nil {
 			return nil, err
 		}
-		if pkg != nil {
-			spdxPackages = append(spdxPackages, pkg)
-		}
 	}
 
-	// Build Relationships from graph edges
-	relationships := make([]*spdx.Relationship, 0, len(graph.Edges))
-	seenRelationship := make(map[string]map[string]bool)
+	var relationships []*spdx.Relationship
+	seenRelationship := make(map[[2]string]bool)
 	for _, edge := range graph.Edges {
-		fromID, fromOk := labelToID[edge.From]
-		toID, toOk := labelToID[edge.To]
+		from, fromOk := labelToPackage[edge.From]
+		to, toOk := labelToPackage[edge.To]
 
-		if !fromOk || !toOk || fromID == toID {
-			// A self-reference can appear if two distinct graph nodes
-			// resolved to the same package (e.g. duplicate metadata).
+		// A self-reference can appear if two distinct graph nodes resolved
+		// to the same package (e.g. duplicate metadata).
+		if !fromOk || !toOk || from == to {
 			continue
 		}
-		if seenRelationship[fromID] == nil {
-			seenRelationship[fromID] = make(map[string]bool)
-		}
-		if seenRelationship[fromID][toID] {
+		key := [2]string{from.ID, to.ID}
+		if seenRelationship[key] {
 			continue
 		}
-		seenRelationship[fromID][toID] = true
+		seenRelationship[key] = true
 		relationships = append(relationships, &spdx.Relationship{
-			RefA:         common.MakeDocElementID("", fromID),
-			RefB:         common.MakeDocElementID("", toID),
-			Relationship: "DEPENDS_ON",
+			ID:   fmt.Sprintf("rel-%d", len(relationships)),
+			From: from,
+			To:   spdx.ElementList{to},
+			Type: spdx.RelationshipType_DependsOn,
 		})
-	}
-
-	// Add DESCRIBES relationship from DOCUMENT to root component
-	if classifications.RootComponent != nil {
-		if rootID, ok := labelToID[classifications.RootComponent.Label]; ok {
-			relationships = append(relationships, &spdx.Relationship{
-				RefA:         common.MakeDocElementID("", "DOCUMENT"),
-				RefB:         common.MakeDocElementID("", rootID),
-				Relationship: "DESCRIBES",
-			})
-		}
 	}
 
 	if subjectName == "" {
@@ -221,31 +167,80 @@ func GenerateDocument(graph sbom.GraphConfig, classifications sbom.Classificatio
 		subjectPURL = "sbom"
 	}
 
-	doc := spdx.Document{
-		SPDXIdentifier: "DOCUMENT",
-		SPDXVersion:    "SPDX-2.3",
-		// 6.2: mandatory, and specifically "CC0-1.0" per the spec. This is
-		// the license of the SPDX *metadata* document itself, independent of
-		// the licenses of the packages it describes.
-		DataLicense:  "CC0-1.0",
-		DocumentName: subjectName,
-		// 6.5: mandatory, must be unique to this document. Derived
-		// deterministically from the subject's purl (rather than e.g. a
-		// random UUID) so that re-generating the SBOM for an unchanged
-		// dependency graph produces byte-identical output and stays
-		// Bazel-cacheable.
-		DocumentNamespace: "https://spdx.org/spdxdocs/" + url.PathEscape(subjectPURL),
-		Packages:          spdxPackages,
-		Relationships:     relationships,
-		CreationInfo: &spdx.CreationInfo{
-			Creators: []common.Creator{
-				{Creator: "Bazel Supply Chain Tools SPDX generator", CreatorType: "Tool"},
-			},
-			Created: created.Format(time.RFC3339),
-		},
+	doc := spdx.NewDocument(
+		spdx.ProfileIdentifierType_Software,
+		subjectName,
+		&spdx.SoftwareAgent{Name: "Bazel Supply Chain Tools SPDX generator"},
+		nil,
+	)
+	// The document ID is mandatory and must be unique to this document.
+	// Derived deterministically from the subject's purl (rather than e.g. a
+	// random UUID) so that re-generating the SBOM for an unchanged dependency
+	// graph produces byte-identical output and stays Bazel-cacheable.
+	doc.ID = "https://spdx.org/spdxdocs/" + url.PathEscape(subjectPURL)
+	doc.Name = subjectName
+	doc.CreationInfo.(*spdx.CreationInfo).Created = created
+	doc.DataLicense = &spdx.ListedLicense{
+		ID:   "https://spdx.org/licenses/CC0-1.0",
+		Name: "CC0-1.0",
 	}
 
-	return &doc, nil
+	// The document describes a single SBOM, which holds all packages and
+	// relationships. The root component is the root of the SBOM.
+	sbomElement := &spdx.SBOM{ID: "sbom"}
+	if classifications.RootComponent != nil {
+		if root, ok := labelToPackage[classifications.RootComponent.Label]; ok {
+			sbomElement.RootElements = spdx.ElementList{root}
+		}
+	}
+	for _, pkg := range packages {
+		sbomElement.Elements = append(sbomElement.Elements, pkg)
+	}
+	for _, relationship := range relationships {
+		sbomElement.Elements = append(sbomElement.Elements, relationship)
+	}
+	doc.RootElements = spdx.ElementList{sbomElement}
+
+	return doc, nil
+}
+
+// writeDocument writes the document as canonical JSON-LD. tools-golang orders
+// the graph nodes and the members of element collections by map iteration, so
+// they are sorted here to keep the output byte-identical between runs.
+func writeDocument(doc *spdx.Document, w io.Writer) error {
+	var raw bytes.Buffer
+	if err := doc.Write(&raw); err != nil {
+		return err
+	}
+	var out struct {
+		Context string           `json:"@context"`
+		Graph   []map[string]any `json:"@graph"`
+	}
+	if err := json.Unmarshal(raw.Bytes(), &out); err != nil {
+		return err
+	}
+	nodeID := func(node map[string]any) string {
+		for _, key := range []string{"spdxId", "@id"} {
+			if id, ok := node[key].(string); ok {
+				return id
+			}
+		}
+		return ""
+	}
+	sort.SliceStable(out.Graph, func(i, j int) bool {
+		return nodeID(out.Graph[i]) < nodeID(out.Graph[j])
+	})
+	for _, node := range out.Graph {
+		if elements, ok := node["element"].([]any); ok {
+			sort.Slice(elements, func(i, j int) bool {
+				return fmt.Sprint(elements[i]) < fmt.Sprint(elements[j])
+			})
+		}
+	}
+	encoder := json.NewEncoder(w)
+	encoder.SetEscapeHTML(false)
+	encoder.SetIndent("", "  ")
+	return encoder.Encode(out)
 }
 
 // readBuildTimestamp reads a BUILD_TIMESTAMP key out of a Bazel

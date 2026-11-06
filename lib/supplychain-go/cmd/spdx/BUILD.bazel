@@ -8,11 +8,7 @@ go_library(
     deps = [
         "//:supplychain-go",
         "//internal/sbom",
-        "@com_github_spdx_tools_golang//json",
-        "@com_github_spdx_tools_golang//spdx",
-        "@com_github_spdx_tools_golang//spdx/v2/common",
-        "@com_github_spdx_tools_golang//tagvalue",
-        "@com_github_spdx_tools_golang//yaml",
+        "@com_github_spdx_tools_golang//spdx/v3/v3_0",
     ],
 )
 
@@ -26,5 +22,8 @@ go_test(
     name = "spdx_test",
     srcs = ["spdx_test.go"],
     embed = [":spdx_lib"],
-    deps = ["//internal/sbom"],
+    deps = [
+        "//internal/sbom",
+        "@com_github_spdx_tools_golang//spdx/v3/v3_0",
+    ],
 )
