@@ -12,6 +12,12 @@ package_metadata(
 
 gazelle(name = "gazelle")
 
+# Goldens of the JSON written by the `license` rule, shared with its tests.
+exports_files(
+    glob(["testdata/*.json"]),
+    visibility = ["//visibility:public"],
+)
+
 go_library(
     name = "supplychain-go",
     srcs = [
@@ -33,6 +39,7 @@ go_test(
         "license_test.go",
         "package_metadata_test.go",
     ],
+    data = glob(["testdata/*.json"]),
     embed = [":supplychain-go"],
     deps = [
         "//label",
