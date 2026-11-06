@@ -2,9 +2,14 @@ load("@package_metadata//licenses/rules:license.bzl", "license")
 load("@package_metadata//licenses/rules:license_kind.bzl", "license_kind")
 load("@package_metadata//purl:purl.bzl", "purl")
 load("@package_metadata//rules:package_metadata.bzl", "package_metadata")
+load("//:license_expression_test.bzl", "license_expression_test")
 load("//:license_json_test.bzl", "license_json_test")
 load("//:license_kind_test.bzl", "license_kind_test")
 load("//:purl_test.bzl", "purl_bazel_registry_test")
+
+license_expression_test(
+    name = "license_expression_test",
+)
 
 package_metadata(
     name = "package_metadata",
