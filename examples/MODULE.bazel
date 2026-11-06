@@ -10,6 +10,15 @@ bazel_dep(name = "bazel_skylib", version = "1.8.2")
 bazel_dep(name = "supply-chain-go", version = "0.0.6")
 bazel_dep(name = "supply_chain_tools", version = "0.0.1")
 
+# Fictional packages under ../external_packages exercising different license
+# scenarios, used by //sbom.
+bazel_dep(name = "acme_plugin", version = "0.4.1")
+bazel_dep(name = "acme_sdk", version = "1.2.0")
+bazel_dep(name = "classpath_runtime", version = "21.0.2")
+bazel_dep(name = "crypto_suite", version = "3.1.0")
+bazel_dep(name = "dual_licensed", version = "1.0.219")
+bazel_dep(name = "legacy_gpl", version = "0.9.0")
+
 # Development tools
 local_path_override(
     module_name = "package_metadata",
@@ -34,3 +43,18 @@ local_path_override(
 bazel_dep(name = "rules_python", version = "1.6.3", dev_dependency = True)
 bazel_dep(name = "platforms", version = "1.0.0", dev_dependency = True)
 bazel_dep(name = "rules_cc", version = "0.2.13", dev_dependency = True)
+
+[
+    local_path_override(
+        module_name = module,
+        path = "../external_packages/" + module,
+    )
+    for module in [
+        "acme_plugin",
+        "acme_sdk",
+        "classpath_runtime",
+        "crypto_suite",
+        "dual_licensed",
+        "legacy_gpl",
+    ]
+]

@@ -16,6 +16,7 @@
 #   to hand inspect the license text to see if it matches the conditions, and
 #   then will have to hand import it to their private license_kind repository.
 
+load("@package_metadata//licenses/rules:license_exception.bzl", "license_exception")
 load("@package_metadata//licenses/rules:license_kind.bzl", "license_kind")
 
 package(default_visibility = ["//visibility:public"])
@@ -51,4 +52,21 @@ license_kind(
     name = "acme_corp_paid",
     full_name = "The ACME per seat license.",
     identifier = "LicenseRef-acme",
+)
+
+# A custom (non-SPDX) license. Custom license identifiers must start with
+# `LicenseRef-` to be usable in a license expression.
+license_kind(
+    name = "acme_commercial",
+    full_name = "ACME Commercial License",
+    identifier = "LicenseRef-acme-commercial",
+)
+
+# A custom license exception. Custom exception identifiers must start with
+# `AdditionRef-` and declare it with `license_exception` to be usable after
+# `WITH`.
+license_exception(
+    name = "acme_linking_exception",
+    full_name = "ACME Linking Exception",
+    identifier = "AdditionRef-acme-linking",
 )
