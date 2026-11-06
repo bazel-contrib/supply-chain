@@ -20,6 +20,7 @@ func GenerateDocument301(graph sbom.GraphConfig, classifications sbom.Classifica
 	graph = sbom.NormalizeGraph(graph)
 	labelToPackage := make(map[string]*spdx.Package)
 	var packages []*spdx.Package
+	licenseOf := make(map[*spdx.Package]*supplychain.LicenseAttribute)
 
 	// Identify the document as a whole (name/namespace, below) by its
 	// subject: preferably the root component; failing that (e.g.
@@ -55,6 +56,13 @@ func GenerateDocument301(graph sbom.GraphConfig, classifications sbom.Classifica
 			Version:          purl.Version,
 			PackageURL:       spdx.URI(purl.String()),
 			DownloadLocation: spdx.URI(downloadLocation),
+		}
+		licenseAttribute, err := supplychain.GetLicenseAttribute(pkgMetadata)
+		if err != nil {
+			return fmt.Errorf("error reading license of %s: %w", node.Label, err)
+		}
+		if licenseAttribute != nil {
+			licenseOf[pkg] = licenseAttribute
 		}
 		packages = append(packages, pkg)
 		labelToPackage[node.Label] = pkg
@@ -101,6 +109,12 @@ func GenerateDocument301(graph sbom.GraphConfig, classifications sbom.Classifica
 		})
 	}
 
+	licenses, licenseRelationships, err := declaredLicenses(packages, licenseOf, len(relationships))
+	if err != nil {
+		return nil, err
+	}
+	relationships = append(relationships, licenseRelationships...)
+
 	if subjectName == "" {
 		subjectName = "sbom"
 		subjectPURL = "sbom"
@@ -134,6 +148,9 @@ func GenerateDocument301(graph sbom.GraphConfig, classifications sbom.Classifica
 	}
 	for _, pkg := range packages {
 		sbomElement.Elements = append(sbomElement.Elements, pkg)
+	}
+	for _, license := range licenses {
+		sbomElement.Elements = append(sbomElement.Elements, license)
 	}
 	for _, relationship := range relationships {
 		sbomElement.Elements = append(sbomElement.Elements, relationship)

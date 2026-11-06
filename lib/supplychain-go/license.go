@@ -65,6 +65,19 @@ func (k LicenseKind) IsCustom() bool {
 	return k.Custom || strings.HasPrefix(k.Identifier, "LicenseRef-")
 }
 
+// RefID returns the identifier to use in an SPDX expression: the identifier
+// itself for SPDX kinds and for kinds already named `LicenseRef-`/`AdditionRef-`,
+// otherwise the identifier with the reference prefix.
+func (k LicenseKind) RefID(exception bool) string {
+	if !k.IsCustom() || strings.HasPrefix(k.Identifier, "LicenseRef-") || strings.HasPrefix(k.Identifier, "AdditionRef-") {
+		return k.Identifier
+	}
+	if exception {
+		return "AdditionRef-" + k.Identifier
+	}
+	return "LicenseRef-" + k.Identifier
+}
+
 // LicenseExpression is a node of the license expression tree. For now, the
 // only kind of node is a leaf, which has a Kind.
 type LicenseExpression struct {

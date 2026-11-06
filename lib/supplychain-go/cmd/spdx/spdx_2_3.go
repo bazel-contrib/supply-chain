@@ -17,6 +17,7 @@ func GenerateDocument23(graph sbom.GraphConfig, classifications sbom.Classificat
 	graph = sbom.NormalizeGraph(graph)
 	spdxPackages := make([]*spdx2.Package, 0)
 	labelToID := make(map[string]string)
+	licenseOf := make(map[*spdx2.Package]*supplychain.LicenseAttribute)
 	idx := 0
 
 	// Identify the document as a whole (name/namespace, below) by its
@@ -67,6 +68,14 @@ func GenerateDocument23(graph sbom.GraphConfig, classifications sbom.Classificat
 			},
 			PackageName:    purl.Name,
 			PackageVersion: purl.Version,
+		}
+
+		licenseAttribute, err := supplychain.GetLicenseAttribute(pkgMetadata)
+		if err != nil {
+			return nil, fmt.Errorf("error reading license of %s: %w", node.Label, err)
+		}
+		if licenseAttribute != nil {
+			licenseOf[pkg] = licenseAttribute
 		}
 
 		labelToID[node.Label] = elementID
@@ -141,6 +150,11 @@ func GenerateDocument23(graph sbom.GraphConfig, classifications sbom.Classificat
 		}
 	}
 
+	otherLicenses, err := declaredLicenses23(spdxPackages, licenseOf)
+	if err != nil {
+		return nil, err
+	}
+
 	if subjectName == "" {
 		subjectName = "sbom"
 		subjectPURL = "sbom"
@@ -161,6 +175,7 @@ func GenerateDocument23(graph sbom.GraphConfig, classifications sbom.Classificat
 		// Bazel-cacheable.
 		DocumentNamespace: "https://spdx.org/spdxdocs/" + url.PathEscape(subjectPURL),
 		Packages:          spdxPackages,
+		OtherLicenses:     otherLicenses,
 		Relationships:     relationships,
 		CreationInfo: &spdx2.CreationInfo{
 			Creators: []common.Creator{

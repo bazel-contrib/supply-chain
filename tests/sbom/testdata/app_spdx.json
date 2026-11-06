@@ -3,6 +3,13 @@
   "@graph": [
     {
       "creationInfo": "_:CreationInfo-1",
+      "name": "ACME License",
+      "simplelicensing_licenseText": "NOASSERTION",
+      "spdxId": "SPDXRef:LicenseRef-acme",
+      "type": "expandedlicensing_CustomLicense"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
       "name": "Bazel Supply Chain Tools SPDX generator",
       "spdxId": "SPDXRef:SoftwareAgent-1",
       "type": "SoftwareAgent"
@@ -17,10 +24,18 @@
     },
     {
       "creationInfo": "_:CreationInfo-1",
-      "name": "dep",
-      "software_packageUrl": "pkg:generic/dep@2.0.0",
-      "software_packageVersion": "2.0.0",
+      "name": "custom",
+      "software_packageUrl": "pkg:generic/custom@1.0.0",
+      "software_packageVersion": "1.0.0",
       "spdxId": "SPDXRef:dep-1",
+      "type": "software_Package"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "unlicensed",
+      "software_packageUrl": "pkg:generic/unlicensed@1.0.0",
+      "software_packageVersion": "1.0.0",
+      "spdxId": "SPDXRef:dep-2",
       "type": "software_Package"
     },
     {
@@ -35,11 +50,47 @@
     },
     {
       "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-0",
+      "relationshipType": "dependsOn",
+      "spdxId": "SPDXRef:rel-1",
+      "to": [
+        "SPDXRef:dep-2"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-0",
+      "relationshipType": "hasDeclaredLicense",
+      "spdxId": "SPDXRef:rel-2",
+      "to": [
+        "https://spdx.org/licenses/Apache-2.0"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-1",
+      "relationshipType": "hasDeclaredLicense",
+      "spdxId": "SPDXRef:rel-3",
+      "to": [
+        "SPDXRef:LicenseRef-acme"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
       "element": [
+        "SPDXRef:LicenseRef-acme",
         "SPDXRef:SoftwareAgent-1",
         "SPDXRef:dep-0",
         "SPDXRef:dep-1",
-        "SPDXRef:rel-0"
+        "SPDXRef:dep-2",
+        "SPDXRef:rel-0",
+        "SPDXRef:rel-1",
+        "SPDXRef:rel-2",
+        "SPDXRef:rel-3",
+        "https://spdx.org/licenses/Apache-2.0"
       ],
       "rootElement": [
         "SPDXRef:dep-0"
@@ -56,6 +107,13 @@
       "createdUsing": [],
       "specVersion": "3.0.1",
       "type": "CreationInfo"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "Apache-2.0",
+      "simplelicensing_licenseText": "NOASSERTION",
+      "spdxId": "https://spdx.org/licenses/Apache-2.0",
+      "type": "expandedlicensing_ListedLicense"
     },
     {
       "creationInfo": "_:CreationInfo-1",
