@@ -1,10 +1,34 @@
 """Declares rule `license_kind`."""
 
 load("//licenses/providers:license_kind_info.bzl", "LicenseKindInfo")
+load("//licenses/spdx:licenses.bzl", "LICENSES")
 
 visibility("public")
 
+_IDSTRING_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-"
+
+def _check_identifier(identifier):
+    """Fails unless the identifier is an SPDX identifier or a valid custom one.
+
+    A custom identifier is an SPDX `idstring`, optionally prefixed by
+    `LicenseRef-`.
+    """
+    if LICENSES.get(identifier.lower(), {}).get("identifier") == identifier:
+        return
+    idstring = identifier
+    if identifier.startswith("AdditionRef-"):
+        fail("invalid license identifier '{}': custom exceptions must be declared with `license_exception`".format(identifier))
+    if identifier.startswith("LicenseRef-"):
+        idstring = identifier[len("LicenseRef-"):]
+    invalid = sorted({c: True for c in idstring.elems() if c not in _IDSTRING_CHARS})
+    if not idstring or invalid:
+        fail("invalid license identifier '{}': a custom identifier may only contain letters, digits, '.' and '-' (SPDX idstring){}".format(
+            identifier,
+            ", found " + ", ".join(["'{}'".format(c) for c in invalid]) if invalid else "",
+        ))
+
 def _license_kind_impl(ctx):
+    _check_identifier(ctx.attr.identifier)
     return [
         LicenseKindInfo(
             identifier = ctx.attr.identifier,
@@ -74,7 +98,12 @@ def license_kind(
 
         This is typically the [SPDX identifier](https://spdx.org/licenses/) of
         the license, but may also be a custom value (e.g., in case of a
-        commercial license). It is not validated.
+        commercial license). A custom value may be written
+        `LicenseRef-<idstring>`; custom exceptions use `AdditionRef-<idstring>`
+        and are declared with `license_exception`. A value that is not on the
+        SPDX list may only contain letters, digits, `.` and `-` (the SPDX
+        `idstring` characters), after the optional prefix; any other character
+        fails the build.
 
         This identifies a single license; it is not an SPDX license expression
         (e.g., `MIT OR Apache-2.0`, or `GPL-2.0-only WITH

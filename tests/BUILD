@@ -53,14 +53,14 @@ spdx_alias_test(
 license_exception(
     name = "test_exception",
     full_name = "Test exception",
-    identifier = "Test-exception",
+    identifier = "AdditionRef-test-exception",
 )
 
 license_exception_test(
     name = "license_exception_info_test",
     exception = ":test_exception",
     exception_name = "Test exception",
-    identifier = "Test-exception",
+    identifier = "AdditionRef-test-exception",
 )
 
 license(
@@ -206,4 +206,44 @@ license_json_test(
     name = "license_json_or_later_test",
     expected = "testdata/or_later.license.json",
     license = ":or_later_license",
+)
+
+license_kind(
+    name = "invalid_identifier_kind",
+    full_name = "Identifier with a character SPDX does not allow",
+    identifier = "LicenseRef-acme_internal",
+    tags = ["manual"],
+)
+
+license_kind(
+    name = "addition_ref_kind",
+    full_name = "Exception declared as a license",
+    identifier = "AdditionRef-acme-exception",
+    tags = ["manual"],
+)
+
+license_expression_failure_test(
+    name = "license_kind_invalid_identifier_test",
+    kind = ":invalid_identifier_kind",
+    message = "invalid license identifier 'LicenseRef-acme_internal'*found '_'",
+)
+
+license_expression_failure_test(
+    name = "license_kind_addition_ref_identifier_test",
+    kind = ":addition_ref_kind",
+    message = "invalid license identifier 'AdditionRef-acme-exception'*license_exception",
+)
+
+license_exception(
+    name = "invalid_identifier_exception",
+    full_name = "Exception with a character SPDX does not allow",
+    identifier = "AdditionRef-acme_internal",
+    tags = ["manual"],
+)
+
+license_expression_failure_test(
+    name = "license_exception_invalid_identifier_test",
+    expression = "MIT WITH AdditionRef-acme_internal",
+    kinds = [":invalid_identifier_exception"],
+    message = "invalid license exception identifier 'AdditionRef-acme_internal'*found '_'",
 )
