@@ -25,7 +25,7 @@ license.
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="license_exception-name"></a>name |  A unique name for this target.   |  none |
-| <a id="license_exception-identifier"></a>identifier |  Required. The unique identifier of the exception (e.g., `Classpath-exception-2.0`).   |  none |
+| <a id="license_exception-identifier"></a>identifier |  Required. The unique identifier of the exception (e.g., `Classpath-exception-2.0`). Custom exceptions must use an `AdditionRef-<idstring>` identifier.   |  none |
 | <a id="license_exception-full_name"></a>full_name |  Required. The (human readable) name of the exception.   |  none |
 | <a id="license_exception-deprecation"></a>deprecation |  An optional message explaining why this target is deprecated.   |  `None` |
 | <a id="license_exception-tags"></a>tags |  A list of arbitrary tags to apply to this target.   |  `None` |
