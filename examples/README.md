@@ -59,5 +59,5 @@ dependencies with `package(default_package_metadata = [...])`. The `sbom` rule
 requires root metadata by default; `require_root_metadata = False` permits
 reports without a root component.
 
-The exporters also support `format = "xml"` for CycloneDX and
-`format = "yaml"` or `format = "tag-value"` for SPDX.
+The `cyclonedx` exporter also supports `format = "xml"`. The `spdx` exporter
+writes SPDX 3.0.1 JSON-LD only.
