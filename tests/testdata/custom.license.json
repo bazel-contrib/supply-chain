@@ -1,0 +1,15 @@
+{
+  "expression": {
+    "kind": {
+      "custom": true,
+      "identifier": "acme",
+      "name": "ACME License"
+    }
+  },
+  "kind": {
+    "custom": true,
+    "identifier": "acme",
+    "name": "ACME License"
+  },
+  "label": "@@//:custom_license"
+}
