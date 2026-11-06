@@ -25,11 +25,6 @@ _validates_strict_test = analysistest.make(
     config_settings = {_strict_flag: True},
 )
 
-_does_not_validate_strict_test = analysistest.make(
-    _does_not_validate_test_impl,
-    config_settings = {_strict_flag: True},
-)
-
 _does_not_validate_default_test = analysistest.make(
     _does_not_validate_test_impl,
     config_settings = {_strict_flag: False},
@@ -46,8 +41,7 @@ def strict_validations_test_suite(name, cyclonedx, spdx):
     _validates_strict_test(name = name + "_cyclonedx_strict", target_under_test = cyclonedx)
     _does_not_validate_default_test(name = name + "_cyclonedx_default", target_under_test = cyclonedx)
 
-    # The SPDX tools-java validator cannot verify SPDX 3, so SPDX is never validated.
-    _does_not_validate_strict_test(name = name + "_spdx_strict", target_under_test = spdx)
+    _validates_strict_test(name = name + "_spdx_strict", target_under_test = spdx)
     _does_not_validate_default_test(name = name + "_spdx_default", target_under_test = spdx)
 
     native.test_suite(
