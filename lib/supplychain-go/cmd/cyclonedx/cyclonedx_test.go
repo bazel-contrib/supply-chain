@@ -170,3 +170,53 @@ func TestGenerateBOM_RetainsPackageEdges(t *testing.T) {
 		})
 	}
 }
+
+func writeLicensedPackage(t *testing.T, dir, name, licenseJSON string) sbom.NodeConfig {
+	t.Helper()
+	attributes := "{}"
+	if licenseJSON != "" {
+		licensePath := filepath.Join(dir, name+".license.json")
+		if err := os.WriteFile(licensePath, []byte(licenseJSON), 0o644); err != nil {
+			t.Fatal(err)
+		}
+		attributes = fmt.Sprintf(`{"build.bazel.attribute.license": %q}`, licensePath)
+	}
+	path := filepath.Join(dir, name+".metadata.json")
+	content := fmt.Sprintf(`{"label": "//fixture:%s", "purl": "pkg:generic/%s@1.0.0", "attributes": %s}`, name, name, attributes)
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	return sbom.NodeConfig{Label: "//" + name, MetadataFile: path}
+}
+
+func TestGenerateBOM_Licenses(t *testing.T) {
+	dir := t.TempDir()
+	nodes := []sbom.NodeConfig{
+		writeLicensedPackage(t, dir, "none", ""),
+		writeLicensedPackage(t, dir, "listed", `{"expression":{"kind":{"identifier":"MIT","name":"MIT License"}},"label":"//listed:license"}`),
+		writeLicensedPackage(t, dir, "custom", `{"expression":{"kind":{"identifier":"LicenseRef-acme","name":"ACME License"}},"label":"//custom:license"}`),
+		// Written by versions of the rule that predate `expression`.
+		writeLicensedPackage(t, dir, "legacy", `{"kind":{"identifier":"Apache-2.0","name":"Apache"},"label":"//legacy:license"}`),
+	}
+
+	bom, err := GenerateBOM(sbom.GraphConfig{}, sbom.Classifications{
+		Dependencies: sbom.DependencyNodes{Direct: nodes},
+	})
+	if err != nil {
+		t.Fatalf("GenerateBOM() error = %v", err)
+	}
+
+	got := map[string]*cdx.Licenses{}
+	for _, component := range *bom.Components {
+		got[component.Name] = component.Licenses
+	}
+	want := map[string]*cdx.Licenses{
+		"none":   nil,
+		"listed": {{License: &cdx.License{ID: "MIT"}}},
+		"custom": {{License: &cdx.License{Name: "ACME License"}}},
+		"legacy": {{License: &cdx.License{ID: "Apache-2.0"}}},
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Fatalf("licenses = %v, want %v", got, want)
+	}
+}
