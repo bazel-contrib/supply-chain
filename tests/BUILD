@@ -204,3 +204,16 @@ license_json_test(
     expected = "@supply-chain-go//:testdata/or_later.license.json",
     license = ":or_later_license",
 )
+
+license_kind(
+    name = "invalid_identifier_kind",
+    full_name = "Identifier with a character SPDX does not allow",
+    identifier = "LicenseRef-acme_internal",
+    tags = ["manual"],
+)
+
+license_expression_failure_test(
+    name = "license_kind_invalid_identifier_test",
+    kind = ":invalid_identifier_kind",
+    message = "invalid license identifier 'LicenseRef-acme_internal'*found '_'",
+)
