@@ -98,7 +98,7 @@ my_purl = (purl.builder()
     .add_qualifier("classifier", "sources")
     .add_qualifier("repository_url", "https://repo.spring.io/release")
     .build())
-# Result: pkg:maven/org.apache.xmlgraphics/batik-anim@1.9.1?classifier=sources&repository_url=https%3A%2F%2Frepo.spring.io%2Frelease
+# Result: pkg:maven/org.apache.xmlgraphics/batik-anim@1.9.1?classifier=sources&repository_url=https:%2F%2Frepo.spring.io%2Frelease
 ```
 
 Example - Golang with namespace and subpath:
