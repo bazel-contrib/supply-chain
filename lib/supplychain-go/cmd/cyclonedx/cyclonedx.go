@@ -93,6 +93,7 @@ func main() {
 }
 
 func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications) (*cdx.BOM, error) {
+	graph = sbom.NormalizeGraph(graph)
 	components := make([]cdx.Component, 0)
 	labelToBOMRef := make(map[string]string)
 	var rootComponent *cdx.Component
