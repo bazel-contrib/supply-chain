@@ -1,0 +1,11 @@
+{
+  "expression": {
+    "kind": {
+      "identifier": "GPL-3.0",
+      "name": "GNU General Public License v3.0 only"
+    },
+    "or_later": true
+  },
+  "kind": null,
+  "label": "@@//:or_later_license"
+}
