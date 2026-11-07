@@ -27,6 +27,7 @@ load("@rules_cc//cc:cc_library.bzl", "cc_library")
 load("@supply_chain_tools//sbom:cyclonedx.bzl", "cyclonedx")
 load("@supply_chain_tools//sbom:sbom.bzl", "sbom")
 load("@supply_chain_tools//sbom:spdx.bzl", "spdx")
+load(":golden_test.bzl", "sbom_golden_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -119,4 +120,28 @@ cyclonedx(
 spdx(
     name = "lib_with_third_party_deps_spdx",
     sbom = ":lib_with_third_party_deps_sbom",
+)
+
+sbom_golden_test(
+    name = "app_spdx_golden_test",
+    golden = "testdata/app_spdx.json",
+    report = ":app_spdx",
+)
+
+sbom_golden_test(
+    name = "app_cyclonedx_golden_test",
+    golden = "testdata/app_cyclonedx.json",
+    report = ":app_cyclonedx",
+)
+
+sbom_golden_test(
+    name = "lib_with_third_party_deps_spdx_golden_test",
+    golden = "testdata/lib_with_third_party_deps_spdx.json",
+    report = ":lib_with_third_party_deps_spdx",
+)
+
+sbom_golden_test(
+    name = "lib_with_third_party_deps_cyclonedx_golden_test",
+    golden = "testdata/lib_with_third_party_deps_cyclonedx.json",
+    report = ":lib_with_third_party_deps_cyclonedx",
 )
