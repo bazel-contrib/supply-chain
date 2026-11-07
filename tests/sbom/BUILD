@@ -219,3 +219,19 @@ build_test(
     name = "custom_exception_spdx23_test",
     targets = [":custom_exception_spdx23"],
 )
+
+# The examples: a graph mixing every kind of license declaration.
+[
+    sbom_golden_test(
+        name = "examples_{}_golden_test".format(report),
+        golden = "testdata/examples_{}.json".format(report),
+        report = "@supply_chain_examples//sbom:{}".format(report),
+    )
+    for report in [
+        "app_cyclonedx",
+        "app_spdx_jsonld",
+        "lib_with_third_party_deps_cyclonedx",
+        "lib_with_third_party_deps_spdx",
+        "lib_with_third_party_deps_spdx_jsonld",
+    ]
+]
