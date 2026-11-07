@@ -1,0 +1,60 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
+  "bomFormat": "CycloneDX",
+  "components": [
+    {
+      "bom-ref": "pkg:github/acmecorp/coyote@3.1.4?download_url=https%3A%2F%2Fgithub.com%2Facmecorp%2Fcoyote%2Farchive%2Frefs%2Ftags%2F3.1.4.tar.gz",
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://github.com/acmecorp/coyote/archive/refs/tags/3.1.4.tar.gz"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "name": "The ACME per seat license."
+          }
+        }
+      ],
+      "name": "acmecorp/coyote",
+      "purl": "pkg:github/acmecorp/coyote@3.1.4?download_url=https%3A%2F%2Fgithub.com%2Facmecorp%2Fcoyote%2Farchive%2Frefs%2Ftags%2F3.1.4.tar.gz",
+      "type": "library",
+      "version": "3.1.4"
+    }
+  ],
+  "dependencies": [
+    {
+      "dependsOn": [
+        "pkg:github/acmecorp/coyote@3.1.4?download_url=https%3A%2F%2Fgithub.com%2Facmecorp%2Fcoyote%2Farchive%2Frefs%2Ftags%2F3.1.4.tar.gz"
+      ],
+      "ref": "pkg:bazel/supply_chain_examples@0.0.1"
+    }
+  ],
+  "metadata": {
+    "component": {
+      "bom-ref": "pkg:bazel/supply_chain_examples@0.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "name": "supply_chain_examples",
+      "purl": "pkg:bazel/supply_chain_examples@0.0.1",
+      "type": "library",
+      "version": "0.0.1"
+    },
+    "tools": {
+      "components": [
+        {
+          "name": "Bazel Supply Chain Tools CycloneDX generator",
+          "type": "application"
+        }
+      ]
+    }
+  },
+  "specVersion": "1.6",
+  "version": 1
+}
