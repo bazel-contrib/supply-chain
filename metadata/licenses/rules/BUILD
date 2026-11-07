@@ -13,6 +13,7 @@ filegroup(
         "license_kind.bzl",
     ] + [
         "//licenses/providers:srcs",
+        "//licenses/spdx:ids.bzl",
         "//providers:srcs",
     ],
     visibility = ["//visibility:public"],

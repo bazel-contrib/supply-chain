@@ -1,6 +1,7 @@
 """Declares rule `license`."""
 
 load("//licenses/providers:license_kind_info.bzl", "LicenseKindInfo")
+load("//licenses/spdx:ids.bzl", "SPDX_IDS")
 load("//providers:package_attribute_info.bzl", "PackageAttributeInfo")
 
 visibility("public")
@@ -8,13 +9,22 @@ visibility("public")
 # The `kind` of the `PackageAttributeInfo` provided by `license` targets.
 KIND = "build.bazel.attribute.license"
 
+def _kind_json(kind):
+    """Returns the JSON of a `LicenseKindInfo`, flagging non-SPDX identifiers as custom."""
+    result = {"identifier": kind.identifier, "name": kind.name}
+    if SPDX_IDS.get(kind.identifier.lower()) != kind.identifier:
+        result["custom"] = True
+    return result
+
 def _license_impl(ctx):
-    kind = ctx.attr.kind[LicenseKindInfo]
+    kind_json = _kind_json(ctx.attr.kind[LicenseKindInfo])
     attribute = {
-        "kind": {
-            "identifier": kind.identifier,
-            "name": kind.name,
+        "expression": {
+            "kind": kind_json,
         },
+        # Deprecated, equal to `expression.kind`. Kept for readers that
+        # predate `expression`.
+        "kind": kind_json,
         "label": str(ctx.label),
     }
     files = []
@@ -112,6 +122,12 @@ def license(
 
     ```json
     {
+        "expression": {
+            "kind": {
+                "identifier": "GPL-3.0-or-later",
+                "name": "GNU General Public License v3.0 or later"
+            }
+        },
         "kind": {
             "identifier": "GPL-3.0-or-later",
             "name": "GNU General Public License v3.0 or later"
@@ -123,8 +139,11 @@ def license(
 
     | Field | Description |
     | :---- | :---------- |
-    | `kind.identifier` | The `identifier` of the `kind` of this license. |
-    | `kind.name` | The `full_name` of the `kind` of this license. |
+    | `expression` | The root node of the license expression tree. Currently always a leaf: an object with a `kind`. Future versions add operator nodes (`AND`, `OR`, `WITH`) to this tree. |
+    | `expression.kind.identifier` | The `identifier` of the `kind` of this license. |
+    | `expression.kind.name` | The `full_name` of the `kind` of this license. |
+    | `expression.kind.custom` | `true` if the identifier is not on the SPDX license list. Absent otherwise. |
+    | `kind` | Deprecated, a copy of `expression.kind` for readers that do not know `expression` yet. |
     | `label` | The label of this `license` target. |
     | `text` | The path of the license `text` file, relative to the execution root. Absent if no `text` was declared. |
 
