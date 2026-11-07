@@ -25,14 +25,14 @@ package(default_visibility = ["//visibility:public"])
 license_kind(
     name = "generic_notice",
     full_name = "a sample generic license",
-    identifier = "generic_license",
+    identifier = "LicenseRef-generic-notice",
     # TODO: Bring back conditions on kind.
 )
 
 license_kind(
     name = "generic_restricted",
     full_name = "a sample generic license",
-    identifier = "generic_restricted",
+    identifier = "LicenseRef-generic-restricted",
 )
 
 license_kind(
@@ -50,5 +50,5 @@ license_kind(
 license_kind(
     name = "acme_corp_paid",
     full_name = "The ACME per seat license.",
-    identifier = "ACME",
+    identifier = "LicenseRef-acme",
 )

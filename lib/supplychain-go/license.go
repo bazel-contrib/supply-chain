@@ -35,6 +35,11 @@ var LicenseAttributeDescriptor = PackageAttributeDescriptor[LicenseAttribute]{
 		if err := a.Expression.validate(); err != nil {
 			return nil, err
 		}
+		for _, kind := range a.Expression.Kinds() {
+			if err := kind.validate(); err != nil {
+				return nil, err
+			}
+		}
 		return &a, nil
 	},
 }
@@ -74,6 +79,27 @@ func (k LicenseKind) RefID(exception bool) string {
 		return "AdditionRef-" + k.Identifier
 	}
 	return "LicenseRef-" + k.Identifier
+}
+
+// validate checks that custom identifiers only use the characters of an SPDX
+// idstring (letters, digits, `.` and `-`) after their optional prefix.
+func (k LicenseKind) validate() error {
+	if !k.IsCustom() {
+		return nil
+	}
+	id := strings.TrimPrefix(strings.TrimPrefix(k.Identifier, "LicenseRef-"), "AdditionRef-")
+	valid := id != ""
+	for _, r := range id {
+		switch {
+		case r >= 'a' && r <= 'z', r >= 'A' && r <= 'Z', r >= '0' && r <= '9', r == '.', r == '-':
+		default:
+			valid = false
+		}
+	}
+	if !valid {
+		return fmt.Errorf("invalid custom license identifier %q: only letters, digits, '.' and '-' are allowed", k.Identifier)
+	}
+	return nil
 }
 
 // LicenseOperator is the operator of a compound node of a `LicenseExpression`.

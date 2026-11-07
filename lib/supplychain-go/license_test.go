@@ -132,6 +132,15 @@ func TestInvalidExpressionShapeIsRejected(t *testing.T) {
 	}
 }
 
+func TestInvalidCustomIdentifierIsRejected(t *testing.T) {
+	for _, id := range []string{"acme_internal", "LicenseRef-a b", "LicenseRef-"} {
+		_, err := LicenseAttributeDescriptor.Parser(strings.NewReader(`{"kind":{"identifier":"` + id + `","name":"n","custom":true},"label":"x"}`))
+		if err == nil {
+			t.Errorf("expected an error for %q", id)
+		}
+	}
+}
+
 func TestLicenseCustomOrLaterHasOwnReference(t *testing.T) {
 	e := LicenseExpression{Kind: &LicenseKind{Identifier: "LicenseRef-acme", Custom: true}, OrLater: true}
 	if got := e.String(); got != "LicenseRef-acme-or-later" {
