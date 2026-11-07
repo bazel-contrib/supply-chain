@@ -343,3 +343,78 @@ func TestGenerateDocument_OutputIsDeterministicSPDX3JSONLD(t *testing.T) {
 		}
 	}
 }
+
+func writeLicensedPackage(t *testing.T, dir, name, licenseJSON string) sbom.NodeConfig {
+	t.Helper()
+	licensePath := filepath.Join(dir, name+".license.json")
+	if err := os.WriteFile(licensePath, []byte(licenseJSON), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(dir, name+".metadata.json")
+	content := fmt.Sprintf(`{"label": "//fixture:%s", "purl": "pkg:generic/%s@1.0.0", "attributes": {"build.bazel.attribute.license": %q}}`, name, name, licensePath)
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	return sbom.NodeConfig{Label: "//" + name, MetadataFile: path}
+}
+
+func TestGenerateDocument_DeclaredLicenses(t *testing.T) {
+	dir := t.TempDir()
+	mit := func(name string) sbom.NodeConfig {
+		return writeLicensedPackage(t, dir, name, `{"expression":{"kind":{"identifier":"MIT","name":"MIT License"}},"label":"//x:license"}`)
+	}
+	custom := func(name, text string) sbom.NodeConfig {
+		textPath := filepath.Join(dir, name+".LICENSE")
+		if err := os.WriteFile(textPath, []byte(text), 0o644); err != nil {
+			t.Fatal(err)
+		}
+		return writeLicensedPackage(t, dir, name, `{"expression":{"kind":{"identifier":"LicenseRef-acme","name":"ACME License"}},"label":"//x:license","text":"`+textPath+`"}`)
+	}
+	legacy := writeLicensedPackage(t, dir, "f", `{"expression":{"kind":{"identifier":"internal","name":"Internal","custom":true}},"label":"//x:license"}`)
+	nodes := []sbom.NodeConfig{
+		mit("a"), mit("b"), legacy,
+		custom("c", "Copyright 2024 ACME"), custom("d", "Copyright 2024 ACME"), custom("e", "Copyright 2025 ACME"),
+	}
+
+	doc, err := GenerateDocument(sbom.GraphConfig{}, sbom.Classifications{
+		Dependencies: sbom.DependencyNodes{Direct: nodes},
+	}, time.Unix(0, 0).UTC())
+	if err != nil {
+		t.Fatalf("GenerateDocument() error = %v", err)
+	}
+
+	var listed, custom_ []string
+	for _, element := range sbomOf(doc).Elements {
+		switch license := element.(type) {
+		case *spdx.ListedLicense:
+			listed = append(listed, license.ID)
+		case *spdx.CustomLicense:
+			custom_ = append(custom_, license.ID+"="+license.Text)
+		}
+	}
+	if want := []string{"https://spdx.org/licenses/MIT"}; !reflect.DeepEqual(listed, want) {
+		t.Errorf("listed licenses = %v, want %v", listed, want)
+	}
+	wantCustom := []string{"LicenseRef-internal=", "LicenseRef-acme=Copyright 2024 ACME", "LicenseRef-acme-1=Copyright 2025 ACME"}
+	if !reflect.DeepEqual(custom_, wantCustom) {
+		t.Errorf("custom licenses = %v, want %v", custom_, wantCustom)
+	}
+
+	declared := map[string]string{}
+	for _, relationship := range relationshipsOf(doc) {
+		if relationship.Type != spdx.RelationshipType_HasDeclaredLicense {
+			continue
+		}
+		license := relationship.To[0]
+		switch l := license.(type) {
+		case *spdx.ListedLicense:
+			declared[relationship.From.(*spdx.Package).Name] = l.Name
+		case *spdx.CustomLicense:
+			declared[relationship.From.(*spdx.Package).Name] = l.ID
+		}
+	}
+	wantDeclared := map[string]string{"a": "MIT", "b": "MIT", "c": "LicenseRef-acme", "d": "LicenseRef-acme", "e": "LicenseRef-acme-1", "f": "LicenseRef-internal"}
+	if !reflect.DeepEqual(declared, wantDeclared) {
+		t.Errorf("declared licenses = %v, want %v", declared, wantDeclared)
+	}
+}

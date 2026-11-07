@@ -45,3 +45,10 @@ func TestLicenseKindIsCustom(t *testing.T) {
 		assert.Equal(t, tc.want, root.Kind.IsCustom(), tc.json)
 	}
 }
+
+func TestLicenseKindRefID(t *testing.T) {
+	assert.Equal(t, "MIT", LicenseKind{Identifier: "MIT"}.RefID(false))
+	assert.Equal(t, "LicenseRef-acme", LicenseKind{Identifier: "LicenseRef-acme"}.RefID(false))
+	assert.Equal(t, "LicenseRef-acme", LicenseKind{Identifier: "acme", Custom: true}.RefID(false))
+	assert.Equal(t, "AdditionRef-acme", LicenseKind{Identifier: "acme", Custom: true}.RefID(true))
+}
