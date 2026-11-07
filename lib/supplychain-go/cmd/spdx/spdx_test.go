@@ -418,3 +418,54 @@ func TestGenerateDocument_DeclaredLicenses(t *testing.T) {
 		t.Errorf("declared licenses = %v, want %v", declared, wantDeclared)
 	}
 }
+
+func TestGenerateDocument_LicenseExpressions(t *testing.T) {
+	dir := t.TempDir()
+	text := filepath.Join(dir, "acme.txt")
+	if err := os.WriteFile(text, []byte("ACME terms"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	node := writeLicensedPackage(t, dir, "p", `{"expression":{"operator":"AND","operands":[
+		{"operator":"OR","operands":[{"kind":{"identifier":"MIT"}},{"or_later":true,"kind":{"identifier":"GPL-2.0-only"}}]},
+		{"operator":"WITH","operands":[{"kind":{"identifier":"GPL-2.0-only"}}],"exception":{"identifier":"Classpath-exception-2.0"}},
+		{"operator":"WITH","operands":[{"kind":{"identifier":"LicenseRef-acme","custom":true,"name":"ACME"}}],"exception":{"identifier":"acme-linking","custom":true,"name":"Linking"}}
+	]},"label":"//x:license","text":"`+text+`"}`)
+
+	doc, err := GenerateDocument(sbom.GraphConfig{}, sbom.Classifications{
+		Dependencies: sbom.DependencyNodes{Direct: []sbom.NodeConfig{node}},
+	}, time.Unix(0, 0).UTC())
+	if err != nil {
+		t.Fatalf("GenerateDocument() error = %v", err)
+	}
+
+	var and *spdx.ConjunctiveLicenseSet
+	for _, r := range relationshipsOf(doc) {
+		if r.Type == spdx.RelationshipType_HasDeclaredLicense {
+			and, _ = r.To[0].(*spdx.ConjunctiveLicenseSet)
+		}
+	}
+	if and == nil || len(and.Members) != 3 {
+		t.Fatalf("declared license = %#v, want an AND of 3 members", and)
+	}
+	if and.ID != "ConjunctiveLicenseSet-1" {
+		t.Errorf("id of the AND = %q, want a stable one", and.ID)
+	}
+	or, ok := and.Members[0].(*spdx.DisjunctiveLicenseSet)
+	if !ok || len(or.Members) != 2 {
+		t.Fatalf("first member = %#v, want an OR of 2 members", and.Members[0])
+	}
+	if _, ok := or.Members[1].(*spdx.OrLaterOperator); !ok {
+		t.Errorf("GPL-2.0-only+ = %#v, want an OrLaterOperator", or.Members[1])
+	}
+	listed, ok := and.Members[1].(*spdx.WithAdditionOperator)
+	if !ok {
+		t.Fatalf("second member = %#v, want WITH", and.Members[1])
+	}
+	if e, ok := listed.SubjectAddition.(*spdx.ListedLicenseException); !ok || e.ID != "https://spdx.org/licenses/Classpath-exception-2.0" {
+		t.Errorf("listed exception = %#v", listed.SubjectAddition)
+	}
+	custom := and.Members[2].(*spdx.WithAdditionOperator)
+	if a, ok := custom.SubjectAddition.(*spdx.CustomLicenseAddition); !ok || a.ID != "AdditionRef-acme-linking" || a.AdditionText != "ACME terms" {
+		t.Errorf("custom exception = %#v, want AdditionRef-acme-linking with the license text", custom.SubjectAddition)
+	}
+}

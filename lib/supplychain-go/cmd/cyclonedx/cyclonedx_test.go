@@ -196,6 +196,8 @@ func TestGenerateBOM_Licenses(t *testing.T) {
 		writeLicensedPackage(t, dir, "listed", `{"expression":{"kind":{"identifier":"MIT","name":"MIT License"}},"label":"//listed:license"}`),
 		writeLicensedPackage(t, dir, "custom", `{"expression":{"kind":{"identifier":"LicenseRef-acme","name":"ACME License"}},"label":"//custom:license"}`),
 		// Written by versions of the rule that predate `expression`.
+		writeLicensedPackage(t, dir, "either", `{"expression":{"operator":"OR","operands":[{"kind":{"identifier":"MIT"}},{"kind":{"identifier":"Apache-2.0"}}]},"label":"//either:license"}`),
+		writeLicensedPackage(t, dir, "orlater", `{"expression":{"or_later":true,"kind":{"identifier":"GPL-3.0"}},"label":"//orlater:license"}`),
 		writeLicensedPackage(t, dir, "legacy", `{"kind":{"identifier":"Apache-2.0","name":"Apache"},"label":"//legacy:license"}`),
 	}
 
@@ -211,10 +213,12 @@ func TestGenerateBOM_Licenses(t *testing.T) {
 		got[component.Name] = component.Licenses
 	}
 	want := map[string]*cdx.Licenses{
-		"none":   nil,
-		"listed": {{License: &cdx.License{ID: "MIT"}}},
-		"custom": {{License: &cdx.License{Name: "ACME License"}}},
-		"legacy": {{License: &cdx.License{ID: "Apache-2.0"}}},
+		"none":    nil,
+		"listed":  {{License: &cdx.License{ID: "MIT"}}},
+		"custom":  {{License: &cdx.License{Name: "ACME License"}}},
+		"either":  {{Expression: "MIT OR Apache-2.0"}},
+		"orlater": {{Expression: "GPL-3.0+"}},
+		"legacy":  {{License: &cdx.License{ID: "Apache-2.0"}}},
 	}
 	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("licenses = %v, want %v", got, want)
