@@ -8,6 +8,7 @@ bazel_dep(name = "jq.bzl", version = "0.7.1")
 bazel_dep(name = "rules_testing", version = "0.9.0")
 bazel_dep(name = "package_metadata", version = "HEAD")
 bazel_dep(name = "package_metadata_extensions", version = "HEAD")
+bazel_dep(name = "supply-chain-go", version = "HEAD")
 
 local_path_override(
     module_name = "package_metadata",
@@ -17,4 +18,11 @@ local_path_override(
 local_path_override(
     module_name = "package_metadata_extensions",
     path = "../metadata-extensions",
+)
+
+# Owns the goldens of the JSON written by the `license` rule, which its Go
+# parser is tested against as well.
+local_path_override(
+    module_name = "supply-chain-go",
+    path = "../lib/supplychain-go",
 )
