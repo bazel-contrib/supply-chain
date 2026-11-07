@@ -28,7 +28,12 @@ func declaredLicenses(packages []*spdx.Package, licenseOf map[*spdx.Package]*sup
 		if !ok {
 			continue
 		}
-		kind := attribute.Root().Kind
+		root := attribute.Root()
+		if !root.IsSingle() {
+			// Only a single license is reported so far.
+			continue
+		}
+		kind := root.Kind
 
 		k := key{id: kind.Identifier}
 		var text string
