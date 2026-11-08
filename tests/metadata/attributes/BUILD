@@ -2,6 +2,8 @@ load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
 load("@package_metadata//attributes:copyright_notice.bzl", "copyright_notice")
 load("@package_metadata//attributes:cpe.bzl", "cpe")
 load("@package_metadata//attributes:integrity.bzl", "integrity")
+load("@package_metadata//attributes:patch.bzl", "patch")
+load("@package_metadata//attributes:patch_set.bzl", "patch_set")
 
 [
     [
@@ -67,3 +69,39 @@ load("@package_metadata//attributes:integrity.bzl", "integrity")
         ],
     }.items()
 ]
+
+patch(
+    name = "patch.valid-1",
+    description = "Fixes a buffer overflow in the parser.",
+    integrity = ["sha256-EbbT7lVO7feSmZBamPm5oE5JghC1nxUJTJFskdFQ51Q="],
+    resolves = ["CVE-2024-12345"],
+    type = "backport",
+    url = "https://example.com/patches/fix_overflow.patch",
+)
+
+diff_test(
+    name = "patch.valid-1.test",
+    file1 = ":patch.valid-1",
+    file2 = "testdata/patch/valid-1.json",
+)
+
+patch_set(
+    name = "patch_set.valid-1",
+    patches = [
+        ":patch.valid-1",
+        ":patch.valid-2",
+    ],
+)
+
+patch(
+    name = "patch.valid-2",
+    description = "Local tweak.",
+    file = "testdata/patch/local_tweak.patch",
+    integrity = ["sha256-EbbT7lVO7feSmZBamPm5oE5JghC1nxUJTJFskdFQ51Q="],
+)
+
+diff_test(
+    name = "patch_set.valid-1.test",
+    file1 = ":patch_set.valid-1",
+    file2 = "testdata/patch_set/valid-1.json",
+)
