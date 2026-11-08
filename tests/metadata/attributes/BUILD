@@ -97,6 +97,7 @@ patch(
     name = "patch.valid-2",
     description = "Local tweak.",
     file = "testdata/patch/local_tweak.patch",
+    type = "unofficial",
     integrity = ["sha256-EbbT7lVO7feSmZBamPm5oE5JghC1nxUJTJFskdFQ51Q="],
 )
 

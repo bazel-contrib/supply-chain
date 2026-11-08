@@ -78,6 +78,8 @@ def patch_set(
         name = "fix_overflow",
         description = "Fixes a buffer overflow in the parser.",
         integrity = ["sha256-EbbT7lVO7feSmZBamPm5oE5JghC1nxUJTJFskdFQ51Q="],
+        type = "backport",
+        url = "https://example.com/patches/fix_overflow.patch",
     )
     ```
 
