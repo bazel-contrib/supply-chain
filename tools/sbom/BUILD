@@ -2,10 +2,6 @@
 
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
-load(":cyclonedx.bzl", "cyclonedx")
-load(":sbom.bzl", "sbom")
-load(":spdx.bzl", "spdx")
-load(":strict_validations_test.bzl", "strict_validations_test_suite")
 
 package(
     default_package_metadata = ["//:package_metadata"],
@@ -44,28 +40,4 @@ bzl_library(
         "//gather_metadata",
     ],
     visibility = ["//visibility:public"],
-)
-
-sbom(
-    name = "test_sbom",
-    target = ":srcs",
-    tags = ["manual"],
-)
-
-cyclonedx(
-    name = "test_cyclonedx",
-    sbom = ":test_sbom",
-    tags = ["manual"],
-)
-
-spdx(
-    name = "test_spdx",
-    sbom = ":test_sbom",
-    tags = ["manual"],
-)
-
-strict_validations_test_suite(
-    name = "strict_validations_tests",
-    cyclonedx = ":test_cyclonedx",
-    spdx = ":test_spdx",
 )

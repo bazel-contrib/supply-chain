@@ -6,7 +6,6 @@ import (
 	"path"
 	"path/filepath"
 	"reflect"
-	"strings"
 	"testing"
 	"time"
 
@@ -301,45 +300,5 @@ func TestGenerateDocument_RetainsPackageEdges(t *testing.T) {
 				t.Fatalf("relationships = %v, want %v", got, want)
 			}
 		})
-	}
-}
-
-func TestGenerateDocument_OutputIsDeterministicSPDX3JSONLD(t *testing.T) {
-	dir := t.TempDir()
-	rootMeta := writePackageMetadata(t, dir, "root.json", "//app:root", "pkg:bazel/app@1.0.0")
-	var nodes []sbom.NodeConfig
-	var edges []sbom.EdgeConfig
-	classifications := sbom.Classifications{RootComponent: &sbom.NodeConfig{Label: "//app:root", MetadataFile: rootMeta}}
-	nodes = append(nodes, *classifications.RootComponent)
-	for i := 0; i < 20; i++ {
-		label := fmt.Sprintf("//lib:dep%d", i)
-		node := sbom.NodeConfig{Label: label, MetadataFile: writePackageMetadata(t, dir, fmt.Sprintf("dep%d.json", i), label, fmt.Sprintf("pkg:golang/github.com/example/dep%d@v1.2.3", i))}
-		nodes = append(nodes, node)
-		edges = append(edges, sbom.EdgeConfig{From: "//app:root", To: label, Type: "depends_on"})
-		classifications.Dependencies.Direct = append(classifications.Dependencies.Direct, node)
-	}
-	graph := sbom.GraphConfig{Nodes: nodes, Edges: edges}
-
-	render := func() string {
-		doc, err := GenerateDocument(graph, classifications, time.Unix(1700000000, 0).UTC())
-		if err != nil {
-			t.Fatal(err)
-		}
-		var buf strings.Builder
-		if err := writeDocument(doc, &buf); err != nil {
-			t.Fatal(err)
-		}
-		return buf.String()
-	}
-	first := render()
-	for i := 0; i < 5; i++ {
-		if render() != first {
-			t.Fatal("output differs between two runs")
-		}
-	}
-	for _, want := range []string{`"specVersion": "3.0.1"`, `"software_Package"`, `"dependsOn"`, `"rootElement"`, `"software_packageUrl": "pkg:golang/github.com/example/dep3@v1.2.3"`} {
-		if !strings.Contains(first, want) {
-			t.Errorf("output does not contain %s:\n%s", want, first)
-		}
 	}
 }

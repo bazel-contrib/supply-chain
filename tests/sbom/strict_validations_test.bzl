@@ -18,7 +18,7 @@ def _does_not_validate_test_impl(ctx):
     asserts.equals(env, [], _validator_args(env))
     return analysistest.end(env)
 
-_strict_flag = str(Label("//sbom:strict_validations"))
+_strict_flag = str(Label("@supply_chain_tools//sbom:strict_validations"))
 
 _validates_strict_test = analysistest.make(
     _validates_test_impl,
