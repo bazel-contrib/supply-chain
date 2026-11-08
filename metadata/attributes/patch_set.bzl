@@ -24,6 +24,7 @@ def _patch_set_impl(ctx):
         PackageAttributeInfo(
             kind = KIND,
             attributes = output,
+            files = [p[PackageAttributeInfo].files for p in ctx.attr.patches],
         ),
     ]
 
@@ -34,7 +35,7 @@ _patch_set = rule(
     attrs = {
         "patches": attr.label_list(
             mandatory = True,
-            providers = [PatchInfo],
+            providers = [PatchInfo, PackageAttributeInfo],
         ),
     },
 )
@@ -86,7 +87,8 @@ def patch_set(
     Format: the `PackageAttributeInfo` of this rule has `kind`
     `build.bazel.attribute.patch_set`, and its `attributes` file holds a JSON
     array of the objects described in `patch`, in the order of `patches`,
-    encoded as UTF-8 and written without insignificant whitespace.
+    encoded as UTF-8 and written without insignificant whitespace. The `files` of
+    its `PackageAttributeInfo` include those of every patch, e.g. their `file`.
 
     Args:
       name: A unique name for this target.
