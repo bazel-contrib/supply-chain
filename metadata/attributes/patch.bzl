@@ -23,8 +23,6 @@ def _patch_impl(ctx):
         fail("integrity must contain at least one entry")
     if bool(ctx.attr.url) == bool(ctx.file.file):
         fail("exactly one of url or file must be set")
-    if ctx.attr.type and ctx.attr.type not in PATCH_TYPES:
-        fail("type must be one of {}, got '{}'".format(PATCH_TYPES, ctx.attr.type))
 
     value = {
         "description": ctx.attr.description,
@@ -71,7 +69,10 @@ _patch = rule(
             allow_single_file = True,
         ),
         "resolves": attr.string_list(),
-        "type": attr.string(),
+        # The empty string means unset.
+        "type": attr.string(
+            values = [""] + PATCH_TYPES,
+        ),
         "url": attr.string(),
     },
 )
