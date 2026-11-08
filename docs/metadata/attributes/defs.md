@@ -324,7 +324,8 @@ patch(
 Format: the `PackageAttributeInfo` of this rule has `kind`
 `build.bazel.attribute.patch_set`, and its `attributes` file holds a JSON
 array of the objects described in `patch`, in the order of `patches`,
-encoded as UTF-8 and written without insignificant whitespace.
+encoded as UTF-8 and written without insignificant whitespace. The `files` of
+its `PackageAttributeInfo` include those of every patch, e.g. their `file`.
 
 
 **PARAMETERS**
