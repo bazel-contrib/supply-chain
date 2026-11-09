@@ -1,0 +1,130 @@
+{
+  "@context": "https://spdx.org/rdf/3.0.1/spdx-context.jsonld",
+  "@graph": [
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "Bazel Supply Chain Tools SPDX generator",
+      "spdxId": "SPDXRef:SoftwareAgent-1",
+      "type": "SoftwareAgent"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "app",
+      "software_packageUrl": "pkg:generic/app@1.0.0",
+      "software_packageVersion": "1.0.0",
+      "spdxId": "SPDXRef:dep-0",
+      "type": "software_Package"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "download_url",
+      "software_downloadLocation": "https://example.com/download_url.tar.gz",
+      "software_packageUrl": "pkg:generic/download_url@1.2.3?download_url=https%3A%2F%2Fexample.com%2Fdownload_url.tar.gz",
+      "software_packageVersion": "1.2.3",
+      "spdxId": "SPDXRef:dep-1",
+      "type": "software_Package"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "unversioned",
+      "software_packageUrl": "pkg:generic/unversioned",
+      "spdxId": "SPDXRef:dep-2",
+      "type": "software_Package"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "url_download",
+      "software_downloadLocation": "https://example.com/url_download.tar.gz",
+      "software_packageUrl": "pkg:generic/url_download@1.2.3?url_download=https%3A%2F%2Fexample.com%2Furl_download.tar.gz",
+      "software_packageVersion": "1.2.3",
+      "spdxId": "SPDXRef:dep-3",
+      "type": "software_Package"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-0",
+      "relationshipType": "dependsOn",
+      "spdxId": "SPDXRef:rel-0",
+      "to": [
+        "SPDXRef:dep-1"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-0",
+      "relationshipType": "dependsOn",
+      "spdxId": "SPDXRef:rel-1",
+      "to": [
+        "SPDXRef:dep-2"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-0",
+      "relationshipType": "dependsOn",
+      "spdxId": "SPDXRef:rel-2",
+      "to": [
+        "SPDXRef:dep-3"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "element": [
+        "SPDXRef:SoftwareAgent-1",
+        "SPDXRef:dep-0",
+        "SPDXRef:dep-1",
+        "SPDXRef:dep-2",
+        "SPDXRef:dep-3",
+        "SPDXRef:rel-0",
+        "SPDXRef:rel-1",
+        "SPDXRef:rel-2"
+      ],
+      "rootElement": [
+        "SPDXRef:dep-0"
+      ],
+      "spdxId": "SPDXRef:sbom",
+      "type": "software_Sbom"
+    },
+    {
+      "@id": "_:CreationInfo-1",
+      "created": "1970-01-01T00:00:00Z",
+      "createdBy": [
+        "SPDXRef:SoftwareAgent-1"
+      ],
+      "createdUsing": [],
+      "specVersion": "3.0.1",
+      "type": "CreationInfo"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "CC0-1.0",
+      "simplelicensing_licenseText": "NOASSERTION",
+      "spdxId": "https://spdx.org/licenses/CC0-1.0",
+      "type": "expandedlicensing_ListedLicense"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "dataLicense": "https://spdx.org/licenses/CC0-1.0",
+      "name": "app",
+      "namespaceMap": [
+        {
+          "namespace": "https://spdx.org/spdxdocs/pkg:generic%2Fapp@1.0.0#",
+          "prefix": "SPDXRef",
+          "type": "NamespaceMap"
+        }
+      ],
+      "profileConformance": [
+        "core",
+        "software"
+      ],
+      "rootElement": [
+        "SPDXRef:sbom"
+      ],
+      "spdxId": "https://spdx.org/spdxdocs/pkg:generic%2Fapp@1.0.0",
+      "type": "SpdxDocument"
+    }
+  ]
+}

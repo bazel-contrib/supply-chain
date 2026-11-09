@@ -3,82 +3,13 @@ package main
 import (
 	"fmt"
 	"os"
-	"path"
 	"path/filepath"
 	"reflect"
 	"testing"
 	"time"
 
 	"github.com/bazel-contrib/supply-chain/lib/supplychain-go/internal/sbom"
-	spdx "github.com/spdx/tools-golang/spdx/v3/v3_0"
 )
-
-func sbomOf(doc *spdx.Document) *spdx.SBOM {
-	return doc.RootElements[0].(*spdx.SBOM)
-}
-
-func packagesOf(doc *spdx.Document) []*spdx.Package {
-	var packages []*spdx.Package
-	for _, element := range sbomOf(doc).Elements {
-		if pkg, ok := element.(*spdx.Package); ok {
-			packages = append(packages, pkg)
-		}
-	}
-	return packages
-}
-
-func relationshipsOf(doc *spdx.Document) []*spdx.Relationship {
-	var relationships []*spdx.Relationship
-	for _, element := range sbomOf(doc).Elements {
-		if relationship, ok := element.(*spdx.Relationship); ok {
-			relationships = append(relationships, relationship)
-		}
-	}
-	return relationships
-}
-
-func TestReadBuildTimestamp_NoPath(t *testing.T) {
-	got, err := readBuildTimestamp("")
-	if err != nil {
-		t.Fatalf("readBuildTimestamp(\"\") error = %v", err)
-	}
-	if !got.Equal(time.Unix(0, 0).UTC()) {
-		t.Errorf("readBuildTimestamp(\"\") = %v, want the Unix epoch", got)
-	}
-}
-
-func TestReadBuildTimestamp_FromFile(t *testing.T) {
-	dir := t.TempDir()
-	path := filepath.Join(dir, "volatile-status.txt")
-	if err := os.WriteFile(path, []byte("BUILD_SCM_REVISION abc123\nBUILD_TIMESTAMP 1700000000\n"), 0o644); err != nil {
-		t.Fatal(err)
-	}
-
-	got, err := readBuildTimestamp(path)
-	if err != nil {
-		t.Fatalf("readBuildTimestamp() error = %v", err)
-	}
-	want := time.Unix(1700000000, 0).UTC()
-	if !got.Equal(want) {
-		t.Errorf("readBuildTimestamp() = %v, want %v", got, want)
-	}
-}
-
-func TestReadBuildTimestamp_MissingKeyFallsBackToEpoch(t *testing.T) {
-	dir := t.TempDir()
-	path := filepath.Join(dir, "volatile-status.txt")
-	if err := os.WriteFile(path, []byte("BUILD_SCM_REVISION abc123\n"), 0o644); err != nil {
-		t.Fatal(err)
-	}
-
-	got, err := readBuildTimestamp(path)
-	if err != nil {
-		t.Fatalf("readBuildTimestamp() error = %v", err)
-	}
-	if !got.Equal(time.Unix(0, 0).UTC()) {
-		t.Errorf("readBuildTimestamp() = %v, want the Unix epoch", got)
-	}
-}
 
 func writePackageMetadata(t *testing.T, dir, name, label, purl string) string {
 	t.Helper()
@@ -90,7 +21,7 @@ func writePackageMetadata(t *testing.T, dir, name, label, purl string) string {
 	return path
 }
 
-func TestGenerateDocument_RequiredFieldsPopulated(t *testing.T) {
+func TestGenerateDocument23_RequiredFieldsPopulated(t *testing.T) {
 	dir := t.TempDir()
 	rootMeta := writePackageMetadata(t, dir, "root.json", "//app:root", "pkg:bazel/app@1.0.0")
 	depMeta := writePackageMetadata(t, dir, "dep.json", "//lib:dep", "pkg:golang/github.com/example/dep@v1.2.3")
@@ -113,41 +44,48 @@ func TestGenerateDocument_RequiredFieldsPopulated(t *testing.T) {
 	}
 
 	created := time.Unix(1700000000, 0).UTC()
-	doc, err := GenerateDocument(graph, classifications, created)
+	doc, err := GenerateDocument23(graph, classifications, created)
 	if err != nil {
-		t.Fatalf("GenerateDocument() error = %v", err)
+		t.Fatalf("GenerateDocument23() error = %v", err)
 	}
 
-	if got := doc.DataLicense.(*spdx.ListedLicense).Name; got != "CC0-1.0" {
-		t.Errorf("DataLicense = %q, want %q", got, "CC0-1.0")
+	if doc.DataLicense != "CC0-1.0" {
+		t.Errorf("DataLicense = %q, want %q", doc.DataLicense, "CC0-1.0")
 	}
-	if doc.Name != "app" {
-		t.Errorf("Name = %q, want the root component's name", doc.Name)
+	if doc.DocumentName == "" {
+		t.Error("DocumentName is empty, want the root component's name")
 	}
-	if want := "https://spdx.org/spdxdocs/pkg:bazel%2Fapp@1.0.0"; doc.ID != want {
-		t.Errorf("ID = %q, want %q", doc.ID, want)
+	if doc.DocumentNamespace == "" {
+		t.Error("DocumentNamespace is empty, want a namespace derived from the root component")
 	}
-	if got := doc.CreationInfo.(*spdx.CreationInfo).Created; !got.Equal(created) {
-		t.Errorf("Created = %v, want %v", got, created)
+	if doc.CreationInfo == nil {
+		t.Fatal("CreationInfo is nil")
 	}
-	if got := doc.CreationInfo.(*spdx.CreationInfo).SpecVersion; got != "3.0.1" {
-		t.Errorf("SpecVersion = %q, want 3.0.1", got)
+	if len(doc.CreationInfo.Creators) == 0 {
+		t.Error("CreationInfo.Creators is empty, want at least one Tool creator")
+	}
+	wantCreated := "2023-11-14T22:13:20Z"
+	if doc.CreationInfo.Created != wantCreated {
+		t.Errorf("CreationInfo.Created = %q, want %q", doc.CreationInfo.Created, wantCreated)
 	}
 	wantVersions := map[string]string{"app": "1.0.0", "dep": "v1.2.3"}
-	for _, pkg := range packagesOf(doc) {
-		if pkg.Version != wantVersions[pkg.Name] {
-			t.Errorf("Version for %s = %q, want %q", pkg.Name, pkg.Version, wantVersions[pkg.Name])
+	for _, pkg := range doc.Packages {
+		if pkg.PackageVersion != wantVersions[pkg.PackageName] {
+			t.Errorf("PackageVersion for %s = %q, want %q", pkg.PackageName, pkg.PackageVersion, wantVersions[pkg.PackageName])
 		}
-		if pkg.PackageURL == "" {
-			t.Errorf("PackageURL for %s is empty", pkg.Name)
+		if pkg.PackageDownloadLocation == "" {
+			t.Errorf("PackageDownloadLocation for %s is empty, want an SPDX sentinel value", pkg.PackageName)
 		}
-	}
-	if roots := sbomOf(doc).RootElements; len(roots) != 1 || roots[0].(*spdx.Package).Name != "app" {
-		t.Errorf("SBOM root elements = %v, want the root component", roots)
+		if pkg.PackageLicenseConcluded != "NOASSERTION" {
+			t.Errorf("PackageLicenseConcluded for %s = %q, want NOASSERTION", pkg.PackageName, pkg.PackageLicenseConcluded)
+		}
+		if pkg.PackageLicenseDeclared != "NOASSERTION" {
+			t.Errorf("PackageLicenseDeclared for %s = %q, want NOASSERTION", pkg.PackageName, pkg.PackageLicenseDeclared)
+		}
 	}
 }
 
-func TestGenerateDocument_NoRootFallsBackToFirstPackage(t *testing.T) {
+func TestGenerateDocument23_NoRootFallsBackToFirstPackage(t *testing.T) {
 	dir := t.TempDir()
 	depMeta := writePackageMetadata(t, dir, "dep.json", "//lib:dep", "pkg:golang/github.com/example/dep@v1.2.3")
 
@@ -160,16 +98,16 @@ func TestGenerateDocument_NoRootFallsBackToFirstPackage(t *testing.T) {
 		},
 	}
 
-	doc, err := GenerateDocument(graph, classifications, time.Unix(0, 0).UTC())
+	doc, err := GenerateDocument23(graph, classifications, time.Unix(0, 0).UTC())
 	if err != nil {
-		t.Fatalf("GenerateDocument() error = %v", err)
+		t.Fatalf("GenerateDocument23() error = %v", err)
 	}
-	if doc.Name != "dep" {
-		t.Errorf("Name = %q, want %q", doc.Name, "dep")
+	if doc.DocumentName != "dep" {
+		t.Errorf("DocumentName = %q, want %q", doc.DocumentName, "dep")
 	}
 }
 
-func TestGenerateDocument_PURLWithoutVersionLeavesPackageVersionEmpty(t *testing.T) {
+func TestGenerateDocument23_PURLWithoutVersionLeavesPackageVersionEmpty(t *testing.T) {
 	dir := t.TempDir()
 	depMeta := writePackageMetadata(t, dir, "dep.json", "//lib:dep", "pkg:golang/github.com/example/dep")
 
@@ -182,16 +120,16 @@ func TestGenerateDocument_PURLWithoutVersionLeavesPackageVersionEmpty(t *testing
 		},
 	}
 
-	doc, err := GenerateDocument(graph, classifications, time.Unix(0, 0).UTC())
+	doc, err := GenerateDocument23(graph, classifications, time.Unix(0, 0).UTC())
 	if err != nil {
-		t.Fatalf("GenerateDocument() error = %v", err)
+		t.Fatalf("GenerateDocument23() error = %v", err)
 	}
-	if got := packagesOf(doc)[0].Version; got != "" {
+	if got := doc.Packages[0].PackageVersion; got != "" {
 		t.Errorf("PackageVersion = %q, want empty", got)
 	}
 }
 
-func TestGenerateDocument_UsesPURLDownloadQualifier(t *testing.T) {
+func TestGenerateDocument23_UsesPURLDownloadQualifier(t *testing.T) {
 	dir := t.TempDir()
 	depMeta := writePackageMetadata(t, dir, "dep.json", "//lib:dep", "pkg:golang/github.com/example/dep@v1.2.3?download_url=https://example.com/dep.tar.gz")
 
@@ -204,16 +142,16 @@ func TestGenerateDocument_UsesPURLDownloadQualifier(t *testing.T) {
 		},
 	}
 
-	doc, err := GenerateDocument(graph, classifications, time.Unix(0, 0).UTC())
+	doc, err := GenerateDocument23(graph, classifications, time.Unix(0, 0).UTC())
 	if err != nil {
-		t.Fatalf("GenerateDocument() error = %v", err)
+		t.Fatalf("GenerateDocument23() error = %v", err)
 	}
-	if got, want := string(packagesOf(doc)[0].DownloadLocation), "https://example.com/dep.tar.gz"; got != want {
+	if got, want := doc.Packages[0].PackageDownloadLocation, "https://example.com/dep.tar.gz"; got != want {
 		t.Errorf("PackageDownloadLocation = %q, want %q", got, want)
 	}
 }
 
-func TestGenerateDocument_UsesPURLURLDownloadQualifier(t *testing.T) {
+func TestGenerateDocument23_UsesPURLURLDownloadQualifier(t *testing.T) {
 	dir := t.TempDir()
 	depMeta := writePackageMetadata(t, dir, "dep.json", "//lib:dep", "pkg:golang/github.com/example/dep@v1.2.3?url_download=https://example.com/dep.tar.gz")
 
@@ -226,29 +164,29 @@ func TestGenerateDocument_UsesPURLURLDownloadQualifier(t *testing.T) {
 		},
 	}
 
-	doc, err := GenerateDocument(graph, classifications, time.Unix(0, 0).UTC())
+	doc, err := GenerateDocument23(graph, classifications, time.Unix(0, 0).UTC())
 	if err != nil {
-		t.Fatalf("GenerateDocument() error = %v", err)
+		t.Fatalf("GenerateDocument23() error = %v", err)
 	}
-	if got, want := string(packagesOf(doc)[0].DownloadLocation), "https://example.com/dep.tar.gz"; got != want {
+	if got, want := doc.Packages[0].PackageDownloadLocation, "https://example.com/dep.tar.gz"; got != want {
 		t.Errorf("PackageDownloadLocation = %q, want %q", got, want)
 	}
 }
 
-func TestGenerateDocument_EmptyGraphUsesFallbackSubject(t *testing.T) {
-	doc, err := GenerateDocument(sbom.GraphConfig{}, sbom.Classifications{}, time.Unix(0, 0).UTC())
+func TestGenerateDocument23_EmptyGraphUsesFallbackSubject(t *testing.T) {
+	doc, err := GenerateDocument23(sbom.GraphConfig{}, sbom.Classifications{}, time.Unix(0, 0).UTC())
 	if err != nil {
-		t.Fatalf("GenerateDocument() error = %v", err)
+		t.Fatalf("GenerateDocument23() error = %v", err)
 	}
-	if doc.Name == "" {
-		t.Error("Name is empty even with no packages at all")
+	if doc.DocumentName == "" {
+		t.Error("DocumentName is empty even with no packages at all")
 	}
-	if doc.ID == "" {
-		t.Error("ID is empty even with no packages at all")
+	if doc.DocumentNamespace == "" {
+		t.Error("DocumentNamespace is empty even with no packages at all")
 	}
 }
 
-func TestGenerateDocument_RetainsPackageEdges(t *testing.T) {
+func TestGenerateDocument23_RetainsPackageEdges(t *testing.T) {
 	for _, wrappers := range []bool{false, true} {
 		t.Run(fmt.Sprintf("wrappers=%t", wrappers), func(t *testing.T) {
 			dir := t.TempDir()
@@ -280,21 +218,22 @@ func TestGenerateDocument_RetainsPackageEdges(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			doc, err := GenerateDocument(graph, classifications, time.Unix(0, 0).UTC())
+			doc, err := GenerateDocument23(graph, classifications, time.Unix(0, 0).UTC())
 			if err != nil {
 				t.Fatal(err)
 			}
-			if len(packagesOf(doc)) != 3 {
-				t.Fatalf("got %d packages, want 3", len(packagesOf(doc)))
+			if len(doc.Packages) != 3 {
+				t.Fatalf("got %d packages, want 3", len(doc.Packages))
 			}
 			got := make(map[string]int)
-			for _, relationship := range relationshipsOf(doc) {
-				key := relationship.From.(*spdx.Package).ID + " " + path.Base(relationship.Type.GetID()) + " " + relationship.To[0].(*spdx.Package).ID
+			for _, relationship := range doc.Relationships {
+				key := string(relationship.RefA.ElementRefID) + " " + relationship.Relationship + " " + string(relationship.RefB.ElementRefID)
 				got[key]++
 			}
 			want := map[string]int{
-				"dep-0 dependsOn dep-1": 1,
-				"dep-1 dependsOn dep-2": 1,
+				"dep-0 DEPENDS_ON dep-1":   1,
+				"dep-1 DEPENDS_ON dep-2":   1,
+				"DOCUMENT DESCRIBES dep-0": 1,
 			}
 			if !reflect.DeepEqual(got, want) {
 				t.Fatalf("relationships = %v, want %v", got, want)

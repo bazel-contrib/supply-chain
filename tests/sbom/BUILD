@@ -34,6 +34,12 @@ sbom(
 spdx(
     name = "app_spdx",
     sbom = ":app_sbom",
+    format = "json-ld",
+)
+
+spdx(
+    name = "app_spdx23",
+    sbom = ":app_sbom",
 )
 
 cyclonedx(
@@ -45,6 +51,12 @@ sbom_golden_test(
     name = "app_spdx_golden_test",
     golden = "testdata/app_spdx.json",
     report = ":app_spdx",
+)
+
+sbom_golden_test(
+    name = "app_spdx23_golden_test",
+    golden = "testdata/app_spdx23.json",
+    report = ":app_spdx23",
 )
 
 sbom_golden_test(

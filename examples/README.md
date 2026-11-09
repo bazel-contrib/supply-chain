@@ -60,4 +60,5 @@ requires root metadata by default; `require_root_metadata = False` permits
 reports without a root component.
 
 The `cyclonedx` exporter also supports `format = "xml"`. The `spdx` exporter
-writes SPDX 3.0.1 JSON-LD only.
+writes SPDX 2.3 as `format = "json"` (the default), `"yaml"` or `"tag-value"`,
+and SPDX 3.0.1 as `format = "json-ld"`.

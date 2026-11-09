@@ -3,13 +3,10 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"flag"
 	"fmt"
 	"io"
 	"net/url"
-	"os"
 	"sort"
-	"strconv"
 	"strings"
 	"time"
 
@@ -18,66 +15,8 @@ import (
 	spdx "github.com/spdx/tools-golang/spdx/v3/v3_0"
 )
 
-func main() {
-	var outPath, graphPath, classificationsPath, buildStatusPath, validatorPath string
-	flag.StringVar(&outPath, "out", "", "The path to write the generated SPDX SBOM.")
-	flag.StringVar(&graphPath, "graph", "", "The path to the graph JSON file.")
-	flag.StringVar(&classificationsPath, "classifications", "", "The path to the classifications JSON file.")
-	flag.StringVar(&buildStatusPath, "created_from_status_file", "", "Path to a Bazel volatile-status.txt file to read a BUILD_TIMESTAMP from for creationInfo.created. If unset, or the file has no BUILD_TIMESTAMP key, a fixed deterministic timestamp (the Unix epoch) is used instead, matching Bazel's own --nostamp default.")
-	flag.StringVar(&validatorPath, "validator", "", "Optional runfiles path or executable path to the SPDX tools-java validator wrapper.")
-	flag.Parse()
-
-	if graphPath == "" || classificationsPath == "" {
-		panic("both --graph and --classifications flags are required")
-	}
-
-	graphBytes, err := os.ReadFile(graphPath)
-	if err != nil {
-		panic(fmt.Errorf("reading graph: %w", err))
-	}
-
-	var graph sbom.GraphConfig
-	if err := json.Unmarshal(graphBytes, &graph); err != nil {
-		panic(fmt.Errorf("parsing graph: %w", err))
-	}
-
-	classBytes, err := os.ReadFile(classificationsPath)
-	if err != nil {
-		panic(fmt.Errorf("reading classifications: %w", err))
-	}
-
-	var classifications sbom.Classifications
-	if err := json.Unmarshal(classBytes, &classifications); err != nil {
-		panic(fmt.Errorf("parsing classifications: %w", err))
-	}
-
-	created, err := readBuildTimestamp(buildStatusPath)
-	if err != nil {
-		panic(fmt.Errorf("reading build status file: %w", err))
-	}
-
-	doc, err := GenerateDocument(graph, classifications, created)
-	if err != nil {
-		panic(err)
-	}
-
-	var buf bytes.Buffer
-	must := func(err error) {
-		if err != nil {
-			panic(err)
-		}
-	}
-	must(writeDocument(doc, &buf))
-
-	must(os.WriteFile(outPath, buf.Bytes(), 0664))
-
-	if validatorPath != "" {
-		must(sbom.RunValidator(validatorPath, outPath))
-	}
-}
-
-// GenerateDocument builds an SPDX 3.0.1 document from the graph.
-func GenerateDocument(graph sbom.GraphConfig, classifications sbom.Classifications, created time.Time) (*spdx.Document, error) {
+// GenerateDocument301 builds an SPDX 3.0.1 document from the graph.
+func GenerateDocument301(graph sbom.GraphConfig, classifications sbom.Classifications, created time.Time) (*spdx.Document, error) {
 	graph = sbom.NormalizeGraph(graph)
 	labelToPackage := make(map[string]*spdx.Package)
 	var packages []*spdx.Package
@@ -241,36 +180,4 @@ func writeDocument(doc *spdx.Document, w io.Writer) error {
 	encoder.SetEscapeHTML(false)
 	encoder.SetIndent("", "  ")
 	return encoder.Encode(out)
-}
-
-// readBuildTimestamp reads a BUILD_TIMESTAMP key out of a Bazel
-// volatile-status.txt file (see ctx.version_file / --workspace_status_command),
-// for use as creationInfo.created. If path is empty, or the file has no
-// BUILD_TIMESTAMP key, it returns the Unix epoch: the same fixed value Bazel
-// itself substitutes for BUILD_TIMESTAMP when building without --stamp, so
-// SBOM generation stays deterministic and cacheable unless the caller
-// explicitly opts into a real timestamp via --stamp.
-func readBuildTimestamp(path string) (time.Time, error) {
-	if path == "" {
-		return time.Unix(0, 0).UTC(), nil
-	}
-
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return time.Time{}, err
-	}
-
-	for _, line := range strings.Split(string(data), "\n") {
-		key, value, found := strings.Cut(line, " ")
-		if !found || key != "BUILD_TIMESTAMP" {
-			continue
-		}
-		seconds, err := strconv.ParseInt(strings.TrimSpace(value), 10, 64)
-		if err != nil {
-			return time.Time{}, fmt.Errorf("parsing BUILD_TIMESTAMP %q: %w", value, err)
-		}
-		return time.Unix(seconds, 0).UTC(), nil
-	}
-
-	return time.Unix(0, 0).UTC(), nil
 }
