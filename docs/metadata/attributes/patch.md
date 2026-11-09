@@ -9,7 +9,7 @@ Declares rule `patch`.
 <pre>
 load("@package_metadata//attributes:patch.bzl", "PatchInfo")
 
-PatchInfo(<a href="#PatchInfo-value">value</a>)
+PatchInfo(<a href="#PatchInfo-description">description</a>, <a href="#PatchInfo-file">file</a>, <a href="#PatchInfo-integrity">integrity</a>, <a href="#PatchInfo-resolves">resolves</a>, <a href="#PatchInfo-type">type</a>, <a href="#PatchInfo-url">url</a>)
 </pre>
 
 Provider carrying the fields of a single `patch` target, consumed by `patch_set`.
@@ -18,7 +18,12 @@ Provider carrying the fields of a single `patch` target, consumed by `patch_set`
 
 | Name  | Description |
 | :------------- | :------------- |
-| <a id="PatchInfo-value"></a>value |  A dict holding the JSON-serializable fields of the patch.    |
+| <a id="PatchInfo-description"></a>description |  The description of the patch.    |
+| <a id="PatchInfo-file"></a>file |  The short path of the patch file, or None.    |
+| <a id="PatchInfo-integrity"></a>integrity |  The list of integrity strings of the patch.    |
+| <a id="PatchInfo-resolves"></a>resolves |  The list of issues resolved by the patch (JSON-serializable), or empty.    |
+| <a id="PatchInfo-type"></a>type |  The type of the patch.    |
+| <a id="PatchInfo-url"></a>url |  The URL of the patch, or None.    |
 
 
 <a id="patch"></a>
