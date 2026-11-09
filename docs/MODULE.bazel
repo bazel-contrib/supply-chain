@@ -3,12 +3,6 @@ module(
     version = "HEAD",
 )
 
-# Must come first so that its C++ toolchain takes precedence over the one from
-# `rules_cc`, which doesn't support newer versions of Xcode.
-bazel_dep(
-    name = "apple_support",
-    version = "2.10.1",
-)
 bazel_dep(
     name = "bazel_skylib",
     version = "1.9.2",
@@ -17,6 +11,16 @@ bazel_dep(
     name = "stardoc",
     version = "0.8.1",
 )
+bazel_dep(
+    name = "protobuf",
+    version = "36.1.bcr.1",
+)
+bazel_dep(
+    name = "llvm",
+    version = "0.8.25",
+)
+
+register_toolchains("@llvm//toolchain:all")
 
 #
 # Modules from this repository.
