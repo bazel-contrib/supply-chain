@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"sort"
 	"strings"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
@@ -221,6 +222,8 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications) (
 				Dependencies: &childRefs,
 			})
 		}
+		// Map iteration order is random; keep the output reproducible.
+		sort.Slice(deps, func(i, j int) bool { return deps[i].Ref < deps[j].Ref })
 		dependencies = &deps
 	}
 
