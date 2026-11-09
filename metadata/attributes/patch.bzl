@@ -14,7 +14,12 @@ PATCH_TYPES = ["unofficial", "monkey", "backport", "cherry-pick"]
 PatchInfo = provider(
     doc = "Provider carrying the fields of a single `patch` target, consumed by `patch_set`.",
     fields = {
-        "value": "A dict holding the JSON-serializable fields of the patch.",
+        "description": "The description of the patch.",
+        "file": "The short path of the patch file, or None.",
+        "integrity": "The list of integrity strings of the patch.",
+        "resolves": "The list of issues resolved by the patch (JSON-serializable), or empty.",
+        "type": "The type of the patch.",
+        "url": "The URL of the patch, or None.",
     },
 )
 
@@ -50,7 +55,14 @@ def _patch_impl(ctx):
             attributes = output,
             files = [depset(direct = [ctx.file.file])] if ctx.file.file else [],
         ),
-        PatchInfo(value = value),
+        PatchInfo(
+            description = ctx.attr.description,
+            file = ctx.file.file.short_path if ctx.file.file else None,
+            integrity = ctx.attr.integrity,
+            resolves = ctx.attr.resolves,
+            type = ctx.attr.type,
+            url = ctx.attr.url or None,
+        ),
     ]
 
 # Documentation lives on the public `patch` macro below: Stardoc renders the
