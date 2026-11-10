@@ -1,0 +1,13 @@
+{
+  "expression": {
+    "kind": {
+      "identifier": "MIT",
+      "name": "MIT License"
+    }
+  },
+  "kind": {
+    "identifier": "MIT",
+    "name": "MIT License"
+  },
+  "label": "@@//:single_license"
+}
