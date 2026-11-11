@@ -3,13 +3,13 @@ load("providers.bzl", "SbomInfo")
 
 def _spdx_impl(ctx):
     out_path = (
-        ctx.attr.out.name if ctx.attr.out != None else "%s.txt" % ctx.attr.name if ctx.attr.format == "tag-value" else "%s.json" % ctx.attr.name if ctx.attr.format == "json" else "%s.yaml" % ctx.attr.name
+        ctx.attr.out.name if ctx.attr.out != None else "%s.txt" % ctx.attr.name if ctx.attr.format == "tag-value" else "%s.yaml" % ctx.attr.name if ctx.attr.format == "yaml" else "%s.json" % ctx.attr.name
     )
 
     out = ctx.actions.declare_file(out_path)
     strict = ctx.attr._strict_validations[BuildSettingInfo].value
 
-    # creationInfo.created (SPDX 2.3, mandatory) comes from Bazel's own
+    # creationInfo.created (mandatory in SPDX 2.3 and 3.0.1) comes from Bazel's own
     # build-stamping mechanism: ctx.version_file (volatile-status.txt) holds
     # a real BUILD_TIMESTAMP only when the build is invoked with --stamp;
     # otherwise Bazel substitutes a fixed placeholder, which keeps this
@@ -58,7 +58,11 @@ spdx = rule(
     _spdx_impl,
     attrs = {
         "sbom": attr.label(doc = "The sbom target to generate the SPDX SBOM from."),
-        "format": attr.string(default = "json", values = ["json", "yaml", "tag-value"], doc = "The output format for the SPDX SBOM."),
+        "format": attr.string(
+            default = "json",
+            values = ["json", "yaml", "tag-value", "json-ld"],
+            doc = "The output format for the SPDX SBOM. `json`, `yaml` and `tag-value` write SPDX 2.3; `json-ld` writes SPDX 3.0.1.",
+        ),
         "out": attr.output(doc = "The output file for the SPDX SBOM."),
         "_spdx": attr.label(default = "@supply-chain-go//cmd/spdx", doc = "The spdx tool to use.", executable = True, cfg = "exec"),
         "_strict_validations": attr.label(

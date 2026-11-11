@@ -2,7 +2,11 @@ load("@rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
 
 go_library(
     name = "spdx_lib",
-    srcs = ["spdx.go"],
+    srcs = [
+        "main.go",
+        "spdx_2_3.go",
+        "spdx_3_0_1.go",
+    ],
     importpath = "github.com/bazel-contrib/supply-chain/lib/supplychain-go/cmd/spdx",
     visibility = ["//visibility:private"],
     deps = [
@@ -11,6 +15,7 @@ go_library(
         "@com_github_spdx_tools_golang//json",
         "@com_github_spdx_tools_golang//spdx",
         "@com_github_spdx_tools_golang//spdx/v2/common",
+        "@com_github_spdx_tools_golang//spdx/v3/v3_0",
         "@com_github_spdx_tools_golang//tagvalue",
         "@com_github_spdx_tools_golang//yaml",
     ],
@@ -24,7 +29,12 @@ go_binary(
 
 go_test(
     name = "spdx_test",
-    srcs = ["spdx_test.go"],
+    srcs = [
+        "main_test.go",
+        "spdx_2_3_test.go",
+    ],
     embed = [":spdx_lib"],
-    deps = ["//internal/sbom"],
+    deps = [
+        "//internal/sbom",
+    ],
 )

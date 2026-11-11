@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"sort"
 	"strings"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
@@ -74,7 +75,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err := encoder.Encode(bom); err != nil {
+	// cyclonedx-go defaults to a newer spec than the validator supports.
+	if err := encoder.EncodeVersion(bom, cdx.SpecVersion1_6); err != nil {
 		fmt.Fprintf(os.Stderr, "Error encoding BOM: %v\n", err)
 		os.Exit(1)
 	}
@@ -220,6 +222,8 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications) (
 				Dependencies: &childRefs,
 			})
 		}
+		// Map iteration order is random; keep the output reproducible.
+		sort.Slice(deps, func(i, j int) bool { return deps[i].Ref < deps[j].Ref })
 		dependencies = &deps
 	}
 
