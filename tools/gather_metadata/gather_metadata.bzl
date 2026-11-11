@@ -29,6 +29,7 @@ def _gather_metadata_info_impl(target, ctx):
         provider_factory = TransitiveMetadataInfo,
         null_provider_instance = null_transitive_metadata_info,
         filter_func = should_traverse,
+        enable_intermediate_pruning = False,
     )
 
 gather_metadata_info = aspect(

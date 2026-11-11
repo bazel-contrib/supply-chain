@@ -53,6 +53,12 @@ example below is indented for readability):
 
 ```json
 {
+    "expression": {
+        "kind": {
+            "identifier": "GPL-3.0-or-later",
+            "name": "GNU General Public License v3.0 or later"
+        }
+    },
     "kind": {
         "identifier": "GPL-3.0-or-later",
         "name": "GNU General Public License v3.0 or later"
@@ -64,8 +70,11 @@ example below is indented for readability):
 
 | Field | Description |
 | :---- | :---------- |
-| `kind.identifier` | The `identifier` of the `kind` of this license. |
-| `kind.name` | The `full_name` of the `kind` of this license. |
+| `expression` | The root node of the license expression tree. Currently always a leaf: an object with a `kind`. Future versions add operator nodes (`AND`, `OR`, `WITH`) to this tree. |
+| `expression.kind.identifier` | The `identifier` of the `kind` of this license. |
+| `expression.kind.name` | The `full_name` of the `kind` of this license. |
+| `expression.kind.custom` | `true` if the identifier is not on the SPDX license list. Absent otherwise. |
+| `kind` | Deprecated, a copy of `expression.kind` for readers that do not know `expression` yet. |
 | `label` | The label of this `license` target. |
 | `text` | The path of the license `text` file, relative to the execution root. Absent if no `text` was declared. |
 

@@ -17,6 +17,16 @@ bazel_dep(
     name = "stardoc",
     version = "0.8.1",
 )
+bazel_dep(
+    name = "protobuf",
+    version = "36.1.bcr.1",
+)
+bazel_dep(
+    name = "llvm",
+    version = "0.8.25",
+)
+
+register_toolchains("@llvm//toolchain:all")
 
 #
 # Modules from this repository.

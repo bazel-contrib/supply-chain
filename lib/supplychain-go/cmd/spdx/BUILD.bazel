@@ -1,4 +1,4 @@
-load("@rules_go//go:def.bzl", "go_binary", "go_library")
+load("@rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
 
 go_library(
     name = "spdx_lib",
@@ -20,4 +20,11 @@ go_binary(
     name = "spdx",
     embed = [":spdx_lib"],
     visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "spdx_test",
+    srcs = ["spdx_test.go"],
+    embed = [":spdx_lib"],
+    deps = ["//internal/sbom"],
 )

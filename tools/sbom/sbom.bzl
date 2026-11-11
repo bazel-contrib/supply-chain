@@ -1,16 +1,16 @@
-load("providers.bzl", "SbomInfo")
 load(
     "@supply_chain_tools//gather_metadata:gather_metadata.bzl",
     "gather_metadata_info",
 )
 load(
-    "@supply_chain_tools//gather_metadata:serialization.bzl",
-    "metadata_info_to_json",
-)
-load(
     "@supply_chain_tools//gather_metadata:providers.bzl",
     "TransitiveMetadataInfo",
 )
+load(
+    "@supply_chain_tools//gather_metadata:serialization.bzl",
+    "metadata_info_to_json",
+)
+load("providers.bzl", "SbomInfo")
 
 def _sbom_impl(ctx):
     transitive_metadata_info = ctx.attr.target[TransitiveMetadataInfo]
@@ -20,11 +20,11 @@ def _sbom_impl(ctx):
     graph_json_content = json_strings[0] if json_strings else "{}"
 
     # Write graph JSON
-    graph_json = ctx.actions.declare_file("{name}.graph.json".format(name=ctx.attr.name))
+    graph_json = ctx.actions.declare_file("{name}.graph.json".format(name = ctx.attr.name))
     ctx.actions.write(graph_json, graph_json_content)
 
     # Run cmd/sbom action to compute classifications
-    classifications_json = ctx.actions.declare_file("{name}.sbom-classifications.json".format(name=ctx.attr.name))
+    classifications_json = ctx.actions.declare_file("{name}.sbom-classifications.json".format(name = ctx.attr.name))
 
     args = [
         "--input",
@@ -79,4 +79,4 @@ def sbom_rule(gathering_aspect):
         },
     )
 
-sbom = sbom_rule(gathering_aspect=gather_metadata_info)
+sbom = sbom_rule(gathering_aspect = gather_metadata_info)

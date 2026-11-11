@@ -2,10 +2,11 @@
 
 visibility("public")
 
-def _init(identifier, name):
+def _init(identifier, name, *, deprecation = None):
     return {
         "identifier": identifier,
         "name": name,
+        "deprecation": deprecation,
     }
 
 LicenseKindInfo, _create = provider(
@@ -25,6 +26,10 @@ license).
 A [string](https://bazel.build/rules/lib/core/string) containing the (human
 readable) name of the license (e.g., `Apache License 2.0`, `European Union
 Public License 1.1`)
+""".strip(),
+        "deprecation": """
+An optional [string](https://bazel.build/rules/lib/core/string) explaining why
+the license is deprecated (e.g., SPDX `GPL-2.0` in favor of `GPL-2.0-only`).
 """.strip(),
     },
     init = _init,

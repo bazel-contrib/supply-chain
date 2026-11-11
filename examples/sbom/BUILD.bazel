@@ -1,0 +1,21 @@
+load("@supply_chain_tools//sbom:cyclonedx.bzl", "cyclonedx")
+load("@supply_chain_tools//sbom:sbom.bzl", "sbom")
+load("@supply_chain_tools//sbom:spdx.bzl", "spdx")
+
+package(default_visibility = ["//visibility:public"])
+
+sbom(
+    name = "lib_with_third_party_deps_sbom",
+    require_root_metadata = False,
+    target = "//lib:lib_with_third_party_deps",
+)
+
+cyclonedx(
+    name = "lib_with_third_party_deps_cyclonedx",
+    sbom = ":lib_with_third_party_deps_sbom",
+)
+
+spdx(
+    name = "lib_with_third_party_deps_spdx",
+    sbom = ":lib_with_third_party_deps_sbom",
+)

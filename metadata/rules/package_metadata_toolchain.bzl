@@ -5,6 +5,13 @@ load("//providers:package_metadata_toolchain_info.bzl", "PackageMetadataToolchai
 
 visibility("public")
 
+# Toolchains are analyzed in the configuration of the target that resolves them,
+# which would analyze this target and its `overrides` (and the
+# `package_metadata` targets they reference) once per configuration. Bazel 8+
+# analyzes the `package_metadata` attribute of all targets in the empty
+# configuration, so do the same here to share a single instance.
+_CFG = config.none() if hasattr(config, "none") else None
+
 def _package_metadata_toolchain_impl(ctx):
     info = PackageMetadataToolchainInfo(
         metadata_overrides = [override[PackageMetadataOverrideInfo] for override in ctx.attr.overrides],
@@ -33,6 +40,7 @@ _package_metadata_toolchain = rule(
         platform_common.ToolchainInfo,
         PackageMetadataToolchainInfo,
     ],
+    cfg = _CFG,
 )
 
 def package_metadata_toolchain(

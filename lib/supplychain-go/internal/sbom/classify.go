@@ -23,7 +23,7 @@ type DependencyNodes struct {
 }
 
 func ComputeClassifications(graph GraphConfig, allowMissingRootMetadata bool) (Classifications, error) {
-	graph = deduplicateByMetadata(graph)
+	graph = NormalizeGraph(graph)
 	scopes, err := calculateScopes(graph.RootTarget, graph.Nodes, graph.Edges, allowMissingRootMetadata)
 	if err != nil {
 		return Classifications{}, err
@@ -36,6 +36,49 @@ func ComputeClassifications(graph GraphConfig, allowMissingRootMetadata bool) (C
 			Transitive: scopes.transitive,
 		},
 	}, nil
+}
+
+// NormalizeGraph projects target paths onto package metadata, then merges
+// aliases. Classification and document generation must use the same graph.
+func NormalizeGraph(graph GraphConfig) GraphConfig {
+	if len(graph.Nodes) == 0 {
+		return graph
+	}
+	metadataLabels := make(map[string]bool)
+	nodes := make([]NodeConfig, 0, len(graph.Nodes))
+	for _, node := range graph.Nodes {
+		if node.MetadataFile != "" {
+			metadataLabels[node.Label] = true
+			nodes = append(nodes, node)
+		} else if node.Label == graph.RootTarget {
+			nodes = append(nodes, node)
+		}
+	}
+	adjacency := make(map[string][]EdgeConfig)
+	for _, edge := range graph.Edges {
+		adjacency[edge.From] = append(adjacency[edge.From], edge)
+	}
+	edges := make([]EdgeConfig, 0, len(graph.Edges))
+	for _, node := range nodes {
+		seen := map[string]bool{node.Label: true}
+		pending := append([]EdgeConfig(nil), adjacency[node.Label]...)
+		for len(pending) > 0 {
+			edge := pending[len(pending)-1]
+			pending = pending[:len(pending)-1]
+			if seen[edge.To] {
+				continue
+			}
+			seen[edge.To] = true
+			if metadataLabels[edge.To] {
+				edges = append(edges, EdgeConfig{From: node.Label, To: edge.To, Type: edge.Type})
+			} else {
+				pending = append(pending, adjacency[edge.To]...)
+			}
+		}
+	}
+	graph.Nodes = nodes
+	graph.Edges = edges
+	return deduplicateByMetadata(graph)
 }
 
 // deduplicateByMetadata collapses graph nodes that share the same non-empty
@@ -104,6 +147,16 @@ func deduplicateByMetadata(graph GraphConfig) GraphConfig {
 	graph.Nodes = nodes
 	graph.Edges = edges
 	graph.RootTarget = remapLabel(remap, graph.RootTarget)
+	sort.Slice(graph.Edges, func(i, j int) bool {
+		a, b := graph.Edges[i], graph.Edges[j]
+		if a.From != b.From {
+			return a.From < b.From
+		}
+		if a.To != b.To {
+			return a.To < b.To
+		}
+		return a.Type < b.Type
+	})
 	return graph
 }
 
@@ -184,15 +237,18 @@ func calculateScopes(rootTarget string, nodes []NodeConfig, edges []EdgeConfig, 
 			// else: only root node exists, no dependencies - valid
 		}
 	} else {
-		// Root has no metadata (allowMissingRootMetadata=true)
-		// Use heuristic: nodes without incoming edges are treated as direct
+		// A retained unannotated root still identifies its direct packages.
+		for _, child := range adjacency[rootTarget] {
+			directDeps[child] = true
+		}
+		// Older graphs omitted unannotated targets. Preserve their fallback.
 		hasIncoming := make(map[string]bool)
 		for _, edge := range edges {
 			hasIncoming[edge.To] = true
 		}
 
 		for _, node := range nodes {
-			if node.Label != rootTarget && !hasIncoming[node.Label] {
+			if len(adjacency[rootTarget]) == 0 && node.Label != rootTarget && !hasIncoming[node.Label] {
 				directDeps[node.Label] = true
 			}
 		}
@@ -200,6 +256,9 @@ func calculateScopes(rootTarget string, nodes []NodeConfig, edges []EdgeConfig, 
 
 	// Classify all nodes
 	for _, node := range nodes {
+		if node.MetadataFile == "" {
+			continue
+		}
 		label := node.Label
 		if result.root != nil && label == result.root.Label {
 			// Skip the root component itself

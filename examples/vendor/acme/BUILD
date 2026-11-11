@@ -5,7 +5,7 @@ load("@package_metadata//licenses/rules:license.bzl", "license")
 load("@rules_cc//cc:cc_library.bzl", "cc_library")
 
 package(
-    default_applicable_licenses = [":package_data"],
+    default_package_metadata = [":package_data"],
     default_visibility = ["//visibility:public"],
 )
 
@@ -14,7 +14,7 @@ package_metadata(
     attributes = [
         ":license",
     ],
-    purl = "pkg:github/acmecorp/coyote@3.1.4",
+    purl = "pkg:github/acmecorp/coyote@3.1.4?download_url=https://github.com/acmecorp/coyote/archive/refs/tags/3.1.4.tar.gz",
 )
 
 # The default license for an entire package is typically named "license".
