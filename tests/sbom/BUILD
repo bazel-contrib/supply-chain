@@ -1,3 +1,5 @@
+load("@package_metadata//licenses/rules:license.bzl", "license")
+load("@package_metadata//licenses/rules:license_kind.bzl", "license_kind")
 load("@package_metadata//rules:package_metadata.bzl", "package_metadata")
 load("@supply_chain_tools//sbom:cyclonedx.bzl", "cyclonedx")
 load("@supply_chain_tools//sbom:sbom.bzl", "sbom")
@@ -5,25 +7,57 @@ load("@supply_chain_tools//sbom:spdx.bzl", "spdx")
 load(":golden_test.bzl", "sbom_golden_test")
 load(":strict_validations_test.bzl", "strict_validations_test_suite")
 
-package_metadata(
-    name = "app_metadata",
-    purl = "pkg:generic/app@1.0.0",
+license(
+    name = "app_license",
+    kind = "@package_metadata//licenses/spdx:Apache-2.0",
 )
 
 package_metadata(
-    name = "dep_metadata",
-    purl = "pkg:generic/dep@2.0.0",
+    name = "app_metadata",
+    attributes = [":app_license"],
+    purl = "pkg:generic/app@1.0.0",
+)
+
+# Not on the SPDX list: reported by name.
+license_kind(
+    name = "acme_kind",
+    full_name = "ACME License",
+    identifier = "LicenseRef-acme",
+)
+
+license(
+    name = "custom_license",
+    kind = ":acme_kind",
+)
+
+package_metadata(
+    name = "custom_metadata",
+    attributes = [":custom_license"],
+    purl = "pkg:generic/custom@1.0.0",
+)
+
+package_metadata(
+    name = "unlicensed_metadata",
+    purl = "pkg:generic/unlicensed@1.0.0",
 )
 
 filegroup(
     name = "app",
-    srcs = [":dep"],
+    srcs = [
+        ":custom",
+        ":unlicensed",
+    ],
     applicable_licenses = [":app_metadata"],
 )
 
 filegroup(
-    name = "dep",
-    applicable_licenses = [":dep_metadata"],
+    name = "custom",
+    applicable_licenses = [":custom_metadata"],
+)
+
+filegroup(
+    name = "unlicensed",
+    applicable_licenses = [":unlicensed_metadata"],
 )
 
 sbom(

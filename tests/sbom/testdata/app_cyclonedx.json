@@ -3,17 +3,32 @@
   "bomFormat": "CycloneDX",
   "components": [
     {
-      "bom-ref": "pkg:generic/dep@2.0.0",
-      "name": "dep",
-      "purl": "pkg:generic/dep@2.0.0",
+      "bom-ref": "pkg:generic/custom@1.0.0",
+      "licenses": [
+        {
+          "license": {
+            "name": "ACME License"
+          }
+        }
+      ],
+      "name": "custom",
+      "purl": "pkg:generic/custom@1.0.0",
       "type": "library",
-      "version": "2.0.0"
+      "version": "1.0.0"
+    },
+    {
+      "bom-ref": "pkg:generic/unlicensed@1.0.0",
+      "name": "unlicensed",
+      "purl": "pkg:generic/unlicensed@1.0.0",
+      "type": "library",
+      "version": "1.0.0"
     }
   ],
   "dependencies": [
     {
       "dependsOn": [
-        "pkg:generic/dep@2.0.0"
+        "pkg:generic/custom@1.0.0",
+        "pkg:generic/unlicensed@1.0.0"
       ],
       "ref": "pkg:generic/app@1.0.0"
     }
@@ -21,6 +36,13 @@
   "metadata": {
     "component": {
       "bom-ref": "pkg:generic/app@1.0.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
       "name": "app",
       "purl": "pkg:generic/app@1.0.0",
       "type": "library",

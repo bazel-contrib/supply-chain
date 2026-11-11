@@ -8,6 +8,13 @@
   },
   "dataLicense": "CC0-1.0",
   "documentNamespace": "https://spdx.org/spdxdocs/pkg:generic%2Fapp@1.0.0",
+  "hasExtractedLicensingInfos": [
+    {
+      "extractedText": "NOASSERTION",
+      "licenseId": "LicenseRef-acme",
+      "name": "ACME License"
+    }
+  ],
   "name": "app",
   "packages": [
     {
@@ -22,7 +29,7 @@
       ],
       "filesAnalyzed": false,
       "licenseConcluded": "NOASSERTION",
-      "licenseDeclared": "NOASSERTION",
+      "licenseDeclared": "Apache-2.0",
       "name": "app",
       "versionInfo": "1.0.0"
     },
@@ -32,20 +39,41 @@
       "externalRefs": [
         {
           "referenceCategory": "PACKAGE-MANAGER",
-          "referenceLocator": "pkg:generic/dep@2.0.0",
+          "referenceLocator": "pkg:generic/custom@1.0.0",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "LicenseRef-acme",
+      "name": "custom",
+      "versionInfo": "1.0.0"
+    },
+    {
+      "SPDXID": "SPDXRef-dep-2",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:generic/unlicensed@1.0.0",
           "referenceType": "purl"
         }
       ],
       "filesAnalyzed": false,
       "licenseConcluded": "NOASSERTION",
       "licenseDeclared": "NOASSERTION",
-      "name": "dep",
-      "versionInfo": "2.0.0"
+      "name": "unlicensed",
+      "versionInfo": "1.0.0"
     }
   ],
   "relationships": [
     {
       "relatedSpdxElement": "SPDXRef-dep-1",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-dep-0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-dep-2",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-dep-0"
     },
