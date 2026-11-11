@@ -271,7 +271,12 @@ func licensesOf(attribute *supplychain.LicenseAttribute) *cdx.Licenses {
 		return nil
 	}
 
-	kind := attribute.Root().Kind
+	root := attribute.Root()
+	if !root.IsSingle() {
+		// Only a single license is reported so far.
+		return nil
+	}
+	kind := root.Kind
 	license := cdx.License{ID: kind.Identifier}
 	if kind.IsCustom() {
 		license = cdx.License{Name: kind.Name}
