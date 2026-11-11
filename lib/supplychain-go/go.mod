@@ -1,10 +1,11 @@
 module github.com/bazel-contrib/supply-chain/lib/supplychain-go
 
-go 1.24.2
+go 1.27.4
 
 require (
 	github.com/CycloneDX/cyclonedx-go v0.9.3
-	github.com/package-url/packageurl-go v0.1.3
+	github.com/bazelbuild/rules_go v0.65.0
+	github.com/package-url/packageurl-go v0.1.7
 	github.com/spdx/tools-golang v0.5.5
 	github.com/stretchr/testify v1.11.1
 )
