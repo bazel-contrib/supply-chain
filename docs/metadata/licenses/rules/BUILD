@@ -19,6 +19,7 @@ load("@stardoc//stardoc:stardoc.bzl", "stardoc")
     ]
     for file in [
         "license",
+        "license_exception",
         "license_kind",
     ]
 ]

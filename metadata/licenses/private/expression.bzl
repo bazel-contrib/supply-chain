@@ -35,8 +35,8 @@ whitespace and/or parentheses around them. In addition, this parser:
   but ignores it: `DocumentRef-d:LicenseRef-x` is the same as `LicenseRef-x`.
   Resolving references to licenses defined in other documents is still to be
   done (https://github.com/bazel-contrib/supply-chain/issues/42);
-* requires every `license-ref` and `addition-ref` to be declared as a
-  `license_kind` and passed in `kinds`.
+* requires every `license-ref` to be declared as a `license_kind` and every
+  `addition-ref` as a `license_exception`, both passed in `kinds`.
 """
 
 visibility("public")

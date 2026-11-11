@@ -39,6 +39,22 @@
       "externalRefs": [
         {
           "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:generic/choice@1.0.0",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT OR (Apache-2.0 AND LicenseRef-acme)",
+      "name": "choice",
+      "versionInfo": "1.0.0"
+    },
+    {
+      "SPDXID": "SPDXRef-dep-2",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
           "referenceLocator": "pkg:generic/custom@1.0.0",
           "referenceType": "purl"
         }
@@ -50,7 +66,23 @@
       "versionInfo": "1.0.0"
     },
     {
-      "SPDXID": "SPDXRef-dep-2",
+      "SPDXID": "SPDXRef-dep-3",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:generic/or_later@1.0.0",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "GPL-3.0+",
+      "name": "or_later",
+      "versionInfo": "1.0.0"
+    },
+    {
+      "SPDXID": "SPDXRef-dep-4",
       "downloadLocation": "NOASSERTION",
       "externalRefs": [
         {
@@ -64,6 +96,22 @@
       "licenseDeclared": "NOASSERTION",
       "name": "unlicensed",
       "versionInfo": "1.0.0"
+    },
+    {
+      "SPDXID": "SPDXRef-dep-5",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:generic/with_listed_exception@1.0.0",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "GPL-2.0-only WITH Classpath-exception-2.0 OR LicenseRef-acme",
+      "name": "with_listed_exception",
+      "versionInfo": "1.0.0"
     }
   ],
   "relationships": [
@@ -74,6 +122,21 @@
     },
     {
       "relatedSpdxElement": "SPDXRef-dep-2",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-dep-0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-dep-3",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-dep-0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-dep-4",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-dep-0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-dep-5",
       "relationshipType": "DEPENDS_ON",
       "spdxElementId": "SPDXRef-dep-0"
     },

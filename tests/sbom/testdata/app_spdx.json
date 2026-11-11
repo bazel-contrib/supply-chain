@@ -3,6 +3,40 @@
   "@graph": [
     {
       "creationInfo": "_:CreationInfo-1",
+      "expandedlicensing_additionText": "",
+      "name": "ACME linking exception",
+      "spdxId": "SPDXRef:AdditionRef-acme-linking",
+      "type": "expandedlicensing_CustomLicenseAddition"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "expandedlicensing_member": [
+        "https://spdx.org/licenses/Apache-2.0",
+        "SPDXRef:LicenseRef-acme"
+      ],
+      "spdxId": "SPDXRef:ConjunctiveLicenseSet-1",
+      "type": "expandedlicensing_ConjunctiveLicenseSet"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "expandedlicensing_member": [
+        "https://spdx.org/licenses/MIT",
+        "SPDXRef:ConjunctiveLicenseSet-1"
+      ],
+      "spdxId": "SPDXRef:DisjunctiveLicenseSet-1",
+      "type": "expandedlicensing_DisjunctiveLicenseSet"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "expandedlicensing_member": [
+        "SPDXRef:WithAdditionOperator-1",
+        "SPDXRef:WithAdditionOperator-2"
+      ],
+      "spdxId": "SPDXRef:DisjunctiveLicenseSet-2",
+      "type": "expandedlicensing_DisjunctiveLicenseSet"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
       "name": "ACME License",
       "simplelicensing_licenseText": "NOASSERTION",
       "spdxId": "SPDXRef:LicenseRef-acme",
@@ -10,9 +44,29 @@
     },
     {
       "creationInfo": "_:CreationInfo-1",
+      "expandedlicensing_subjectLicense": "https://spdx.org/licenses/GPL-3.0",
+      "spdxId": "SPDXRef:OrLaterOperator-1",
+      "type": "expandedlicensing_OrLaterOperator"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
       "name": "Bazel Supply Chain Tools SPDX generator",
       "spdxId": "SPDXRef:SoftwareAgent-1",
       "type": "SoftwareAgent"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "expandedlicensing_subjectAddition": "https://spdx.org/licenses/Classpath-exception-2.0",
+      "expandedlicensing_subjectExtendableLicense": "https://spdx.org/licenses/GPL-2.0-only",
+      "spdxId": "SPDXRef:WithAdditionOperator-1",
+      "type": "expandedlicensing_WithAdditionOperator"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "expandedlicensing_subjectAddition": "SPDXRef:AdditionRef-acme-linking",
+      "expandedlicensing_subjectExtendableLicense": "SPDXRef:LicenseRef-acme",
+      "spdxId": "SPDXRef:WithAdditionOperator-2",
+      "type": "expandedlicensing_WithAdditionOperator"
     },
     {
       "creationInfo": "_:CreationInfo-1",
@@ -24,10 +78,26 @@
     },
     {
       "creationInfo": "_:CreationInfo-1",
+      "name": "choice",
+      "software_packageUrl": "pkg:generic/choice@1.0.0",
+      "software_packageVersion": "1.0.0",
+      "spdxId": "SPDXRef:dep-1",
+      "type": "software_Package"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
       "name": "custom",
       "software_packageUrl": "pkg:generic/custom@1.0.0",
       "software_packageVersion": "1.0.0",
-      "spdxId": "SPDXRef:dep-1",
+      "spdxId": "SPDXRef:dep-2",
+      "type": "software_Package"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "or_later",
+      "software_packageUrl": "pkg:generic/or_later@1.0.0",
+      "software_packageVersion": "1.0.0",
+      "spdxId": "SPDXRef:dep-3",
       "type": "software_Package"
     },
     {
@@ -35,7 +105,15 @@
       "name": "unlicensed",
       "software_packageUrl": "pkg:generic/unlicensed@1.0.0",
       "software_packageVersion": "1.0.0",
-      "spdxId": "SPDXRef:dep-2",
+      "spdxId": "SPDXRef:dep-4",
+      "type": "software_Package"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "with_exception",
+      "software_packageUrl": "pkg:generic/with_exception@1.0.0",
+      "software_packageVersion": "1.0.0",
+      "spdxId": "SPDXRef:dep-5",
       "type": "software_Package"
     },
     {
@@ -61,8 +139,38 @@
     {
       "creationInfo": "_:CreationInfo-1",
       "from": "SPDXRef:dep-0",
-      "relationshipType": "hasDeclaredLicense",
+      "relationshipType": "dependsOn",
       "spdxId": "SPDXRef:rel-2",
+      "to": [
+        "SPDXRef:dep-3"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-0",
+      "relationshipType": "dependsOn",
+      "spdxId": "SPDXRef:rel-3",
+      "to": [
+        "SPDXRef:dep-4"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-0",
+      "relationshipType": "dependsOn",
+      "spdxId": "SPDXRef:rel-4",
+      "to": [
+        "SPDXRef:dep-5"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-0",
+      "relationshipType": "hasDeclaredLicense",
+      "spdxId": "SPDXRef:rel-5",
       "to": [
         "https://spdx.org/licenses/Apache-2.0"
       ],
@@ -72,7 +180,17 @@
       "creationInfo": "_:CreationInfo-1",
       "from": "SPDXRef:dep-1",
       "relationshipType": "hasDeclaredLicense",
-      "spdxId": "SPDXRef:rel-3",
+      "spdxId": "SPDXRef:rel-6",
+      "to": [
+        "SPDXRef:DisjunctiveLicenseSet-1"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-2",
+      "relationshipType": "hasDeclaredLicense",
+      "spdxId": "SPDXRef:rel-7",
       "to": [
         "SPDXRef:LicenseRef-acme"
       ],
@@ -80,17 +198,57 @@
     },
     {
       "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-3",
+      "relationshipType": "hasDeclaredLicense",
+      "spdxId": "SPDXRef:rel-8",
+      "to": [
+        "SPDXRef:OrLaterOperator-1"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-5",
+      "relationshipType": "hasDeclaredLicense",
+      "spdxId": "SPDXRef:rel-9",
+      "to": [
+        "SPDXRef:DisjunctiveLicenseSet-2"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
       "element": [
+        "SPDXRef:AdditionRef-acme-linking",
+        "SPDXRef:ConjunctiveLicenseSet-1",
+        "SPDXRef:DisjunctiveLicenseSet-1",
+        "SPDXRef:DisjunctiveLicenseSet-2",
         "SPDXRef:LicenseRef-acme",
+        "SPDXRef:OrLaterOperator-1",
         "SPDXRef:SoftwareAgent-1",
+        "SPDXRef:WithAdditionOperator-1",
+        "SPDXRef:WithAdditionOperator-2",
         "SPDXRef:dep-0",
         "SPDXRef:dep-1",
         "SPDXRef:dep-2",
+        "SPDXRef:dep-3",
+        "SPDXRef:dep-4",
+        "SPDXRef:dep-5",
         "SPDXRef:rel-0",
         "SPDXRef:rel-1",
         "SPDXRef:rel-2",
         "SPDXRef:rel-3",
-        "https://spdx.org/licenses/Apache-2.0"
+        "SPDXRef:rel-4",
+        "SPDXRef:rel-5",
+        "SPDXRef:rel-6",
+        "SPDXRef:rel-7",
+        "SPDXRef:rel-8",
+        "SPDXRef:rel-9",
+        "https://spdx.org/licenses/Apache-2.0",
+        "https://spdx.org/licenses/Classpath-exception-2.0",
+        "https://spdx.org/licenses/GPL-2.0-only",
+        "https://spdx.org/licenses/GPL-3.0",
+        "https://spdx.org/licenses/MIT"
       ],
       "rootElement": [
         "SPDXRef:dep-0"
@@ -120,6 +278,34 @@
       "name": "CC0-1.0",
       "simplelicensing_licenseText": "NOASSERTION",
       "spdxId": "https://spdx.org/licenses/CC0-1.0",
+      "type": "expandedlicensing_ListedLicense"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "expandedlicensing_additionText": "",
+      "name": "Classpath-exception-2.0",
+      "spdxId": "https://spdx.org/licenses/Classpath-exception-2.0",
+      "type": "expandedlicensing_ListedLicenseException"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "GPL-2.0-only",
+      "simplelicensing_licenseText": "NOASSERTION",
+      "spdxId": "https://spdx.org/licenses/GPL-2.0-only",
+      "type": "expandedlicensing_ListedLicense"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "GPL-3.0",
+      "simplelicensing_licenseText": "NOASSERTION",
+      "spdxId": "https://spdx.org/licenses/GPL-3.0",
+      "type": "expandedlicensing_ListedLicense"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "MIT",
+      "simplelicensing_licenseText": "NOASSERTION",
+      "spdxId": "https://spdx.org/licenses/MIT",
       "type": "expandedlicensing_ListedLicense"
     },
     {
