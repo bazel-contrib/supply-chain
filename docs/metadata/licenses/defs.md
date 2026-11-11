@@ -287,7 +287,7 @@ license.
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="license_exception-name"></a>name |  A unique name for this target.   |  none |
-| <a id="license_exception-identifier"></a>identifier |  Required. The unique identifier of the exception (e.g., `Classpath-exception-2.0`).   |  none |
+| <a id="license_exception-identifier"></a>identifier |  Required. The unique identifier of the exception (e.g., `Classpath-exception-2.0`). Custom exceptions must use an `AdditionRef-<idstring>` identifier.   |  none |
 | <a id="license_exception-full_name"></a>full_name |  Required. The (human readable) name of the exception.   |  none |
 | <a id="license_exception-deprecation"></a>deprecation |  An optional message explaining why this target is deprecated.   |  `None` |
 | <a id="license_exception-tags"></a>tags |  A list of arbitrary tags to apply to this target.   |  `None` |
@@ -337,7 +337,7 @@ license_kind(
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="license_kind-name"></a>name |  A unique name for this target.   |  none |
-| <a id="license_kind-identifier"></a>identifier |  Required. The unique identifier of the license (e.g., `Apache-2.0`, `EUPL-1.1`).<br><br>This is typically the [SPDX identifier](https://spdx.org/licenses/) of the license, but may also be a custom value (e.g., in case of a commercial license). It is not validated.<br><br>This identifies a single license; it is not an SPDX license expression (e.g., `MIT OR Apache-2.0`, or `GPL-2.0-only WITH Classpath-exception-2.0`).   |  none |
+| <a id="license_kind-identifier"></a>identifier |  Required. The unique identifier of the license (e.g., `Apache-2.0`, `EUPL-1.1`).<br><br>This is typically the [SPDX identifier](https://spdx.org/licenses/) of the license, but may also be a custom value (e.g., in case of a commercial license). A custom value may be written `LicenseRef-<idstring>`; custom exceptions use `AdditionRef-<idstring>` and are declared with `license_exception`. A value that is not on the SPDX list may only contain letters, digits, `.` and `-` (the SPDX `idstring` characters), after the optional prefix; any other character fails the build.<br><br>This identifies a single license; it is not an SPDX license expression (e.g., `MIT OR Apache-2.0`, or `GPL-2.0-only WITH Classpath-exception-2.0`).   |  none |
 | <a id="license_kind-full_name"></a>full_name |  Required. The (human readable) name of the license (e.g., `Apache License 2.0`, `European Union Public License 1.1`).   |  none |
 | <a id="license_kind-deprecation"></a>deprecation |  An optional message explaining why this target is deprecated.   |  `None` |
 | <a id="license_kind-tags"></a>tags |  A list of arbitrary tags to apply to this target.   |  `None` |
