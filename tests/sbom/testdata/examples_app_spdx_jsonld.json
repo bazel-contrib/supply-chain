@@ -1,0 +1,515 @@
+{
+  "@context": "https://spdx.org/rdf/3.0.1/spdx-context.jsonld",
+  "@graph": [
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "expandedlicensing_additionText": "Placeholder license text for the fictional `acme_plugin` test package.\n",
+      "name": "ACME Linking Exception",
+      "spdxId": "SPDXRef:AdditionRef-acme-linking",
+      "type": "expandedlicensing_CustomLicenseAddition"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "expandedlicensing_member": [
+        "https://spdx.org/licenses/Apache-2.0",
+        "https://spdx.org/licenses/BSD-3-Clause"
+      ],
+      "spdxId": "SPDXRef:ConjunctiveLicenseSet-1",
+      "type": "expandedlicensing_ConjunctiveLicenseSet"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "expandedlicensing_member": [
+        "SPDXRef:WithAdditionOperator-1",
+        "SPDXRef:WithAdditionOperator-2"
+      ],
+      "spdxId": "SPDXRef:DisjunctiveLicenseSet-1",
+      "type": "expandedlicensing_DisjunctiveLicenseSet"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "expandedlicensing_member": [
+        "SPDXRef:ConjunctiveLicenseSet-1",
+        "https://spdx.org/licenses/MIT"
+      ],
+      "spdxId": "SPDXRef:DisjunctiveLicenseSet-2",
+      "type": "expandedlicensing_DisjunctiveLicenseSet"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "expandedlicensing_member": [
+        "https://spdx.org/licenses/Apache-2.0",
+        "https://spdx.org/licenses/MIT"
+      ],
+      "spdxId": "SPDXRef:DisjunctiveLicenseSet-3",
+      "type": "expandedlicensing_DisjunctiveLicenseSet"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "expandedlicensing_member": [
+        "https://spdx.org/licenses/MIT",
+        "SPDXRef:LicenseRef-acme-commercial-1"
+      ],
+      "spdxId": "SPDXRef:DisjunctiveLicenseSet-4",
+      "type": "expandedlicensing_DisjunctiveLicenseSet"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "expandedlicensing_member": [
+        "SPDXRef:OrLaterOperator-1",
+        "https://spdx.org/licenses/GPL-2.0-with-classpath-exception"
+      ],
+      "spdxId": "SPDXRef:DisjunctiveLicenseSet-5",
+      "type": "expandedlicensing_DisjunctiveLicenseSet"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "ACME Commercial License",
+      "simplelicensing_licenseText": "Placeholder license text for the fictional `acme_plugin` test package.\n",
+      "spdxId": "SPDXRef:LicenseRef-acme-commercial",
+      "type": "expandedlicensing_CustomLicense"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "ACME Commercial License",
+      "simplelicensing_licenseText": "NOASSERTION",
+      "spdxId": "SPDXRef:LicenseRef-acme-commercial-1",
+      "type": "expandedlicensing_CustomLicense"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "ACME Commercial License",
+      "simplelicensing_licenseText": "Placeholder license text for the fictional `acme_sdk` test package.\n",
+      "spdxId": "SPDXRef:LicenseRef-acme-commercial-2",
+      "type": "expandedlicensing_CustomLicense"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "expandedlicensing_subjectLicense": "https://spdx.org/licenses/GPL-2.0",
+      "spdxId": "SPDXRef:OrLaterOperator-1",
+      "type": "expandedlicensing_OrLaterOperator"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "Bazel Supply Chain Tools SPDX generator",
+      "spdxId": "SPDXRef:SoftwareAgent-1",
+      "type": "SoftwareAgent"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "expandedlicensing_subjectAddition": "https://spdx.org/licenses/LLVM-exception",
+      "expandedlicensing_subjectExtendableLicense": "https://spdx.org/licenses/Apache-2.0",
+      "spdxId": "SPDXRef:WithAdditionOperator-1",
+      "type": "expandedlicensing_WithAdditionOperator"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "expandedlicensing_subjectAddition": "SPDXRef:AdditionRef-acme-linking",
+      "expandedlicensing_subjectExtendableLicense": "SPDXRef:LicenseRef-acme-commercial",
+      "spdxId": "SPDXRef:WithAdditionOperator-2",
+      "type": "expandedlicensing_WithAdditionOperator"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "expandedlicensing_subjectAddition": "https://spdx.org/licenses/Classpath-exception-2.0",
+      "expandedlicensing_subjectExtendableLicense": "https://spdx.org/licenses/GPL-2.0-only",
+      "spdxId": "SPDXRef:WithAdditionOperator-3",
+      "type": "expandedlicensing_WithAdditionOperator"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "app",
+      "software_packageUrl": "pkg:generic/app@1.0.0",
+      "software_packageVersion": "1.0.0",
+      "spdxId": "SPDXRef:dep-0",
+      "type": "software_Package"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "acme_plugin",
+      "software_packageUrl": "pkg:bazel/acme_plugin@0.4.1",
+      "software_packageVersion": "0.4.1",
+      "spdxId": "SPDXRef:dep-1",
+      "type": "software_Package"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "classpath_runtime",
+      "software_packageUrl": "pkg:bazel/classpath_runtime@21.0.2",
+      "software_packageVersion": "21.0.2",
+      "spdxId": "SPDXRef:dep-2",
+      "type": "software_Package"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "crypto_suite",
+      "software_packageUrl": "pkg:bazel/crypto_suite@3.1.0",
+      "software_packageVersion": "3.1.0",
+      "spdxId": "SPDXRef:dep-3",
+      "type": "software_Package"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "dual_licensed",
+      "software_packageUrl": "pkg:bazel/dual_licensed@1.0.219",
+      "software_packageVersion": "1.0.219",
+      "spdxId": "SPDXRef:dep-4",
+      "type": "software_Package"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "dual_custom",
+      "software_packageUrl": "pkg:generic/dual_custom@0.3.0",
+      "software_packageVersion": "0.3.0",
+      "spdxId": "SPDXRef:dep-5",
+      "type": "software_Package"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "http_client",
+      "software_packageUrl": "pkg:generic/http_client@2.0.0",
+      "software_packageVersion": "2.0.0",
+      "spdxId": "SPDXRef:dep-6",
+      "type": "software_Package"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "acme_sdk",
+      "software_packageUrl": "pkg:bazel/acme_sdk@1.2.0",
+      "software_packageVersion": "1.2.0",
+      "spdxId": "SPDXRef:dep-7",
+      "type": "software_Package"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "legacy_gpl",
+      "software_packageUrl": "pkg:bazel/legacy_gpl@0.9.0",
+      "software_packageVersion": "0.9.0",
+      "spdxId": "SPDXRef:dep-8",
+      "type": "software_Package"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-1",
+      "relationshipType": "dependsOn",
+      "spdxId": "SPDXRef:rel-0",
+      "to": [
+        "SPDXRef:dep-7"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-0",
+      "relationshipType": "dependsOn",
+      "spdxId": "SPDXRef:rel-1",
+      "to": [
+        "SPDXRef:dep-1"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-2",
+      "relationshipType": "hasDeclaredLicense",
+      "spdxId": "SPDXRef:rel-10",
+      "to": [
+        "SPDXRef:WithAdditionOperator-3"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-3",
+      "relationshipType": "hasDeclaredLicense",
+      "spdxId": "SPDXRef:rel-11",
+      "to": [
+        "SPDXRef:DisjunctiveLicenseSet-2"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-4",
+      "relationshipType": "hasDeclaredLicense",
+      "spdxId": "SPDXRef:rel-12",
+      "to": [
+        "SPDXRef:DisjunctiveLicenseSet-3"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-5",
+      "relationshipType": "hasDeclaredLicense",
+      "spdxId": "SPDXRef:rel-13",
+      "to": [
+        "SPDXRef:DisjunctiveLicenseSet-4"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-6",
+      "relationshipType": "hasDeclaredLicense",
+      "spdxId": "SPDXRef:rel-14",
+      "to": [
+        "https://spdx.org/licenses/MIT"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-7",
+      "relationshipType": "hasDeclaredLicense",
+      "spdxId": "SPDXRef:rel-15",
+      "to": [
+        "SPDXRef:LicenseRef-acme-commercial-2"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-8",
+      "relationshipType": "hasDeclaredLicense",
+      "spdxId": "SPDXRef:rel-16",
+      "to": [
+        "SPDXRef:DisjunctiveLicenseSet-5"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-0",
+      "relationshipType": "dependsOn",
+      "spdxId": "SPDXRef:rel-2",
+      "to": [
+        "SPDXRef:dep-2"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-0",
+      "relationshipType": "dependsOn",
+      "spdxId": "SPDXRef:rel-3",
+      "to": [
+        "SPDXRef:dep-3"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-0",
+      "relationshipType": "dependsOn",
+      "spdxId": "SPDXRef:rel-4",
+      "to": [
+        "SPDXRef:dep-4"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-0",
+      "relationshipType": "dependsOn",
+      "spdxId": "SPDXRef:rel-5",
+      "to": [
+        "SPDXRef:dep-5"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-0",
+      "relationshipType": "dependsOn",
+      "spdxId": "SPDXRef:rel-6",
+      "to": [
+        "SPDXRef:dep-6"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-5",
+      "relationshipType": "dependsOn",
+      "spdxId": "SPDXRef:rel-7",
+      "to": [
+        "SPDXRef:dep-8"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-0",
+      "relationshipType": "hasDeclaredLicense",
+      "spdxId": "SPDXRef:rel-8",
+      "to": [
+        "https://spdx.org/licenses/Apache-2.0"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-1",
+      "relationshipType": "hasDeclaredLicense",
+      "spdxId": "SPDXRef:rel-9",
+      "to": [
+        "SPDXRef:DisjunctiveLicenseSet-1"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "element": [
+        "SPDXRef:AdditionRef-acme-linking",
+        "SPDXRef:ConjunctiveLicenseSet-1",
+        "SPDXRef:DisjunctiveLicenseSet-1",
+        "SPDXRef:DisjunctiveLicenseSet-2",
+        "SPDXRef:DisjunctiveLicenseSet-3",
+        "SPDXRef:DisjunctiveLicenseSet-4",
+        "SPDXRef:DisjunctiveLicenseSet-5",
+        "SPDXRef:LicenseRef-acme-commercial",
+        "SPDXRef:LicenseRef-acme-commercial-1",
+        "SPDXRef:LicenseRef-acme-commercial-2",
+        "SPDXRef:OrLaterOperator-1",
+        "SPDXRef:SoftwareAgent-1",
+        "SPDXRef:WithAdditionOperator-1",
+        "SPDXRef:WithAdditionOperator-2",
+        "SPDXRef:WithAdditionOperator-3",
+        "SPDXRef:dep-0",
+        "SPDXRef:dep-1",
+        "SPDXRef:dep-2",
+        "SPDXRef:dep-3",
+        "SPDXRef:dep-4",
+        "SPDXRef:dep-5",
+        "SPDXRef:dep-6",
+        "SPDXRef:dep-7",
+        "SPDXRef:dep-8",
+        "SPDXRef:rel-0",
+        "SPDXRef:rel-1",
+        "SPDXRef:rel-10",
+        "SPDXRef:rel-11",
+        "SPDXRef:rel-12",
+        "SPDXRef:rel-13",
+        "SPDXRef:rel-14",
+        "SPDXRef:rel-15",
+        "SPDXRef:rel-16",
+        "SPDXRef:rel-2",
+        "SPDXRef:rel-3",
+        "SPDXRef:rel-4",
+        "SPDXRef:rel-5",
+        "SPDXRef:rel-6",
+        "SPDXRef:rel-7",
+        "SPDXRef:rel-8",
+        "SPDXRef:rel-9",
+        "https://spdx.org/licenses/Apache-2.0",
+        "https://spdx.org/licenses/BSD-3-Clause",
+        "https://spdx.org/licenses/Classpath-exception-2.0",
+        "https://spdx.org/licenses/GPL-2.0",
+        "https://spdx.org/licenses/GPL-2.0-only",
+        "https://spdx.org/licenses/GPL-2.0-with-classpath-exception",
+        "https://spdx.org/licenses/LLVM-exception",
+        "https://spdx.org/licenses/MIT"
+      ],
+      "rootElement": [
+        "SPDXRef:dep-0"
+      ],
+      "spdxId": "SPDXRef:sbom",
+      "type": "software_Sbom"
+    },
+    {
+      "@id": "_:CreationInfo-1",
+      "created": "1970-01-01T00:00:00Z",
+      "createdBy": [
+        "SPDXRef:SoftwareAgent-1"
+      ],
+      "createdUsing": [],
+      "specVersion": "3.0.1",
+      "type": "CreationInfo"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "Apache-2.0",
+      "simplelicensing_licenseText": "NOASSERTION",
+      "spdxId": "https://spdx.org/licenses/Apache-2.0",
+      "type": "expandedlicensing_ListedLicense"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "BSD-3-Clause",
+      "simplelicensing_licenseText": "NOASSERTION",
+      "spdxId": "https://spdx.org/licenses/BSD-3-Clause",
+      "type": "expandedlicensing_ListedLicense"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "CC0-1.0",
+      "simplelicensing_licenseText": "NOASSERTION",
+      "spdxId": "https://spdx.org/licenses/CC0-1.0",
+      "type": "expandedlicensing_ListedLicense"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "expandedlicensing_additionText": "",
+      "name": "Classpath-exception-2.0",
+      "spdxId": "https://spdx.org/licenses/Classpath-exception-2.0",
+      "type": "expandedlicensing_ListedLicenseException"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "GPL-2.0",
+      "simplelicensing_licenseText": "NOASSERTION",
+      "spdxId": "https://spdx.org/licenses/GPL-2.0",
+      "type": "expandedlicensing_ListedLicense"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "GPL-2.0-only",
+      "simplelicensing_licenseText": "NOASSERTION",
+      "spdxId": "https://spdx.org/licenses/GPL-2.0-only",
+      "type": "expandedlicensing_ListedLicense"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "GPL-2.0-with-classpath-exception",
+      "simplelicensing_licenseText": "NOASSERTION",
+      "spdxId": "https://spdx.org/licenses/GPL-2.0-with-classpath-exception",
+      "type": "expandedlicensing_ListedLicense"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "expandedlicensing_additionText": "",
+      "name": "LLVM-exception",
+      "spdxId": "https://spdx.org/licenses/LLVM-exception",
+      "type": "expandedlicensing_ListedLicenseException"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "MIT",
+      "simplelicensing_licenseText": "NOASSERTION",
+      "spdxId": "https://spdx.org/licenses/MIT",
+      "type": "expandedlicensing_ListedLicense"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "dataLicense": "https://spdx.org/licenses/CC0-1.0",
+      "name": "app",
+      "namespaceMap": [
+        {
+          "namespace": "https://spdx.org/spdxdocs/pkg:generic%2Fapp@1.0.0#",
+          "prefix": "SPDXRef",
+          "type": "NamespaceMap"
+        }
+      ],
+      "profileConformance": [
+        "core",
+        "software"
+      ],
+      "rootElement": [
+        "SPDXRef:sbom"
+      ],
+      "spdxId": "https://spdx.org/spdxdocs/pkg:generic%2Fapp@1.0.0",
+      "type": "SpdxDocument"
+    }
+  ]
+}

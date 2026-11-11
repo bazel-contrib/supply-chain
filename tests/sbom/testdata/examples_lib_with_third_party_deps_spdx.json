@@ -1,0 +1,66 @@
+{
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "creationInfo": {
+    "created": "1970-01-01T00:00:00Z",
+    "creators": [
+      "Tool: Bazel Supply Chain Tools SPDX generator"
+    ]
+  },
+  "dataLicense": "CC0-1.0",
+  "documentNamespace": "https://spdx.org/spdxdocs/pkg:bazel%2Fsupply_chain_examples@0.0.1",
+  "hasExtractedLicensingInfos": [
+    {
+      "extractedText": "Acme Novelty & Software provides a license to this software under terms laid\nout in specific contracts. Unless you have purchased a license from us, you may\nnot use this software for any purpose.\n",
+      "licenseId": "LicenseRef-acme",
+      "name": "The ACME per seat license."
+    }
+  ],
+  "name": "supply_chain_examples",
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-dep-0",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:bazel/supply_chain_examples@0.0.1",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "Apache-2.0",
+      "name": "supply_chain_examples",
+      "versionInfo": "0.0.1"
+    },
+    {
+      "SPDXID": "SPDXRef-dep-1",
+      "downloadLocation": "https://github.com/acmecorp/coyote/archive/refs/tags/3.1.4.tar.gz",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:github/acmecorp/coyote@3.1.4?download_url=https%3A%2F%2Fgithub.com%2Facmecorp%2Fcoyote%2Farchive%2Frefs%2Ftags%2F3.1.4.tar.gz",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "LicenseRef-acme",
+      "name": "coyote",
+      "versionInfo": "3.1.4"
+    }
+  ],
+  "relationships": [
+    {
+      "relatedSpdxElement": "SPDXRef-dep-1",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-dep-0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-dep-0",
+      "relationshipType": "DESCRIBES",
+      "spdxElementId": "SPDXRef-DOCUMENT"
+    }
+  ],
+  "spdxVersion": "SPDX-2.3"
+}
