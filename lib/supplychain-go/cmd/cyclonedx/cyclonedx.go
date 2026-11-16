@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"sort"
 	"strings"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
@@ -74,7 +75,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err := encoder.Encode(bom); err != nil {
+	// cyclonedx-go defaults to a newer spec than the validator supports.
+	if err := encoder.EncodeVersion(bom, cdx.SpecVersion1_6); err != nil {
 		fmt.Fprintf(os.Stderr, "Error encoding BOM: %v\n", err)
 		os.Exit(1)
 	}
@@ -144,6 +146,12 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications) (
 		if purl.Version != "" {
 			component.Version = purl.Version
 		}
+
+		licenseAttribute, err := supplychain.GetLicenseAttribute(pkgMetadata)
+		if err != nil {
+			return cdx.Component{}, fmt.Errorf("error reading license of %s: %w", node.Label, err)
+		}
+		component.Licenses = licensesOf(licenseAttribute)
 
 		labelToBOMRef[node.Label] = bomRef
 		return component, nil
@@ -220,6 +228,8 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications) (
 				Dependencies: &childRefs,
 			})
 		}
+		// Map iteration order is random; keep the output reproducible.
+		sort.Slice(deps, func(i, j int) bool { return deps[i].Ref < deps[j].Ref })
 		dependencies = &deps
 	}
 
@@ -252,4 +262,27 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications) (
 	bom.Metadata = metadata
 
 	return bom, nil
+}
+
+// licensesOf converts the license attribute of a package to CycloneDX: a
+// license identified by its SPDX identifier, or by its name if it is custom.
+// Anything else is an SPDX license expression.
+func licensesOf(attribute *supplychain.LicenseAttribute) *cdx.Licenses {
+	if attribute == nil {
+		return nil
+	}
+
+	root := attribute.Root()
+	if !root.IsSingle() || root.OrLater {
+		return &cdx.Licenses{{Expression: root.String()}}
+	}
+	kind := root.Kind
+	license := cdx.License{ID: kind.Identifier}
+	if kind.IsCustom() {
+		license = cdx.License{Name: kind.Name}
+		if license.Name == "" {
+			license.Name = kind.Identifier
+		}
+	}
+	return &cdx.Licenses{{License: &license}}
 }

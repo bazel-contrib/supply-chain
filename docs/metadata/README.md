@@ -35,6 +35,8 @@ If you are a module author and want to annotate your module, you will need :
 
   - Choose the appropriate package-url(PURL) type from the [standard list](https://github.com/package-url/purl-spec/tree/main/types-doc) related to the module technology if available. If no package type is already defined, use the `generic` type and provide the appropriate qualifiers to unambiguously identify the package.
 
+    Build the PURL with [`purl.bazel`](./purl/purl.md#purlbazel) for Bazel modules, or with [`purl.builder`](./purl/purl.md#purlbuilder) otherwise, rather than writing the string by hand: the builder percent-encodes, normalizes, and validates it.
+
   - Add a dependency on `package_metadata` to your `MODULE.bazel` file.
 
     ```starlark
@@ -69,6 +71,7 @@ If you are a module author and want to annotate your module, you will need :
 
       - [license](./licenses/rules/license.md#license) — the license the package is available under.
       - [copyright_notice](./attributes/copyright_notice.md#copyright_notice) — the copyright notices of the package.
+      - [cpe](./attributes/cpe.md#cpe) — the [CPE](https://en.wikipedia.org/wiki/Common_Platform_Enumeration)s of the package.
 
     Custom attributes are declared by writing a rule that provides [PackageAttributeInfo](./providers/package_attribute_info.md#PackageAttributeInfo). [`copyright_notice`](../../metadata/attributes/copyright_notice.bzl) is a minimal example to copy from.
 
@@ -117,6 +120,8 @@ If you are a module author and want to annotate your module, you will need :
 
   - Publish your module.
 
+If your rule set fetches third-party packages (e.g., through repository rules or module extensions), also annotate the repositories it creates. See [Tutorial: Adding `package_metadata` as a rule author](../tutorials/rule_authors.md).
+
 ### As an organization
 
 Organizations consume the metadata that module authors declare — to check compliance, or to produce provenance information for the artifacts they ship.
@@ -146,6 +151,7 @@ Where a package has a `defs.bzl` (e.g., `@package_metadata//:defs.bzl`), it re-e
 #### Rules
 
   - [@package_metadata//rules:package_metadata.bzl](./rules/package_metadata.md)
+  - [@package_metadata//rules:package_metadata_toolchain.bzl](./rules/package_metadata_toolchain.md)
 
 #### Utils
 
@@ -155,7 +161,9 @@ Where a package has a `defs.bzl` (e.g., `@package_metadata//:defs.bzl`), it re-e
 
 ### Attributes
 
+  - [@package_metadata//attributes:defs.bzl](./attributes/defs.md)
   - [@package_metadata//attributes:copyright_notice.bzl](./attributes/copyright_notice.md)
+  - [@package_metadata//attributes:cpe.bzl](./attributes/cpe.md)
 
 
 ### Licenses

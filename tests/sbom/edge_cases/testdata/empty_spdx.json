@@ -1,0 +1,57 @@
+{
+  "@context": "https://spdx.org/rdf/3.0.1/spdx-context.jsonld",
+  "@graph": [
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "Bazel Supply Chain Tools SPDX generator",
+      "spdxId": "SPDXRef:SoftwareAgent-1",
+      "type": "SoftwareAgent"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "element": [
+        "SPDXRef:SoftwareAgent-1"
+      ],
+      "spdxId": "SPDXRef:sbom",
+      "type": "software_Sbom"
+    },
+    {
+      "@id": "_:CreationInfo-1",
+      "created": "1970-01-01T00:00:00Z",
+      "createdBy": [
+        "SPDXRef:SoftwareAgent-1"
+      ],
+      "createdUsing": [],
+      "specVersion": "3.0.1",
+      "type": "CreationInfo"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "CC0-1.0",
+      "simplelicensing_licenseText": "NOASSERTION",
+      "spdxId": "https://spdx.org/licenses/CC0-1.0",
+      "type": "expandedlicensing_ListedLicense"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "dataLicense": "https://spdx.org/licenses/CC0-1.0",
+      "name": "sbom",
+      "namespaceMap": [
+        {
+          "namespace": "https://spdx.org/spdxdocs/sbom#",
+          "prefix": "SPDXRef",
+          "type": "NamespaceMap"
+        }
+      ],
+      "profileConformance": [
+        "core",
+        "software"
+      ],
+      "rootElement": [
+        "SPDXRef:sbom"
+      ],
+      "spdxId": "https://spdx.org/spdxdocs/sbom",
+      "type": "SpdxDocument"
+    }
+  ]
+}

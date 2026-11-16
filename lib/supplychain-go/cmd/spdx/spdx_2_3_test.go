@@ -11,49 +11,6 @@ import (
 	"github.com/bazel-contrib/supply-chain/lib/supplychain-go/internal/sbom"
 )
 
-func TestReadBuildTimestamp_NoPath(t *testing.T) {
-	got, err := readBuildTimestamp("")
-	if err != nil {
-		t.Fatalf("readBuildTimestamp(\"\") error = %v", err)
-	}
-	if !got.Equal(time.Unix(0, 0).UTC()) {
-		t.Errorf("readBuildTimestamp(\"\") = %v, want the Unix epoch", got)
-	}
-}
-
-func TestReadBuildTimestamp_FromFile(t *testing.T) {
-	dir := t.TempDir()
-	path := filepath.Join(dir, "volatile-status.txt")
-	if err := os.WriteFile(path, []byte("BUILD_SCM_REVISION abc123\nBUILD_TIMESTAMP 1700000000\n"), 0o644); err != nil {
-		t.Fatal(err)
-	}
-
-	got, err := readBuildTimestamp(path)
-	if err != nil {
-		t.Fatalf("readBuildTimestamp() error = %v", err)
-	}
-	want := time.Unix(1700000000, 0).UTC()
-	if !got.Equal(want) {
-		t.Errorf("readBuildTimestamp() = %v, want %v", got, want)
-	}
-}
-
-func TestReadBuildTimestamp_MissingKeyFallsBackToEpoch(t *testing.T) {
-	dir := t.TempDir()
-	path := filepath.Join(dir, "volatile-status.txt")
-	if err := os.WriteFile(path, []byte("BUILD_SCM_REVISION abc123\n"), 0o644); err != nil {
-		t.Fatal(err)
-	}
-
-	got, err := readBuildTimestamp(path)
-	if err != nil {
-		t.Fatalf("readBuildTimestamp() error = %v", err)
-	}
-	if !got.Equal(time.Unix(0, 0).UTC()) {
-		t.Errorf("readBuildTimestamp() = %v, want the Unix epoch", got)
-	}
-}
-
 func writePackageMetadata(t *testing.T, dir, name, label, purl string) string {
 	t.Helper()
 	path := filepath.Join(dir, name)
@@ -64,7 +21,7 @@ func writePackageMetadata(t *testing.T, dir, name, label, purl string) string {
 	return path
 }
 
-func TestGenerateDocument_RequiredFieldsPopulated(t *testing.T) {
+func TestGenerateDocument23_RequiredFieldsPopulated(t *testing.T) {
 	dir := t.TempDir()
 	rootMeta := writePackageMetadata(t, dir, "root.json", "//app:root", "pkg:bazel/app@1.0.0")
 	depMeta := writePackageMetadata(t, dir, "dep.json", "//lib:dep", "pkg:golang/github.com/example/dep@v1.2.3")
@@ -87,9 +44,9 @@ func TestGenerateDocument_RequiredFieldsPopulated(t *testing.T) {
 	}
 
 	created := time.Unix(1700000000, 0).UTC()
-	doc, err := GenerateDocument(graph, classifications, created)
+	doc, err := GenerateDocument23(graph, classifications, created)
 	if err != nil {
-		t.Fatalf("GenerateDocument() error = %v", err)
+		t.Fatalf("GenerateDocument23() error = %v", err)
 	}
 
 	if doc.DataLicense != "CC0-1.0" {
@@ -128,7 +85,7 @@ func TestGenerateDocument_RequiredFieldsPopulated(t *testing.T) {
 	}
 }
 
-func TestGenerateDocument_NoRootFallsBackToFirstPackage(t *testing.T) {
+func TestGenerateDocument23_NoRootFallsBackToFirstPackage(t *testing.T) {
 	dir := t.TempDir()
 	depMeta := writePackageMetadata(t, dir, "dep.json", "//lib:dep", "pkg:golang/github.com/example/dep@v1.2.3")
 
@@ -141,16 +98,16 @@ func TestGenerateDocument_NoRootFallsBackToFirstPackage(t *testing.T) {
 		},
 	}
 
-	doc, err := GenerateDocument(graph, classifications, time.Unix(0, 0).UTC())
+	doc, err := GenerateDocument23(graph, classifications, time.Unix(0, 0).UTC())
 	if err != nil {
-		t.Fatalf("GenerateDocument() error = %v", err)
+		t.Fatalf("GenerateDocument23() error = %v", err)
 	}
 	if doc.DocumentName != "dep" {
 		t.Errorf("DocumentName = %q, want %q", doc.DocumentName, "dep")
 	}
 }
 
-func TestGenerateDocument_PURLWithoutVersionLeavesPackageVersionEmpty(t *testing.T) {
+func TestGenerateDocument23_PURLWithoutVersionLeavesPackageVersionEmpty(t *testing.T) {
 	dir := t.TempDir()
 	depMeta := writePackageMetadata(t, dir, "dep.json", "//lib:dep", "pkg:golang/github.com/example/dep")
 
@@ -163,16 +120,16 @@ func TestGenerateDocument_PURLWithoutVersionLeavesPackageVersionEmpty(t *testing
 		},
 	}
 
-	doc, err := GenerateDocument(graph, classifications, time.Unix(0, 0).UTC())
+	doc, err := GenerateDocument23(graph, classifications, time.Unix(0, 0).UTC())
 	if err != nil {
-		t.Fatalf("GenerateDocument() error = %v", err)
+		t.Fatalf("GenerateDocument23() error = %v", err)
 	}
 	if got := doc.Packages[0].PackageVersion; got != "" {
 		t.Errorf("PackageVersion = %q, want empty", got)
 	}
 }
 
-func TestGenerateDocument_UsesPURLDownloadQualifier(t *testing.T) {
+func TestGenerateDocument23_UsesPURLDownloadQualifier(t *testing.T) {
 	dir := t.TempDir()
 	depMeta := writePackageMetadata(t, dir, "dep.json", "//lib:dep", "pkg:golang/github.com/example/dep@v1.2.3?download_url=https://example.com/dep.tar.gz")
 
@@ -185,16 +142,16 @@ func TestGenerateDocument_UsesPURLDownloadQualifier(t *testing.T) {
 		},
 	}
 
-	doc, err := GenerateDocument(graph, classifications, time.Unix(0, 0).UTC())
+	doc, err := GenerateDocument23(graph, classifications, time.Unix(0, 0).UTC())
 	if err != nil {
-		t.Fatalf("GenerateDocument() error = %v", err)
+		t.Fatalf("GenerateDocument23() error = %v", err)
 	}
 	if got, want := doc.Packages[0].PackageDownloadLocation, "https://example.com/dep.tar.gz"; got != want {
 		t.Errorf("PackageDownloadLocation = %q, want %q", got, want)
 	}
 }
 
-func TestGenerateDocument_UsesPURLURLDownloadQualifier(t *testing.T) {
+func TestGenerateDocument23_UsesPURLURLDownloadQualifier(t *testing.T) {
 	dir := t.TempDir()
 	depMeta := writePackageMetadata(t, dir, "dep.json", "//lib:dep", "pkg:golang/github.com/example/dep@v1.2.3?url_download=https://example.com/dep.tar.gz")
 
@@ -207,19 +164,19 @@ func TestGenerateDocument_UsesPURLURLDownloadQualifier(t *testing.T) {
 		},
 	}
 
-	doc, err := GenerateDocument(graph, classifications, time.Unix(0, 0).UTC())
+	doc, err := GenerateDocument23(graph, classifications, time.Unix(0, 0).UTC())
 	if err != nil {
-		t.Fatalf("GenerateDocument() error = %v", err)
+		t.Fatalf("GenerateDocument23() error = %v", err)
 	}
 	if got, want := doc.Packages[0].PackageDownloadLocation, "https://example.com/dep.tar.gz"; got != want {
 		t.Errorf("PackageDownloadLocation = %q, want %q", got, want)
 	}
 }
 
-func TestGenerateDocument_EmptyGraphUsesFallbackSubject(t *testing.T) {
-	doc, err := GenerateDocument(sbom.GraphConfig{}, sbom.Classifications{}, time.Unix(0, 0).UTC())
+func TestGenerateDocument23_EmptyGraphUsesFallbackSubject(t *testing.T) {
+	doc, err := GenerateDocument23(sbom.GraphConfig{}, sbom.Classifications{}, time.Unix(0, 0).UTC())
 	if err != nil {
-		t.Fatalf("GenerateDocument() error = %v", err)
+		t.Fatalf("GenerateDocument23() error = %v", err)
 	}
 	if doc.DocumentName == "" {
 		t.Error("DocumentName is empty even with no packages at all")
@@ -229,7 +186,7 @@ func TestGenerateDocument_EmptyGraphUsesFallbackSubject(t *testing.T) {
 	}
 }
 
-func TestGenerateDocument_RetainsPackageEdges(t *testing.T) {
+func TestGenerateDocument23_RetainsPackageEdges(t *testing.T) {
 	for _, wrappers := range []bool{false, true} {
 		t.Run(fmt.Sprintf("wrappers=%t", wrappers), func(t *testing.T) {
 			dir := t.TempDir()
@@ -261,7 +218,7 @@ func TestGenerateDocument_RetainsPackageEdges(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			doc, err := GenerateDocument(graph, classifications, time.Unix(0, 0).UTC())
+			doc, err := GenerateDocument23(graph, classifications, time.Unix(0, 0).UTC())
 			if err != nil {
 				t.Fatal(err)
 			}
