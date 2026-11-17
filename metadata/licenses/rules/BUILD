@@ -14,6 +14,7 @@ filegroup(
         "license_exception.bzl",
         "license_kind.bzl",
     ] + [
+        "//licenses/private:srcs",
         "//licenses/providers:srcs",
         "//licenses/spdx:licenses.bzl",
         "//providers:srcs",

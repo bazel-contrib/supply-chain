@@ -1,0 +1,81 @@
+{
+  "expression": {
+    "operands": [
+      {
+        "kind": {
+          "identifier": "MIT",
+          "name": "MIT License"
+        }
+      },
+      {
+        "operands": [
+          {
+            "kind": {
+              "identifier": "Apache-2.0",
+              "name": "Apache License 2.0"
+            }
+          },
+          {
+            "operands": [
+              {
+                "kind": {
+                  "custom": true,
+                  "identifier": "LicenseRef-acme",
+                  "name": "ACME"
+                }
+              },
+              {
+                "exception": {
+                  "identifier": "Classpath-exception-2.0",
+                  "name": "Classpath exception 2.0"
+                },
+                "operands": [
+                  {
+                    "kind": {
+                      "identifier": "GPL-2.0-only",
+                      "name": "GNU General Public License v2.0 only"
+                    }
+                  }
+                ],
+                "operator": "WITH"
+              }
+            ],
+            "operator": "OR"
+          }
+        ],
+        "operator": "AND"
+      },
+      {
+        "operands": [
+          {
+            "kind": {
+              "identifier": "BSD-3-Clause",
+              "name": "BSD 3-Clause \"New\" or \"Revised\" License"
+            }
+          },
+          {
+            "exception": {
+              "custom": true,
+              "identifier": "AdditionRef-acme-linking",
+              "name": "ACME linking exception"
+            },
+            "operands": [
+              {
+                "kind": {
+                  "custom": true,
+                  "identifier": "LicenseRef-acme",
+                  "name": "ACME"
+                }
+              }
+            ],
+            "operator": "WITH"
+          }
+        ],
+        "operator": "AND"
+      }
+    ],
+    "operator": "OR"
+  },
+  "kind": null,
+  "label": "@@//:all_operators_license"
+}

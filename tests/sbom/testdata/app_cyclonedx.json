@@ -3,6 +3,18 @@
   "bomFormat": "CycloneDX",
   "components": [
     {
+      "bom-ref": "pkg:generic/choice@1.0.0",
+      "licenses": [
+        {
+          "expression": "MIT OR (Apache-2.0 AND LicenseRef-acme)"
+        }
+      ],
+      "name": "choice",
+      "purl": "pkg:generic/choice@1.0.0",
+      "type": "library",
+      "version": "1.0.0"
+    },
+    {
       "bom-ref": "pkg:generic/custom@1.0.0",
       "licenses": [
         {
@@ -17,9 +29,33 @@
       "version": "1.0.0"
     },
     {
+      "bom-ref": "pkg:generic/or_later@1.0.0",
+      "licenses": [
+        {
+          "expression": "GPL-3.0+"
+        }
+      ],
+      "name": "or_later",
+      "purl": "pkg:generic/or_later@1.0.0",
+      "type": "library",
+      "version": "1.0.0"
+    },
+    {
       "bom-ref": "pkg:generic/unlicensed@1.0.0",
       "name": "unlicensed",
       "purl": "pkg:generic/unlicensed@1.0.0",
+      "type": "library",
+      "version": "1.0.0"
+    },
+    {
+      "bom-ref": "pkg:generic/with_exception@1.0.0",
+      "licenses": [
+        {
+          "expression": "GPL-2.0-only WITH Classpath-exception-2.0 OR LicenseRef-acme WITH AdditionRef-acme-linking"
+        }
+      ],
+      "name": "with_exception",
+      "purl": "pkg:generic/with_exception@1.0.0",
       "type": "library",
       "version": "1.0.0"
     }
@@ -27,8 +63,11 @@
   "dependencies": [
     {
       "dependsOn": [
+        "pkg:generic/choice@1.0.0",
         "pkg:generic/custom@1.0.0",
-        "pkg:generic/unlicensed@1.0.0"
+        "pkg:generic/or_later@1.0.0",
+        "pkg:generic/unlicensed@1.0.0",
+        "pkg:generic/with_exception@1.0.0"
       ],
       "ref": "pkg:generic/app@1.0.0"
     }
