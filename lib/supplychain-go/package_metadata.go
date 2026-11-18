@@ -71,12 +71,41 @@ func WritePackageMetadataToFile(path string, metadata PackageMetadata) error {
 func GetPackageAttribute[T any](m PackageMetadata, d PackageAttributeDescriptor[T]) (*T, error) {
 	p := m.(*packageMetadata)
 
-	a, ok := p.Attributes[d.Kind]
+	paths, ok := p.Attributes[d.Kind]
+	if !ok {
+		return nil, fmt.Errorf("package %q does not have attribute %q", p.PURL, d.Kind)
+	}
+	if len(paths) != 1 {
+		return nil, fmt.Errorf("package %q has %d attributes of kind %q, use GetPackageAttributes", p.PURL, len(paths), d.Kind)
+	}
+
+	return parseAttributeFile(paths[0], d)
+}
+
+// GetPackageAttributes returns all attributes of the provided kind from the
+// `PackageMetadata`, in declaration order. This is meant for attribute kinds
+// that allow being declared multiple times.
+func GetPackageAttributes[T any](m PackageMetadata, d PackageAttributeDescriptor[T]) ([]*T, error) {
+	p := m.(*packageMetadata)
+
+	paths, ok := p.Attributes[d.Kind]
 	if !ok {
 		return nil, fmt.Errorf("package %q does not have attribute %q", p.PURL, d.Kind)
 	}
 
-	r, err := os.Open(a)
+	result := make([]*T, 0, len(paths))
+	for _, path := range paths {
+		a, err := parseAttributeFile(path, d)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, a)
+	}
+	return result, nil
+}
+
+func parseAttributeFile[T any](path string, d PackageAttributeDescriptor[T]) (*T, error) {
+	r, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +117,9 @@ func GetPackageAttribute[T any](m PackageMetadata, d PackageAttributeDescriptor[
 type packageMetadata struct {
 	Label      label.Label
 	PURL       packageurl.PackageURL
-	Attributes map[string]string
+	// Attributes maps the kind to the paths of its attribute files. Kinds
+	// that do not allow multiple attributes have exactly one path.
+	Attributes map[string][]string
 }
 
 /*
@@ -119,9 +150,11 @@ var _ json.Marshaler = (*packageMetadata)(nil)
 var _ json.Unmarshaler = (*packageMetadata)(nil)
 
 type rawPackageMetadata struct {
-	Label      string            `json:"label"`
-	PURL       string            `json:"purl"`
-	Attributes map[string]string `json:"attributes"`
+	Label string `json:"label"`
+	PURL  string `json:"purl"`
+	// Attributes values are either a single path or, for kinds allowing
+	// multiple attributes, an array of paths.
+	Attributes map[string]json.RawMessage `json:"attributes"`
 }
 
 func (p *packageMetadata) UnmarshalJSON(data []byte) error {
@@ -142,18 +175,40 @@ func (p *packageMetadata) UnmarshalJSON(data []byte) error {
 	}
 	p.PURL = purl
 
-	p.Attributes = rawMetadata.Attributes
-	if p.Attributes == nil {
-		p.Attributes = make(map[string]string)
+	p.Attributes = make(map[string][]string, len(rawMetadata.Attributes))
+	for kind, raw := range rawMetadata.Attributes {
+		var single string
+		if err := json.Unmarshal(raw, &single); err == nil {
+			p.Attributes[kind] = []string{single}
+			continue
+		}
+		var multiple []string
+		if err := json.Unmarshal(raw, &multiple); err != nil {
+			return fmt.Errorf("attribute %q must be a string or an array of strings: %w", kind, err)
+		}
+		p.Attributes[kind] = multiple
 	}
 
 	return nil
 }
 
 func (p *packageMetadata) MarshalJSON() ([]byte, error) {
+	attributes := make(map[string]json.RawMessage, len(p.Attributes))
+	for kind, paths := range p.Attributes {
+		var v any = paths
+		if len(paths) == 1 {
+			v = paths[0]
+		}
+		raw, err := json.Marshal(v)
+		if err != nil {
+			return nil, err
+		}
+		attributes[kind] = raw
+	}
+
 	return json.Marshal(&rawPackageMetadata{
 		Label:      p.Label.String(),
 		PURL:       p.PURL.String(),
-		Attributes: p.Attributes,
+		Attributes: attributes,
 	})
 }
