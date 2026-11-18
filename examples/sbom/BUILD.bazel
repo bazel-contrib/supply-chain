@@ -1,4 +1,4 @@
-# An SBOM (SPDX and CycloneDX) of a single dependency graph that mixes every
+# An SBOM (SPDX 2.3, SPDX 3.0.1 and CycloneDX) of a single dependency graph that mixes every
 # kind of license declaration:
 #
 #   app                     Apache-2.0                          standard, single
@@ -122,4 +122,10 @@ cyclonedx(
 spdx(
     name = "lib_with_third_party_deps_spdx",
     sbom = ":lib_with_third_party_deps_sbom",
+)
+
+spdx(
+    name = "lib_with_third_party_deps_spdx_jsonld",
+    sbom = ":lib_with_third_party_deps_sbom",
+    format = "json-ld",
 )
