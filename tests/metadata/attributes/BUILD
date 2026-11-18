@@ -1,9 +1,10 @@
 load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
+load("@jq.bzl//jq:jq.bzl", "jq")
 load("@package_metadata//attributes:copyright_notice.bzl", "copyright_notice")
 load("@package_metadata//attributes:cpe.bzl", "cpe")
 load("@package_metadata//attributes:integrity.bzl", "integrity")
 load("@package_metadata//attributes:patch.bzl", "patch")
-load("@package_metadata//attributes:patch_set.bzl", "patch_set")
+load("@package_metadata//rules:package_metadata.bzl", "package_metadata")
 
 [
     [
@@ -85,14 +86,6 @@ diff_test(
     file2 = "testdata/patch/valid-1.json",
 )
 
-patch_set(
-    name = "patch_set.valid-1",
-    patches = [
-        ":patch.valid-1",
-        ":patch.valid-2",
-    ],
-)
-
 patch(
     name = "patch.valid-2",
     description = "Local tweak.",
@@ -101,8 +94,28 @@ patch(
     integrity = ["sha256-EbbT7lVO7feSmZBamPm5oE5JghC1nxUJTJFskdFQ51Q="],
 )
 
+# A `patch` allows multiple attributes of its kind: both end up, in order, in
+# the same `package_metadata`.
+package_metadata(
+    name = "patch.multiple.package_metadata",
+    attributes = [
+        ":patch.valid-1",
+        ":patch.valid-2",
+    ],
+    purl = "pkg:generic/patched@1.0.0",
+)
+
+# Keeps only the file names, since the paths contain the configuration.
+jq(
+    name = "patch.multiple.actual",
+    srcs = [":patch.multiple.package_metadata"],
+    args = ["-S"],
+    filter = '.attributes |= map_values(if type == "array" then map(split("/") | last) else split("/") | last end)',
+    out = "patch.multiple.actual.json",
+)
+
 diff_test(
-    name = "patch_set.valid-1.test",
-    file1 = ":patch_set.valid-1",
-    file2 = "testdata/patch_set/valid-1.json",
+    name = "patch.multiple.test",
+    file1 = "testdata/patch/multiple.json",
+    file2 = ":patch.multiple.actual",
 )
