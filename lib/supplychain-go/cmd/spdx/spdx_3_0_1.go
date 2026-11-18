@@ -141,7 +141,7 @@ func GenerateDocument301(graph sbom.GraphConfig, classifications sbom.Classifica
 		spdx.ProfileIdentifierType_Software,
 		subjectName,
 		&spdx.SoftwareAgent{Name: generatorName},
-		generatorTool(toolVersion),
+		generatorTool(toolPURL),
 	)
 	// The document ID is mandatory and must be unique to this document.
 	// Derived deterministically from the subject's purl (rather than e.g. a
@@ -221,20 +221,19 @@ func writeDocument(doc *spdx.Document, w io.Writer) error {
 
 const generatorName = "Bazel Supply Chain Tools SPDX generator"
 
-// toolVersion is the release version of the generator, set at link time from
-// the module version. It stays "HEAD" for builds that are not a release.
-var toolVersion = "HEAD"
+// toolPURL is the purl of the generator, set at link time from the module
+// name and version. It stays empty for builds that are not a release.
+var toolPURL = ""
 
 // generatorTool describes the generator as the tool that created the
-// document. The purl is only emitted for a released version: a purl without
-// a version does not identify the tool, and "HEAD" is not a version.
-func generatorTool(version string) *spdx.Tool {
+// document.
+func generatorTool(purl string) *spdx.Tool {
 	tool := &spdx.Tool{Name: generatorName}
-	if version != "" && version != "HEAD" {
+	if purl != "" {
 		tool.ExternalIdentifiers = spdx.ExternalIdentifierList{
 			&spdx.ExternalIdentifier{
 				Type:       spdx.ExternalIdentifierType_PackageURL,
-				Identifier: "pkg:github/bazel-contrib/supply-chain@v" + url.PathEscape(version),
+				Identifier: purl,
 			},
 		}
 	}

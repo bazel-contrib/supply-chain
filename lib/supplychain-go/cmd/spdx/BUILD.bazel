@@ -1,3 +1,4 @@
+load("@package_metadata//purl:purl.bzl", "purl")
 load("@rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
 
 go_library(
@@ -11,7 +12,9 @@ go_library(
     ],
     importpath = "github.com/bazel-contrib/supply-chain/lib/supplychain-go/cmd/spdx",
     visibility = ["//visibility:private"],
-    x_defs = {"toolVersion": module_version()},
+    # A purl without a version does not identify the tool, and "HEAD" is not
+    # a version: development builds do not report one.
+    x_defs = {"toolPURL": "" if module_version() in (None, "HEAD") else purl.bazel(module_name(), module_version())},
     deps = [
         "//:supplychain-go",
         "//internal/sbom",

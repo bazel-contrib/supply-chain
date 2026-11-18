@@ -7,19 +7,17 @@ import (
 )
 
 func TestGeneratorTool(t *testing.T) {
-	released := generatorTool("1.2.3")
+	want := "pkg:bazel/supply-chain-go@1.2.3"
+	released := generatorTool(want)
 	if len(released.ExternalIdentifiers) != 1 {
 		t.Fatalf("released tool has %d external identifiers, want 1", len(released.ExternalIdentifiers))
 	}
-	want := "pkg:github/bazel-contrib/supply-chain@v1.2.3"
 	if got := released.ExternalIdentifiers[0].(interface{ GetIdentifier() string }).GetIdentifier(); got != want {
 		t.Errorf("purl = %q, want %q", got, want)
 	}
 
-	for _, version := range []string{"", "HEAD"} {
-		if got := generatorTool(version).ExternalIdentifiers; len(got) != 0 {
-			t.Errorf("generatorTool(%q) has identifiers %v, want none", version, got)
-		}
+	if got := generatorTool("").ExternalIdentifiers; len(got) != 0 {
+		t.Errorf("tool without a purl has identifiers %v, want none", got)
 	}
 }
 
