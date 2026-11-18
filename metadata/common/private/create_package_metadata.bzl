@@ -40,17 +40,35 @@ def create_package_metadata(*, actions, label, purl, attributes = []):
             Typically constructed with `purl.builder` or `purl.bazel`.
         attributes: A list of `PackageAttributeInfo` providers representing package
             attributes (e.g., source location, license). Defaults to an empty list.
+            Attributes sharing a `kind` are only allowed if their `allow_multiple`
+            is set; they are then emitted as a list of paths, otherwise the build
+            fails.
 
     Returns:
         A `PackageMetadataInfo` provider containing the generated metadata file and
         transitive files from all attributes.
     """
 
+    attribute_files = {}
+    multiple_kinds = {}
+    for a in attributes:
+        allow_multiple = getattr(a, "allow_multiple", False)
+        if a.kind in attribute_files:
+            if not allow_multiple or not multiple_kinds[a.kind]:
+                fail("{}: attribute kind '{}' can only be declared once, but was declared multiple times (or with a mismatching `allow_multiple`)".format(label, a.kind))
+            attribute_files[a.kind].append(a.attributes.path)
+        else:
+            multiple_kinds[a.kind] = allow_multiple
+            attribute_files[a.kind] = [a.attributes.path]
+
     metadata = actions.declare_file("{}.package-metadata.json".format(label.name))
     actions.write(
         output = metadata,
         content = json.encode({
-            "attributes": {a.kind: a.attributes.path for a in attributes},
+            "attributes": {
+                kind: paths if multiple_kinds[kind] else paths[0]
+                for kind, paths in attribute_files.items()
+            },
             "label": str(label),
             "purl": purl,
         }),

@@ -164,9 +164,10 @@ func TestGetAttribute(t *testing.T) {
 			/* qualifiers= */ packageurl.Qualifiers{},
 			/* subpath= */ "",
 		),
-		Attributes: map[string]string{
-			"fake":  os.Args[0],
-			"other": "/does/not/exist",
+		Attributes: map[string][]string{
+			"fake":  {os.Args[0]},
+			"other": {"/does/not/exist"},
+			"multi": {os.Args[0], os.Args[0]},
 		},
 	}
 
@@ -182,4 +183,31 @@ func TestGetAttribute(t *testing.T) {
 		})
 	assert.Nil(t, err)
 	assert.Equal(t, &FakeAttribute{Name: "foo"}, a)
+
+	descriptor := PackageAttributeDescriptor[FakeAttribute]{
+		Kind: "multi",
+		Parser: func(r io.Reader) (*FakeAttribute, error) {
+			return &FakeAttribute{Name: "foo"}, nil
+		},
+	}
+
+	_, err = GetPackageAttribute(p, descriptor)
+	assert.NotNil(t, err)
+
+	as, err := GetPackageAttributes(p, descriptor)
+	assert.Nil(t, err)
+	assert.Equal(t, []*FakeAttribute{{Name: "foo"}, {Name: "foo"}}, as)
+}
+
+func TestReadMultipleAttributesOfKind(t *testing.T) {
+	m, err := ReadPackageMetadata(strings.NewReader(`{
+		"purl": "pkg:github/bazel-contrib/supply-chain",
+		"label": "@package_metadata//foo/bar",
+		"attributes": {"patch": ["a.json", "b.json"], "license": "l.json"}
+	}`))
+	assert.Nil(t, err)
+	assert.Equal(t, map[string][]string{
+		"patch":   {"a.json", "b.json"},
+		"license": {"l.json"},
+	}, m.(*packageMetadata).Attributes)
 }
