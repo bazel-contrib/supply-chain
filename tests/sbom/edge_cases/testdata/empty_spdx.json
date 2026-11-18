@@ -9,8 +9,18 @@
     },
     {
       "creationInfo": "_:CreationInfo-1",
+      "name": "Bazel Supply Chain Tools SPDX generator",
+      "spdxId": "SPDXRef:Tool-1",
+      "type": "Tool"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
       "element": [
-        "SPDXRef:SoftwareAgent-1"
+        "SPDXRef:SoftwareAgent-1",
+        "SPDXRef:Tool-1"
+      ],
+      "software_sbomType": [
+        "build"
       ],
       "spdxId": "SPDXRef:sbom",
       "type": "software_Sbom"
@@ -21,7 +31,9 @@
       "createdBy": [
         "SPDXRef:SoftwareAgent-1"
       ],
-      "createdUsing": [],
+      "createdUsing": [
+        "SPDXRef:Tool-1"
+      ],
       "specVersion": "3.0.1",
       "type": "CreationInfo"
     },
