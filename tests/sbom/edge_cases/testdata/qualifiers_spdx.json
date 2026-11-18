@@ -19,7 +19,7 @@
       "creationInfo": "_:CreationInfo-1",
       "name": "download_url",
       "software_downloadLocation": "https://example.com/download_url.tar.gz",
-      "software_packageUrl": "pkg:generic/download_url@1.2.3?download_url=https%3A%2F%2Fexample.com%2Fdownload_url.tar.gz",
+      "software_packageUrl": "pkg:generic/download_url@1.2.3?download_url=https:%2F%2Fexample.com%2Fdownload_url.tar.gz",
       "software_packageVersion": "1.2.3",
       "spdxId": "SPDXRef:dep-1",
       "type": "software_Package"
@@ -35,7 +35,7 @@
       "creationInfo": "_:CreationInfo-1",
       "name": "url_download",
       "software_downloadLocation": "https://example.com/url_download.tar.gz",
-      "software_packageUrl": "pkg:generic/url_download@1.2.3?url_download=https%3A%2F%2Fexample.com%2Furl_download.tar.gz",
+      "software_packageUrl": "pkg:generic/url_download@1.2.3?url_download=https:%2F%2Fexample.com%2Furl_download.tar.gz",
       "software_packageVersion": "1.2.3",
       "spdxId": "SPDXRef:dep-3",
       "type": "software_Package"
