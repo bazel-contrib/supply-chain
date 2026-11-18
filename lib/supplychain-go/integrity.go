@@ -44,7 +44,9 @@ func ParseChecksums(sris []string) ([]Checksum, error) {
 		if !ok {
 			continue
 		}
-		// An SRI string can carry options after the digest.
+		// The SRI spec (https://www.w3.org/TR/sri/, section 3.5) reserves
+		// `?<options>` after the digest but defines no options, and consumers
+		// must ignore the ones they do not recognize.
 		digest, _, _ = strings.Cut(digest, "?")
 		// Accept both the standard and the URL-safe base64 alphabets.
 		digest = strings.NewReplacer("-", "+", "_", "/").Replace(strings.TrimRight(digest, "="))

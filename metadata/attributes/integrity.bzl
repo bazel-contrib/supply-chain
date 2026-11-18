@@ -23,7 +23,9 @@ def _validate(sri):
     if not algorithm or not separator:
         fail("integrity {} is not of the form <algorithm>-<base64 digest>".format(repr(sri)))
 
-    # An SRI string can carry options after the digest.
+    # The SRI spec (https://www.w3.org/TR/sri/, section 3.5) reserves
+    # `?<options>` after the digest but defines no options, and consumers must
+    # ignore the ones they do not recognize.
     digest = digest.partition("?")[0].rstrip("=")
     if not digest:
         fail("integrity {} has no digest".format(repr(sri)))
