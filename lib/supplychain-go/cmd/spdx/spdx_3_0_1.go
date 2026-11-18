@@ -57,6 +57,23 @@ func GenerateDocument301(graph sbom.GraphConfig, classifications sbom.Classifica
 			PackageURL:       spdx.URI(purl.String()),
 			DownloadLocation: spdx.URI(downloadLocation),
 		}
+		pkg.OriginatedBy = originatedBy(purl.Type, purl.Namespace)
+		integrity, err := supplychain.GetIntegrityAttribute(pkgMetadata)
+		if err != nil {
+			return fmt.Errorf("error reading integrity of %s: %w", node.Label, err)
+		}
+		if integrity != nil {
+			checksums, err := integrity.Checksums()
+			if err != nil {
+				return fmt.Errorf("error reading integrity of %s: %w", node.Label, err)
+			}
+			for _, checksum := range checksums {
+				pkg.VerifiedUsing = append(pkg.VerifiedUsing, &spdx.Hash{
+					Algorithm: hashAlgorithms[checksum.Algorithm],
+					Value:     checksum.Hex,
+				})
+			}
+		}
 		licenseAttribute, err := supplychain.GetLicenseAttribute(pkgMetadata)
 		if err != nil {
 			return fmt.Errorf("error reading license of %s: %w", node.Label, err)
@@ -123,8 +140,8 @@ func GenerateDocument301(graph sbom.GraphConfig, classifications sbom.Classifica
 	doc := spdx.NewDocument(
 		spdx.ProfileIdentifierType_Software,
 		subjectName,
-		&spdx.SoftwareAgent{Name: "Bazel Supply Chain Tools SPDX generator"},
-		nil,
+		&spdx.SoftwareAgent{Name: generatorName},
+		generatorTool(toolVersion),
 	)
 	// The document ID is mandatory and must be unique to this document.
 	// Derived deterministically from the subject's purl (rather than e.g. a
@@ -140,7 +157,10 @@ func GenerateDocument301(graph sbom.GraphConfig, classifications sbom.Classifica
 
 	// The document describes a single SBOM, which holds all packages and
 	// relationships. The root component is the root of the SBOM.
-	sbomElement := &spdx.SBOM{ID: "sbom"}
+	sbomElement := &spdx.SBOM{
+		ID:        "sbom",
+		SbomTypes: []spdx.SbomType{spdx.SbomType_Build},
+	}
 	if classifications.RootComponent != nil {
 		if root, ok := labelToPackage[classifications.RootComponent.Label]; ok {
 			sbomElement.RootElements = spdx.ElementList{root}
@@ -197,4 +217,46 @@ func writeDocument(doc *spdx.Document, w io.Writer) error {
 	encoder.SetEscapeHTML(false)
 	encoder.SetIndent("", "  ")
 	return encoder.Encode(out)
+}
+
+const generatorName = "Bazel Supply Chain Tools SPDX generator"
+
+// toolVersion is the release version of the generator, set at link time from
+// the module version. It stays "HEAD" for builds that are not a release.
+var toolVersion = "HEAD"
+
+// generatorTool describes the generator as the tool that created the
+// document. The purl is only emitted for a released version: a purl without
+// a version does not identify the tool, and "HEAD" is not a version.
+func generatorTool(version string) *spdx.Tool {
+	tool := &spdx.Tool{Name: generatorName}
+	if version != "" && version != "HEAD" {
+		tool.ExternalIdentifiers = spdx.ExternalIdentifierList{
+			&spdx.ExternalIdentifier{
+				Type:       spdx.ExternalIdentifierType_PackageURL,
+				Identifier: "pkg:github/bazel-contrib/supply-chain@v" + url.PathEscape(version),
+			},
+		}
+	}
+	return tool
+}
+
+var hashAlgorithms = map[string]spdx.HashAlgorithm{
+	"sha1":   spdx.HashAlgorithm_Sha1,
+	"sha256": spdx.HashAlgorithm_Sha256,
+	"sha384": spdx.HashAlgorithm_Sha384,
+	"sha512": spdx.HashAlgorithm_Sha512,
+}
+
+// originatedBy names the organization the package comes from. Only purl types
+// whose namespace is the owner of the repository tell it; for others (e.g.
+// the maven group or the npm scope) the namespace is not necessarily one.
+func originatedBy(purlType, namespace string) spdx.AgentList {
+	switch purlType {
+	case "github", "gitlab", "bitbucket":
+		if namespace != "" {
+			return spdx.AgentList{&spdx.Organization{Name: namespace}}
+		}
+	}
+	return nil
 }
