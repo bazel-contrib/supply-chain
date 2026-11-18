@@ -148,9 +148,10 @@ This is typically passed to the `attributes` of a `package_metadata` target.
 
 Each integrity is a Subresource Integrity (SRI) string: the hash algorithm
 name, a dash, then the base64-encoded digest, e.g. `sha256-<base64 digest>`.
-Values are passed through as-is: this rule does not validate them. Tools
-consuming the attribute are responsible for validating and mapping them to
-the format they produce, and may drop algorithms they do not support.
+The form and base64 encoding of each value are validated, and so is the size
+of the digest of `sha1`, `sha256`, `sha384` and `sha512`. Values of other
+algorithms are passed through as-is: tools consuming the attribute map them
+to the format they produce, and may drop algorithms they do not support.
 
 Entries are assumed to be UTF-8 encoded. Tools for building SBOMs presume
 that.
