@@ -35,6 +35,9 @@ def _patch_impl(ctx):
         value["url"] = ctx.attr.url
     if ctx.file.file:
         value["file"] = _repo_relative_path(ctx.file.file)
+
+        # Where tools running in the action find the file, to read its content.
+        value["file_exec_path"] = ctx.file.file.path
     if ctx.attr.resolves:
         value["resolves"] = ctx.attr.resolves
 
@@ -127,8 +130,9 @@ def patch(
 
     Format: the `PackageAttributeInfo` of this rule has `kind`
     `build.bazel.attribute.patch`, and its `attributes` file holds a JSON object
-    written without insignificant whitespace, with keys sorted. `url`, `file` and
-    `resolves` are omitted when unset:
+    written without insignificant whitespace, with keys sorted. `url`, `file`,
+    `file_exec_path` and `resolves` are omitted when unset. `file_exec_path` is
+    the path of `file` for tools that read its content:
 
     ```json
     {
@@ -153,7 +157,7 @@ def patch(
       file: A patch file in the workspace. Exactly one of `url` or `file` must
         be set. The JSON holds the path of the file relative to the root of the
         repository it belongs to, and the file is added to the `files` of the
-        `PackageAttributeInfo`.
+        `PackageAttributeInfo`. `file_exec_path` holds its execution path.
       resolves: Optional. Identifiers (e.g., CVE ids, issue URLs) of the
         issues the patch resolves.
       tags: A list of arbitrary tags to apply to this target.

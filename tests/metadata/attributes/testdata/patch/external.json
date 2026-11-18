@@ -1,1 +1,1 @@
-{"description":"Patch of an external repository.","file":"LICENSE","integrity":["sha256-EbbT7lVO7feSmZBamPm5oE5JghC1nxUJTJFskdFQ51Q="],"type":"monkey"}
+{"description":"Patch of an external repository.","file":"LICENSE","file_exec_path":"external/rules_license+/LICENSE","integrity":["sha256-EbbT7lVO7feSmZBamPm5oE5JghC1nxUJTJFskdFQ51Q="],"type":"monkey"}
