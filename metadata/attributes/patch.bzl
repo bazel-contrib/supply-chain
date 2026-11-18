@@ -11,18 +11,6 @@ KIND = "build.bazel.attribute.patch"
 # equivalent, tools may drop it.
 PATCH_TYPES = ["unofficial", "monkey", "backport", "cherry-pick"]
 
-PatchInfo = provider(
-    doc = "Provider carrying the fields of a single `patch` target, consumed by `patch_set`.",
-    fields = {
-        "description": "The description of the patch.",
-        "file": "The short path of the patch file, or None.",
-        "integrity": "The list of integrity strings of the patch.",
-        "resolves": "The list of issues resolved by the patch (JSON-serializable), or empty.",
-        "type": "The type of the patch.",
-        "url": "The URL of the patch, or None.",
-    },
-)
-
 def _patch_impl(ctx):
     if not ctx.attr.integrity:
         fail("integrity must contain at least one entry")
@@ -54,14 +42,7 @@ def _patch_impl(ctx):
             kind = KIND,
             attributes = output,
             files = [depset(direct = [ctx.file.file])] if ctx.file.file else [],
-        ),
-        PatchInfo(
-            description = ctx.attr.description,
-            file = ctx.file.file.short_path if ctx.file.file else None,
-            integrity = ctx.attr.integrity,
-            resolves = ctx.attr.resolves,
-            type = ctx.attr.type,
-            url = ctx.attr.url or None,
+            allow_multiple = True,
         ),
     ]
 
@@ -104,9 +85,9 @@ def patch(
         visibility = None):
     """Rule for declaring a single patch applied to a package.
 
-    Bazel attributes cannot be structs, so a patch is declared as its own
-    target and grouped with `patch_set`. This target can also be passed on its
-    own to the `attributes` of a `package_metadata` target.
+    A patch is declared as its own target. Several of them can be passed to the
+    `attributes` of the same `package_metadata` target, since this attribute
+    sets `allow_multiple`; they are recorded in the order they are declared.
 
     Values are passed through as-is: tools consuming the
     attribute are responsible for mapping them to the format they produce.

@@ -2,30 +2,6 @@
 
 Declares rule `patch`.
 
-<a id="PatchInfo"></a>
-
-## PatchInfo
-
-<pre>
-load("@package_metadata//attributes:patch.bzl", "PatchInfo")
-
-PatchInfo(<a href="#PatchInfo-description">description</a>, <a href="#PatchInfo-file">file</a>, <a href="#PatchInfo-integrity">integrity</a>, <a href="#PatchInfo-resolves">resolves</a>, <a href="#PatchInfo-type">type</a>, <a href="#PatchInfo-url">url</a>)
-</pre>
-
-Provider carrying the fields of a single `patch` target, consumed by `patch_set`.
-
-**FIELDS**
-
-| Name  | Description |
-| :------------- | :------------- |
-| <a id="PatchInfo-description"></a>description |  The description of the patch.    |
-| <a id="PatchInfo-file"></a>file |  The short path of the patch file, or None.    |
-| <a id="PatchInfo-integrity"></a>integrity |  The list of integrity strings of the patch.    |
-| <a id="PatchInfo-resolves"></a>resolves |  The list of issues resolved by the patch (JSON-serializable), or empty.    |
-| <a id="PatchInfo-type"></a>type |  The type of the patch.    |
-| <a id="PatchInfo-url"></a>url |  The URL of the patch, or None.    |
-
-
 <a id="patch"></a>
 
 ## patch
@@ -38,9 +14,9 @@ patch(*, <a href="#patch-name">name</a>, <a href="#patch-description">descriptio
 
 Rule for declaring a single patch applied to a package.
 
-Bazel attributes cannot be structs, so a patch is declared as its own
-target and grouped with `patch_set`. This target can also be passed on its
-own to the `attributes` of a `package_metadata` target.
+A patch is declared as its own target. Several of them can be passed to the
+`attributes` of the same `package_metadata` target, since this attribute
+sets `allow_multiple`; they are recorded in the order they are declared.
 
 Values are passed through as-is: tools consuming the
 attribute are responsible for mapping them to the format they produce.
