@@ -32,6 +32,46 @@
       "type": "software_Package"
     },
     {
+      "comment": "Patch file vendor/acme/fix_coyote.patch in the repository that declares the package.",
+      "creationInfo": "_:CreationInfo-1",
+      "description": "Fixes an off-by-one in the coyote parser.",
+      "name": "fix_coyote.patch",
+      "software_primaryPurpose": "patch",
+      "spdxId": "SPDXRef:patch-0",
+      "type": "software_File",
+      "verifiedUsing": [
+        {
+          "algorithm": "sha256",
+          "hashValue": "72d6febcbbbd81df21396bb28a40ab726a55b2f47cac1cd0e684dd756ae2f3c0",
+          "type": "Hash"
+        }
+      ]
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "description": "Backport of the upstream fix.",
+      "externalRef": [
+        {
+          "externalRefType": "altDownloadLocation",
+          "locator": [
+            "https://example.com/coyote/cve-2024-0001.patch"
+          ],
+          "type": "ExternalRef"
+        }
+      ],
+      "name": "cve-2024-0001.patch",
+      "software_primaryPurpose": "patch",
+      "spdxId": "SPDXRef:patch-1",
+      "type": "software_File",
+      "verifiedUsing": [
+        {
+          "algorithm": "sha256",
+          "hashValue": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "type": "Hash"
+        }
+      ]
+    },
+    {
       "creationInfo": "_:CreationInfo-1",
       "from": "SPDXRef:dep-0",
       "relationshipType": "dependsOn",
@@ -63,14 +103,38 @@
     },
     {
       "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-1",
+      "relationshipType": "patchedBy",
+      "spdxId": "SPDXRef:rel-3",
+      "to": [
+        "SPDXRef:patch-0"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-1",
+      "relationshipType": "patchedBy",
+      "spdxId": "SPDXRef:rel-4",
+      "to": [
+        "SPDXRef:patch-1"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
       "element": [
         "SPDXRef:LicenseRef-acme",
         "SPDXRef:SoftwareAgent-1",
         "SPDXRef:dep-0",
         "SPDXRef:dep-1",
+        "SPDXRef:patch-0",
+        "SPDXRef:patch-1",
         "SPDXRef:rel-0",
         "SPDXRef:rel-1",
         "SPDXRef:rel-2",
+        "SPDXRef:rel-3",
+        "SPDXRef:rel-4",
         "https://spdx.org/licenses/Apache-2.0"
       ],
       "rootElement": [
