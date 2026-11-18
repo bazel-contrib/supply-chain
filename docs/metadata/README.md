@@ -33,7 +33,7 @@ The rules and providers in this module have two primary audiences:
 
 If you are a module author and want to annotate your module, you will need :
 
-  - Choose the appropriate package-url(PURL) type from the [standard list](https://github.com/package-url/purl-spec/tree/main/types-doc) related to the module technology if available. If no package type is already defined, use the `generic` type and provide the appropriate qualifiers to unambiguously identify the package.
+  - Choose the appropriate package-url(PURL) type from the [standard list](https://github.com/package-url/purl-spec/blob/main/purl-types-index.json) related to the module technology if available. If no package type is already defined, use the `generic` type and provide the appropriate qualifiers to unambiguously identify the package.
 
     Build the PURL with [`purl.bazel`](./purl/purl.md#purlbazel) for Bazel modules, or with [`purl.builder`](./purl/purl.md#purlbuilder) otherwise, rather than writing the string by hand: the builder percent-encodes, normalizes, and validates it.
 
