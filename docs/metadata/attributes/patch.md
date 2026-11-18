@@ -71,7 +71,7 @@ written without insignificant whitespace, with keys sorted. `url`, `file` and
 | <a id="patch-integrity"></a>integrity |  Required. Checksums of the patch file as SRI strings (`<algorithm>-<base64 digest>`), e.g. `["sha256-<base64 digest>"]`. Must contain at least one entry.   |  none |
 | <a id="patch-type"></a>type |  Required. The nature of the patch, one of `unofficial`, `monkey`, `backport` or `cherry-pick` (CycloneDX `pedigree.patches[].type`).   |  none |
 | <a id="patch-url"></a>url |  Where the patch can be retrieved from. Exactly one of `url` or `file` must be set.   |  `None` |
-| <a id="patch-file"></a>file |  A patch file in the workspace. Exactly one of `url` or `file` must be set. The JSON holds the file's `short_path`, and the file is added to the `files` of the `PackageAttributeInfo`.   |  `None` |
+| <a id="patch-file"></a>file |  A patch file in the workspace. Exactly one of `url` or `file` must be set. The JSON holds the path of the file relative to the root of the repository it belongs to, and the file is added to the `files` of the `PackageAttributeInfo`.   |  `None` |
 | <a id="patch-resolves"></a>resolves |  Optional. Identifiers (e.g., CVE ids, issue URLs) of the issues the patch resolves.   |  `None` |
 | <a id="patch-tags"></a>tags |  A list of arbitrary tags to apply to this target.   |  `None` |
 | <a id="patch-visibility"></a>visibility |  The visibility of this target.   |  `None` |

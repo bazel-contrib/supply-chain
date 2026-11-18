@@ -94,6 +94,28 @@ patch(
     integrity = ["sha256-EbbT7lVO7feSmZBamPm5oE5JghC1nxUJTJFskdFQ51Q="],
 )
 
+diff_test(
+    name = "patch.valid-2.test",
+    file1 = ":patch.valid-2",
+    file2 = "testdata/patch/valid-2.json",
+)
+
+# The path of a file of an external repository is relative to the root of that
+# repository, without the `../<repo>/` prefix of its `short_path`.
+patch(
+    name = "patch.external",
+    description = "Patch of an external repository.",
+    file = "@rules_license//:LICENSE",
+    integrity = ["sha256-EbbT7lVO7feSmZBamPm5oE5JghC1nxUJTJFskdFQ51Q="],
+    type = "monkey",
+)
+
+diff_test(
+    name = "patch.external.test",
+    file1 = ":patch.external",
+    file2 = "testdata/patch/external.json",
+)
+
 # A `patch` allows multiple attributes of its kind: both end up, in order, in
 # the same `package_metadata`.
 package_metadata(

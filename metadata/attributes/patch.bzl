@@ -11,6 +11,15 @@ KIND = "build.bazel.attribute.patch"
 # equivalent, tools may drop it.
 PATCH_TYPES = ["unofficial", "monkey", "backport", "cherry-pick"]
 
+def _repo_relative_path(file):
+    """Returns the path of the file relative to the root of its repository."""
+    path = file.short_path
+
+    # The `short_path` of a file of an external repository is `../<repo>/<path>`.
+    if path.startswith("../"):
+        return path[len("../"):].partition("/")[2]
+    return path
+
 def _patch_impl(ctx):
     if not ctx.attr.integrity:
         fail("integrity must contain at least one entry")
@@ -25,7 +34,7 @@ def _patch_impl(ctx):
     if ctx.attr.url:
         value["url"] = ctx.attr.url
     if ctx.file.file:
-        value["file"] = ctx.file.file.short_path
+        value["file"] = _repo_relative_path(ctx.file.file)
     if ctx.attr.resolves:
         value["resolves"] = ctx.attr.resolves
 
@@ -142,8 +151,9 @@ def patch(
       url: Where the patch can be retrieved from. Exactly one of `url` or
         `file` must be set.
       file: A patch file in the workspace. Exactly one of `url` or `file` must
-        be set. The JSON holds the file's `short_path`, and the file is added
-        to the `files` of the `PackageAttributeInfo`.
+        be set. The JSON holds the path of the file relative to the root of the
+        repository it belongs to, and the file is added to the `files` of the
+        `PackageAttributeInfo`.
       resolves: Optional. Identifiers (e.g., CVE ids, issue URLs) of the
         issues the patch resolves.
       tags: A list of arbitrary tags to apply to this target.
