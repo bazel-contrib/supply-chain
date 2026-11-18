@@ -15,6 +15,7 @@ gazelle(name = "gazelle")
 go_library(
     name = "supplychain-go",
     srcs = [
+        "integrity.go",
         "license.go",
         "package_attribute.go",
         "package_metadata.go",
@@ -29,11 +30,15 @@ go_library(
 
 go_test(
     name = "supplychain-go_test",
-    srcs = ["package_metadata_test.go"],
+    srcs = [
+        "integrity_test.go",
+        "package_metadata_test.go",
+    ],
     embed = [":supplychain-go"],
     deps = [
         "//label",
         "@com_github_package_url_packageurl_go//:packageurl-go",
         "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
     ],
 )
