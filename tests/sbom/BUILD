@@ -1,4 +1,5 @@
 load("@bazel_skylib//rules:build_test.bzl", "build_test")
+load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("@package_metadata//licenses/rules:license.bzl", "license")
 load("@package_metadata//licenses/rules:license_exception.bzl", "license_exception")
 load("@package_metadata//licenses/rules:license_kind.bzl", "license_kind")
@@ -182,6 +183,39 @@ cyclonedx(
     sbom = ":app_sbom",
 )
 
+# The serial number and the document namespace of a report come from a file, so
+# that a build can produce them, for example from its workspace status.
+write_file(
+    name = "serial_number",
+    out = "serial_number.txt",
+    content = ["urn:uuid:7c9e6679-7425-40de-944b-e07fc1f90ae7"],
+)
+
+write_file(
+    name = "document_namespace",
+    out = "document_namespace.txt",
+    content = ["https://example.com/spdxdocs/app-1.0.0-4d3c2b1a"],
+)
+
+cyclonedx(
+    name = "app_cyclonedx_serial_number",
+    sbom = ":app_sbom",
+    serial_number = ":serial_number",
+)
+
+spdx(
+    name = "app_spdx_document_namespace",
+    document_namespace = ":document_namespace",
+    format = "json-ld",
+    sbom = ":app_sbom",
+)
+
+spdx(
+    name = "app_spdx23_document_namespace",
+    document_namespace = ":document_namespace",
+    sbom = ":app23_sbom",
+)
+
 sbom_golden_test(
     name = "app_spdx_golden_test",
     golden = "testdata/app_spdx.json",
@@ -198,6 +232,24 @@ sbom_golden_test(
     name = "app_cyclonedx_golden_test",
     golden = "testdata/app_cyclonedx.json",
     report = ":app_cyclonedx",
+)
+
+sbom_golden_test(
+    name = "app_cyclonedx_serial_number_golden_test",
+    golden = "testdata/app_cyclonedx_serial_number.json",
+    report = ":app_cyclonedx_serial_number",
+)
+
+sbom_golden_test(
+    name = "app_spdx_document_namespace_golden_test",
+    golden = "testdata/app_spdx_document_namespace.json",
+    report = ":app_spdx_document_namespace",
+)
+
+sbom_golden_test(
+    name = "app_spdx23_document_namespace_golden_test",
+    golden = "testdata/app_spdx23_document_namespace.json",
+    report = ":app_spdx23_document_namespace",
 )
 
 strict_validations_test_suite(

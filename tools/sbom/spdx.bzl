@@ -21,6 +21,9 @@ def _spdx_impl(ctx):
     if ctx.version_file:
         extra_inputs.append(ctx.version_file)
         extra_args.extend(["--created_from_status_file", ctx.version_file.path])
+    if ctx.file.document_namespace:
+        extra_inputs.append(ctx.file.document_namespace)
+        extra_args.extend(["--document_namespace_file", ctx.file.document_namespace.path])
     if strict:
         spdx_validator = ctx.toolchains["//sbom:spdx_validator_toolchain_type"]
         extra_args.extend(["--validator", spdx_validator.validator.path])
@@ -64,6 +67,17 @@ spdx = rule(
             doc = "The output format for the SPDX SBOM. `json`, `yaml` and `tag-value` write SPDX 2.3; `json-ld` writes SPDX 3.0.1.",
         ),
         "out": attr.output(doc = "The output file for the SPDX SBOM."),
+        "document_namespace": attr.label(
+            allow_single_file = True,
+            doc = """Optional file holding the SPDX document namespace: an absolute URI without a fragment, unique to each generated document. By default the namespace is derived from the purl of the SBOM subject, which is the same for every build of it.
+
+    This is a file, not a string, because the value that makes a document's
+    namespace unique is normally produced by the build, for example from its
+    workspace status with `expand_template` and `stamp_substitutions`. A string
+    attribute is fixed when the BUILD file is loaded, so it could only hold the
+    same value for every build. A file is only read when the action runs, which
+    also keeps the report cacheable when the file does not change.""",
+        ),
         "_spdx": attr.label(default = "@supply-chain-go//cmd/spdx", doc = "The spdx tool to use.", executable = True, cfg = "exec"),
         "_strict_validations": attr.label(
             default = "//sbom:strict_validations",

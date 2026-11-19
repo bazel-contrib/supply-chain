@@ -6,23 +6,23 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"strconv"
-	"strings"
 	"time"
 
 	"github.com/bazel-contrib/supply-chain/lib/supplychain-go/internal/sbom"
+	"github.com/bazel-contrib/supply-chain/lib/supplychain-go/internal/spdxnamespace"
 	spdxJson "github.com/spdx/tools-golang/json"
 	spdxTV "github.com/spdx/tools-golang/tagvalue"
 	spdxYaml "github.com/spdx/tools-golang/yaml"
 )
 
 func main() {
-	var outPath, graphPath, classificationsPath, format, buildStatusPath, validatorPath string
+	var outPath, graphPath, classificationsPath, format, buildStatusPath, documentNamespacePath, validatorPath string
 	flag.StringVar(&outPath, "out", "", "The path to write the generated SPDX SBOM.")
 	flag.StringVar(&graphPath, "graph", "", "The path to the graph JSON file.")
 	flag.StringVar(&classificationsPath, "classifications", "", "The path to the classifications JSON file.")
 	flag.StringVar(&format, "format", "json", "The output format of the SPDX SBOM: json, yaml and tag-value write SPDX 2.3, json-ld writes SPDX 3.0.1.")
 	flag.StringVar(&buildStatusPath, "created_from_status_file", "", "Path to a Bazel volatile-status.txt file to read a BUILD_TIMESTAMP from for creationInfo.created. If unset, or the file has no BUILD_TIMESTAMP key, a fixed deterministic timestamp (the Unix epoch) is used instead, matching Bazel's own --nostamp default.")
+	flag.StringVar(&documentNamespacePath, "document_namespace_file", "", "Optional path to a file holding the document namespace (an absolute URI without a fragment). It replaces the namespace derived from the subject's purl, and should be unique to each generated document.")
 	flag.StringVar(&validatorPath, "validator", "", "Optional runfiles path or executable path to the SPDX tools-java validator wrapper.")
 	flag.Parse()
 
@@ -55,6 +55,11 @@ func main() {
 		panic(fmt.Errorf("reading build status file: %w", err))
 	}
 
+	documentNamespace, err := spdxnamespace.ReadFile(documentNamespacePath)
+	if err != nil {
+		panic(fmt.Errorf("reading document namespace: %w", err))
+	}
+
 	var buf bytes.Buffer
 	must := func(err error) {
 		if err != nil {
@@ -65,6 +70,9 @@ func main() {
 	case "json", "yaml", "tag-value":
 		doc, err := GenerateDocument23(graph, classifications, created)
 		must(err)
+		if documentNamespace != "" {
+			doc.DocumentNamespace = documentNamespace
+		}
 		switch format {
 		case "json":
 			must(spdxJson.Write(doc, &buf))
@@ -76,6 +84,9 @@ func main() {
 	case "json-ld":
 		doc, err := GenerateDocument301(graph, classifications, created)
 		must(err)
+		if documentNamespace != "" {
+			doc.ID = documentNamespace
+		}
 		must(writeDocument(doc, &buf))
 	default:
 		panic(fmt.Sprintf("'%s' is not a supported format", format))
@@ -88,34 +99,8 @@ func main() {
 	}
 }
 
-// readBuildTimestamp reads a BUILD_TIMESTAMP key out of a Bazel
-// volatile-status.txt file (see ctx.version_file / --workspace_status_command),
-// for use as creationInfo.created. If path is empty, or the file has no
-// BUILD_TIMESTAMP key, it returns the Unix epoch: the same fixed value Bazel
-// itself substitutes for BUILD_TIMESTAMP when building without --stamp, so
-// SBOM generation stays deterministic and cacheable unless the caller
-// explicitly opts into a real timestamp via --stamp.
+// readBuildTimestamp reads the BUILD_TIMESTAMP of a Bazel volatile-status.txt
+// file for creationInfo.created; see sbom.ReadBuildTimestamp.
 func readBuildTimestamp(path string) (time.Time, error) {
-	if path == "" {
-		return time.Unix(0, 0).UTC(), nil
-	}
-
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return time.Time{}, err
-	}
-
-	for _, line := range strings.Split(string(data), "\n") {
-		key, value, found := strings.Cut(line, " ")
-		if !found || key != "BUILD_TIMESTAMP" {
-			continue
-		}
-		seconds, err := strconv.ParseInt(strings.TrimSpace(value), 10, 64)
-		if err != nil {
-			return time.Time{}, fmt.Errorf("parsing BUILD_TIMESTAMP %q: %w", value, err)
-		}
-		return time.Unix(seconds, 0).UTC(), nil
-	}
-
-	return time.Unix(0, 0).UTC(), nil
+	return sbom.ReadBuildTimestamp(path)
 }

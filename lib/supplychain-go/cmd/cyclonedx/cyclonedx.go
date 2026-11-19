@@ -6,8 +6,10 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"regexp"
 	"sort"
 	"strings"
+	"time"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	supplychain "github.com/bazel-contrib/supply-chain/lib/supplychain-go"
@@ -15,11 +17,13 @@ import (
 )
 
 func main() {
-	var outPath, graphPath, classificationsPath, format, validatorPath string
+	var outPath, graphPath, classificationsPath, format, buildStatusPath, serialNumberPath, validatorPath string
 	flag.StringVar(&outPath, "out", "", "The path to write the generated CycloneDX SBOM.")
 	flag.StringVar(&graphPath, "graph", "", "The path to the graph JSON file.")
 	flag.StringVar(&classificationsPath, "classifications", "", "The path to the classifications JSON file.")
 	flag.StringVar(&format, "format", "json", "The output format of the CycloneDX SBOM (json or xml).")
+	flag.StringVar(&buildStatusPath, "created_from_status_file", "", "Path to a Bazel volatile-status.txt file to read a BUILD_TIMESTAMP from for metadata.timestamp. If unset, or the file has no BUILD_TIMESTAMP key, a fixed deterministic timestamp (the Unix epoch) is used instead, matching Bazel's own --nostamp default.")
+	flag.StringVar(&serialNumberPath, "serial_number_file", "", "Optional path to a file holding the BOM serialNumber, in urn:uuid form. It should be unique to each generated BOM. If unset, the BOM has no serialNumber.")
 	flag.StringVar(&validatorPath, "validator", "", "Optional runfiles path or executable path to the CycloneDX CLI validator.")
 	flag.Parse()
 
@@ -61,6 +65,25 @@ func main() {
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error generating BOM: %v\n", err)
 		os.Exit(1)
+	}
+
+	created, err := sbom.ReadBuildTimestamp(buildStatusPath)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error reading build status file: %v\n", err)
+		os.Exit(1)
+	}
+	if bom.Metadata == nil {
+		bom.Metadata = &cdx.Metadata{}
+	}
+	bom.Metadata.Timestamp = created.Format(time.RFC3339)
+
+	serialNumber, err := readSerialNumber(serialNumberPath)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error reading serial number: %v\n", err)
+		os.Exit(1)
+	}
+	if serialNumber != "" {
+		bom.SerialNumber = serialNumber
 	}
 
 	var buf bytes.Buffer
@@ -285,4 +308,23 @@ func licensesOf(attribute *supplychain.LicenseAttribute) *cdx.Licenses {
 		}
 	}
 	return &cdx.Licenses{{License: &license}}
+}
+
+var serialNumberPattern = regexp.MustCompile(`^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$`)
+
+// readSerialNumber reads a CycloneDX BOM serialNumber from the file at path.
+// An empty path returns an empty serial number, meaning "not provided".
+func readSerialNumber(path string) (string, error) {
+	if path == "" {
+		return "", nil
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return "", err
+	}
+	serialNumber := strings.TrimSpace(string(data))
+	if !serialNumberPattern.MatchString(serialNumber) {
+		return "", fmt.Errorf("%s must contain a serial number in urn:uuid form, got %q", path, serialNumber)
+	}
+	return serialNumber, nil
 }
