@@ -64,7 +64,7 @@ func main() {
 	}
 	if len(untyped) > 0 {
 		fmt.Fprintf(os.Stderr, "WARNING: %d component(s) do not declare a component_type and are reported as %q because CycloneDX requires a type: %s\n"+
-			"Declare one with the component_type attribute of @package_metadata//attributes:component_type.bzl.\n",
+			"Declare one with the component_type attribute of @package_metadata//attributes:component_type.bzl, or build with --//sbom:strict_component_types to fail instead.\n",
 			len(untyped), cdx.ComponentTypeLibrary, strings.Join(untyped, ", "))
 	}
 

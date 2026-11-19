@@ -8,6 +8,7 @@ load("@supply_chain_tools//sbom:sbom.bzl", "sbom")
 load("@supply_chain_tools//sbom:spdx.bzl", "spdx")
 load(":expected_failure.bzl", "spdx_expected_failure")
 load(":golden_test.bzl", "sbom_golden_test")
+load(":strict_component_types_test.bzl", "strict_component_types_test_suite")
 load(":strict_validations_test.bzl", "strict_validations_test_suite")
 
 license(
@@ -235,3 +236,9 @@ build_test(
         "lib_with_third_party_deps_spdx_jsonld",
     ]
 ]
+
+strict_component_types_test_suite(
+    name = "strict_component_types_tests",
+    typed_sbom = "//sbom/edge_cases:service_sbom",
+    untyped_sbom = "//sbom/edge_cases:image_sbom",
+)

@@ -10,10 +10,25 @@ load(
     "@supply_chain_tools//gather_metadata:serialization.bzl",
     "metadata_info_to_json",
 )
+load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
 load("providers.bzl", "SbomInfo")
+
+# The kind of the attribute declared by `@package_metadata//attributes:component_type.bzl`.
+COMPONENT_TYPE_KIND = "build.bazel.attribute.component_type"
 
 def _sbom_impl(ctx):
     transitive_metadata_info = ctx.attr.target[TransitiveMetadataInfo]
+
+    if ctx.attr._strict_component_types[BuildSettingInfo].value:
+        untyped = []
+        for transitive_metadata in transitive_metadata_info.transitive.to_list():
+            for m in transitive_metadata.metadata.to_list():
+                if hasattr(m, "attribute_kinds") and COMPONENT_TYPE_KIND not in m.attribute_kinds:
+                    untyped.append(str(transitive_metadata.target))
+        if untyped:
+            fail("--//sbom:strict_component_types is set, but these targets have package metadata without a component_type attribute: {}".format(
+                ", ".join(sorted({t: None for t in untyped}.keys())),
+            ))
 
     # Get graph-only format from gather_metadata
     json_strings = metadata_info_to_json(transitive_metadata_info)
@@ -70,6 +85,10 @@ def sbom_rule(gathering_aspect):
             "require_root_metadata": attr.bool(
                 default = True,
                 doc = "If True, fail if the root target has no package metadata. If False, generate an SBOM without a root component.",
+            ),
+            "_strict_component_types": attr.label(
+                default = "//sbom:strict_component_types",
+                doc = "Whether to fail if a component does not declare a `component_type` attribute (see `@package_metadata//attributes:component_type.bzl`). See //sbom:strict_component_types.",
             ),
             "_sbom_cmd": attr.label(
                 default = "@supply-chain-go//cmd/sbom",
