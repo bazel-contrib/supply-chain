@@ -585,6 +585,7 @@ filegroup(
 sbom(
     name = "image_sbom",
     target = ":image",
+    visibility = ["//sbom:__pkg__"],
 )
 
 [
@@ -615,4 +616,11 @@ sbom_golden_test(
     name = "image_cyclonedx_golden_test",
     golden = "testdata/image_cyclonedx.json",
     report = ":image_cyclonedx",
+)
+
+# All of its components declare a component_type.
+sbom(
+    name = "service_sbom",
+    target = ":service",
+    visibility = ["//sbom:__pkg__"],
 )
