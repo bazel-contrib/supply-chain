@@ -20,6 +20,7 @@ load("@stardoc//stardoc:stardoc.bzl", "stardoc")
     for file in [
         "integrity",
         "copyright_notice",
+        "component_type",
         "cpe",
         "patch",
         "defs",

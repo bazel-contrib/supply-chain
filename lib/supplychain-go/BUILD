@@ -15,6 +15,7 @@ gazelle(name = "gazelle")
 go_library(
     name = "supplychain-go",
     srcs = [
+        "component_type.go",
         "cpe.go",
         "integrity.go",
         "license.go",
