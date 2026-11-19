@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "classify.go",
         "genconfig.go",
+        "status.go",
         "validate.go",
     ],
     importpath = "github.com/bazel-contrib/supply-chain/lib/supplychain-go/internal/sbom",

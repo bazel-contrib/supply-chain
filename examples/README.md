@@ -62,3 +62,13 @@ reports without a root component.
 The `cyclonedx` exporter also supports `format = "xml"`. The `spdx` exporter
 writes SPDX 2.3 as `format = "json"` (the default), `"yaml"` or `"tag-value"`,
 and SPDX 3.0.1 as `format = "json-ld"`.
+
+Both exporters record when the report was generated (`metadata.timestamp` in
+CycloneDX, `creationInfo.created` in SPDX): the build time with `--stamp`, and a
+fixed value otherwise, so that reports stay reproducible. To make a report
+unique to a build, give `cyclonedx` a `serial_number` (a file holding a
+`urn:uuid:` value) or `spdx` a `document_namespace` (a file holding an absolute
+URI without a fragment). Without them a CycloneDX report has no serial number,
+and the SPDX namespace is derived from the purl of the subject. They are files
+so that a build can produce them, for example from its workspace status with
+`expand_template`.
