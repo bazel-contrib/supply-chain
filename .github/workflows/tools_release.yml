@@ -1,0 +1,108 @@
+name: "Create supply_chain_tools release"
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        required: true
+        type: "string"
+        description: "Version for supply_chain_tools release (e.g., 1.0.0)"
+
+permissions:
+  id-token: write
+  attestations: write
+  contents: write
+
+jobs:
+  ci:
+    name: "CI"
+    uses: "./.github/workflows/ci.yml"
+  
+  create_tools_tag:
+    name: "Create supply_chain_tools tag"
+    runs-on:
+      - "ubuntu-latest"
+    needs:
+      - "ci"
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: "Create supply_chain_tools tag"
+        id: "tag"
+        env:
+          VERSION: "${{ inputs.version }}"
+          GIT_AUTHOR_NAME: "${{ github.actor }}"
+          GIT_AUTHOR_EMAIL: "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+          GIT_COMMITTER_NAME: "${{ github.actor }}"
+          GIT_COMMITTER_EMAIL: "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+        run: |
+          # 1. Download `buildozer`
+          curl -o "${RUNNER_TEMP}/buildozer" -L "https://github.com/bazelbuild/buildtools/releases/download/v7.3.1/buildozer-linux-amd64"
+          chmod +x "${RUNNER_TEMP}/buildozer"
+
+          # 2. Update supply_chain_tools MODULE.bazel version
+          "${RUNNER_TEMP}/buildozer" "set version ${VERSION}" "//tools/MODULE.bazel:supply_chain_tools"
+          git add "tools/MODULE.bazel"
+          git commit -m "Release supply_chain_tools v${VERSION}"
+
+          # 3. Push supply_chain_tools release tag
+          git tag "supply_chain_tools-v${VERSION}" "HEAD"
+          git push origin "supply_chain_tools-v${VERSION}"
+
+      - name: "Generate release artifacts"
+        run: |
+          ./.github/workflows/tools_release_prep.sh "supply_chain_tools-v${{ inputs.version }}" > release_notes.md
+
+      - name: "Upload release artifacts"
+        uses: actions/upload-artifact@v4
+        with:
+          name: supply_chain_tools-release-artifacts
+          path: |
+            supply-chain-tools-*.tar.gz
+            release_notes.md
+
+  release:
+    name: "Create GitHub release for supply_chain_tools"
+    needs:
+      - "create_tools_tag"
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: "Download artifacts"
+        uses: actions/download-artifact@v4
+        with:
+          name: supply_chain_tools-release-artifacts
+
+      - name: "Create GitHub Release"
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: "supply_chain_tools-v${{ inputs.version }}"
+          name: "supply_chain_tools v${{ inputs.version }}"
+          body_path: release_notes.md
+          files: |
+            supply-chain-tools-*.tar.gz
+          draft: false
+          prerelease: false
+
+  publish_to_bcr:
+    name: "Publish supply_chain_tools to BCR"
+    needs:
+      - "release"
+
+    permissions:
+      attestations: write
+      contents: write
+      id-token: write
+
+    uses: "bazel-contrib/publish-to-bcr/.github/workflows/publish.yaml@v1.0.0"
+    with:
+      tag_name: "supply_chain_tools-v${{ inputs.version }}"
+      registry_fork: "bazel-contrib/bazel-central-registry"
+      draft: false
+    secrets:
+      publish_token: "${{ secrets.BCR_PUBLISH_TOKEN }}"
