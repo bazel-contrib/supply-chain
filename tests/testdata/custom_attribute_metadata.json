@@ -1,0 +1,11 @@
+{
+  "attributes": {
+    "build.bazel.attribute.license": "custom_attribute_test_license.package-attribute.json",
+    "com.example.attribute.patch": [
+      "custom_attribute_test_patch_a.patch-attribute.json",
+      "custom_attribute_test_patch_b.patch-attribute.json"
+    ]
+  },
+  "label": "@@//:custom_attribute_test_metadata",
+  "purl": "pkg:generic/patched@1.0.0"
+}
