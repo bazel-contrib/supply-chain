@@ -49,26 +49,23 @@ def create_package_metadata(*, actions, label, purl, attributes = []):
         transitive files from all attributes.
     """
 
-    attribute_files = {}
-    multiple_kinds = {}
-    for a in attributes:
-        allow_multiple = getattr(a, "allow_multiple", False)
-        if a.kind in attribute_files:
-            if not allow_multiple or not multiple_kinds[a.kind]:
-                fail("{}: attribute kind '{}' can only be declared once, but was declared multiple times (or with a mismatching `allow_multiple`)".format(label, a.kind))
-            attribute_files[a.kind].append(a.attributes.path)
+    attributes_data = {}
+    for attribute in attributes:
+        if getattr(attribute, "allow_multiple", False):
+            values = attributes_data.setdefault(attribute.kind, default = [])
+            if type(values) != type([]):
+                fail("{}: attribute kind '{}' was previously declared with allow_multiple=False".format(label, attribute.kind))
+            values.append(attribute.attributes.path)
         else:
-            multiple_kinds[a.kind] = allow_multiple
-            attribute_files[a.kind] = [a.attributes.path]
+            if attribute.kind in attributes_data:
+                fail("{}: attribute kind '{}' can only be declared once, but was declared multiple times".format(label, attribute.kind))
+            attributes_data[attribute.kind] = attribute.attributes.path
 
     metadata = actions.declare_file("{}.package-metadata.json".format(label.name))
     actions.write(
         output = metadata,
         content = json.encode({
-            "attributes": {
-                kind: paths if multiple_kinds[kind] else paths[0]
-                for kind, paths in attribute_files.items()
-            },
+            "attributes": attributes_data,
             "label": str(label),
             "purl": purl,
         }),
