@@ -1,0 +1,10 @@
+{
+  "attributes": {
+    "build.bazel.attribute.patch": [
+      "patch.valid-1.package-attribute.json",
+      "patch.valid-2.package-attribute.json"
+    ]
+  },
+  "label": "@@//metadata/attributes:patch.multiple.package_metadata",
+  "purl": "pkg:generic/patched@1.0.0"
+}
