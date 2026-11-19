@@ -2,9 +2,8 @@
 
 visibility("public")
 
-def _init(metadata, files = [], attribute_kinds = []):
+def _init(metadata, files = []):
     return {
-        "attribute_kinds": attribute_kinds,
         "files": depset(
             direct = [
                 metadata,
@@ -19,11 +18,6 @@ PackageMetadataInfo, _create = provider(
 Provider for declaring metadata about a Bazel package.
 """.strip(),
     fields = {
-        "attribute_kinds": """
-A list of the `kind`s of the attributes declared by the package, so that tools
-can tell at analysis time which attributes a package has. The values of the
-attributes are only available in the `metadata` file.
-""".strip(),
         "files": """
 A [depset](https://bazel.build/rules/lib/builtins/depset) of
 [File](https://bazel.build/rules/lib/builtins/File)s with metadata about the
