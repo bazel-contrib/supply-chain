@@ -74,5 +74,4 @@ def create_package_metadata(*, actions, label, purl, attributes = []):
     return PackageMetadataInfo(
         metadata = metadata,
         files = [a.files for a in attributes],
-        attribute_kinds = sorted(attributes_data.keys()),
     )

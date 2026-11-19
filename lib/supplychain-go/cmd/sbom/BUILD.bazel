@@ -4,5 +4,8 @@ go_binary(
     name = "sbom",
     srcs = ["main.go"],
     visibility = ["//visibility:public"],
-    deps = ["//internal/sbom"],
+    deps = [
+        "//:supplychain-go",
+        "//internal/sbom",
+    ],
 )
