@@ -153,6 +153,16 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications) (
 		}
 		component.Licenses = licensesOf(licenseAttribute)
 
+		patches, err := supplychain.GetPatchAttributes(pkgMetadata)
+		if err != nil {
+			return cdx.Component{}, fmt.Errorf("error reading patches of %s: %w", node.Label, err)
+		}
+		pedigree, err := pedigreeOf(patches)
+		if err != nil {
+			return cdx.Component{}, fmt.Errorf("error reporting patches of %s: %w", node.Label, err)
+		}
+		component.Pedigree = pedigree
+
 		labelToBOMRef[node.Label] = bomRef
 		return component, nil
 	}
