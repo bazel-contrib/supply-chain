@@ -125,6 +125,14 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications) (
 			Name:       fullName,
 			PackageURL: bomRef,
 		}
+		if node.Involvement != "" {
+			setInvolvementProperty(&component, node.Involvement)
+		} else if node.Scope == "build" {
+			setInvolvementProperty(&component, "build")
+		}
+		if node.Scope == "build" {
+			component.Scope = cdx.ScopeExcluded
+		}
 
 		downloadLocation := ""
 		qualifiers := purl.Qualifiers.Map()
@@ -170,16 +178,17 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications) (
 	// BOMRef was already added (classification should already be unique per
 	// component, but a duplicate BOMRef is invalid CycloneDX, so guard here
 	// too).
-	seenBOMRef := make(map[string]bool)
+	componentIndexes := make(map[string]int)
 	addComponent := func(node *sbom.NodeConfig) error {
 		comp, err := createComponent(node)
 		if err != nil {
 			return err
 		}
-		if seenBOMRef[comp.BOMRef] {
+		if index, exists := componentIndexes[comp.BOMRef]; exists {
+			mergeComponentClassifications(&components[index], comp)
 			return nil
 		}
-		seenBOMRef[comp.BOMRef] = true
+		componentIndexes[comp.BOMRef] = len(components)
 		components = append(components, comp)
 		return nil
 	}
@@ -196,26 +205,17 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications) (
 		}
 	}
 
-	// Build Dependencies from graph edges
+	// Collapse target edges to component edges, then remove only edges needed
+	// to make CycloneDX's component dependency graph acyclic.
+	componentEdges := componentDependencyEdges(graph.Edges, labelToBOMRef)
+	rootRef := ""
+	if rootComponent != nil {
+		rootRef = rootComponent.BOMRef
+	}
+	componentEdges = makeAcyclicComponentDependencies(componentEdges, rootRef)
 	depMap := make(map[string][]string) // parent BOMRef -> []child BOMRefs
-	seenDep := make(map[string]map[string]bool)
-	for _, edge := range graph.Edges {
-		fromRef, fromOk := labelToBOMRef[edge.From]
-		toRef, toOk := labelToBOMRef[edge.To]
-
-		if !fromOk || !toOk || fromRef == toRef {
-			// A self-reference can appear if two distinct graph nodes
-			// resolved to the same component (e.g. duplicate metadata).
-			continue
-		}
-		if seenDep[fromRef] == nil {
-			seenDep[fromRef] = make(map[string]bool)
-		}
-		if seenDep[fromRef][toRef] {
-			continue
-		}
-		seenDep[fromRef][toRef] = true
-		depMap[fromRef] = append(depMap[fromRef], toRef)
+	for _, edge := range componentEdges {
+		depMap[edge.from] = append(depMap[edge.from], edge.to)
 	}
 
 	// Convert to CycloneDX Dependencies format
@@ -223,6 +223,7 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications) (
 	if len(depMap) > 0 {
 		deps := make([]cdx.Dependency, 0, len(depMap))
 		for parentRef, childRefs := range depMap {
+			sort.Strings(childRefs)
 			deps = append(deps, cdx.Dependency{
 				Ref:          parentRef,
 				Dependencies: &childRefs,
@@ -262,6 +263,309 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications) (
 	bom.Metadata = metadata
 
 	return bom, nil
+}
+
+type componentDependencyEdge struct {
+	from        string
+	to          string
+	involvement string
+}
+
+func componentDependencyEdges(edges []sbom.EdgeConfig, labelToBOMRef map[string]string) []componentDependencyEdge {
+	type edgeKey struct {
+		from string
+		to   string
+	}
+	bestByPair := make(map[edgeKey]componentDependencyEdge)
+	for _, edge := range edges {
+		fromRef, fromOk := labelToBOMRef[edge.From]
+		toRef, toOk := labelToBOMRef[edge.To]
+		if !fromOk || !toOk || fromRef == toRef {
+			// A self-reference can appear if distinct graph nodes resolved to
+			// the same component (e.g. duplicate metadata).
+			continue
+		}
+
+		key := edgeKey{from: fromRef, to: toRef}
+		candidate := componentDependencyEdge{
+			from:        fromRef,
+			to:          toRef,
+			involvement: edge.Involvement,
+		}
+		current, found := bestByPair[key]
+		if !found || involvementPriority(candidate.involvement) < involvementPriority(current.involvement) {
+			bestByPair[key] = candidate
+		}
+	}
+
+	result := make([]componentDependencyEdge, 0, len(bestByPair))
+	for _, edge := range bestByPair {
+		result = append(result, edge)
+	}
+	sortComponentDependencyEdges(result)
+	return result
+}
+
+func makeAcyclicComponentDependencies(edges []componentDependencyEdge, root string) []componentDependencyEdge {
+	componentByNode, cyclicComponents := dependencyStronglyConnectedComponents(edges)
+	filtered := make([]componentDependencyEdge, 0, len(edges))
+	for _, edge := range edges {
+		fromComponent, fromFound := componentByNode[edge.from]
+		toComponent, toFound := componentByNode[edge.to]
+		if edge.involvement == "build" &&
+			fromFound && toFound &&
+			fromComponent == toComponent &&
+			cyclicComponents[fromComponent] {
+			continue
+		}
+		filtered = append(filtered, edge)
+	}
+
+	// SCC filtering handles build-only back edges first. A sorted DFS then
+	// removes any remaining back edges, including cycles made only of runtime
+	// or embedded dependencies.
+	adjacency := make(map[string][]int)
+	nodes := make(map[string]bool)
+	for index, edge := range filtered {
+		adjacency[edge.from] = append(adjacency[edge.from], index)
+		nodes[edge.from] = true
+		nodes[edge.to] = true
+	}
+	for from := range adjacency {
+		sort.Slice(adjacency[from], func(i, j int) bool {
+			return filtered[adjacency[from][i]].to < filtered[adjacency[from][j]].to
+		})
+	}
+
+	removed := make([]bool, len(filtered))
+	state := make(map[string]uint8)
+	var visit func(string)
+	visit = func(from string) {
+		state[from] = 1
+		for _, edgeIndex := range adjacency[from] {
+			if removed[edgeIndex] {
+				continue
+			}
+			to := filtered[edgeIndex].to
+			switch state[to] {
+			case 0:
+				visit(to)
+			case 1:
+				removed[edgeIndex] = true
+			}
+		}
+		state[from] = 2
+	}
+
+	if root != "" && nodes[root] {
+		visit(root)
+	}
+	orderedNodes := make([]string, 0, len(nodes))
+	for node := range nodes {
+		orderedNodes = append(orderedNodes, node)
+	}
+	sort.Strings(orderedNodes)
+	for _, node := range orderedNodes {
+		if state[node] == 0 {
+			visit(node)
+		}
+	}
+
+	result := make([]componentDependencyEdge, 0, len(filtered))
+	for index, edge := range filtered {
+		if !removed[index] {
+			result = append(result, edge)
+		}
+	}
+	return result
+}
+
+func dependencyStronglyConnectedComponents(edges []componentDependencyEdge) (map[string]int, map[int]bool) {
+	adjacency := make(map[string][]string)
+	nodes := make(map[string]bool)
+	for _, edge := range edges {
+		adjacency[edge.from] = append(adjacency[edge.from], edge.to)
+		nodes[edge.from] = true
+		nodes[edge.to] = true
+	}
+	orderedNodes := make([]string, 0, len(nodes))
+	for node := range nodes {
+		orderedNodes = append(orderedNodes, node)
+	}
+	sort.Strings(orderedNodes)
+	for from := range adjacency {
+		sort.Strings(adjacency[from])
+	}
+
+	index := 0
+	componentID := 0
+	indices := make(map[string]int)
+	lowLinks := make(map[string]int)
+	onStack := make(map[string]bool)
+	stack := make([]string, 0, len(nodes))
+	componentByNode := make(map[string]int, len(nodes))
+	componentSizes := make(map[int]int)
+	selfLoops := make(map[int]bool)
+	var connect func(string)
+	connect = func(node string) {
+		index++
+		indices[node] = index
+		lowLinks[node] = index
+		stack = append(stack, node)
+		onStack[node] = true
+
+		for _, child := range adjacency[node] {
+			if indices[child] == 0 {
+				connect(child)
+				if lowLinks[child] < lowLinks[node] {
+					lowLinks[node] = lowLinks[child]
+				}
+			} else if onStack[child] && indices[child] < lowLinks[node] {
+				lowLinks[node] = indices[child]
+			}
+		}
+
+		if lowLinks[node] != indices[node] {
+			return
+		}
+		for {
+			last := stack[len(stack)-1]
+			stack = stack[:len(stack)-1]
+			onStack[last] = false
+			componentByNode[last] = componentID
+			componentSizes[componentID]++
+			if last == node {
+				break
+			}
+		}
+		componentID++
+	}
+	for _, node := range orderedNodes {
+		if indices[node] == 0 {
+			connect(node)
+		}
+	}
+
+	for _, edge := range edges {
+		if edge.from == edge.to {
+			selfLoops[componentByNode[edge.from]] = true
+		}
+	}
+	cyclicComponents := make(map[int]bool)
+	for id, size := range componentSizes {
+		if size > 1 || selfLoops[id] {
+			cyclicComponents[id] = true
+		}
+	}
+	return componentByNode, cyclicComponents
+}
+
+func sortComponentDependencyEdges(edges []componentDependencyEdge) {
+	sort.Slice(edges, func(i, j int) bool {
+		if edges[i].from != edges[j].from {
+			return edges[i].from < edges[j].from
+		}
+		return edges[i].to < edges[j].to
+	})
+}
+
+// mergeComponentClassifications combines target occurrences of one PURL using
+// the best root-path involvement. Runtime is represented by no property.
+func mergeComponentClassifications(existing *cdx.Component, incoming cdx.Component) {
+	best := bestComponentInvolvement(*existing, incoming)
+	excluded := existing.Scope == cdx.ScopeExcluded && incoming.Scope == cdx.ScopeExcluded
+	properties := mergedProperties(*existing, incoming)
+	existing.Properties = properties
+	if excluded {
+		existing.Scope = cdx.ScopeExcluded
+	} else {
+		existing.Scope = ""
+	}
+	setInvolvementProperty(existing, best)
+}
+
+func bestComponentInvolvement(components ...cdx.Component) string {
+	best := "build"
+	bestRank := 2
+	for _, component := range components {
+		involvement := "runtime"
+		if component.Scope == cdx.ScopeExcluded {
+			involvement = "build"
+		} else if component.Properties != nil {
+			for _, property := range *component.Properties {
+				if property.Name == "bazel:involvement" {
+					involvement = property.Value
+					break
+				}
+			}
+		}
+		rank := involvementPriority(involvement)
+		if rank < bestRank {
+			best = involvement
+			bestRank = rank
+		}
+	}
+	return best
+}
+
+func mergedProperties(components ...cdx.Component) *[]cdx.Property {
+	properties := make([]cdx.Property, 0)
+	seen := make(map[string]bool)
+	for _, component := range components {
+		if component.Properties == nil {
+			continue
+		}
+		for _, property := range *component.Properties {
+			if property.Name == "bazel:involvement" {
+				continue
+			}
+			key := property.Name + "\x00" + property.Value
+			if seen[key] {
+				continue
+			}
+			seen[key] = true
+			properties = append(properties, property)
+		}
+	}
+	sort.Slice(properties, func(i, j int) bool {
+		if properties[i].Name != properties[j].Name {
+			return properties[i].Name < properties[j].Name
+		}
+		return properties[i].Value < properties[j].Value
+	})
+	if len(properties) == 0 {
+		return nil
+	}
+	return &properties
+}
+
+func involvementPriority(involvement string) int {
+	switch involvement {
+	case "embedded":
+		return 1
+	case "build":
+		return 2
+	default:
+		return 0
+	}
+}
+
+func setInvolvementProperty(component *cdx.Component, involvement string) {
+	if involvement == "" || involvement == "runtime" {
+		return
+	}
+	property := cdx.Property{Name: "bazel:involvement", Value: involvement}
+	if component.Properties == nil {
+		component.Properties = &[]cdx.Property{property}
+		return
+	}
+	*component.Properties = append(*component.Properties, property)
+	sort.Slice(*component.Properties, func(i, j int) bool {
+		if (*component.Properties)[i].Name != (*component.Properties)[j].Name {
+			return (*component.Properties)[i].Name < (*component.Properties)[j].Name
+		}
+		return (*component.Properties)[i].Value < (*component.Properties)[j].Value
+	})
 }
 
 // licensesOf converts the license attribute of a package to CycloneDX: a

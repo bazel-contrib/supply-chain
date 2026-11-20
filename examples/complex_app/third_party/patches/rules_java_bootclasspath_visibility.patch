@@ -1,0 +1,9 @@
+--- a/toolchains/bootclasspath.bzl
++++ b/toolchains/bootclasspath.bzl
+@@ -19,5 +19,5 @@
+ load(":utf8_environment.bzl", "Utf8EnvironmentInfo")
+ 
+-visibility("private")
++visibility("public")
+ 
+ # TODO: This provider and is only necessary since --java_{language,runtime}_version

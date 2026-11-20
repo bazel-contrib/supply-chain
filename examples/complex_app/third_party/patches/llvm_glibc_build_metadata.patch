@@ -1,0 +1,35 @@
+--- a/3rd_party/libc/glibc/glibc.BUILD.bazel
++++ b/3rd_party/libc/glibc/glibc.BUILD.bazel
+@@ -5,6 +5,31 @@
+ load("@llvm//toolchain/runtimes:cc_runtime_static_library.bzl", "cc_runtime_stage0_static_library")
+ load("@llvm//toolchain/runtimes:cc_stage0_object.bzl", "cc_stage0_object")
+-
++
++load("@@package_metadata+//licenses/rules:license.bzl", "license")
++load("@@package_metadata+//rules:package_metadata.bzl", "package_metadata")
++
++license(
++    name = "glibc_license",
++    kind = "@@package_metadata+//licenses/spdx:LGPL-2.1-or-later",
++)
++
++package_metadata(
++    name = "glibc_metadata",
++    attributes = [":glibc_license"],
++    purl = "pkg:generic/glibc@GLIBC_VERSION_PLACEHOLDER",
++    visibility = ["//visibility:public"],
++)
++
++package(
++    default_package_metadata = [":glibc_metadata"],
++)
++
++filegroup(
++    name = "runtime_dependency",
++    srcs = [],
++    visibility = ["//visibility:public"],
++)
++
+ alias(
+     name = "gnu_libc_headers",
+     actual = "@glibc//:gnu_libc_headers",

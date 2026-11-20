@@ -1,0 +1,40 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
+  "bomFormat": "CycloneDX",
+  "components": [
+    {
+      "bom-ref": "pkg:generic/toolchain-fixtures-javac@1.0.0",
+      "name": "toolchain-fixtures-javac",
+      "purl": "pkg:generic/toolchain-fixtures-javac@1.0.0",
+      "type": "library",
+      "version": "1.0.0"
+    }
+  ],
+  "dependencies": [
+    {
+      "dependsOn": [
+        "pkg:generic/toolchain-fixtures-javac@1.0.0"
+      ],
+      "ref": "pkg:generic/toolchain-fixture-app@1.0.0"
+    }
+  ],
+  "metadata": {
+    "component": {
+      "bom-ref": "pkg:generic/toolchain-fixture-app@1.0.0",
+      "name": "toolchain-fixture-app",
+      "purl": "pkg:generic/toolchain-fixture-app@1.0.0",
+      "type": "library",
+      "version": "1.0.0"
+    },
+    "tools": {
+      "components": [
+        {
+          "name": "Bazel Supply Chain Tools CycloneDX generator",
+          "type": "application"
+        }
+      ]
+    }
+  },
+  "specVersion": "1.6",
+  "version": 1
+}

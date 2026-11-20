@@ -1,0 +1,26 @@
+--- a/toolchains/jdk_build_file.bzl
++++ b/toolchains/jdk_build_file.bzl
+@@ -16,5 +16,22 @@
+ JDK_BUILD_TEMPLATE = """load("@rules_java//java/toolchains:java_runtime.bzl", "java_runtime")
+ 
+-package(default_visibility = ["//visibility:public"])
++load("@@package_metadata+//licenses/rules:license.bzl", "license")
++load("@@package_metadata+//rules:package_metadata.bzl", "package_metadata")
++
++license(
++    name = "openjdk_license",
++    expression = "GPL-2.0-only WITH Classpath-exception-2.0",
++)
++
++package_metadata(
++    name = "openjdk_metadata",
++    attributes = [":openjdk_license"],
++    purl = "pkg:generic/openjdk@{RUNTIME_VERSION}",
++)
++
++package(
++    default_package_metadata = [":openjdk_metadata"],
++    default_visibility = ["//visibility:public"],
++)
+ 
+ exports_files(["WORKSPACE", "BUILD.bazel"])
