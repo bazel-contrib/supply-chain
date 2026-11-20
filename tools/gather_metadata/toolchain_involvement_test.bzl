@@ -1,14 +1,14 @@
 """Unit tests for toolchain-type normalization and registry lookup."""
 
 load("@bazel_skylib//lib:unittest.bzl", "analysistest", "asserts")
+load(":providers.bzl", "TargetWithMetadataInfo", "TransitiveMetadataInfo")
+load(":serialization.bzl", "metadata_info_to_json")
 load(
     ":toolchain_involvement.bzl",
     "ToolchainInvolvementInfo",
     "normalize_toolchain_type",
     "toolchain_involvement_for",
 )
-load(":providers.bzl", "TargetWithMetadataInfo", "TransitiveMetadataInfo")
-load(":serialization.bzl", "metadata_info_to_json")
 
 def _toolchain_involvement_test_impl(ctx):
     env = analysistest.begin(ctx)

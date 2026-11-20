@@ -5,8 +5,6 @@ load(":gather_metadata.bzl", "gather_metadata_info")
 load(":providers.bzl", "TransitiveMetadataInfo")
 load(":test_fixtures.bzl", "create_test_fixtures")
 
-
-
 def _direct_deps_test_impl(ctx):
     """Verify direct_deps field is populated, immutable, and contains labels."""
     env = analysistest.begin(ctx)

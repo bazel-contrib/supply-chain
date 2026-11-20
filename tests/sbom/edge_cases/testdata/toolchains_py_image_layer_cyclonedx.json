@@ -30,11 +30,19 @@
       "version": "1.0.0"
     }
   ],
+  "compositions": [
+    {
+      "aggregate": "unknown",
+      "assemblies": [
+        "pkg:generic/toolchain-fixtures-python@1.0.0"
+      ],
+      "bom-ref": "pkg:generic/toolchain-fixture-app@1.0.0"
+    }
+  ],
   "dependencies": [
     {
       "dependsOn": [
-        "pkg:generic/toolchain-fixtures-image_tar@1.0.0",
-        "pkg:generic/toolchain-fixtures-python@1.0.0"
+        "pkg:generic/toolchain-fixtures-image_tar@1.0.0"
       ],
       "ref": "pkg:generic/toolchain-fixture-app@1.0.0"
     }

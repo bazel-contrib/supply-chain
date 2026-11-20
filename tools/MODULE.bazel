@@ -34,6 +34,9 @@ toolchain_involvement = use_extension(
 )
 use_repo(toolchain_involvement, "supply_chain_toolchain_involvements")
 
+relationships = use_extension("//gather_metadata:extensions.bzl", "relationships")
+use_repo(relationships, "supply_chain_relationships")
+
 sbom_validators = use_extension("//sbom:extensions.bzl", "sbom_validators")
 use_repo(
     sbom_validators,

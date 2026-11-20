@@ -170,3 +170,98 @@ func TestGenerateBOM_RetainsPackageEdges(t *testing.T) {
 		})
 	}
 }
+
+func TestGenerateBOM_EncodesContainsAsCompositions(t *testing.T) {
+	dir := t.TempDir()
+	root := sbom.NodeConfig{Label: "//app:root", MetadataFile: writePackageMetadata(t, dir, "root.json", "//fixture:root", "pkg:generic/root@1.0.0")}
+	child := sbom.NodeConfig{Label: "//app:child", MetadataFile: writePackageMetadata(t, dir, "child.json", "//fixture:child", "pkg:generic/child@1.0.0")}
+	embedded := sbom.NodeConfig{Label: "//app:embedded", MetadataFile: writePackageMetadata(t, dir, "embedded.json", "//fixture:embedded", "pkg:generic/embedded@1.0.0")}
+	build := sbom.NodeConfig{Label: "//app:build", MetadataFile: writePackageMetadata(t, dir, "build.json", "//fixture:build", "pkg:generic/build@1.0.0")}
+	static := sbom.NodeConfig{Label: "//app:static", MetadataFile: writePackageMetadata(t, dir, "static.json", "//fixture:static", "pkg:generic/static@1.0.0")}
+	graph := sbom.GraphConfig{
+		RootTarget: root.Label,
+		Nodes:      []sbom.NodeConfig{root, child, embedded, build, static},
+		Edges: []sbom.EdgeConfig{
+			{From: root.Label, To: child.Label, Relationship: "contains"},
+			{From: child.Label, To: embedded.Label, Involvement: "embedded"},
+			{From: child.Label, To: root.Label, Relationship: "contains"},
+			{From: root.Label, To: build.Label, Involvement: "build", Relationship: "contains"},
+			{From: root.Label, To: static.Label, Relationship: "static_link"},
+		},
+	}
+	bom, err := GenerateBOM(graph, sbom.Classifications{
+		RootComponent: &root,
+		Dependencies: sbom.DependencyNodes{
+			Direct: []sbom.NodeConfig{child, embedded, build, static},
+		},
+	})
+	if err != nil {
+		t.Fatalf("GenerateBOM() error = %v", err)
+	}
+
+	if bom.Compositions == nil {
+		t.Fatal("Compositions is nil, want contains edges represented as compositions")
+	}
+	wantCompositions := []cdx.Composition{
+		{
+			BOMRef:     "pkg:generic/child@1.0.0",
+			Aggregate:  cdx.CompositionAggregateUnknown,
+			Assemblies: bomRefPointer("pkg:generic/embedded@1.0.0", "pkg:generic/root@1.0.0"),
+		},
+		{
+			BOMRef:     "pkg:generic/root@1.0.0",
+			Aggregate:  cdx.CompositionAggregateUnknown,
+			Assemblies: bomRefPointer("pkg:generic/child@1.0.0"),
+		},
+	}
+	if !reflect.DeepEqual(*bom.Compositions, wantCompositions) {
+		t.Fatalf("Compositions = %#v, want %#v", *bom.Compositions, wantCompositions)
+	}
+
+	if bom.Dependencies == nil {
+		t.Fatal("Dependencies is nil, want non-contains edges retained")
+	}
+	dependencies := make(map[string][]string)
+	for _, dependency := range *bom.Dependencies {
+		if dependency.Dependencies == nil {
+			t.Fatalf("missing dependencies for %s", dependency.Ref)
+		}
+		dependencies[dependency.Ref] = *dependency.Dependencies
+	}
+	if got, want := dependencies["pkg:generic/root@1.0.0"], []string{
+		"pkg:generic/build@1.0.0",
+		"pkg:generic/static@1.0.0",
+	}; !reflect.DeepEqual(got, want) {
+		t.Fatalf("root dependencies = %v, want %v", got, want)
+	}
+	if got := dependencies["pkg:generic/child@1.0.0"]; len(got) != 0 {
+		t.Fatalf("child dependencies = %v, want no contains edges", got)
+	}
+
+	foundStaticLinkProperty := false
+	for _, component := range append(*bom.Components, *bom.Metadata.Component) {
+		if component.Properties != nil {
+			for _, property := range *component.Properties {
+				if property.Name == "bazel:relationship:contains" {
+					t.Fatalf("contains property emitted on %s", component.BOMRef)
+				}
+				if component.BOMRef == "pkg:generic/root@1.0.0" &&
+					property.Name == "bazel:relationship:static_link" &&
+					property.Value == "pkg:generic/static@1.0.0" {
+					foundStaticLinkProperty = true
+				}
+			}
+		}
+	}
+	if !foundStaticLinkProperty {
+		t.Fatal("static_link relationship property was not retained")
+	}
+}
+
+func bomRefPointer(refs ...string) *[]cdx.BOMReference {
+	bomRefs := make([]cdx.BOMReference, len(refs))
+	for i, ref := range refs {
+		bomRefs[i] = cdx.BOMReference(ref)
+	}
+	return &bomRefs
+}

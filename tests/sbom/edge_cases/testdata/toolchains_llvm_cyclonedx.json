@@ -16,12 +16,13 @@
       "version": "1.0.0"
     }
   ],
-  "dependencies": [
+  "compositions": [
     {
-      "dependsOn": [
+      "aggregate": "unknown",
+      "assemblies": [
         "pkg:generic/toolchain-fixtures-llvm_runtime@1.0.0"
       ],
-      "ref": "pkg:generic/toolchain-fixture-app@1.0.0"
+      "bom-ref": "pkg:generic/toolchain-fixture-app@1.0.0"
     }
   ],
   "metadata": {

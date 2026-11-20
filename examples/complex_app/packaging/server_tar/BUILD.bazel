@@ -1,0 +1,18 @@
+load("@package_metadata//rules:package_metadata.bzl", "package_metadata")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+
+package(
+    default_package_metadata = [":package_metadata"],
+    default_visibility = ["//visibility:public"],
+)
+
+package_metadata(
+    name = "package_metadata",
+    purl = "pkg:generic/toolchain-demo-server-tar@0.1.0",
+)
+
+pkg_tar(
+    name = "server_tar",
+    srcs = ["//server"],
+    package_dir = "/app",
+)

@@ -1,0 +1,71 @@
+diff --git a/MODULE.bazel b/MODULE.bazel
+--- a/MODULE.bazel
++++ b/MODULE.bazel
+@@ -28,3 +28,34 @@
+ register_toolchains(
+     "@img_toolchain//:all",
+ )
++
++bazel_dep(name = "supply_chain_tools", version = "0.0.1")
++
++relationships = use_extension(
++    "@supply_chain_tools//gather_metadata:extensions.bzl",
++    "relationships",
++)
++relationships.declare(
++    name = "image-layer-files",
++    rule_kind = "image_layer",
++    attribute = "srcs",
++    relationship = "contains",
++)
++relationships.declare(
++    name = "image-manifest-layers",
++    rule_kind = "image_manifest",
++    attribute = "layers",
++    relationship = "contains",
++)
++relationships.declare(
++    name = "image-manifest-base",
++    rule_kind = "image_manifest",
++    attribute = "base",
++    relationship = "contains",
++)
++relationships.declare(
++    name = "image-index-manifests",
++    rule_kind = "image_index",
++    attribute = "manifests",
++    relationship = "contains",
++)
+diff --git a/img/private/layer.bzl b/img/private/layer.bzl
+--- a/img/private/layer.bzl
++++ b/img/private/layer.bzl
+@@ -178,6 +178,7 @@
+ - `mtree`: a single [mtree](https://man.freebsd.org/cgi/man.cgi?mtree(5)) text file
+ """,
+     attrs = {
++        "_supply_chain_module": attr.string(default = Label("//:x").repo_name),
+         "srcs": attr.string_keyed_label_dict(
+             doc = """Files to include in the layer. Keys are paths in the image (e.g., "/app/bin/server"),
+ values are labels to files or executables.
+diff --git a/img/private/manifest.bzl b/img/private/manifest.bzl
+--- a/img/private/manifest.bzl
++++ b/img/private/manifest.bzl
+@@ -801,6 +801,7 @@
+   reflects only a subset of the image. Only produced when at least one layer contributes an `mtree`.
+ """,
+     attrs = {
++        "_supply_chain_module": attr.string(default = Label("//:x").repo_name),
+         "base": attr.label(
+             doc = "Base image to inherit layers from. Should provide ImageManifestInfo or ImageIndexInfo.",
+         ),
+diff --git a/img/private/index.bzl b/img/private/index.bzl
+--- a/img/private/index.bzl
++++ b/img/private/index.bzl
+@@ -302,6 +302,7 @@
+ - `sparse_oci_layout`: Sparse OCI layout directory (without layer blobs, only layer descriptors)
+ """,
+     attrs = {
++        "_supply_chain_module": attr.string(default = Label("//:x").repo_name),
+         "manifests": attr.label_list(
+             providers = [ImageManifestInfo],
+             doc = "List of manifests for specific platforms.",

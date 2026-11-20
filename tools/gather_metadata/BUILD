@@ -25,6 +25,7 @@ bzl_library(
         ":core.bzl",
         ":gather_metadata.bzl",
         ":providers.bzl",
+        ":relationships.bzl",
         ":rule_filters.bzl",
         ":serialization.bzl",
         ":toolchain_involvement.bzl",
@@ -44,10 +45,19 @@ bzl_library(
 )
 
 bzl_library(
+    name = "relationships",
+    srcs = [":relationships.bzl"],
+    visibility = ["//visibility:public"],
+)
+
+bzl_library(
     name = "extensions",
     srcs = [":extensions.bzl"],
     visibility = ["//visibility:public"],
-    deps = [":toolchain_involvement"],
+    deps = [
+        ":relationships",
+        ":toolchain_involvement",
+    ],
 )
 
 integration_test_suite(name = "integration_tests")

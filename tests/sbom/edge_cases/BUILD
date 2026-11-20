@@ -2,10 +2,11 @@
 # See ../golden_test.bzl to update them.
 
 load("@package_metadata//rules:package_metadata.bzl", "package_metadata")
-load("@toolchain_fixtures//:fixtures.bzl", "cc_binary", "dual_use_image", "java_binary", "js_binary", "mixed_involvement_binary", "mixed_path_binary", "openapi_generate_sources", "py_binary", "py_image_layer", "root_override_binary", "toolchain_impl")
 load("@supply_chain_tools//sbom:sbom.bzl", "sbom")
 load("@supply_chain_tools//sbom:spdx.bzl", "spdx")
+load("@toolchain_fixtures//:fixtures.bzl", "cc_binary", "dual_use_image", "java_binary", "js_binary", "mixed_involvement_binary", "mixed_path_binary", "openapi_generate_sources", "py_binary", "py_image_layer", "root_override_binary", "toolchain_impl")
 load("//sbom:golden_test.bzl", "sbom_golden_test")
+load(":relationship_cases.bzl", "ambiguous_fixture", "ambiguous_relationship_failure_test", "image_layer", "pkg_tar_impl", "relationship_golden_tests", "relationship_root")
 load(":toolchain_cases.bzl", "cycle_backedge_binary", "mixed_path_cyclonedx_golden", "toolchain_golden_cases")
 load(":toolchain_extension_test.bzl", "toolchain_extension_test")
 
@@ -14,16 +15,155 @@ package_metadata(
     purl = "pkg:generic/toolchain-fixture-app@1.0.0",
 )
 
+package_metadata(
+    name = "relationship_root_metadata",
+    purl = "pkg:generic/relationship-root@1.0.0",
+)
+
+package_metadata(
+    name = "relationship_layer_metadata",
+    purl = "pkg:generic/image-layer@1.0.0",
+)
+
+package_metadata(
+    name = "relationship_archive_metadata",
+    purl = "pkg:generic/server-tar@1.0.0",
+)
+
+package_metadata(
+    name = "relationship_payload_metadata",
+    purl = "pkg:generic/server-binary@1.0.0",
+)
+
+package_metadata(
+    name = "relationship_static_metadata",
+    purl = "pkg:generic/static-library@1.0.0",
+)
+
+package_metadata(
+    name = "relationship_dynamic_metadata",
+    purl = "pkg:generic/dynamic-library@1.0.0",
+)
+
+package_metadata(
+    name = "relationship_test_metadata",
+    purl = "pkg:generic/test-helper@1.0.0",
+)
+
+package_metadata(
+    name = "relationship_dev_metadata",
+    purl = "pkg:generic/dev-helper@1.0.0",
+)
+
+package_metadata(
+    name = "relationship_legacy_metadata",
+    purl = "pkg:generic/legacy-library@1.0.0",
+)
+
+filegroup(
+    name = "relationship_payload",
+    applicable_licenses = [":relationship_payload_metadata"],
+)
+
+filegroup(
+    name = "relationship_static",
+    applicable_licenses = [":relationship_static_metadata"],
+)
+
+filegroup(
+    name = "relationship_dynamic",
+    applicable_licenses = [":relationship_dynamic_metadata"],
+)
+
+filegroup(
+    name = "relationship_test",
+    applicable_licenses = [":relationship_test_metadata"],
+)
+
+filegroup(
+    name = "relationship_dev",
+    applicable_licenses = [":relationship_dev_metadata"],
+)
+
+filegroup(
+    name = "relationship_legacy",
+    applicable_licenses = [":relationship_legacy_metadata"],
+)
+
+image_layer(
+    name = "relationship_image_layer",
+    srcs = [":relationship_payload"],
+    applicable_licenses = [":relationship_layer_metadata"],
+)
+
+filegroup(
+    name = "relationship_image_layer_wrapper",
+    srcs = [":relationship_image_layer"],
+)
+
+pkg_tar_impl(
+    name = "relationship_pkg_tar",
+    srcs = [":relationship_payload"],
+    applicable_licenses = [":relationship_archive_metadata"],
+    deps = [":relationship_payload"],
+)
+
+relationship_root(
+    name = "relationship_root",
+    applicable_licenses = [":relationship_root_metadata"],
+    dev_deps = [":relationship_dev"],
+    dynamic_deps = [":relationship_dynamic"],
+    layers = [
+        ":relationship_image_layer_wrapper",
+        "@toolchain_fixtures//:provider_image_layer",
+        "@relationship_fixtures//:provider_image_layer",
+        ":relationship_pkg_tar",
+    ],
+    legacy_deps = [":relationship_legacy"],
+    static_deps = [":relationship_static"],
+    test_deps = [":relationship_test"],
+    deps = [
+        ":relationship_pkg_tar",
+        "@toolchain_fixtures//:provider_override",
+    ],
+)
+
+relationship_golden_tests(
+    name = "relationship_golden_tests",
+    target = ":relationship_root",
+)
+
+ambiguous_fixture(
+    name = "ambiguous_relationship_target",
+    applicable_licenses = [":relationship_root_metadata"],
+    deps = [":relationship_payload"],
+)
+
+ambiguous_relationship_failure_test(
+    name = "ambiguous_relationship_analysis_test",
+    target = ":ambiguous_relationship_target",
+)
+
 java_binary(name = "java_app")
+
 py_binary(name = "python_app")
+
 js_binary(name = "node_app")
+
 cc_binary(name = "llvm_app")
+
 openapi_generate_sources(name = "openapi_generated")
+
 py_image_layer(name = "python_image")
+
 dual_use_image(name = "dual_use_image")
+
 root_override_binary(name = "root_override_app")
+
 mixed_path_binary(name = "mixed_build_runtime_app")
+
 mixed_involvement_binary(name = "mixed_build_embedded_app")
+
 cycle_backedge_binary(name = "cycle_backedge_app")
 
 toolchain_type(name = "cycle_backedge_type")
@@ -69,7 +209,10 @@ toolchain_golden_cases(
             "name": "toolchains_java",
             "target": ":java_app",
         },
-        {"name": "toolchains_python", "target": ":python_app"},
+        {
+            "name": "toolchains_python",
+            "target": ":python_app",
+        },
         {
             "name": "toolchains_nodejs",
             "target": ":node_app",
@@ -78,7 +221,10 @@ toolchain_golden_cases(
             "name": "toolchains_llvm",
             "target": ":llvm_app",
         },
-        {"name": "toolchains_openapi", "target": ":openapi_generated"},
+        {
+            "name": "toolchains_openapi",
+            "target": ":openapi_generated",
+        },
         {
             "name": "toolchains_py_image_layer",
             "target": ":python_image",

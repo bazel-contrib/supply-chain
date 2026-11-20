@@ -1,0 +1,335 @@
+{
+  "@context": "https://spdx.org/rdf/3.0.1/spdx-context.jsonld",
+  "@graph": [
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "Bazel Supply Chain Tools SPDX generator",
+      "spdxId": "SPDXRef:SoftwareAgent-1",
+      "type": "SoftwareAgent"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "relationship-root",
+      "software_packageUrl": "pkg:generic/relationship-root@1.0.0",
+      "software_packageVersion": "1.0.0",
+      "spdxId": "SPDXRef:dep-0",
+      "type": "software_Package"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "dev-helper",
+      "software_packageUrl": "pkg:generic/dev-helper@1.0.0",
+      "software_packageVersion": "1.0.0",
+      "spdxId": "SPDXRef:dep-1",
+      "type": "software_Package"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "provider-override",
+      "software_packageUrl": "pkg:generic/provider-override@1.0.0",
+      "software_packageVersion": "1.0.0",
+      "spdxId": "SPDXRef:dep-10",
+      "type": "software_Package"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "server-binary",
+      "software_packageUrl": "pkg:generic/server-binary@1.0.0",
+      "software_packageVersion": "1.0.0",
+      "spdxId": "SPDXRef:dep-11",
+      "type": "software_Package"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "dynamic-library",
+      "software_packageUrl": "pkg:generic/dynamic-library@1.0.0",
+      "software_packageVersion": "1.0.0",
+      "spdxId": "SPDXRef:dep-2",
+      "type": "software_Package"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "image-layer",
+      "software_packageUrl": "pkg:generic/image-layer@1.0.0",
+      "software_packageVersion": "1.0.0",
+      "spdxId": "SPDXRef:dep-3",
+      "type": "software_Package"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "legacy-library",
+      "software_packageUrl": "pkg:generic/legacy-library@1.0.0",
+      "software_packageVersion": "1.0.0",
+      "spdxId": "SPDXRef:dep-4",
+      "type": "software_Package"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "server-tar",
+      "software_packageUrl": "pkg:generic/server-tar@1.0.0",
+      "software_packageVersion": "1.0.0",
+      "spdxId": "SPDXRef:dep-5",
+      "type": "software_Package"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "static-library",
+      "software_packageUrl": "pkg:generic/static-library@1.0.0",
+      "software_packageVersion": "1.0.0",
+      "spdxId": "SPDXRef:dep-6",
+      "type": "software_Package"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "test-helper",
+      "software_packageUrl": "pkg:generic/test-helper@1.0.0",
+      "software_packageVersion": "1.0.0",
+      "spdxId": "SPDXRef:dep-7",
+      "type": "software_Package"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "other-provider-image-layer",
+      "software_packageUrl": "pkg:generic/other-provider-image-layer@1.0.0",
+      "software_packageVersion": "1.0.0",
+      "spdxId": "SPDXRef:dep-8",
+      "type": "software_Package"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "provider-image-layer",
+      "software_packageUrl": "pkg:generic/provider-image-layer@1.0.0",
+      "software_packageVersion": "1.0.0",
+      "spdxId": "SPDXRef:dep-9",
+      "type": "software_Package"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-3",
+      "relationshipType": "hasStaticLink",
+      "spdxId": "SPDXRef:rel-0",
+      "to": [
+        "SPDXRef:dep-11"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-5",
+      "relationshipType": "contains",
+      "spdxId": "SPDXRef:rel-1",
+      "to": [
+        "SPDXRef:dep-11"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-0",
+      "relationshipType": "contains",
+      "spdxId": "SPDXRef:rel-10",
+      "to": [
+        "SPDXRef:dep-9"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-0",
+      "relationshipType": "dependsOn",
+      "spdxId": "SPDXRef:rel-11",
+      "to": [
+        "SPDXRef:dep-10"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-8",
+      "relationshipType": "contains",
+      "spdxId": "SPDXRef:rel-12",
+      "to": [
+        "SPDXRef:dep-11"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-9",
+      "relationshipType": "hasDynamicLink",
+      "spdxId": "SPDXRef:rel-13",
+      "to": [
+        "SPDXRef:dep-11"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-10",
+      "relationshipType": "hasStaticLink",
+      "spdxId": "SPDXRef:rel-14",
+      "to": [
+        "SPDXRef:dep-11"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-0",
+      "relationshipType": "dependsOn",
+      "scope": "development",
+      "spdxId": "SPDXRef:rel-2",
+      "to": [
+        "SPDXRef:dep-1"
+      ],
+      "type": "LifecycleScopedRelationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-0",
+      "relationshipType": "hasDynamicLink",
+      "spdxId": "SPDXRef:rel-3",
+      "to": [
+        "SPDXRef:dep-2"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-0",
+      "relationshipType": "contains",
+      "spdxId": "SPDXRef:rel-4",
+      "to": [
+        "SPDXRef:dep-3"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-0",
+      "relationshipType": "dependsOn",
+      "spdxId": "SPDXRef:rel-5",
+      "to": [
+        "SPDXRef:dep-4"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-0",
+      "relationshipType": "contains",
+      "spdxId": "SPDXRef:rel-6",
+      "to": [
+        "SPDXRef:dep-5"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-0",
+      "relationshipType": "hasStaticLink",
+      "spdxId": "SPDXRef:rel-7",
+      "to": [
+        "SPDXRef:dep-6"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-0",
+      "relationshipType": "dependsOn",
+      "scope": "test",
+      "spdxId": "SPDXRef:rel-8",
+      "to": [
+        "SPDXRef:dep-7"
+      ],
+      "type": "LifecycleScopedRelationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-0",
+      "relationshipType": "contains",
+      "spdxId": "SPDXRef:rel-9",
+      "to": [
+        "SPDXRef:dep-8"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "element": [
+        "SPDXRef:SoftwareAgent-1",
+        "SPDXRef:dep-0",
+        "SPDXRef:dep-1",
+        "SPDXRef:dep-10",
+        "SPDXRef:dep-11",
+        "SPDXRef:dep-2",
+        "SPDXRef:dep-3",
+        "SPDXRef:dep-4",
+        "SPDXRef:dep-5",
+        "SPDXRef:dep-6",
+        "SPDXRef:dep-7",
+        "SPDXRef:dep-8",
+        "SPDXRef:dep-9",
+        "SPDXRef:rel-0",
+        "SPDXRef:rel-1",
+        "SPDXRef:rel-10",
+        "SPDXRef:rel-11",
+        "SPDXRef:rel-12",
+        "SPDXRef:rel-13",
+        "SPDXRef:rel-14",
+        "SPDXRef:rel-2",
+        "SPDXRef:rel-3",
+        "SPDXRef:rel-4",
+        "SPDXRef:rel-5",
+        "SPDXRef:rel-6",
+        "SPDXRef:rel-7",
+        "SPDXRef:rel-8",
+        "SPDXRef:rel-9"
+      ],
+      "rootElement": [
+        "SPDXRef:dep-0"
+      ],
+      "spdxId": "SPDXRef:sbom",
+      "type": "software_Sbom"
+    },
+    {
+      "@id": "_:CreationInfo-1",
+      "created": "1970-01-01T00:00:00Z",
+      "createdBy": [
+        "SPDXRef:SoftwareAgent-1"
+      ],
+      "createdUsing": [],
+      "specVersion": "3.0.1",
+      "type": "CreationInfo"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "CC0-1.0",
+      "simplelicensing_licenseText": "NOASSERTION",
+      "spdxId": "https://spdx.org/licenses/CC0-1.0",
+      "type": "expandedlicensing_ListedLicense"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "dataLicense": "https://spdx.org/licenses/CC0-1.0",
+      "name": "relationship-root",
+      "namespaceMap": [
+        {
+          "namespace": "https://spdx.org/spdxdocs/pkg:generic%2Frelationship-root@1.0.0#",
+          "prefix": "SPDXRef",
+          "type": "NamespaceMap"
+        }
+      ],
+      "profileConformance": [
+        "core",
+        "software"
+      ],
+      "rootElement": [
+        "SPDXRef:sbom"
+      ],
+      "spdxId": "https://spdx.org/spdxdocs/pkg:generic%2Frelationship-root@1.0.0",
+      "type": "SpdxDocument"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+diff --git a/MODULE.bazel b/MODULE.bazel
+--- a/MODULE.bazel
++++ b/MODULE.bazel
+@@ -30,3 +30,22 @@
+     name = "mappings_test_external_repo",
+     path = "tests/mappings/external_repo",
+ )
++
++bazel_dep(name = "supply_chain_tools", version = "0.0.1")
++
++relationships = use_extension(
++    "@supply_chain_tools//gather_metadata:extensions.bzl",
++    "relationships",
++)
++relationships.declare(
++    name = "pkg-tar-contents",
++    rule_kind = "pkg_tar_impl",
++    attribute = "srcs",
++    relationship = "contains",
++)
++relationships.declare(
++    name = "pkg-tar-dependencies",
++    rule_kind = "pkg_tar_impl",
++    attribute = "deps",
++    relationship = "contains",
++)
+diff --git a/pkg/private/tar/tar.bzl b/pkg/private/tar/tar.bzl
+--- a/pkg/private/tar/tar.bzl
++++ b/pkg/private/tar/tar.bzl
+@@ -220,6 +220,7 @@
+ pkg_tar_impl = rule(
+     implementation = _pkg_tar_impl,
+     attrs = {
++        "_supply_chain_module": attr.string(default = Label("//:x").repo_name),
+         "strip_prefix": attr.string(
+             doc = """(note: Use strip_prefix = "." to strip path to the package but preserve relative paths of sub directories beneath the package.)""",
+         ),
