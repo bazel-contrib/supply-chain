@@ -18,7 +18,20 @@
         }
       ],
       "name": "acmecorp/coyote",
+      "publisher": "A. Coyote",
       "purl": "pkg:github/acmecorp/coyote@3.1.4?download_url=https:%2F%2Fgithub.com%2Facmecorp%2Fcoyote%2Farchive%2Frefs%2Ftags%2F3.1.4.tar.gz",
+      "supplier": {
+        "contact": [
+          {
+            "email": "oss@acme.example",
+            "name": "ACME Corp"
+          }
+        ],
+        "name": "ACME Corp",
+        "url": [
+          "https://acme.example"
+        ]
+      },
       "type": "library",
       "version": "3.1.4"
     }

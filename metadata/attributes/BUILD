@@ -1,6 +1,8 @@
 exports_files(
     [
         "integrity.bzl",
+        "supplier.bzl",
+        "originator.bzl",
         "copyright_notice.bzl",
         "cpe.bzl",
         "patch.bzl",
@@ -12,11 +14,14 @@ exports_files(
 filegroup(
     name = "srcs",
     srcs = [
-        "integrity.bzl",
+        "agent.bzl",
         "copyright_notice.bzl",
         "cpe.bzl",
-        "patch.bzl",
         "defs.bzl",
+        "integrity.bzl",
+        "originator.bzl",
+        "patch.bzl",
+        "supplier.bzl",
     ] + [
         "//providers:srcs",
     ],

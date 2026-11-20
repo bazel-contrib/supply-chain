@@ -211,3 +211,35 @@ func TestReadMultipleAttributesOfKind(t *testing.T) {
 		"license": {"l.json"},
 	}, m.(*packageMetadata).Attributes)
 }
+
+func TestPackageAgentAttributes(t *testing.T) {
+	metadata := &packageMetadata{
+		Attributes: map[string][]string{
+			SupplierAttributeKind: {"testdata/supplier.json"},
+		},
+	}
+	supplier, err := GetSupplierAttribute(metadata)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, &PackageAgent{
+		Name:  "ACME Corp",
+		Type:  PackageAgentTypeOrganization,
+		URL:   "https://acme.example",
+		Email: "oss@acme.example",
+	}, supplier)
+	originator, err := GetOriginatorAttribute(metadata)
+	assert.NoError(t, err)
+	assert.Nil(t, originator)
+
+	for _, input := range []string{
+		`{"name":"","type":"person"}`,
+		`{"name":"A. Person","type":"company"}`,
+		`{"name":"A. Person","type":"person","unknown":"field"}`,
+	} {
+		t.Run(input, func(t *testing.T) {
+			_, err := parsePackageAgent(strings.NewReader(input))
+			assert.Error(t, err)
+		})
+	}
+}

@@ -1,10 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
 	"reflect"
+	"strings"
 	"testing"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
@@ -87,6 +89,87 @@ func TestGenerateBOM_WithoutDownloadQualifierOmitsDistributionReference(t *testi
 	if licenses := (*bom.Components)[0].Licenses; licenses != nil {
 		t.Fatalf("Licenses = %#v, want nil when no component license is known", *licenses)
 	}
+	if supplier := (*bom.Components)[0].Supplier; supplier != nil {
+		t.Fatalf("Supplier = %#v, want nil when no supplier is declared", supplier)
+	}
+	if publisher := (*bom.Components)[0].Publisher; publisher != "" {
+		t.Fatalf("Publisher = %q, want empty when no originator is declared", publisher)
+	}
+}
+
+func TestGenerateBOM_MapsSupplierAndOriginator(t *testing.T) {
+	dir := t.TempDir()
+	metadata := writeAgentMetadata(t, dir, map[string]string{
+		"build.bazel.attribute.supplier":   `{"name":"ACME Corp","type":"organization","url":"https://acme.example","email":"oss@acme.example"}`,
+		"build.bazel.attribute.originator": `{"name":"A. Creator","type":"person","email":"creator@example"}`,
+	})
+	bom, err := GenerateBOM(
+		sbom.GraphConfig{},
+		sbom.Classifications{Dependencies: sbom.DependencyNodes{
+			Direct: []sbom.NodeConfig{{Label: "//lib:dep", MetadataFile: metadata}},
+		}},
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	component := (*bom.Components)[0]
+	if component.Supplier == nil || component.Supplier.Name != "ACME Corp" {
+		t.Fatalf("Supplier = %#v, want ACME Corp", component.Supplier)
+	}
+	if component.Supplier.URL == nil || !reflect.DeepEqual(*component.Supplier.URL, []string{"https://acme.example"}) {
+		t.Fatalf("Supplier.URL = %#v", component.Supplier.URL)
+	}
+	if component.Supplier.Contact == nil || len(*component.Supplier.Contact) != 1 || (*component.Supplier.Contact)[0].Email != "oss@acme.example" {
+		t.Fatalf("Supplier.Contact = %#v", component.Supplier.Contact)
+	}
+	if component.Publisher != "A. Creator" {
+		t.Fatalf("Publisher = %q, want originator name", component.Publisher)
+	}
+}
+
+func TestGenerateBOM_MapsPersonSupplier(t *testing.T) {
+	dir := t.TempDir()
+	metadata := writeAgentMetadata(t, dir, map[string]string{
+		"build.bazel.attribute.supplier": `{"name":"A. Supplier","type":"person","email":"supplier@example"}`,
+	})
+	bom, err := GenerateBOM(
+		sbom.GraphConfig{},
+		sbom.Classifications{Dependencies: sbom.DependencyNodes{
+			Direct: []sbom.NodeConfig{{Label: "//lib:dep", MetadataFile: metadata}},
+		}},
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	supplier := (*bom.Components)[0].Supplier
+	if supplier == nil || supplier.Name != "A. Supplier" || supplier.Contact == nil || (*supplier.Contact)[0].Email != "supplier@example" {
+		t.Fatalf("Supplier = %#v", supplier)
+	}
+}
+
+func writeAgentMetadata(t *testing.T, dir string, agents map[string]string) string {
+	t.Helper()
+	attributes := make(map[string]string, len(agents))
+	for kind, content := range agents {
+		path := filepath.Join(dir, strings.TrimPrefix(kind, "build.bazel.attribute.")+".json")
+		if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+			t.Fatal(err)
+		}
+		attributes[kind] = path
+	}
+	data, err := json.Marshal(map[string]any{
+		"label":      "//lib:dep",
+		"purl":       "pkg:generic/dep@1.0",
+		"attributes": attributes,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(dir, "metadata.json")
+	if err := os.WriteFile(path, data, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	return path
 }
 
 func assertDistributionReference(t *testing.T, component cdx.Component, wantURL string) {
