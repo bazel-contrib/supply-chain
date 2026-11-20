@@ -2,6 +2,7 @@ exports_files(
     [
         "integrity.bzl",
         "copyright_notice.bzl",
+        "component_type.bzl",
         "cpe.bzl",
         "patch.bzl",
         "defs.bzl",
@@ -14,6 +15,7 @@ filegroup(
     srcs = [
         "integrity.bzl",
         "copyright_notice.bzl",
+        "component_type.bzl",
         "cpe.bzl",
         "patch.bzl",
         "defs.bzl",

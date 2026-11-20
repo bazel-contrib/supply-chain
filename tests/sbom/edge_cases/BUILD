@@ -1,7 +1,9 @@
-# SPDX 3.0.1 reports of graphs with unusual shapes, checked against goldens.
+# SBOM reports of graphs with unusual shapes, checked against goldens.
 # See ../golden_test.bzl to update them.
 
+load("@package_metadata//attributes:component_type.bzl", "component_type")
 load("@package_metadata//rules:package_metadata.bzl", "package_metadata")
+load("@supply_chain_tools//sbom:cyclonedx.bzl", "cyclonedx")
 load("@supply_chain_tools//sbom:sbom.bzl", "sbom")
 load("@supply_chain_tools//sbom:spdx.bzl", "spdx")
 load("//sbom:golden_test.bzl", "sbom_golden_test")
@@ -178,4 +180,97 @@ sbom_golden_test(
     name = "empty_spdx_golden_test",
     golden = "testdata/empty_spdx.json",
     report = ":empty_spdx",
+)
+
+# Packages declare their component type; one that does not keep the default.
+[
+    [
+        component_type(
+            name = "{}_type".format(name),
+            type = type,
+        ),
+        package_metadata(
+            name = "{}_metadata".format(name),
+            attributes = [":{}_type".format(name)],
+            purl = purl,
+        ),
+    ]
+    for name, type, purl in [
+        ("image", "container", "pkg:oci/my-image?repository_url=registry.example.com%2Fmy-image"),
+        ("base_os", "operating-system", "pkg:generic/base-os@12.1"),
+        ("bootloader", "firmware", "pkg:generic/bootloader@2.4"),
+        ("service", "application", "pkg:generic/service@3.0.0"),
+    ]
+]
+
+[
+    filegroup(
+        name = name,
+        applicable_licenses = [":{}_metadata".format(name)],
+    )
+    for name in [
+        "base_os",
+        "bootloader",
+        "service",
+    ]
+]
+
+# Without a component type, so it is a library.
+filegroup(
+    name = "image_library",
+    applicable_licenses = [":direct_metadata"],
+)
+
+filegroup(
+    name = "image",
+    srcs = [
+        ":base_os",
+        ":bootloader",
+        ":image_library",
+        ":service",
+    ],
+    applicable_licenses = [":image_metadata"],
+)
+
+sbom(
+    name = "image_sbom",
+    target = ":image",
+    visibility = ["//sbom:__pkg__"],
+)
+
+[
+    [
+        spdx(
+            name = "image_{}".format(name),
+            format = format,
+            sbom = ":image_sbom",
+        ),
+        sbom_golden_test(
+            name = "image_{}_golden_test".format(name),
+            golden = "testdata/image_{}.json".format(name),
+            report = ":image_{}".format(name),
+        ),
+    ]
+    for name, format in {
+        "spdx": "json-ld",
+        "spdx_2_3": "json",
+    }.items()
+]
+
+cyclonedx(
+    name = "image_cyclonedx",
+    sbom = ":image_sbom",
+)
+
+sbom_golden_test(
+    name = "image_cyclonedx_golden_test",
+    golden = "testdata/image_cyclonedx.json",
+    report = ":image_cyclonedx",
+)
+
+# All of its components declare a component_type.
+sbom(
+    name = "service_sbom",
+    target = ":service",
+    visibility = ["//sbom:__pkg__"],
 )

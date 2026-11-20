@@ -78,6 +78,13 @@ func GenerateDocument23(graph sbom.GraphConfig, classifications sbom.Classificat
 			licenseOf[pkg] = licenseAttribute
 		}
 
+		componentType, err := supplychain.GetComponentTypeAttribute(pkgMetadata)
+		if err != nil {
+			return nil, fmt.Errorf("error reading component type of %s: %w", node.Label, err)
+		}
+		// SPDX 2.3 purposes are the upper-case component types.
+		pkg.PrimaryPackagePurpose = strings.ToUpper(componentType)
+
 		labelToID[node.Label] = elementID
 		return pkg, nil
 	}
