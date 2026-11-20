@@ -1,1 +1,5 @@
 common --@supply_chain_tools//sbom:strict_validations
+
+# Modules from this repo come from the local registry, not local_path_override.
+common --registry=file://%workspace%/../registry/head
+common --registry=https://bcr.bazel.build

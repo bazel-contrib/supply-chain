@@ -14,7 +14,3 @@ bazel_dep(
     name = "package_metadata",
     version = "HEAD",  # Automatically updated by release pipeline.
 )
-local_path_override(
-    module_name = "package_metadata",
-    path = "../metadata",
-)
