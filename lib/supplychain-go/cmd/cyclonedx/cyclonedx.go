@@ -16,11 +16,13 @@ import (
 
 func main() {
 	var outPath, graphPath, classificationsPath, format, validatorPath string
+	var verboseComponentTypes bool
 	flag.StringVar(&outPath, "out", "", "The path to write the generated CycloneDX SBOM.")
 	flag.StringVar(&graphPath, "graph", "", "The path to the graph JSON file.")
 	flag.StringVar(&classificationsPath, "classifications", "", "The path to the classifications JSON file.")
 	flag.StringVar(&format, "format", "json", "The output format of the CycloneDX SBOM (json or xml).")
 	flag.StringVar(&validatorPath, "validator", "", "Optional runfiles path or executable path to the CycloneDX CLI validator.")
+	flag.BoolVar(&verboseComponentTypes, "verbose_component_types", false, "Warn about the components that do not declare a component_type attribute.")
 	flag.Parse()
 
 	if outPath == "" {
@@ -62,7 +64,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error generating BOM: %v\n", err)
 		os.Exit(1)
 	}
-	if len(untyped) > 0 {
+	if verboseComponentTypes && len(untyped) > 0 {
 		fmt.Fprintf(os.Stderr, "WARNING: %d component(s) do not declare a component_type and are reported as %q because CycloneDX requires a type: %s\n"+
 			"Declare one with the component_type attribute of @package_metadata//attributes:component_type.bzl, or build with --//sbom:strict_component_types to fail instead.\n",
 			len(untyped), cdx.ComponentTypeLibrary, strings.Join(untyped, ", "))

@@ -7,6 +7,8 @@ def _cyclonedx_impl(ctx):
     strict = ctx.attr.format in ["json", "xml"] and ctx.attr._strict_validations[BuildSettingInfo].value
     extra_args = []
     extra_tools = []
+    if ctx.attr._verbose_component_types[BuildSettingInfo].value:
+        extra_args.append("--verbose_component_types")
     if strict:
         cyclonedx_validator = ctx.toolchains["//sbom:cyclonedx_validator_toolchain_type"]
         extra_args.extend(["--validator", cyclonedx_validator.validator.path])
@@ -49,6 +51,10 @@ cyclonedx = rule(
         "_strict_validations": attr.label(
             default = "//sbom:strict_validations",
             doc = "Whether to validate generated reports with the upstream CycloneDX CLI. See //sbom:strict_validations.",
+        ),
+        "_verbose_component_types": attr.label(
+            default = "//sbom:verbose_component_types",
+            doc = "Whether to warn about components that do not declare a `component_type` attribute. See //sbom:verbose_component_types.",
         ),
     },
     toolchains = ["//sbom:cyclonedx_validator_toolchain_type"],
