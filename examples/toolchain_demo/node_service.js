@@ -5,4 +5,4 @@ const server = http.createServer((_request, response) => {
   response.end("This Node.js runtime is shipped in the container image.\n");
 });
 
-server.listen(8081, "0.0.0.0");
+server.listen(Number(process.argv[2] || process.env.PORT || 8081), "0.0.0.0");

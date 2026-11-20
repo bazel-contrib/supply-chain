@@ -120,6 +120,22 @@ version from `go.mod`, Node.js's selected `node_version`, rules_python's
 `llvm/llvm-project`, `golang/go`, `nodejs/node`, `python/cpython`, and OpenJDK;
 the host `local-jdk` has no metadata declaration and is not included.
 
+## Integration test with rules_itest
+
+`//:itest` uses [rules_itest](https://github.com/hermeticbuild/rules_itest) to start
+the Go `server` (which also runs the Python and Java binaries behind `/api/python`
+and `/api/java`) and the Node.js service on auto-assigned ports, wait for their
+health checks, and run `itest_test.go` against them. It runs on the host platform,
+since the container targets linux_x86_64:
+
+```sh
+bazel test --config=itest //:itest
+bazel build --config=itest //:itest_cyclonedx //:itest_spdx
+```
+
+`itest_sbom` takes the test as its target, so the SBOM ties together the Go, Node.js,
+Python and Java components with their toolchains and rules_itest itself.
+
 ## Verified SBOM components
 
 The image index and its CycloneDX, SPDX 2.3, and SPDX 3.0.1 JSON-LD reports

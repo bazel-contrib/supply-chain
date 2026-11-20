@@ -1,5 +1,6 @@
 load("@aspect_rules_js//js:defs.bzl", "js_binary", "js_image_layer", "js_run_binary")
-load("@io_bazel_rules_go//go:def.bzl", "go_binary")
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_test")
+load("@rules_itest//:itest.bzl", "itest_service", "itest_service_group", "service_test")
 load("@package_metadata//licenses/rules:license.bzl", "license")
 load("@package_metadata//purl:purl.bzl", "purl")
 load("@package_metadata//rules:package_metadata.bzl", "package_metadata")
@@ -222,4 +223,66 @@ spdx(
     name = "container_index_spdx_jsonld",
     format = "json-ld",
     sbom = ":container_index_sbom",
+)
+
+itest_service(
+    name = "node_service_itest",
+    autoassign_port = True,
+    args = ["$${PORT}"],
+    exe = ":node_service",
+    http_health_check_address = "http://127.0.0.1:$${PORT}",
+)
+
+itest_service(
+    name = "server_service",
+    autoassign_port = True,
+    args = [
+        "--port=$${PORT}",
+        "--python-api=$(rlocationpath :python_api)",
+        "--java-greeter=$(rlocationpath //java:runtime_java)",
+    ],
+    data = [
+        ":python_api",
+        "//java:runtime_java",
+    ],
+    exe = ":server",
+    http_health_check_address = "http://127.0.0.1:$${PORT}/openapi.json",
+)
+
+itest_service_group(
+    name = "services",
+    services = [
+        ":node_service_itest",
+        ":server_service",
+    ],
+)
+
+go_test(
+    name = "_itest_test",
+    srcs = ["itest_test.go"],
+    tags = ["manual"],
+)
+
+service_test(
+    name = "itest",
+    services = [":services"],
+    test = ":_itest_test",
+)
+
+sbom(
+    name = "itest_sbom",
+    target = ":itest",
+    testonly = True,
+)
+
+cyclonedx(
+    name = "itest_cyclonedx",
+    sbom = ":itest_sbom",
+    testonly = True,
+)
+
+spdx(
+    name = "itest_spdx",
+    sbom = ":itest_sbom",
+    testonly = True,
 )
