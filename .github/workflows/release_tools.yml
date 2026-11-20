@@ -47,6 +47,12 @@ jobs:
           # TODO(yannic): Use `RUNNER_TOOL_CACHE` and cache between runs?
           curl -o "${RUNNER_TEMP}/buildozer" -L "https://github.com/bazelbuild/buildtools/releases/download/v7.3.1/buildozer-linux-amd64"
           chmod +x "${RUNNER_TEMP}/buildozer"
+
+          # Validate that the declared dependency versions are enough to build
+          # the module on its own: ignore the module's `.bazelrc`, which would
+          # otherwise resolve our modules from the local registry.
+          (cd "${module_dir}" && bazel --noworkspace_rc build //...)
+
           # Update `MODULE.bazel` and commit.
           module_dir=$(./releasing/module_to_dir.sh "${MODULE}")
           "${RUNNER_TEMP}/buildozer" "set version ${VERSION}" "//${module_dir}/MODULE.bazel:${MODULE}" || true
