@@ -1,0 +1,18 @@
+module(
+    name = "relationship_fixtures",
+    version = "1.0.0",
+)
+
+bazel_dep(name = "package_metadata", version = "HEAD")
+bazel_dep(name = "supply_chain_tools", version = "HEAD")
+
+relationships = use_extension(
+    "@supply_chain_tools//gather_metadata:extensions.bzl",
+    "relationships",
+)
+relationships.declare(
+    name = "other-provider-image-layer",
+    attribute = "srcs",
+    relationship = "contains",
+    rule_kind = "image_layer",
+)

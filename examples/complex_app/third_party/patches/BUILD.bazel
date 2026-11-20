@@ -8,6 +8,7 @@ exports_files([
     "rules_go_bootstrap_sdk_metadata.patch",
     "rules_go_sdk_metadata.patch",
     "rules_go_toolchain_involvement.patch",
+    "rules_img_relationships.patch",
     "rules_java_toolchain_involvement.patch",
     "rules_java_jdk_build_metadata.patch",
     "rules_java_bootclasspath_visibility.patch",
@@ -15,4 +16,5 @@ exports_files([
     "rules_nodejs_metadata.patch",
     "rules_python_toolchain_involvement.patch",
     "rules_python_metadata.patch",
+    "rules_pkg_relationships.patch",
 ])

@@ -31,6 +31,10 @@ _gather_metadata_attrs = {
         default = "@supply_chain_toolchain_involvements//:toolchain_involvements",
         doc = "Toolchain involvement registry generated from module declarations.",
     ),
+    "_relationships": attr.label(
+        default = "@supply_chain_relationships//:relationships",
+        doc = "Dependency relationship registry generated from module declarations.",
+    ),
 }
 
 def _gather_metadata_info_impl(target, ctx):
@@ -110,13 +114,15 @@ gather_metadata_info_and_write = aspect(
             "from": "//some:target",
             "to": "//dep:target",
             "type": "depends_on",
-            "involvement": "build"
+            "involvement": "build",
+            "relationship": "contains"
           }
         ]
       }
 
     The optional edge "involvement" is "build" or "embedded". Runtime edges
-    omit the field to preserve the original graph format.
+    omit the field to preserve the original graph format. "relationship" is
+    omitted for the default depends_on relationship.
     """,
     implementation = _write_metadata_info_impl,
     attr_aspects = ["*"],

@@ -53,6 +53,26 @@ py_image_layer = rule(
     ],
 )
 
+image_layer = rule(
+    implementation = _empty_rule_impl,
+    attrs = {
+        "srcs": attr.label_list(),
+        "provider_marker": attr.string(),
+        "applicable_licenses": attr.label_list(),
+        "_supply_chain_module": attr.string(default = Label("//:x").repo_name),
+    },
+)
+
+provider_override_rule = rule(
+    implementation = _empty_rule_impl,
+    attrs = {
+        "deps": attr.label_list(),
+        "provider_marker": attr.string(),
+        "applicable_licenses": attr.label_list(),
+        "_supply_chain_module": attr.string(default = Label("//:x").repo_name),
+    },
+)
+
 dual_use_image = rule(
     implementation = _empty_rule_impl,
     toolchains = [

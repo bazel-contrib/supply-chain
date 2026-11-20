@@ -19,7 +19,8 @@ This set of rules produces a graph of nodes (targets) and their edges starting f
       "from": "//some:target",
       "to": "//other:dep",
       "type": "depends_on",
-      "involvement": "embedded"
+      "involvement": "embedded",
+      "relationship": "contains"
     }
   ]
 }
@@ -117,7 +118,99 @@ behalf of its pinned upstream providers; each provider can move the equivalent
 declaration into its own `MODULE.bazel`.
 
 `single_version_override` is a root-module-only directive: an override written
-by a dependency is ignored when that dependency is consumed. Bazel's
-documentation says a patch to a module's `MODULE.bazel` is effective only when
-the patch is provided by the root module; the demo does not patch upstream
-module declarations and instead uses root tags as the provider-side stand-in.
+by a dependency is ignored when that dependency is consumed. The demo uses root
+tags as a provider-side stand-in for toolchain involvement declarations.
+
+## Provider-declared dependency relationships
+
+Modules can classify rule-attribute edges independently of toolchain
+involvement. A provider declares its rule relationships in its own
+`MODULE.bazel` through the `relationships` extension:
+
+```starlark
+relationships = use_extension(
+    "@supply_chain_tools//gather_metadata:extensions.bzl",
+    "relationships",
+)
+relationships.declare(
+    name = "image-layer-files",
+    rule_kind = "image_layer",
+    attribute = "srcs",
+    relationship = "contains",
+)
+```
+
+For provider declarations to be module-specific, patch each declared rule with
+a private string attribute in its `attrs` map:
+
+```starlark
+"_supply_chain_module": attr.string(default = Label("//:x").repo_name),
+```
+
+The aspect reads this marker from `ctx.rule.attr` and normalizes a canonical
+Bazel repository name (for example, `rules_img+`) to its Bzlmod module name.
+Provider-scoped tags do not match unmarked rules; a root fallback may still
+classify them. This keeps identically named rules from different modules
+separate. The `examples/complex_app` patches show declarations added to
+the `rules_img` and `rules_pkg` modules and markers added to their actual rule
+definitions.
+
+The vocabulary is `depends_on` (the default and omitted from serialized
+edges), `contains`, `static_link`, `dynamic_link`, `test_dependency`, and
+`dev_dependency`. `name` is an optional diagnostic label. Rule kinds may be
+`*` to match all kinds; for a given
+attribute, an exact rule-kind declaration takes precedence over the wildcard.
+The extension generates `@supply_chain_relationships//:relationships` even
+when no declarations exist. Unknown vocabulary values fail during extension
+evaluation.
+
+The registry is keyed by `(rule_module, rule_kind, attribute,
+requires_attributes)`. Provider declarations are automatically scoped to the
+declaring module and match only rules whose private marker identifies that
+module. A root declaration may set `rule_module` to target a patched module
+explicitly. Without it, the declaration has no module scope and acts as a
+kind-based fallback for unmarked rules or marked rules without a more-specific
+module declaration. Lookup prefers an exact module marker over that fallback,
+then an exact rule kind over `*`, then the declaration with the most matching
+`requires_attributes`.
+
+`requires_attributes` is optional and is primarily useful for root fallbacks
+when two unmarked rule definitions share a kind and attribute. Every listed
+name must appear in `dir(ctx.rule.attr)`; Bazel includes declared attributes
+even when they are unset. Equal-specificity declarations that match one rule
+and disagree on the relationship fail during analysis with both declaring
+module names and values.
+
+For the same full registry key, identical provider declarations coalesce. A
+root declaration wins over a provider declaration; conflicting declarations
+from non-root modules fail during extension evaluation with module names and
+values. A root declaration with `rule_module` can therefore override a
+provider's declaration for that module. There are no built-in relationship
+defaults: an unmatched edge remains `depends_on`.
+
+When graph paths collapse intermediate Bazel targets, the first non-default
+relationship encountered from the root is retained. If multiple edges map to
+the same component pair, relationship specificity is `contains`, `static_link`,
+`dynamic_link`, `test_dependency`, `dev_dependency`, then `depends_on`.
+Toolchain `involvement` remains orthogonal; build/embedded involvement keeps
+its existing output behavior and takes precedence over the attribute
+relationship when rendering.
+
+| Relationship | SPDX 2.3 | SPDX 3.0.1 | CycloneDX |
+| --- | --- | --- | --- |
+| `depends_on` | parent `DEPENDS_ON` child | `dependsOn` | dependency edge |
+| `contains` | parent `CONTAINS` child | `contains` | BOM composition with `aggregate: "unknown"` and child bom-ref in `assemblies` |
+| `static_link` | parent `STATIC_LINK` child | `hasStaticLink` | dependency edge and parent property `bazel:relationship:static_link` |
+| `dynamic_link` | parent `DYNAMIC_LINK` child | `hasDynamicLink` | dependency edge and parent property `bazel:relationship:dynamic_link` |
+| `test_dependency` | child `TEST_DEPENDENCY_OF` parent | `dependsOn`, lifecycle scope `test` | dependency edge and parent property `bazel:relationship:test_dependency` |
+| `dev_dependency` | child `DEV_DEPENDENCY_OF` parent | `dependsOn`, lifecycle scope `development` | dependency edge and parent property `bazel:relationship:dev_dependency` |
+
+CycloneDX has no corresponding relationship vocabulary. `contains` edges are
+represented by BOM-level compositions, one per parent bom-ref, with
+`aggregate: "unknown"` and sorted child bom-refs in `assemblies`; they are not
+emitted as dependency edges or `bazel:relationship:contains` properties.
+Embedded involvement also maps to compositions, unless build involvement
+takes precedence. Other non-default relationship types remain dependency
+edges and are represented by sorted, deduplicated properties on the parent.
+Default `depends_on` edges need no extra property. Components remain flat, and
+composition references do not participate in dependency-cycle removal.

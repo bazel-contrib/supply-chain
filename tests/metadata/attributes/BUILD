@@ -90,8 +90,8 @@ patch(
     name = "patch.valid-2",
     description = "Local tweak.",
     file = "testdata/patch/local_tweak.patch",
-    type = "unofficial",
     integrity = ["sha256-EbbT7lVO7feSmZBamPm5oE5JghC1nxUJTJFskdFQ51Q="],
+    type = "unofficial",
 )
 
 diff_test(
@@ -131,9 +131,9 @@ package_metadata(
 jq(
     name = "patch.multiple.actual",
     srcs = [":patch.multiple.package_metadata"],
+    out = "patch.multiple.actual.json",
     args = ["-S"],
     filter = '.attributes |= map_values(if type == "array" then map(split("/") | last) else split("/") | last end)',
-    out = "patch.multiple.actual.json",
 )
 
 diff_test(

@@ -1,17 +1,57 @@
-load(":fixtures.bzl", "toolchain_impl")
 load("@package_metadata//rules:package_metadata.bzl", "package_metadata")
+load(":fixtures.bzl", "image_layer", "provider_override_rule", "toolchain_impl")
 
 package(default_visibility = ["//visibility:public"])
 
 toolchain_type(name = "node_runtime_type")
+
 toolchain_type(name = "node_transpile_type")
+
 toolchain_type(name = "tar_toolchain_type")
+
 toolchain_type(name = "dual_runtime_type")
+
 toolchain_type(name = "mixed_runtime_type")
+
 toolchain_type(name = "mixed_build_type")
+
 toolchain_type(name = "mixed_embedded_type")
+
 toolchain_type(name = "llvm_toolchain_type")
+
 toolchain_type(name = "root_override_type")
+
+package_metadata(
+    name = "provider_image_layer_metadata",
+    purl = "pkg:generic/provider-image-layer@1.0.0",
+)
+
+package_metadata(
+    name = "provider_override_metadata",
+    purl = "pkg:generic/provider-override@1.0.0",
+)
+
+package_metadata(
+    name = "provider_payload_metadata",
+    purl = "pkg:generic/server-binary@1.0.0",
+)
+
+filegroup(
+    name = "provider_payload",
+    applicable_licenses = [":provider_payload_metadata"],
+)
+
+image_layer(
+    name = "provider_image_layer",
+    srcs = [":provider_payload"],
+    applicable_licenses = [":provider_image_layer_metadata"],
+)
+
+provider_override_rule(
+    name = "provider_override",
+    applicable_licenses = [":provider_override_metadata"],
+    deps = [":provider_payload"],
+)
 
 [
     package_metadata(

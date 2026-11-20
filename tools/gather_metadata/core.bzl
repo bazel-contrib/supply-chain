@@ -3,6 +3,7 @@
 load("@bazel_features//:features.bzl", "bazel_features")
 load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
 load(":providers.bzl", "TargetWithMetadataInfo")
+load(":relationships.bzl", "RelationshipInfo", "relationships_for")
 load(":rule_filters.bzl", "rule_to_excluded_attributes")
 load(":toolchain_involvement.bzl", "ToolchainInvolvementInfo", "toolchain_involvement_for")
 
@@ -100,7 +101,8 @@ def _get_transitive_metadata(
         null_provider_instance = None,
         filter_func = None,
         direct_deps = None,
-        direct_dep_involvements = None):
+        direct_dep_involvements = None,
+        direct_dep_relationships = None):
     """Gather the collection provider instances of interest from our children.
 
     This is a helper to pull up the collected metadata info from children so
@@ -118,12 +120,9 @@ def _get_transitive_metadata(
         direct_deps: (output) list of direct dependency labels for edge tracking
     """
 
-    # A single dependency Target can be reachable more than once: through
-    # more than one attribute (e.g. "deps" and "embed" both naming the same
-    # library), or because a generated attribute value legitimately repeats a
-    # label. Track labels already processed so each dependency contributes
-    # exactly one edge and one slice of transitive metadata, regardless of
-    # how many attributes/positions reference it.
+    # A single dependency Target can be reachable through multiple attributes
+    # or repeated positions. Add its transitive metadata once, but preserve one
+    # edge for each distinct involvement/relationship classification.
     seen_dep_labels = {}
     seen_edges = {}
 
@@ -147,13 +146,30 @@ def _get_transitive_metadata(
                         transitive_depsets.append(info.transitive)
 
                     involvement = "build" if info.is_exec_config else "runtime"
-                    edge_key = label_key + "\0" + involvement
+
+                    # Custom aspects wrapping this one may not declare the registry.
+                    relationship = "depends_on"
+                    if hasattr(ctx.attr, "_relationships"):
+                        registry = ctx.attr._relationships[RelationshipInfo]
+                        rule_module = ""
+                        if hasattr(ctx.rule.attr, "_supply_chain_module"):
+                            rule_module = ctx.rule.attr._supply_chain_module
+                        relationship = relationships_for(
+                            registry,
+                            rule_module,
+                            ctx.rule.kind,
+                            name,
+                            attrs,
+                        )
+                    edge_key = label_key + "\0" + involvement + "\0" + relationship
                     if edge_key not in seen_edges:
                         seen_edges[edge_key] = True
                         if direct_deps != None:
                             direct_deps.append(dep.label)
                             if direct_dep_involvements != None:
                                 direct_dep_involvements.append(involvement)
+                            if direct_dep_relationships != None:
+                                direct_dep_relationships.append(relationship)
 
     # Toolchain edges are exposed to aspects only on Bazel versions supporting
     # toolchains_aspects = ["*"], and only to aspects declaring the registry
@@ -186,13 +202,16 @@ def _get_transitive_metadata(
             )
             if involvement == None:
                 involvement = "build" if info.is_exec_config else "runtime"
-            edge_key = label_key + "\0" + involvement
+            relationship = "depends_on"
+            edge_key = label_key + "\0" + involvement + "\0" + relationship
             if edge_key not in seen_edges:
                 seen_edges[edge_key] = True
                 if direct_deps != None:
                     direct_deps.append(label)
                     if direct_dep_involvements != None:
                         direct_dep_involvements.append(involvement)
+                    if direct_dep_relationships != None:
+                        direct_dep_relationships.append(relationship)
 
 def gather_metadata_info_common(
         target,
@@ -264,6 +283,7 @@ def gather_metadata_info_common(
     transitive_depsets = []
     direct_deps = []
     direct_dep_involvements = []
+    direct_dep_relationships = []
     _get_transitive_metadata(
         ctx = ctx,
         transitive_depsets = transitive_depsets,
@@ -272,6 +292,7 @@ def gather_metadata_info_common(
         filter_func = filter_func,
         direct_deps = direct_deps,
         direct_dep_involvements = direct_dep_involvements,
+        direct_dep_relationships = direct_dep_relationships,
     )
 
     # State so far:
@@ -316,6 +337,7 @@ def gather_metadata_info_common(
         metadata = depset(got_providers),
         direct_deps = tuple(direct_deps),  # Convert to tuple for immutability (required for depset)
         direct_dep_involvements = tuple(direct_dep_involvements),
+        direct_dep_relationships = tuple(direct_dep_relationships),
     )
     if not transitive_depsets:
         return [provider_factory(

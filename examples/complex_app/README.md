@@ -104,10 +104,10 @@ This was verified with `bazel mod graph`: it succeeds and shows
 (`llvm`, `rules_go`, `rules_java`, `rules_nodejs`, and `rules_python`). Bazel
 documents that MODULE-file patch changes are effective when the patch is
 provided by the root module; patches declared by a dependency would not be.
-No `archive_override` is needed. The default registry combines these
-provider-owned declarations with shipped defaults; `.bazelrc` does not set the
-optional registry override. The existing `include_build_tools` setting remains
-enabled so build-only components appear in these reports.
+No `archive_override` is needed. The involvement registry contains only
+provider/root module declarations; there are no shipped classification
+defaults or optional registry override. The existing `include_build_tools`
+setting remains enabled so build-only components appear in these reports.
 The root module also declares its own custom `openapi_generate_sources` rule's
 JDK compiler toolchain as build-involved.
 
@@ -119,6 +119,29 @@ version from `go.mod`, Node.js's selected `node_version`, rules_python's
 `python_version`, and rules_java's `RUNTIME_VERSION`. Their PURLs identify
 `llvm/llvm-project`, `golang/go`, `nodejs/node`, `python/cpython`, and OpenJDK;
 the host `local-jdk` has no metadata declaration and is not included.
+
+## Packaging relationship edges
+
+The demo applies `rules_img_relationships.patch` and
+`rules_pkg_relationships.patch` to the actual pinned module sources. Each patch
+adds a private `_supply_chain_module` marker to the rules it classifies and
+declares the relationships in that provider's `MODULE.bazel`. The marker is
+derived from `Label("//:x").repo_name` and normalized from Bazel's canonical
+repository name to the module name. In rules_pkg 1.1.0, the public `pkg_tar`
+macro creates a rule whose kind is `pkg_tar_impl`; its real `srcs` and `deps`
+attributes are both classified as contents.
+
+The image PURL is `pkg:oci/toolchain-demo@0.1.0`. Separate package metadata
+keeps its Go server and server tar as distinct components; the image contains
+both the tar and the server binary. The intermediate image-layer target has no
+package metadata, so graph normalization composes its `contains` edge into a
+direct image-to-tar edge. CycloneDX represents the image-to-tar and
+tar-to-server relationships as BOM compositions with `aggregate: "unknown"`
+and sorted `assemblies`; these edges do not appear in `dependencies` or as
+relationship properties. SPDX 2.3 emits `CONTAINS` relationships and SPDX 3.0.1
+emits `contains` relationships for the same hierarchy. The Go server remains
+directly installed at `/app/server`; the tar is also included as
+`/app/server.tar`.
 
 ## Integration test with rules_itest
 
@@ -138,16 +161,20 @@ Python and Java components with their toolchains and rules_itest itself.
 
 ## Verified SBOM components
 
-The image index and its CycloneDX, SPDX 2.3, and SPDX 3.0.1 JSON-LD reports
-were built. The OCI index contains two manifests. CycloneDX has ten
-third-party components; each SPDX report has eleven package records including
-the root, with no duplicate PURLs. Repeated PURLs are merged while distinct
+The image and OCI index and their CycloneDX, SPDX 2.3, and SPDX 3.0.1 JSON-LD
+reports were built and validated. The OCI index contains two manifests.
+CycloneDX 1.6 has 11 components for one image and 12 for the index; the SPDX
+reports have 12 and 13 package records respectively, including the root. The
+reports have no duplicate PURLs. Repeated PURLs are merged while distinct
 relationship kinds are retained. SPDX 2.3 uses `BUILD_TOOL_OF`, `DEPENDS_ON`,
 and `CONTAINS`; SPDX 3.0.1 uses lifecycle-scoped `usesTool`, `dependsOn`, and
 `contains` relations.
 
 | Component | Scope | Best involvement |
 | --- | --- | --- |
+| OCI toolchain-demo image (`pkg:oci/toolchain-demo@0.1.0`) | In scope | Runtime |
+| Go server tar | In scope | Runtime |
+| Go server | In scope | Runtime |
 | Ubuntu 24.04 base image | In scope | Runtime |
 | glibc `2.28` from LLVM's configured glibc repository | In scope | Runtime |
 | musl `1.2.6` from LLVM's configured musl repository | In scope | Embedded |
@@ -178,8 +205,8 @@ headers or linker inputs into the image.
 The demo pins the requested BCR releases: `rules_img` 0.3.26,
 `rules_java` 9.9.0, `rules_py` 2.0.0-alpha.11, `rules_python` 2.5.1,
 `rules_go` 0.65.0, `llvm` 0.8.27, `rules_nodejs` 6.7.7, and
-`aspect_rules_js` 3.6.1. These releases were confirmed present in the Bazel
-Central Registry.
+`aspect_rules_js` 3.6.1, and `rules_pkg` 1.1.0. These releases were confirmed
+present in the Bazel Central Registry.
 
 ## Toolchain versions and glibc
 
@@ -214,8 +241,9 @@ bazel build //:container_cyclonedx //:container_spdx //:container_spdx_jsonld
 ```
 
 The `.bazelrc` opts in to build-tool edges and selects the hermetic LLVM
-GNU/glibc 2.28 platform. The default registry combines module-extension tags
-with shipped defaults; no registry override flag is required. It uses
+GNU/glibc 2.28 platform. The registries contain module declarations only;
+there are no shipped classification defaults and no registry override flag is
+required. It uses
 `--experimental_platform_in_output_dir` for stable output paths. To resolve the
 module graph without building the demo, use:
 

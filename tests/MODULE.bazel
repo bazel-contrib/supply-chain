@@ -14,6 +14,7 @@ bazel_dep(name = "supply-chain-go", version = "HEAD")
 bazel_dep(name = "supply_chain_tools", version = "HEAD")
 bazel_dep(name = "supply_chain_examples", version = "HEAD")
 bazel_dep(name = "toolchain_fixtures", version = "1.0.0")
+bazel_dep(name = "relationship_fixtures", version = "1.0.0")
 
 local_path_override(
     module_name = "package_metadata",
@@ -59,6 +60,7 @@ local_path_override(
         "dual_licensed",
         "legacy_gpl",
         "toolchain_fixtures",
+        "relationship_fixtures",
     ]
 ]
 
@@ -68,52 +70,133 @@ toolchain_involvement = use_extension(
 )
 toolchain_involvement.declare(
     name = "root-override-binary",
-    toolchain_type = "@toolchain_fixtures//:root_override_type",
-    rule_kind = "root_override_binary",
     involvement = "runtime",
+    rule_kind = "root_override_binary",
+    toolchain_type = "@toolchain_fixtures//:root_override_type",
 )
 toolchain_involvement.declare(
     name = "cycle-backedge-toolchain",
-    toolchain_type = "//sbom/edge_cases:cycle_backedge_type",
-    rule_kind = "cycle_backedge_binary",
     involvement = "runtime",
+    rule_kind = "cycle_backedge_binary",
+    toolchain_type = "//sbom/edge_cases:cycle_backedge_type",
 )
-
 toolchain_involvement.declare(
     name = "py-image-layer-python",
-    toolchain_type = "@bazel_tools//tools/python:toolchain_type",
-    rule_kind = "py_image_layer",
     involvement = "embedded",
+    rule_kind = "py_image_layer",
+    toolchain_type = "@bazel_tools//tools/python:toolchain_type",
 )
 toolchain_involvement.declare(
     name = "py-image-layer-tar",
-    toolchain_type = "@toolchain_fixtures//:tar_toolchain_type",
-    rule_kind = "py_image_layer",
     involvement = "build",
+    rule_kind = "py_image_layer",
+    toolchain_type = "@toolchain_fixtures//:tar_toolchain_type",
 )
 toolchain_involvement.declare(
     name = "cc-binary-llvm",
-    toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
-    rule_kind = "cc_binary",
     involvement = "embedded",
+    rule_kind = "cc_binary",
+    toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
 )
 toolchain_involvement.declare(
     name = "cc-library-llvm",
-    toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
-    rule_kind = "cc_library",
     involvement = "embedded",
+    rule_kind = "cc_library",
+    toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
 )
 toolchain_involvement.declare(
     name = "cc-test-llvm",
-    toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
-    rule_kind = "cc_test",
     involvement = "embedded",
+    rule_kind = "cc_test",
+    toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
 )
 toolchain_involvement.declare(
     name = "openapi-java",
-    toolchain_type = "@bazel_tools//tools/jdk:toolchain_type",
-    rule_kind = "openapi_generate_sources",
     involvement = "build",
+    rule_kind = "openapi_generate_sources",
+    toolchain_type = "@bazel_tools//tools/jdk:toolchain_type",
+)
+
+relationships = use_extension(
+    "@supply_chain_tools//gather_metadata:extensions.bzl",
+    "relationships",
+)
+relationships.declare(
+    name = "unpatched-image-layer-fallback",
+    attribute = "srcs",
+    relationship = "contains",
+    rule_kind = "image_layer",
+)
+relationships.declare(
+    name = "root-image-layer-payload",
+    attribute = "srcs",
+    relationship = "static_link",
+    requires_attributes = ["root_marker"],
+    rule_kind = "image_layer",
+)
+relationships.declare(
+    name = "pkg-tar-payload",
+    attribute = "srcs",
+    relationship = "contains",
+    rule_kind = "pkg_tar_impl",
+)
+relationships.declare(
+    name = "pkg-tar-dependencies",
+    attribute = "deps",
+    relationship = "contains",
+    rule_kind = "pkg_tar_impl",
+)
+relationships.declare(
+    name = "provider-override-root",
+    attribute = "deps",
+    relationship = "static_link",
+    requires_attributes = ["provider_marker"],
+    rule_kind = "provider_override_rule",
+    rule_module = "toolchain_fixtures",
+)
+relationships.declare(
+    name = "root-layers",
+    attribute = "layers",
+    relationship = "contains",
+    rule_kind = "relationship_root",
+)
+relationships.declare(
+    name = "root-static-links",
+    attribute = "static_deps",
+    relationship = "static_link",
+    rule_kind = "relationship_root",
+)
+relationships.declare(
+    name = "root-dynamic-links",
+    attribute = "dynamic_deps",
+    relationship = "dynamic_link",
+    rule_kind = "relationship_root",
+)
+relationships.declare(
+    name = "root-test-dependencies",
+    attribute = "test_deps",
+    relationship = "test_dependency",
+    rule_kind = "relationship_root",
+)
+relationships.declare(
+    name = "root-dev-dependencies",
+    attribute = "dev_deps",
+    relationship = "dev_dependency",
+    rule_kind = "relationship_root",
+)
+relationships.declare(
+    name = "ambiguous-left",
+    attribute = "deps",
+    relationship = "contains",
+    requires_attributes = ["ambiguity_left"],
+    rule_kind = "ambiguous_fixture",
+)
+relationships.declare(
+    name = "ambiguous-right",
+    attribute = "deps",
+    relationship = "static_link",
+    requires_attributes = ["ambiguity_right"],
+    rule_kind = "ambiguous_fixture",
 )
 
 register_toolchains(
