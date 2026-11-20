@@ -22,6 +22,83 @@ bazel_dep(
 bazel_dep(name = "llvm", version = "0.8.27")
 bazel_dep(name = "platforms", version = "1.1.0")
 
+toolchain_involvement = use_extension(
+    "@supply_chain_tools//gather_metadata:extensions.bzl",
+    "toolchain_involvement",
+)
+toolchain_involvement.declare(
+    name = "demo-openapi-codegen",
+    involvement = "build",
+    rule_kind = "openapi_generate_sources",
+    toolchain_type = "@bazel_tools//tools/jdk:toolchain_type",
+)
+
+java_toolchains = use_extension(
+    "@rules_java//java:extensions.bzl",
+    "toolchains",
+)
+use_repo(
+    java_toolchains,
+    "remotejdk21_macos_aarch64",
+    "remotejdk25_linux",
+)
+
+single_version_override(
+    module_name = "llvm",
+    patch_strip = 1,
+    patches = [
+        "//third_party/patches:llvm_cc_toolchain_metadata.patch",
+        "//third_party/patches:llvm_cc_runtime_metadata.patch",
+        "//third_party/patches:llvm_glibc_build_metadata.patch",
+        "//third_party/patches:llvm_glibc_extension_metadata.patch",
+        "//third_party/patches:llvm_musl_metadata.patch",
+        "//third_party/patches:llvm_toolchain_involvement.patch",
+    ],
+    version = "0.8.27",
+)
+
+single_version_override(
+    module_name = "rules_go",
+    patch_strip = 1,
+    patches = [
+        "//third_party/patches:rules_go_sdk_metadata.patch",
+        "//third_party/patches:rules_go_bootstrap_sdk_metadata.patch",
+        "//third_party/patches:rules_go_toolchain_involvement.patch",
+    ],
+    version = "0.65.0",
+)
+
+single_version_override(
+    module_name = "rules_java",
+    patch_strip = 1,
+    patches = [
+        "//third_party/patches:rules_java_jdk_build_metadata.patch",
+        "//third_party/patches:rules_java_bootclasspath_visibility.patch",
+        "//third_party/patches:rules_java_toolchain_involvement.patch",
+    ],
+    version = "9.9.0",
+)
+
+single_version_override(
+    module_name = "rules_nodejs",
+    patch_strip = 1,
+    patches = [
+        "//third_party/patches:rules_nodejs_metadata.patch",
+        "//third_party/patches:rules_nodejs_toolchain_involvement.patch",
+    ],
+    version = "6.7.7",
+)
+
+single_version_override(
+    module_name = "rules_python",
+    patch_strip = 1,
+    patches = [
+        "//third_party/patches:rules_python_metadata.patch",
+        "//third_party/patches:rules_python_toolchain_involvement.patch",
+    ],
+    version = "2.5.1",
+)
+
 local_path_override(
     module_name = "package_metadata",
     path = "../../metadata",
@@ -39,19 +116,11 @@ local_path_override(
 
 register_toolchains("@llvm//toolchain:all")
 
-java_toolchains = use_extension(
-    "@rules_java//java:extensions.bzl",
-    "toolchains",
-)
-use_repo(
-    java_toolchains,
-    "remotejdk21_macos_aarch64",
-    "remotejdk25_linux",
-)
-
 register_toolchains(
-    "//java:runtime_jdk21_macos",
-    "//java:runtime_jdk25_linux",
+    "//java:demo_jdk21_compile_toolchain_registration",
+    "//java:demo_jdk21_runtime_toolchain",
+    "//java:demo_jdk21_bootstrap_runtime_toolchain",
+    "//java:demo_jdk25_runtime_toolchain",
 )
 
 go_sdk = use_extension(

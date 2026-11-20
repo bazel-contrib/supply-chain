@@ -1,0 +1,10 @@
+--- a/runtimes/glibc/extension/glibc.bzl
++++ b/runtimes/glibc/extension/glibc.bzl
+@@ -134,4 +134,6 @@
+             strip_prefix = _glibc_release_strip_prefix(version),
+             sha256 = GLIBC_RELEASE_INTEGRITY[version],
+-            build_file = "//3rd_party/libc/glibc:glibc.BUILD.bazel",
++            build_file_content = module_ctx.read(
++                module_ctx.path(Label("//3rd_party/libc/glibc:glibc.BUILD.bazel")),
++            ).replace("GLIBC_VERSION_PLACEHOLDER", version),
+             patches = [

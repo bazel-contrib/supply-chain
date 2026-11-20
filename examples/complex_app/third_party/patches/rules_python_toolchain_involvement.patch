@@ -1,0 +1,23 @@
+--- a/MODULE.bazel
++++ b/MODULE.bazel
+@@ -12,1 +12,20 @@
+ bazel_dep(name = "toml.bzl", version = "0.4.1")
++
++bazel_dep(name = "supply_chain_tools", version = "0.0.1")
++
++toolchain_involvement = use_extension(
++    "@supply_chain_tools//gather_metadata:extensions.bzl",
++    "toolchain_involvement",
++)
++toolchain_involvement.declare(
++    name = "rules-python-image",
++    toolchain_type = "@bazel_tools//tools/python:toolchain_type",
++    rule_kind = "py_image_layer",
++    involvement = "embedded",
++)
++toolchain_involvement.declare(
++    name = "demo-python-closure",
++    toolchain_type = "@bazel_tools//tools/python:toolchain_type",
++    rule_kind = "_py_venv_lib",
++    involvement = "embedded",
++)

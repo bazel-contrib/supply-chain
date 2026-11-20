@@ -1,0 +1,26 @@
+--- a/toolchain/BUILD.bazel
++++ b/toolchain/BUILD.bazel
+@@ -7,4 +7,22 @@
+ load(":bootstrap_stages.bzl", "BOOTSTRAP_STAGES")
+ load(":declare_toolchains.bzl", "declare_toolchains")
+ 
+-package(default_visibility = ["//toolchain:__subpackages__"])
++load("@@package_metadata+//licenses/rules:license.bzl", "license")
++load("@@package_metadata+//rules:package_metadata.bzl", "package_metadata")
++load("@llvm_version//:version.bzl", "LLVM_VERSION")
++
++license(
++    name = "llvm_license",
++    expression = "Apache-2.0 WITH LLVM-exception",
++)
++
++package_metadata(
++    name = "llvm_metadata",
++    attributes = [":llvm_license"],
++    purl = "pkg:github/llvm/llvm-project@" + LLVM_VERSION,
++)
++
++package(
++    default_package_metadata = [":llvm_metadata"],
++    default_visibility = ["//toolchain:__subpackages__"],
++)

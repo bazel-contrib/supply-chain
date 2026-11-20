@@ -1,0 +1,22 @@
+--- a/MODULE.bazel
++++ b/MODULE.bazel
+@@ -7,1 +7,19 @@
+ bazel_dep(name = "bazel_lib", version = "3.2.2")
++
++bazel_dep(name = "supply_chain_tools", version = "0.0.1")
++
++toolchain_involvement = use_extension(
++    "@supply_chain_tools//gather_metadata:extensions.bzl",
++    "toolchain_involvement",
++)
++toolchain_involvement.declare(
++    name = "llvm-cc-toolchain-build",
++    toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
++    involvement = "build",
++)
++toolchain_involvement.declare(
++    name = "llvm-cgo",
++    toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
++    rule_kind = "go_binary",
++    involvement = "embedded",
++)
