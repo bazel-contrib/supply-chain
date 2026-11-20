@@ -2,6 +2,8 @@ package main
 
 import (
 	"bytes"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -22,6 +24,8 @@ func GenerateDocument301(graph sbom.GraphConfig, classifications sbom.Classifica
 	var packages []*spdx.Package
 	licenseOf := make(map[*spdx.Package]*supplychain.LicenseAttribute)
 	patchesOf := make(map[*spdx.Package][]*supplychain.PatchAttribute)
+	supplierOf := make(map[*spdx.Package]*supplychain.PackageAgent)
+	originatorOf := make(map[*spdx.Package]*supplychain.PackageAgent)
 
 	// Identify the document as a whole (name/namespace, below) by its
 	// subject: preferably the root component; failing that (e.g.
@@ -107,6 +111,20 @@ func GenerateDocument301(graph sbom.GraphConfig, classifications sbom.Classifica
 			return fmt.Errorf("error reading patches of %s: %w", node.Label, err)
 		}
 		patchesOf[pkg] = patches
+		supplierAttribute, err := supplychain.GetSupplierAttribute(pkgMetadata)
+		if err != nil {
+			return fmt.Errorf("error reading supplier of %s: %w", node.Label, err)
+		}
+		if supplierAttribute != nil {
+			supplierOf[pkg] = supplierAttribute
+		}
+		originatorAttribute, err := supplychain.GetOriginatorAttribute(pkgMetadata)
+		if err != nil {
+			return fmt.Errorf("error reading originator of %s: %w", node.Label, err)
+		}
+		if originatorAttribute != nil {
+			originatorOf[pkg] = originatorAttribute
+		}
 		packages = append(packages, pkg)
 		labelToPackage[node.Label] = pkg
 		return nil
@@ -207,12 +225,93 @@ func GenerateDocument301(graph sbom.GraphConfig, classifications sbom.Classifica
 	for _, patch := range patches {
 		sbomElement.Elements = append(sbomElement.Elements, patch)
 	}
+
+	agents := newPackageAgentCollector(doc.CreationInfo)
+	for _, pkg := range packages {
+		if agent, ok := supplierOf[pkg]; ok {
+			pkg.SuppliedBy = agents.get(agent)
+		}
+		if agent, ok := originatorOf[pkg]; ok {
+			// An explicit originator takes precedence over the organization
+			// inferred from the purl, which is only a fallback.
+			pkg.OriginatedBy = spdx.AgentList{agents.get(agent)}
+		}
+	}
+	for _, agent := range agents.elements {
+		sbomElement.Elements = append(sbomElement.Elements, agent)
+	}
 	for _, relationship := range relationships {
 		sbomElement.Elements = append(sbomElement.Elements, relationship)
 	}
+
 	doc.RootElements = spdx.ElementList{sbomElement}
 
 	return doc, nil
+}
+
+type packageAgentKey struct {
+	name, kind, url, email string
+}
+
+type packageAgentCollector struct {
+	creationInfo spdx.AnyCreationInfo
+	elements     []spdx.AnyElement
+	byKey        map[packageAgentKey]spdx.AnyAgent
+}
+
+func newPackageAgentCollector(creationInfo spdx.AnyCreationInfo) *packageAgentCollector {
+	return &packageAgentCollector{
+		creationInfo: creationInfo,
+		byKey:        make(map[packageAgentKey]spdx.AnyAgent),
+	}
+}
+
+func (c *packageAgentCollector) get(agent *supplychain.PackageAgent) spdx.AnyAgent {
+	key := packageAgentKey{name: agent.Name, kind: string(agent.Type), url: agent.URL, email: agent.Email}
+	if existing, ok := c.byKey[key]; ok {
+		return existing
+	}
+	hash := sha256.Sum256([]byte(fmt.Sprintf("%s\x00%s\x00%s\x00%s", key.kind, key.name, key.url, key.email)))
+	id := "agent-" + hex.EncodeToString(hash[:])
+	var result spdx.AnyAgent
+	if agent.Type == supplychain.PackageAgentTypePerson {
+		person := &spdx.Person{ID: id, Name: agent.Name, CreationInfo: c.creationInfo}
+		if agent.Email != "" {
+			person.ExternalIdentifiers = spdx.ExternalIdentifierList{&spdx.ExternalIdentifier{
+				ID:         id + "-email",
+				Identifier: agent.Email,
+				Type:       spdx.ExternalIdentifierType_Email,
+			}}
+		}
+		if agent.URL != "" {
+			person.ExternalRefs = spdx.ExternalRefList{&spdx.ExternalRef{
+				ID:       id + "-url",
+				Locators: []string{agent.URL},
+				Type:     spdx.ExternalRefType_AltWebPage,
+			}}
+		}
+		result = person
+	} else {
+		organization := &spdx.Organization{ID: id, Name: agent.Name, CreationInfo: c.creationInfo}
+		if agent.Email != "" {
+			organization.ExternalIdentifiers = spdx.ExternalIdentifierList{&spdx.ExternalIdentifier{
+				ID:         id + "-email",
+				Identifier: agent.Email,
+				Type:       spdx.ExternalIdentifierType_Email,
+			}}
+		}
+		if agent.URL != "" {
+			organization.ExternalRefs = spdx.ExternalRefList{&spdx.ExternalRef{
+				ID:       id + "-url",
+				Locators: []string{agent.URL},
+				Type:     spdx.ExternalRefType_AltWebPage,
+			}}
+		}
+		result = organization
+	}
+	c.byKey[key] = result
+	c.elements = append(c.elements, result)
+	return result
 }
 
 // writeDocument writes the document as canonical JSON-LD. tools-golang orders

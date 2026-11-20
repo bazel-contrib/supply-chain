@@ -1,14 +1,17 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 
 	"github.com/bazel-contrib/supply-chain/lib/supplychain-go/internal/sbom"
+	spdx2 "github.com/spdx/tools-golang/spdx"
 )
 
 func writePackageMetadata(t *testing.T, dir, name, label, purl string) string {
@@ -64,10 +67,14 @@ func TestGenerateDocument23_RequiredFieldsPopulated(t *testing.T) {
 	if len(doc.CreationInfo.Creators) == 0 {
 		t.Error("CreationInfo.Creators is empty, want at least one Tool creator")
 	}
+	if doc.Packages[0].PackageSupplier != nil || doc.Packages[0].PackageOriginator != nil {
+		t.Fatal("package without agent metadata unexpectedly has supplier or originator")
+	}
 	wantCreated := "2023-11-14T22:13:20Z"
 	if doc.CreationInfo.Created != wantCreated {
 		t.Errorf("CreationInfo.Created = %q, want %q", doc.CreationInfo.Created, wantCreated)
 	}
+
 	wantVersions := map[string]string{"app": "1.0.0", "dep": "v1.2.3"}
 	for _, pkg := range doc.Packages {
 		if pkg.PackageVersion != wantVersions[pkg.PackageName] {
@@ -240,4 +247,80 @@ func TestGenerateDocument23_RetainsPackageEdges(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestGenerateDocument23_MapsSupplierAndOriginator(t *testing.T) {
+	dir := t.TempDir()
+	metadata := writeAgentMetadata(t, dir, map[string]string{
+		"build.bazel.attribute.supplier":   `{"name":"ACME Corp","type":"organization","url":"https://acme.example","email":"oss@acme.example"}`,
+		"build.bazel.attribute.originator": `{"name":"A. Creator","type":"person","email":"creator@example"}`,
+	})
+	doc := generateAgentDocument23(t, metadata)
+	pkg := doc.Packages[0]
+	if got, want := pkg.PackageSupplier.Supplier, "ACME Corp (oss@acme.example)"; got != want {
+		t.Fatalf("PackageSupplier = %q, want %q", got, want)
+	}
+	if pkg.PackageSupplier.SupplierType != "Organization" {
+		t.Fatalf("PackageSupplier.SupplierType = %q", pkg.PackageSupplier.SupplierType)
+	}
+	if got, want := pkg.PackageOriginator.Originator, "A. Creator (creator@example)"; got != want {
+		t.Fatalf("PackageOriginator = %q, want %q", got, want)
+	}
+	if pkg.PackageOriginator.OriginatorType != "Person" {
+		t.Fatalf("PackageOriginator.OriginatorType = %q", pkg.PackageOriginator.OriginatorType)
+	}
+}
+
+func TestGenerateDocument23_MapsPersonSupplier(t *testing.T) {
+	dir := t.TempDir()
+	metadata := writeAgentMetadata(t, dir, map[string]string{
+		"build.bazel.attribute.supplier": `{"name":"A. Supplier","type":"person","email":"supplier@example"}`,
+	})
+	pkg := generateAgentDocument23(t, metadata).Packages[0]
+	if pkg.PackageSupplier.Supplier != "A. Supplier (supplier@example)" || pkg.PackageSupplier.SupplierType != "Person" {
+		t.Fatalf("PackageSupplier = %#v", pkg.PackageSupplier)
+	}
+	if pkg.PackageOriginator != nil {
+		t.Fatalf("PackageOriginator = %#v, want nil", pkg.PackageOriginator)
+	}
+}
+
+func generateAgentDocument23(t *testing.T, metadata string) *spdx2.Document {
+	t.Helper()
+	doc, err := GenerateDocument23(
+		sbom.GraphConfig{},
+		sbom.Classifications{Dependencies: sbom.DependencyNodes{
+			Direct: []sbom.NodeConfig{{Label: "//lib:dep", MetadataFile: metadata}},
+		}},
+		time.Unix(0, 0).UTC(),
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return doc
+}
+
+func writeAgentMetadata(t *testing.T, dir string, agents map[string]string) string {
+	t.Helper()
+	attributes := make(map[string]string, len(agents))
+	for kind, content := range agents {
+		path := filepath.Join(dir, strings.TrimPrefix(kind, "build.bazel.attribute.")+".json")
+		if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+			t.Fatal(err)
+		}
+		attributes[kind] = path
+	}
+	data, err := json.Marshal(map[string]any{
+		"label":      "//lib:dep",
+		"purl":       "pkg:generic/dep@1.0",
+		"attributes": attributes,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(dir, "metadata.json")
+	if err := os.WriteFile(path, data, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	return path
 }
