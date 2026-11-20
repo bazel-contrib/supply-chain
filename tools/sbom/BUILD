@@ -48,6 +48,15 @@ bool_flag(
     build_setting_default = False,
 )
 
+# Disabled by default: prints a warning listing the components that do not
+# declare a `component_type` attribute when generating a CycloneDX report. The
+# list can be very long, so it is opt-in:
+#   bazel build //some:target --//sbom:verbose_component_types
+bool_flag(
+    name = "verbose_component_types",
+    build_setting_default = False,
+)
+
 toolchain_type(name = "cyclonedx_validator_toolchain_type")
 
 toolchain_type(name = "spdx_validator_toolchain_type")

@@ -19,6 +19,7 @@ import (
 func main() {
 	var outPath, graphPath, classificationsPath, format, buildStatusPath, serialNumberPath, validatorPath string
 	var embedPatchFiles bool
+	var verboseComponentTypes bool
 	flag.StringVar(&outPath, "out", "", "The path to write the generated CycloneDX SBOM.")
 	flag.StringVar(&graphPath, "graph", "", "The path to the graph JSON file.")
 	flag.StringVar(&classificationsPath, "classifications", "", "The path to the classifications JSON file.")
@@ -27,6 +28,7 @@ func main() {
 	flag.StringVar(&serialNumberPath, "serial_number_file", "", "Optional path to a file holding the BOM serialNumber, in urn:uuid form. It should be unique to each generated BOM. If unset, the BOM has no serialNumber.")
 	flag.StringVar(&validatorPath, "validator", "", "Optional runfiles path or executable path to the CycloneDX CLI validator.")
 	flag.BoolVar(&embedPatchFiles, "embed_patch_files", true, "Embed the content of the patch files in the pedigree of the packages they patch. Disable it to keep local patches out of the report.")
+	flag.BoolVar(&verboseComponentTypes, "verbose_component_types", false, "Warn about the components that do not declare a component_type attribute.")
 	flag.Parse()
 
 	if outPath == "" {
@@ -72,7 +74,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error generating BOM: %v\n", err)
 		os.Exit(1)
 	}
-	if len(untyped) > 0 {
+	if verboseComponentTypes && len(untyped) > 0 {
 		fmt.Fprintf(os.Stderr, "WARNING: %d component(s) do not declare a component_type and are reported as %q because CycloneDX requires a type: %s\n"+
 			"Declare one with the component_type attribute of @package_metadata//attributes:component_type.bzl, or build with --//sbom:strict_component_types to fail instead.\n",
 			len(untyped), cdx.ComponentTypeLibrary, strings.Join(untyped, ", "))
