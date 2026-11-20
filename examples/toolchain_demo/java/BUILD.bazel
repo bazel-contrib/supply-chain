@@ -1,0 +1,75 @@
+load("@rules_java//java:defs.bzl", "java_binary")
+load("@rules_java//toolchains:bootclasspath.bzl", "bootclasspath")
+load(
+    "@rules_java//toolchains:default_java_toolchain.bzl",
+    "DEFAULT_TOOLCHAIN_CONFIGURATION",
+    "default_java_toolchain",
+)
+
+package(default_visibility = ["//visibility:public"])
+
+default_java_toolchain(
+    name = "demo_jdk21_compile_toolchain",
+    configuration = dict(
+        DEFAULT_TOOLCHAIN_CONFIGURATION,
+        bootclasspath = [":demo_jdk21_platformclasspath"],
+        java_runtime = "@remotejdk21_macos_aarch64//:jdk",
+    ),
+    source_version = "21",
+    target_version = "21",
+)
+
+bootclasspath(
+    name = "demo_jdk21_platformclasspath",
+    java_runtime_alias = "@remotejdk21_macos_aarch64//:jdk",
+    language_version_bootstrap_runtime = "@remotejdk21_macos_aarch64//:jdk",
+    src = "@rules_java//toolchains:DumpPlatformClassPath.java",
+)
+
+toolchain(
+    name = "demo_jdk21_compile_toolchain_registration",
+    toolchain = ":demo_jdk21_compile_toolchain",
+    toolchain_type = "@bazel_tools//tools/jdk:toolchain_type",
+)
+
+toolchain(
+    name = "demo_jdk21_runtime_toolchain",
+    toolchain = "@remotejdk21_macos_aarch64//:jdk",
+    toolchain_type = "@bazel_tools//tools/jdk:runtime_toolchain_type",
+    target_compatible_with = [
+        "@platforms//cpu:arm64",
+        "@platforms//os:macos",
+    ],
+)
+
+toolchain(
+    name = "demo_jdk21_bootstrap_runtime_toolchain",
+    toolchain = "@remotejdk21_macos_aarch64//:jdk",
+    toolchain_type = "@bazel_tools//tools/jdk:bootstrap_runtime_toolchain_type",
+    exec_compatible_with = [
+        "@platforms//cpu:arm64",
+        "@platforms//os:macos",
+    ],
+)
+
+toolchain(
+    name = "demo_jdk25_runtime_toolchain",
+    toolchain = "@remotejdk25_linux//:jdk",
+    toolchain_type = "@bazel_tools//tools/jdk:runtime_toolchain_type",
+    target_compatible_with = [
+        "@platforms//cpu:x86_64",
+        "@platforms//os:linux",
+    ],
+)
+
+java_binary(
+    name = "openapi_codegen_tool",
+    srcs = ["codegen/OpenApiGenerator.java"],
+    main_class = "demo.codegen.OpenApiGenerator",
+)
+
+java_binary(
+    name = "runtime_java",
+    srcs = ["runtime/JavaGreeter.java"],
+    main_class = "demo.runtime.JavaGreeter",
+)

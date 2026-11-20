@@ -1,0 +1,124 @@
+module(
+    name = "toolchain_fixtures",
+    version = "1.0.0",
+)
+
+bazel_dep(name = "package_metadata", version = "0.0.5")
+bazel_dep(name = "supply_chain_tools", version = "HEAD")
+
+toolchain_involvement = use_extension(
+    "@supply_chain_tools//gather_metadata:extensions.bzl",
+    "toolchain_involvement",
+)
+
+toolchain_involvement.declare(
+    name = "java-compiler",
+    toolchain_type = "@bazel_tools//tools/jdk:toolchain_type",
+    rule_kind = "java_binary",
+    involvement = "build",
+)
+
+toolchain_involvement.declare(
+    name = "java-runtime",
+    toolchain_type = "@bazel_tools//tools/jdk:runtime_toolchain_type",
+    rule_kind = "java_binary",
+    involvement = "runtime",
+)
+
+toolchain_involvement.declare(
+    name = "python-runtime",
+    toolchain_type = "@bazel_tools//tools/python:toolchain_type",
+    rule_kind = "py_binary",
+    involvement = "runtime",
+)
+
+toolchain_involvement.declare(
+    name = "node-runtime",
+    toolchain_type = "//:node_runtime_type",
+    rule_kind = "js_binary",
+    involvement = "runtime",
+)
+
+toolchain_involvement.declare(
+    name = "node-transpiler",
+    toolchain_type = "//:node_transpile_type",
+    rule_kind = "js_binary",
+    involvement = "build",
+)
+
+toolchain_involvement.declare(
+    name = "root-override-provider",
+    toolchain_type = "//:root_override_type",
+    rule_kind = "root_override_binary",
+    involvement = "build",
+)
+
+toolchain_involvement.declare(
+    name = "llvm-cc",
+    toolchain_type = "//:llvm_toolchain_type",
+    rule_kind = "cc_binary",
+    involvement = "embedded",
+)
+
+toolchain_involvement.declare(
+    name = "python-image",
+    toolchain_type = "@bazel_tools//tools/python:toolchain_type",
+    rule_kind = "py_image_layer",
+    involvement = "embedded",
+)
+
+toolchain_involvement.declare(
+    name = "image-tar",
+    toolchain_type = "//:tar_toolchain_type",
+    rule_kind = "py_image_layer",
+    involvement = "build",
+)
+
+toolchain_involvement.declare(
+    name = "dual-jdk",
+    toolchain_type = "@bazel_tools//tools/jdk:toolchain_type",
+    rule_kind = "dual_use_image",
+    involvement = "build",
+)
+
+toolchain_involvement.declare(
+    name = "dual-runtime",
+    toolchain_type = "//:dual_runtime_type",
+    rule_kind = "dual_use_image",
+    involvement = "runtime",
+)
+
+toolchain_involvement.declare(
+    name = "shared-build-path",
+    toolchain_type = "//:mixed_build_type",
+    rule_kind = "mixed_path_binary",
+    involvement = "build",
+)
+
+toolchain_involvement.declare(
+    name = "shared-runtime-path",
+    toolchain_type = "//:mixed_runtime_type",
+    rule_kind = "mixed_path_binary",
+    involvement = "runtime",
+)
+
+toolchain_involvement.declare(
+    name = "shared-embedded-path",
+    toolchain_type = "//:mixed_embedded_type",
+    rule_kind = "mixed_involvement_binary",
+    involvement = "embedded",
+)
+
+toolchain_involvement.declare(
+    name = "shared-build-involvement",
+    toolchain_type = "//:mixed_build_type",
+    rule_kind = "mixed_involvement_binary",
+    involvement = "build",
+)
+
+toolchain_involvement.declare(
+    name = "openapi-java",
+    toolchain_type = "@bazel_tools//tools/jdk:toolchain_type",
+    rule_kind = "openapi_generate_sources",
+    involvement = "build",
+)

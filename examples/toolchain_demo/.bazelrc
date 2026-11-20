@@ -1,0 +1,10 @@
+common --@supply_chain_tools//sbom:include_build_tools
+
+build --platforms=//:linux_x86_64
+build --experimental_platform_in_output_dir
+
+# Never fall back to the host C/C++ toolchain: only the hermetic LLVM one
+# registered in MODULE.bazel may be used.
+common --repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
+build --incompatible_strict_action_env
+build --action_env=CGO_ENABLED=1

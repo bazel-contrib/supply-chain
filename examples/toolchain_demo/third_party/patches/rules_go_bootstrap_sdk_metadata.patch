@@ -1,0 +1,25 @@
+--- a/go/private/experimental/BUILD.bootstrap.sdk.bazel
++++ b/go/private/experimental/BUILD.bootstrap.sdk.bazel
+@@ -1,4 +1,21 @@
+ load("@io_bazel_rules_go//go/private:experimental/bootstrap_rules.bzl", "experimental_bootstrap_go_sdk")
+ load("@io_bazel_rules_go//go/private:sdk_build_defs.bzl", "STDLIB_SRCS_EXCLUDE", "define_sdk_repository_targets")
+
+-package(default_visibility = ["//visibility:public"])
++load("@@package_metadata+//licenses/rules:license.bzl", "license")
++load("@@package_metadata+//rules:package_metadata.bzl", "package_metadata")
++
++license(
++    name = "go_license",
++    kind = "@@package_metadata+//licenses/spdx:BSD-3-Clause",
++)
++
++package_metadata(
++    name = "go_metadata",
++    attributes = [":go_license"],
++    purl = "pkg:golang/go@{version}",
++)
++
++package(
++    default_package_metadata = [":go_metadata"],
++    default_visibility = ["//visibility:public"],
++)

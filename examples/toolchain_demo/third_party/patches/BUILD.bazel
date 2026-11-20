@@ -1,0 +1,18 @@
+exports_files([
+    "llvm_cc_toolchain_metadata.patch",
+    "llvm_cc_runtime_metadata.patch",
+    "llvm_glibc_build_metadata.patch",
+    "llvm_glibc_extension_metadata.patch",
+    "llvm_musl_metadata.patch",
+    "llvm_toolchain_involvement.patch",
+    "rules_go_bootstrap_sdk_metadata.patch",
+    "rules_go_sdk_metadata.patch",
+    "rules_go_toolchain_involvement.patch",
+    "rules_java_toolchain_involvement.patch",
+    "rules_java_jdk_build_metadata.patch",
+    "rules_java_bootclasspath_visibility.patch",
+    "rules_nodejs_toolchain_involvement.patch",
+    "rules_nodejs_metadata.patch",
+    "rules_python_toolchain_involvement.patch",
+    "rules_python_metadata.patch",
+])

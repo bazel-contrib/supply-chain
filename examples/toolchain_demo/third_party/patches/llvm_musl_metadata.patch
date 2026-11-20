@@ -1,0 +1,46 @@
+--- a/runtimes/musl/extension/musl.bzl
++++ b/runtimes/musl/extension/musl.bzl
+@@ -4,13 +4,39 @@
+ def _musl_extension_impl(module_ctx):
+     """Implementation of the musl module extension."""
+ 
++    musl_version = "1.2.6"
++
+     http_archive(
+         name = "musl_libc",
+-        # When bumping musl, also update version_h in 3rd_party/libc/musl/musl.BUILD.bazel.
+-        urls = ["https://musl.libc.org/releases/musl-1.2.6.tar.gz"],
+-        strip_prefix = "musl-1.2.6",
++        urls = ["https://musl.libc.org/releases/musl-%s.tar.gz" % musl_version],
++        strip_prefix = "musl-%s" % musl_version,
+         integrity = "sha256-1YX9O2E8ZhUfwySejtRPdwIMtebB5jWmFtP5+CRgUSo=",
+-        build_file = "//3rd_party/libc/musl:musl.BUILD.bazel",
++        build_file_content = module_ctx.read(
++            module_ctx.path(Label("//3rd_party/libc/musl:musl.BUILD.bazel")),
++        ).replace("1.2.6", musl_version).replace(
++            'load("@rules_cc//cc:cc_library.bzl", "cc_library")',
++            """load("@rules_cc//cc:cc_library.bzl", "cc_library")
++load("@@package_metadata+//licenses/rules:license.bzl", "license")
++load("@@package_metadata+//rules:package_metadata.bzl", "package_metadata")""",
++        ).replace(
++            "MUSL_SUPPORTED_ARCHS = [",
++            """license(
++    name = "musl_license",
++    kind = "@@package_metadata+//licenses/spdx:MIT",
++)
++
++package_metadata(
++    name = "musl_metadata",
++    attributes = [":musl_license"],
++    purl = "pkg:generic/musl@MUSL_VERSION_PLACEHOLDER",
++)
++
++package(
++    default_package_metadata = [":musl_metadata"],
++)
++
++MUSL_SUPPORTED_ARCHS = [""".replace("MUSL_VERSION_PLACEHOLDER", musl_version),
++        ),
+     )
+ 
+     metadata_kwargs = {}

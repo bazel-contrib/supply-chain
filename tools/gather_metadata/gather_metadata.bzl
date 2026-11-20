@@ -1,5 +1,6 @@
 """Rules and macros for collecting metadata providers."""
 
+load("@bazel_features//:features.bzl", "bazel_features")
 load(
     "@package_metadata//:defs.bzl",
     "PackageAttributeInfo",
@@ -21,6 +22,17 @@ load(
     "write_metadata_info",
 )
 
+_gather_metadata_attrs = {
+    "_include_build_tools": attr.label(
+        default = "//sbom:include_build_tools",
+        doc = "Whether to retain and classify exec-configuration dependencies.",
+    ),
+    "_toolchain_involvements": attr.label(
+        default = "@supply_chain_toolchain_involvements//:toolchain_involvements",
+        doc = "Toolchain involvement registry generated from module declarations.",
+    ),
+}
+
 def _gather_metadata_info_impl(target, ctx):
     return gather_metadata_info_common(
         target,
@@ -32,13 +44,20 @@ def _gather_metadata_info_impl(target, ctx):
         enable_intermediate_pruning = False,
     )
 
-gather_metadata_info = aspect(
-    doc = """Collects metadata providers into a single TransitiveMetadataInfo provider.""",
-    implementation = _gather_metadata_info_impl,
-    attr_aspects = ["*"],
-    provides = [TransitiveMetadataInfo],
-    apply_to_generating_rules = True,
-)
+def _create_gather_metadata_info_aspect():
+    args = {
+        "doc": "Collects metadata providers into a single TransitiveMetadataInfo provider.",
+        "implementation": _gather_metadata_info_impl,
+        "attr_aspects": ["*"],
+        "attrs": _gather_metadata_attrs,
+        "provides": [TransitiveMetadataInfo],
+        "apply_to_generating_rules": True,
+    }
+    if bazel_features.rules.supports_toolchains_aspects_star:
+        args["toolchains_aspects"] = ["*"]
+    return aspect(**args)
+
+gather_metadata_info = _create_gather_metadata_info_aspect()
 
 def _write_metadata_info_impl(target, ctx):
     """Write transitive metadata info into a JSON file.
@@ -90,10 +109,14 @@ gather_metadata_info_and_write = aspect(
           {
             "from": "//some:target",
             "to": "//dep:target",
-            "type": "depends_on"
+            "type": "depends_on",
+            "involvement": "build"
           }
         ]
       }
+
+    The optional edge "involvement" is "build" or "embedded". Runtime edges
+    omit the field to preserve the original graph format.
     """,
     implementation = _write_metadata_info_impl,
     attr_aspects = ["*"],

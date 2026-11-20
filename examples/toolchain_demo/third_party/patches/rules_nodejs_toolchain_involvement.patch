@@ -1,0 +1,16 @@
+--- a/MODULE.bazel
++++ b/MODULE.bazel
+@@ -14,1 +14,13 @@
+ bazel_dep(name = "rules_cc", version = "0.2.16")  # to expose headers
++
++bazel_dep(name = "supply_chain_tools", version = "0.0.1")
++
++toolchain_involvement = use_extension(
++    "@supply_chain_tools//gather_metadata:extensions.bzl",
++    "toolchain_involvement",
++)
++toolchain_involvement.declare(
++    name = "rules-nodejs-host-tool",
++    toolchain_type = "@rules_nodejs//nodejs:toolchain_type",
++    involvement = "build",
++)

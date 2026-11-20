@@ -1,0 +1,225 @@
+load("@aspect_rules_js//js:defs.bzl", "js_binary", "js_image_layer", "js_run_binary")
+load("@io_bazel_rules_go//go:def.bzl", "go_binary")
+load("@package_metadata//licenses/rules:license.bzl", "license")
+load("@package_metadata//purl:purl.bzl", "purl")
+load("@package_metadata//rules:package_metadata.bzl", "package_metadata")
+load("@rules_img//img:image.bzl", "image_index", "image_manifest")
+load("@rules_img//img:layer.bzl", "image_layer")
+load("@rules_img_images.bzl", "image")
+load("@rules_py//py:defs.bzl", "py_binary", "py_image_layer")
+load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
+load("@supply_chain_tools//sbom:cyclonedx.bzl", "cyclonedx")
+load("@supply_chain_tools//sbom:sbom.bzl", "sbom")
+load("@supply_chain_tools//sbom:spdx.bzl", "spdx")
+load(":openapi_codegen.bzl", "openapi_generate_sources")
+load("//libc_variants:variants.bzl", "libc_variant")
+
+package(
+    default_package_metadata = [":package_metadata"],
+    default_visibility = ["//visibility:public"],
+)
+
+string_flag(
+    name = "libc",
+    build_setting_default = "glibc",
+    values = ["glibc", "musl"],
+)
+
+config_setting(
+    name = "libc_glibc",
+    flag_values = {":libc": "glibc"},
+)
+
+config_setting(
+    name = "libc_musl",
+    flag_values = {":libc": "musl"},
+)
+
+platform(
+    name = "linux_x86_64",
+    parents = ["@llvm//platforms:linux_x86_64_gnu.2.28"],
+)
+
+platform(
+    name = "linux_x86_64_musl",
+    parents = ["@llvm//platforms:linux_x86_64_musl"],
+)
+
+package_metadata(
+    name = "package_metadata",
+    attributes = [":license"],
+    purl = purl.bazel(
+        module_name(),
+        module_version(),
+    ),
+)
+
+license(
+    name = "license",
+    kind = "@package_metadata//licenses/spdx:Apache-2.0",
+    text = "LICENSE",
+)
+
+js_binary(
+    name = "frontend_bundle_tool",
+    entry_point = "bundle_frontend.js",
+)
+
+js_run_binary(
+    name = "frontend_bundle",
+    srcs = [
+        "web/api.js",
+        "web/main.js",
+    ],
+    outs = ["frontend.js"],
+    args = [
+        "$(location web/api.js)",
+        "$(location web/main.js)",
+        "frontend.js",
+    ],
+    tool = ":frontend_bundle_tool",
+)
+
+js_binary(
+    name = "node_service",
+    entry_point = "node_service.js",
+)
+
+js_image_layer(
+    name = "node_image_layers",
+    binary = ":node_service",
+    platform = ":linux_x86_64",
+    root = "/app",
+)
+
+py_binary(
+    name = "python_api",
+    srcs = ["python_api.py"],
+    main = "python_api.py",
+)
+
+py_image_layer(
+    name = "python_image_layers",
+    binary = ":python_api",
+    launcher_dir = "/app",
+)
+
+openapi_generate_sources(
+    name = "openapi_generate_sources",
+    out = "openapi_generated.go",
+    generator = "//java:openapi_codegen_tool",
+    spec = "openapi.json",
+)
+
+go_binary(
+    name = "server",
+    srcs = [
+        "openapi_generated.go",
+        "server.go",
+    ],
+    cgo = True,
+    static = select({
+        ":libc_glibc": "off",
+        ":libc_musl": "on",
+    }),
+    data = select({
+        ":libc_glibc": ["@@llvm++glibc+glibc_2.28//:runtime_dependency"],
+        ":libc_musl": [],
+    }),
+    embedsrcs = [
+        "frontend.js",
+        "web/index.html",
+    ],
+    importpath = "example.com/toolchain-demo",
+)
+
+image_layer(
+    name = "server_layer",
+    srcs = {
+        "/app/server": ":server",
+    },
+)
+
+image_layer(
+    name = "java_layer",
+    srcs = {
+        "/app/java-greeter": "//java:runtime_java",
+    },
+    include_runfiles = True,
+)
+
+image_manifest(
+    name = "container_manifest",
+    base = image("ubuntu_24_04"),
+    entrypoint = ["/app/server"],
+    env = {"PORT": "8080"},
+    layers = [
+        ":server_layer",
+    ] + select({
+        ":libc_glibc": [
+            ":node_image_layers",
+            ":python_image_layers",
+            ":java_layer",
+        ],
+        ":libc_musl": [":python_image_layers"],
+    }),
+    platform = select({
+        ":libc_glibc": ":linux_x86_64",
+        ":libc_musl": ":linux_x86_64_musl",
+    }),
+)
+
+libc_variant(
+    name = "container",
+    target = ":container_manifest",
+)
+
+image_index(
+    name = "container_index",
+    manifests = [
+        "//libc_variants:container_glibc",
+        "//libc_variants:container_musl",
+    ],
+)
+
+sbom(
+    name = "container_sbom",
+    target = ":container",
+)
+
+cyclonedx(
+    name = "container_cyclonedx",
+    sbom = ":container_sbom",
+)
+
+spdx(
+    name = "container_spdx",
+    sbom = ":container_sbom",
+)
+
+spdx(
+    name = "container_spdx_jsonld",
+    format = "json-ld",
+    sbom = ":container_sbom",
+)
+
+sbom(
+    name = "container_index_sbom",
+    target = ":container_index",
+)
+
+cyclonedx(
+    name = "container_index_cyclonedx",
+    sbom = ":container_index_sbom",
+)
+
+spdx(
+    name = "container_index_spdx",
+    sbom = ":container_index_sbom",
+)
+
+spdx(
+    name = "container_index_spdx_jsonld",
+    format = "json-ld",
+    sbom = ":container_index_sbom",
+)
