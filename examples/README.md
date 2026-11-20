@@ -21,6 +21,8 @@ checkout.
 The SBOM example reports on `//lib:lib_with_third_party_deps`, which depends on
 `//vendor/acme`. The library uses the example module's package metadata; ACME
 declares its own package URL, version, and license metadata.
+Its package metadata also declares an ACME supplier and a person originator;
+the generated SBOM reports show the fields each supported format can represent.
 
 ## Generate an SBOM
 

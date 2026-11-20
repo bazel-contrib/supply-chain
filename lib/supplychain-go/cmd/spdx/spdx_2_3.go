@@ -78,6 +78,21 @@ func GenerateDocument23(graph sbom.GraphConfig, classifications sbom.Classificat
 			licenseOf[pkg] = licenseAttribute
 		}
 
+		supplierAttribute, err := supplychain.GetSupplierAttribute(pkgMetadata)
+		if err != nil {
+			return nil, fmt.Errorf("error reading supplier of %s: %w", node.Label, err)
+		}
+		if supplierAttribute != nil {
+			pkg.PackageSupplier = packageSupplier23(supplierAttribute)
+		}
+		originatorAttribute, err := supplychain.GetOriginatorAttribute(pkgMetadata)
+		if err != nil {
+			return nil, fmt.Errorf("error reading originator of %s: %w", node.Label, err)
+		}
+		if originatorAttribute != nil {
+			pkg.PackageOriginator = packageOriginator23(originatorAttribute)
+		}
+
 		labelToID[node.Label] = elementID
 		return pkg, nil
 	}
@@ -88,6 +103,7 @@ func GenerateDocument23(graph sbom.GraphConfig, classifications sbom.Classificat
 		if err != nil {
 			return nil, err
 		}
+
 		if pkg != nil {
 			spdxPackages = append(spdxPackages, pkg)
 		}
@@ -186,4 +202,28 @@ func GenerateDocument23(graph sbom.GraphConfig, classifications sbom.Classificat
 	}
 
 	return &doc, nil
+}
+
+func packageAgentName23(agent *supplychain.PackageAgent) string {
+	name := agent.Name
+	if agent.Email != "" {
+		name += " (" + agent.Email + ")"
+	}
+	return name
+}
+
+func packageSupplier23(agent *supplychain.PackageAgent) *common.Supplier {
+	agentType := "Organization"
+	if agent.Type == supplychain.PackageAgentTypePerson {
+		agentType = "Person"
+	}
+	return &common.Supplier{Supplier: packageAgentName23(agent), SupplierType: agentType}
+}
+
+func packageOriginator23(agent *supplychain.PackageAgent) *common.Originator {
+	agentType := "Organization"
+	if agent.Type == supplychain.PackageAgentTypePerson {
+		agentType = "Person"
+	}
+	return &common.Originator{Originator: packageAgentName23(agent), OriginatorType: agentType}
 }

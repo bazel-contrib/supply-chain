@@ -15,6 +15,7 @@ gazelle(name = "gazelle")
 go_library(
     name = "supplychain-go",
     srcs = [
+        "agent.go",
         "license.go",
         "package_attribute.go",
         "package_metadata.go",
@@ -30,6 +31,7 @@ go_library(
 go_test(
     name = "supplychain-go_test",
     srcs = ["package_metadata_test.go"],
+    data = ["testdata/supplier.json"],
     embed = [":supplychain-go"],
     deps = [
         "//label",

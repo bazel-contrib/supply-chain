@@ -72,6 +72,8 @@ If you are a module author and want to annotate your module, you will need :
       - [license](./licenses/rules/license.md#license) — the license the package is available under.
       - [copyright_notice](./attributes/copyright_notice.md#copyright_notice) — the copyright notices of the package.
       - [cpe](./attributes/cpe.md#cpe) — the [CPE](https://en.wikipedia.org/wiki/Common_Platform_Enumeration)s of the package.
+      - [supplier](./attributes/supplier.md#supplier) — the entity that distributes the package.
+      - [originator](./attributes/originator.md#originator) — the entity that originally created the package.
 
     Custom attributes are declared by writing a rule that provides [PackageAttributeInfo](./providers/package_attribute_info.md#PackageAttributeInfo). [`copyright_notice`](../../metadata/attributes/copyright_notice.bzl) is a minimal example to copy from.
 
@@ -164,6 +166,8 @@ Where a package has a `defs.bzl` (e.g., `@package_metadata//:defs.bzl`), it re-e
   - [@package_metadata//attributes:defs.bzl](./attributes/defs.md)
   - [@package_metadata//attributes:copyright_notice.bzl](./attributes/copyright_notice.md)
   - [@package_metadata//attributes:cpe.bzl](./attributes/cpe.md)
+  - [@package_metadata//attributes:supplier.bzl](./attributes/supplier.md)
+  - [@package_metadata//attributes:originator.bzl](./attributes/originator.md)
 
 
 ### Licenses

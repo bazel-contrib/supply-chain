@@ -34,6 +34,7 @@ go_test(
     srcs = [
         "main_test.go",
         "spdx_2_3_test.go",
+        "spdx_3_0_1_test.go",
     ],
     embed = [":spdx_lib"],
     deps = [
