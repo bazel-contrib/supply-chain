@@ -97,6 +97,12 @@
     },
     {
       "creationInfo": "_:CreationInfo-1",
+      "name": "Bazel Supply Chain Tools SPDX generator",
+      "spdxId": "SPDXRef:Tool-1",
+      "type": "Tool"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
       "expandedlicensing_subjectAddition": "https://spdx.org/licenses/LLVM-exception",
       "expandedlicensing_subjectExtendableLicense": "https://spdx.org/licenses/Apache-2.0",
       "spdxId": "SPDXRef:WithAdditionOperator-1",
@@ -373,6 +379,7 @@
         "SPDXRef:LicenseRef-acme-commercial-2",
         "SPDXRef:OrLaterOperator-1",
         "SPDXRef:SoftwareAgent-1",
+        "SPDXRef:Tool-1",
         "SPDXRef:WithAdditionOperator-1",
         "SPDXRef:WithAdditionOperator-2",
         "SPDXRef:WithAdditionOperator-3",
@@ -414,6 +421,9 @@
       "rootElement": [
         "SPDXRef:dep-0"
       ],
+      "software_sbomType": [
+        "build"
+      ],
       "spdxId": "SPDXRef:sbom",
       "type": "software_Sbom"
     },
@@ -423,7 +433,9 @@
       "createdBy": [
         "SPDXRef:SoftwareAgent-1"
       ],
-      "createdUsing": [],
+      "createdUsing": [
+        "SPDXRef:Tool-1"
+      ],
       "specVersion": "3.0.1",
       "type": "CreationInfo"
     },

@@ -65,7 +65,7 @@ load("@package_metadata//rules:package_metadata.bzl", "package_metadata")
     ]
     for name, values in {
         "valid-1": [
-            "sha1-he0IF6+DokrY2mjCtQlN5pgzmDw=",
+            "sha384-/u6/iE9tq+bsqNaONz1r5IjNql63ZOiVKQM2/+n/lpaG8qnTYumou93257LhRV8t",
             "sha256-EbbT7lVO7feSmZBamPm5oE5JghC1nxUJTJFskdFQ51Q=",
         ],
     }.items()
