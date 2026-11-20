@@ -3,6 +3,7 @@
 
 module(
     name = "rules_license",
+    compatibility_level = 1,
 )
 
 bazel_dep(name = "package_metadata", version = "0.0.5")
