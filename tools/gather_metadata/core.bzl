@@ -3,8 +3,8 @@
 load("@bazel_features//:features.bzl", "bazel_features")
 load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
 load(":providers.bzl", "TargetWithMetadataInfo")
-load(":toolchain_involvement.bzl", "ToolchainInvolvementInfo", "toolchain_involvement_for")
 load(":rule_filters.bzl", "rule_to_excluded_attributes")
+load(":toolchain_involvement.bzl", "ToolchainInvolvementInfo", "toolchain_involvement_for")
 
 def _is_exec_config(ctx):
     """Determines whether the current configuration is an exec configuration."""
@@ -156,11 +156,15 @@ def _get_transitive_metadata(
                                 direct_dep_involvements.append(involvement)
 
     # Toolchain edges are exposed to aspects only on Bazel versions supporting
-    # toolchains_aspects = ["*"].
-    if bazel_features.rules.supports_toolchains_aspects_star and hasattr(ctx.rule, "toolchains"):
+    # toolchains_aspects = ["*"], and only to aspects declaring the registry
+    # attribute (custom aspects wrapping this one may not).
+    if (bazel_features.rules.supports_toolchains_aspects_star and
+        hasattr(ctx.rule, "toolchains") and
+        hasattr(ctx.attr, "_toolchain_involvements")):
         registry = ctx.attr._toolchain_involvements[ToolchainInvolvementInfo]
         for toolchain_type in ctx.rule.toolchains.toolchain_types():
             resolved_toolchain = ctx.rule.toolchains[toolchain_type]
+
             # Optional toolchain types may not resolve to anything.
             if resolved_toolchain == None or provider not in resolved_toolchain:
                 continue
@@ -168,7 +172,8 @@ def _get_transitive_metadata(
             if info == null_provider_instance:
                 continue
 
-            label = resolved_toolchain.label
+            # `ToolchainAspectsProviders.label` is missing before Bazel 9.
+            label = getattr(resolved_toolchain, "label", None) or info.top_level_target
             label_key = str(label)
             if label_key not in seen_dep_labels:
                 seen_dep_labels[label_key] = True
