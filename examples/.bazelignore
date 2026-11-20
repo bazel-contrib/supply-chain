@@ -1,0 +1,2 @@
+# A standalone module with its own dependencies (e.g. rules_img).
+complex_app
