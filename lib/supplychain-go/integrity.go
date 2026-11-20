@@ -16,14 +16,13 @@ const IntegrityAttributeKind = "build.bazel.attribute.integrity"
 
 // Checksum is a digest of a package or of a file.
 type Checksum struct {
-	// Algorithm is one of "sha1", "sha256", "sha384" and "sha512".
+	// Algorithm is one of "sha256", "sha384" and "sha512".
 	Algorithm string
 	// Hex is the digest, hex-encoded.
 	Hex string
 }
 
 var checksumSizes = map[string]int{
-	"sha1":   20,
 	"sha256": 32,
 	"sha384": 48,
 	"sha512": 64,

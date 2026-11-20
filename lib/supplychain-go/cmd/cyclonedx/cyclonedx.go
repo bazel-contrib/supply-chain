@@ -300,7 +300,6 @@ func licensesOf(attribute *supplychain.LicenseAttribute) *cdx.Licenses {
 }
 
 var hashAlgorithms = map[string]cdx.HashAlgorithm{
-	"sha1":   cdx.HashAlgoSHA1,
 	"sha256": cdx.HashAlgoSHA256,
 	"sha384": cdx.HashAlgoSHA384,
 	"sha512": cdx.HashAlgoSHA512,

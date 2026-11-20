@@ -19,7 +19,7 @@ This is typically passed to the `attributes` of a `package_metadata` target.
 Each integrity is a Subresource Integrity (SRI) string: the hash algorithm
 name, a dash, then the base64-encoded digest, e.g. `sha256-<base64 digest>`.
 The form and base64 encoding of each value are validated, and so is the size
-of the digest of `sha1`, `sha256`, `sha384` and `sha512`. Values of other
+of the digest of `sha256`, `sha384` and `sha512`. Values of other
 algorithms are passed through as-is: tools consuming the attribute map them
 to the format they produce, and may drop algorithms they do not support.
 
@@ -44,7 +44,7 @@ package_metadata(
 integrity(
     name = "integrity",
     values = [
-        "sha1-he0IF6+DokrY2mjCtQlN5pgzmDw=",
+        "sha384-/u6/iE9tq+bsqNaONz1r5IjNql63ZOiVKQM2/+n/lpaG8qnTYumou93257LhRV8t",
         "sha256-EbbT7lVO7feSmZBamPm5oE5JghC1nxUJTJFskdFQ51Q=",
     ],
 )
@@ -57,7 +57,7 @@ written without insignificant whitespace:
 
 ```json
 [
-    "sha1-he0IF6+DokrY2mjCtQlN5pgzmDw=",
+    "sha384-/u6/iE9tq+bsqNaONz1r5IjNql63ZOiVKQM2/+n/lpaG8qnTYumou93257LhRV8t",
     "sha256-EbbT7lVO7feSmZBamPm5oE5JghC1nxUJTJFskdFQ51Q="
 ]
 ```

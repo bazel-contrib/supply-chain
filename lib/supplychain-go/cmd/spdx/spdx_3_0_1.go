@@ -241,7 +241,6 @@ func generatorTool(purl string) *spdx.Tool {
 }
 
 var hashAlgorithms = map[string]spdx.HashAlgorithm{
-	"sha1":   spdx.HashAlgorithm_Sha1,
 	"sha256": spdx.HashAlgorithm_Sha256,
 	"sha384": spdx.HashAlgorithm_Sha384,
 	"sha512": spdx.HashAlgorithm_Sha512,

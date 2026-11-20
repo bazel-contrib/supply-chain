@@ -10,11 +10,11 @@ import (
 
 func TestParseChecksums(t *testing.T) {
 	sha256 := "sha256-" + strings.Repeat("A", 43) + "="
-	got, err := ParseChecksums([]string{sha256, "md5-AAAA", "SHA1-" + strings.Repeat("A", 27)})
+	got, err := ParseChecksums([]string{sha256, "md5-AAAA", "SHA384-" + strings.Repeat("A", 64)})
 	require.NoError(t, err)
 	assert.Equal(t, []Checksum{
 		{Algorithm: "sha256", Hex: strings.Repeat("00", 32)},
-		{Algorithm: "sha1", Hex: strings.Repeat("00", 20)},
+		{Algorithm: "sha384", Hex: strings.Repeat("00", 48)},
 	}, got)
 }
 
