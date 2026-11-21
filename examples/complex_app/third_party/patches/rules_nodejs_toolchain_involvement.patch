@@ -1,0 +1,13 @@
+diff --git a/nodejs/node_toolchain_alias.bzl b/nodejs/node_toolchain_alias.bzl
+--- a/nodejs/node_toolchain_alias.bzl
++++ b/nodejs/node_toolchain_alias.bzl
+@@ -38,4 +38,9 @@
+ node_toolchain_alias = rule(
+     implementation = _node_toolchain_alias,
+     toolchains = [semantics.NODE_TOOLCHAIN],
++    attrs = {
++        "_supply_chain_toolchain_involvement": attr.label_keyed_string_dict(default = {
++            Label("@rules_nodejs//nodejs:toolchain_type"): "build",
++        }),
++    },
+ )

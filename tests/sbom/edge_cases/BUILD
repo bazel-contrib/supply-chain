@@ -1,14 +1,115 @@
-# Reports of graphs with unusual shapes, checked against goldens.
+# SBOM reports for unusual and toolchain graphs, checked against goldens.
 # See ../golden_test.bzl to update them.
 
 load("@bazel_skylib//rules:build_test.bzl", "build_test")
 load("@package_metadata//attributes:cpe.bzl", "cpe")
 load("@package_metadata//rules:package_metadata.bzl", "package_metadata")
 load("@supply_chain_tools//sbom:cyclonedx.bzl", "cyclonedx")
+load("@toolchain_fixtures//:fixtures.bzl", "cc_binary", "dual_use_image", "java_binary", "js_binary", "mixed_involvement_binary", "mixed_path_binary", "openapi_generate_sources", "py_binary", "py_image_layer", "toolchain_impl")
 load("@supply_chain_tools//sbom:sbom.bzl", "sbom")
 load("@supply_chain_tools//sbom:spdx.bzl", "spdx")
 load("//sbom:expected_failure.bzl", "spdx_expected_failure")
 load("//sbom:golden_test.bzl", "sbom_golden_test")
+load(":toolchain_cases.bzl", "cycle_backedge_binary", "invalid_toolchain_attr_tests", "mixed_path_cyclonedx_golden", "toolchain_alias_probe_test", "toolchain_golden_cases")
+
+package_metadata(
+    name = "toolchain_app_metadata",
+    purl = "pkg:generic/toolchain-fixture-app@1.0.0",
+)
+
+java_binary(name = "java_app")
+py_binary(name = "python_app")
+js_binary(name = "node_app")
+cc_binary(name = "llvm_app")
+openapi_generate_sources(name = "openapi_generated")
+py_image_layer(name = "python_image")
+dual_use_image(name = "dual_use_image")
+mixed_path_binary(name = "mixed_build_runtime_app")
+mixed_involvement_binary(name = "mixed_build_embedded_app")
+cycle_backedge_binary(name = "cycle_backedge_app")
+
+toolchain_type(name = "cycle_backedge_type")
+alias(
+    name = "cycle_backedge_type_alias",
+    actual = ":cycle_backedge_type",
+)
+
+toolchain_alias_probe_test(name = "toolchain_type_alias_test")
+
+package_metadata(
+    name = "cycle_tool_metadata",
+    purl = "pkg:generic/toolchain-fixtures-cycle-tool@1.0.0",
+)
+
+filegroup(
+    name = "cycle_back_to_app",
+    applicable_licenses = [":toolchain_app_metadata"],
+)
+
+toolchain_impl(
+    name = "cycle_backedge_toolchain_impl",
+    applicable_licenses = [":cycle_tool_metadata"],
+    deps = [":cycle_back_to_app"],
+)
+
+toolchain(
+    name = "cycle_backedge_toolchain",
+    toolchain = ":cycle_backedge_toolchain_impl",
+    toolchain_type = ":cycle_backedge_type",
+    visibility = ["//visibility:public"],
+)
+
+toolchain_golden_cases(
+    name = "toolchain_involvement_golden_tests",
+    applicable_licenses = [":toolchain_app_metadata"],
+    cases = [
+        {
+            "name": "toolchains_java",
+            "target": ":java_app",
+        },
+        {"name": "toolchains_python", "target": ":python_app"},
+        {
+            "name": "toolchains_nodejs",
+            "target": ":node_app",
+        },
+        {
+            "name": "toolchains_llvm",
+            "target": ":llvm_app",
+        },
+        {"name": "toolchains_openapi", "target": ":openapi_generated"},
+        {
+            "name": "toolchains_py_image_layer",
+            "target": ":python_image",
+        },
+        {
+            "name": "toolchains_dual_use",
+            "target": ":dual_use_image",
+        },
+        {
+            "name": "toolchains_mixed_paths",
+            "target": ":mixed_build_runtime_app",
+        },
+        {
+            "name": "toolchains_mixed_build_embedded",
+            "target": ":mixed_build_embedded_app",
+        },
+        {
+            "name": "toolchains_cycle_backedge",
+            "target": ":cycle_backedge_app",
+        },
+    ],
+)
+
+invalid_toolchain_attr_tests(
+    name = "toolchain_attribute_validation_tests",
+    applicable_licenses = ":toolchain_app_metadata",
+)
+
+mixed_path_cyclonedx_golden(
+    name = "mixed_build_runtime",
+    applicable_licenses = [":toolchain_app_metadata"],
+    target = ":mixed_build_runtime_app",
+)
 
 package_metadata(
     name = "app_metadata",

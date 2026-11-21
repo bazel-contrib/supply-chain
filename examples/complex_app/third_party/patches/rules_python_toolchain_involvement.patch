@@ -1,0 +1,13 @@
+diff --git a/python/private/py_executable.bzl b/python/private/py_executable.bzl
+--- a/python/private/py_executable.bzl
++++ b/python/private/py_executable.bzl
+@@ -2241,4 +2241,8 @@
+     builder = ruleb.Rule(
+         implementation = implementation,
+-        attrs = EXECUTABLE_ATTRS | (COVERAGE_ATTRS if kwargs.get("test") else {}),
++        attrs = EXECUTABLE_ATTRS | (COVERAGE_ATTRS if kwargs.get("test") else {}) | {
++            "_supply_chain_toolchain_involvement": attr.label_keyed_string_dict(default = {
++                Label("//python:toolchain_type"): "runtime",
++            }),
++        },
+         exec_groups = dict(REQUIRED_EXEC_GROUP_BUILDERS),  # Mutable copy
