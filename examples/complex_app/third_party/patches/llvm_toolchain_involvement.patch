@@ -1,0 +1,58 @@
+diff --git a/toolchain/cc_runtimes/cc_runtimes.bzl b/toolchain/cc_runtimes/cc_runtimes.bzl
+--- a/toolchain/cc_runtimes/cc_runtimes.bzl
++++ b/toolchain/cc_runtimes/cc_runtimes.bzl
+@@ -34,8 +34,11 @@
+         "hdrs": attr.label_list(
+             doc = "Public headers to compile when `header_modules` is enabled.",
+             allow_files = True,
+         ),
+-    },
++        "_supply_chain_toolchain_involvement": attr.label_keyed_string_dict(default = {
++            Label("@bazel_tools//tools/cpp:toolchain_type"): "build",
++        }),
++    },
+     fragments = ["cpp"],
+     toolchains = use_cc_toolchain(),
+ )
+diff --git a/toolchain/bootstrap/fdo_profile.bzl b/toolchain/bootstrap/fdo_profile.bzl
+--- a/toolchain/bootstrap/fdo_profile.bzl
++++ b/toolchain/bootstrap/fdo_profile.bzl
+@@ -240,4 +240,7 @@
+             ],
+             doc = "Whether this workload compiles only or compiles and links.",
+         ),
+-    },
++        "_supply_chain_toolchain_involvement": attr.label_keyed_string_dict(default = {
++            Label("@bazel_tools//tools/cpp:toolchain_type"): "build",
++        }),
++    },
+diff --git a/toolchain/runtimes/cc_stage0_object.bzl b/toolchain/runtimes/cc_stage0_object.bzl
+--- a/toolchain/runtimes/cc_stage0_object.bzl
++++ b/toolchain/runtimes/cc_stage0_object.bzl
+@@ -152,9 +152,12 @@
+         "out": attr.output(
+             doc = "The output object file.",
+             mandatory = True,
+         ),
+-    },
++        "_supply_chain_toolchain_involvement": attr.label_keyed_string_dict(default = {
++            Label("@bazel_tools//tools/cpp:toolchain_type"): "build",
++        }),
++    },
+     cfg = bootstrap_transition,
+     fragments = ["cpp"],
+     toolchains = use_cc_toolchain(),
+ )
+diff --git a/toolchain/runtimes/cc_internal_symbolizer_object.bzl b/toolchain/runtimes/cc_internal_symbolizer_object.bzl
+--- a/toolchain/runtimes/cc_internal_symbolizer_object.bzl
++++ b/toolchain/runtimes/cc_internal_symbolizer_object.bzl
+@@ -153,5 +153,8 @@
+         "target_triple": attr.string_list(mandatory = True),
+-    },
++        "_supply_chain_toolchain_involvement": attr.label_keyed_string_dict(default = {
++            Label("@bazel_tools//tools/cpp:toolchain_type"): "build",
++        }),
++    },
+     fragments = ["cpp"],
+     toolchains = use_cc_toolchain(),
+ )

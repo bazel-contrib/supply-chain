@@ -17,6 +17,7 @@ func GenerateDocument23(graph sbom.GraphConfig, classifications sbom.Classificat
 	graph = sbom.NormalizeGraph(graph)
 	spdxPackages := make([]*spdx2.Package, 0)
 	labelToID := make(map[string]string)
+	purlToID := make(map[string]string)
 	licenseOf := make(map[*spdx2.Package]*supplychain.LicenseAttribute)
 	patchesOf := make(map[*spdx2.Package][]*supplychain.PatchAttribute)
 	idx := 0
@@ -38,14 +39,18 @@ func GenerateDocument23(graph sbom.GraphConfig, classifications sbom.Classificat
 			return nil, err
 		}
 
-		elementID := fmt.Sprintf("dep-%d", idx)
-		idx++
-
 		purl := pkgMetadata.GetPURL()
 		if subjectPURL == "" {
 			subjectName = purl.Name
 			subjectPURL = purl.String()
 		}
+		if elementID, exists := purlToID[purl.String()]; exists {
+			labelToID[node.Label] = elementID
+			return nil, nil
+		}
+
+		elementID := fmt.Sprintf("dep-%d", idx)
+		idx++
 
 		downloadLocation := "NOASSERTION"
 		qualifiers := purl.Qualifiers.Map()
@@ -125,6 +130,7 @@ func GenerateDocument23(graph sbom.GraphConfig, classifications sbom.Classificat
 		patchesOf[pkg] = patches
 
 		labelToID[node.Label] = elementID
+		purlToID[purl.String()] = elementID
 		return pkg, nil
 	}
 
@@ -161,7 +167,7 @@ func GenerateDocument23(graph sbom.GraphConfig, classifications sbom.Classificat
 
 	// Build Relationships from graph edges
 	relationships := make([]*spdx2.Relationship, 0, len(graph.Edges))
-	seenRelationship := make(map[string]map[string]bool)
+	seenRelationship := make(map[[3]string]bool)
 	for _, edge := range graph.Edges {
 		fromID, fromOk := labelToID[edge.From]
 		toID, toOk := labelToID[edge.To]
@@ -171,17 +177,24 @@ func GenerateDocument23(graph sbom.GraphConfig, classifications sbom.Classificat
 			// resolved to the same package (e.g. duplicate metadata).
 			continue
 		}
-		if seenRelationship[fromID] == nil {
-			seenRelationship[fromID] = make(map[string]bool)
-		}
-		if seenRelationship[fromID][toID] {
+		key := [3]string{fromID, toID, edge.Involvement}
+		if seenRelationship[key] {
 			continue
 		}
-		seenRelationship[fromID][toID] = true
+		seenRelationship[key] = true
+		refA, refB, relationship := fromID, toID, "DEPENDS_ON"
+		switch edge.Involvement {
+		case "build":
+			// SPDX 2.3's BUILD_TOOL_OF is directed from the tool to its
+			// consumer, the reverse of the graph dependency edge.
+			refA, refB, relationship = toID, fromID, "BUILD_TOOL_OF"
+		case "embedded":
+			relationship = "CONTAINS"
+		}
 		relationships = append(relationships, &spdx2.Relationship{
-			RefA:         common.MakeDocElementID("", fromID),
-			RefB:         common.MakeDocElementID("", toID),
-			Relationship: "DEPENDS_ON",
+			RefA:         common.MakeDocElementID("", refA),
+			RefB:         common.MakeDocElementID("", refB),
+			Relationship: relationship,
 		})
 	}
 

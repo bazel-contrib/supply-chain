@@ -1,0 +1,17 @@
+diff --git a/py/private/py_venv/py_venv.bzl b/py/private/py_venv/py_venv.bzl
+--- a/py/private/py_venv/py_venv.bzl
++++ b/py/private/py_venv/py_venv.bzl
+@@ -336,8 +336,11 @@
+ _py_venv_lib = rule(
+     implementation = _py_venv_lib_rule_impl,
+-    attrs = _lib_attrs | {
++    attrs = _lib_attrs | {
+         "include_console_scripts": attr.bool(default = False),
+-    },
++        "_supply_chain_toolchain_involvement": attr.label_keyed_string_dict(default = {
++            Label("@bazel_tools//tools/python:toolchain_type"): "embedded",
++        }),
++    },
+     toolchains = _venv_toolchains,
+     cfg = python_transition,
+ )

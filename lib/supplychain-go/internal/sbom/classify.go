@@ -29,6 +29,19 @@ func ComputeClassifications(graph GraphConfig, allowMissingRootMetadata bool) (C
 		return Classifications{}, err
 	}
 
+	// Keep the classification JSON identical for legacy graphs. Involvement
+	// annotations are emitted only when the graph actually carries them.
+	hasInvolvement := false
+	for _, edge := range graph.Edges {
+		if edge.Involvement != "" {
+			hasInvolvement = true
+			break
+		}
+	}
+	if hasInvolvement {
+		annotateNodeScopes(graph.RootTarget, graph.Edges, &scopes)
+	}
+
 	return Classifications{
 		RootComponent: scopes.root,
 		Dependencies: DependencyNodes{
@@ -61,18 +74,39 @@ func NormalizeGraph(graph GraphConfig) GraphConfig {
 	edges := make([]EdgeConfig, 0, len(graph.Edges))
 	for _, node := range nodes {
 		seen := map[string]bool{node.Label: true}
-		pending := append([]EdgeConfig(nil), adjacency[node.Label]...)
+		type pendingEdge struct {
+			edge        EdgeConfig
+			involvement string
+		}
+		pending := make([]pendingEdge, 0, len(adjacency[node.Label]))
+		for _, edge := range adjacency[node.Label] {
+			pending = append(pending, pendingEdge{edge: edge, involvement: edge.Involvement})
+		}
+		seenStates := make(map[string]bool)
 		for len(pending) > 0 {
-			edge := pending[len(pending)-1]
+			next := pending[len(pending)-1]
 			pending = pending[:len(pending)-1]
+			edge := next.edge
+			involvement := composeInvolvement(next.involvement, edge.Involvement)
 			if seen[edge.To] {
-				continue
-			}
-			seen[edge.To] = true
-			if metadataLabels[edge.To] {
-				edges = append(edges, EdgeConfig{From: node.Label, To: edge.To, Type: edge.Type})
+				// A node can be reached through paths with different
+				// involvement. Preserve each distinct composed path marker.
+				state := edge.To + "\x00" + involvement
+				if seenStates[state] {
+					continue
+				}
+				seenStates[state] = true
 			} else {
-				pending = append(pending, adjacency[edge.To]...)
+				seen[edge.To] = true
+			}
+			if metadataLabels[edge.To] {
+				edges = append(edges, EdgeConfig{
+					From: node.Label, To: edge.To, Type: edge.Type, Involvement: involvement,
+				})
+			} else {
+				for _, child := range adjacency[edge.To] {
+					pending = append(pending, pendingEdge{edge: child, involvement: involvement})
+				}
 			}
 		}
 	}
@@ -136,7 +170,7 @@ func deduplicateByMetadata(graph GraphConfig) GraphConfig {
 			// Collapsing duplicate nodes turned this into a self-reference.
 			continue
 		}
-		e := EdgeConfig{From: from, To: to, Type: edge.Type}
+		e := EdgeConfig{From: from, To: to, Type: edge.Type, Involvement: edge.Involvement}
 		if seenEdges[e] {
 			continue
 		}
@@ -155,9 +189,25 @@ func deduplicateByMetadata(graph GraphConfig) GraphConfig {
 		if a.To != b.To {
 			return a.To < b.To
 		}
-		return a.Type < b.Type
+		if a.Type != b.Type {
+			return a.Type < b.Type
+		}
+		return a.Involvement < b.Involvement
 	})
 	return graph
+}
+
+// composeInvolvement propagates the strongest marker across a path. A path
+// containing any build-only hop is build; otherwise any embedded hop makes it
+// embedded; paths containing neither remain runtime (the empty encoding).
+func composeInvolvement(left, right string) string {
+	if left == "build" || right == "build" {
+		return "build"
+	}
+	if left == "embedded" || right == "embedded" {
+		return "embedded"
+	}
+	return ""
 }
 
 func remapLabel(remap map[string]string, label string) string {
@@ -171,6 +221,75 @@ type scopeResult struct {
 	root       *NodeConfig
 	direct     []NodeConfig
 	transitive []NodeConfig
+}
+
+// annotateNodeScopes assigns each package the best involvement among all paths
+// from the root: runtime, then embedded, then build.
+func annotateNodeScopes(rootTarget string, edges []EdgeConfig, result *scopeResult) {
+	if rootTarget == "" {
+		return
+	}
+
+	const (
+		runtimeCost = iota
+		embeddedCost
+		buildCost
+	)
+	adjacency := make(map[string][]EdgeConfig)
+	for _, edge := range edges {
+		adjacency[edge.From] = append(adjacency[edge.From], edge)
+	}
+	best := map[string]int{rootTarget: runtimeCost}
+	queue := []string{rootTarget}
+	for len(queue) > 0 {
+		from := queue[0]
+		queue = queue[1:]
+		for _, edge := range adjacency[from] {
+			candidate := best[from]
+			switch edge.Involvement {
+			case "embedded":
+				if candidate < embeddedCost {
+					candidate = embeddedCost
+				}
+			case "build":
+				candidate = buildCost
+			}
+			current, found := best[edge.To]
+			if !found || candidate < current {
+				best[edge.To] = candidate
+				queue = append(queue, edge.To)
+			}
+		}
+	}
+
+	annotate := func(node *NodeConfig) {
+		cost, reachable := best[node.Label]
+		if !reachable {
+			cost = buildCost
+		}
+		if cost < buildCost {
+			node.Scope = "runtime"
+		} else {
+			node.Scope = "build"
+		}
+		switch cost {
+		case embeddedCost:
+			node.Involvement = "embedded"
+		case buildCost:
+			node.Involvement = "build"
+		default:
+			node.Involvement = ""
+		}
+	}
+	if result.root != nil {
+		annotate(result.root)
+	}
+	for i := range result.direct {
+		annotate(&result.direct[i])
+	}
+	for i := range result.transitive {
+		annotate(&result.transitive[i])
+	}
 }
 
 // calculateScopes determines root/direct/transitive classification

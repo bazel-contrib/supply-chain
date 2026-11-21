@@ -1,0 +1,26 @@
+--- a/toolchain/cc_runtimes/BUILD.bazel
++++ b/toolchain/cc_runtimes/BUILD.bazel
+@@ -1,4 +1,22 @@
+ load("@bazel_lib//:bzl_library.bzl", "bzl_library")
+ load(":cc_runtimes.bzl", "cc_runtimes_library", "cc_runtimes_toolchain")
+ 
+-package(default_visibility = ["//visibility:public"])
++load("@@package_metadata+//licenses/rules:license.bzl", "license")
++load("@@package_metadata+//rules:package_metadata.bzl", "package_metadata")
++load("@llvm_version//:version.bzl", "LLVM_VERSION")
++
++license(
++    name = "llvm_license",
++    expression = "Apache-2.0 WITH LLVM-exception",
++)
++
++package_metadata(
++    name = "llvm_runtimes_metadata",
++    attributes = [":llvm_license"],
++    purl = "pkg:github/llvm/llvm-project@" + LLVM_VERSION + "#runtimes",
++)
++
++package(
++    default_package_metadata = [":llvm_runtimes_metadata"],
++    default_visibility = ["//visibility:public"],
++)
