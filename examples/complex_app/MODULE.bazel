@@ -9,6 +9,7 @@ bazel_dep(name = "supply_chain_tools", version = "0.0.1")
 bazel_dep(name = "supply-chain-go", version = "0.0.6")
 bazel_dep(name = "aspect_rules_js", version = "3.6.1")
 bazel_dep(name = "rules_img", version = "0.3.26")
+bazel_dep(name = "rules_pkg", version = "1.1.0")
 bazel_dep(name = "rules_itest", version = "0.0.61")
 bazel_dep(name = "rules_java", version = "9.9.0")
 bazel_dep(name = "rules_nodejs", version = "6.7.7")
@@ -55,6 +56,20 @@ single_version_override(
         "//third_party/patches:rules_go_toolchain_involvement.patch",
     ],
     version = "0.65.0",
+)
+
+single_version_override(
+    module_name = "rules_img",
+    patch_strip = 1,
+    patches = ["//third_party/patches:rules_img_relationships.patch"],
+    version = "0.3.26",
+)
+
+single_version_override(
+    module_name = "rules_pkg",
+    patch_strip = 1,
+    patches = ["//third_party/patches:rules_pkg_relationships.patch"],
+    version = "1.1.0",
 )
 
 single_version_override(

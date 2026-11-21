@@ -174,7 +174,7 @@ func GenerateDocument23(graph sbom.GraphConfig, classifications sbom.Classificat
 
 	// Build Relationships from graph edges
 	relationships := make([]*spdx2.Relationship, 0, len(graph.Edges))
-	seenRelationship := make(map[[3]string]bool)
+	seenRelationship := make(map[[4]string]bool)
 	for _, edge := range graph.Edges {
 		fromID, fromOk := labelToID[edge.From]
 		toID, toOk := labelToID[edge.To]
@@ -184,7 +184,7 @@ func GenerateDocument23(graph sbom.GraphConfig, classifications sbom.Classificat
 			// resolved to the same package (e.g. duplicate metadata).
 			continue
 		}
-		key := [3]string{fromID, toID, edge.Involvement}
+		key := [4]string{fromID, toID, edge.Involvement, edge.Relationship}
 		if seenRelationship[key] {
 			continue
 		}
@@ -197,6 +197,19 @@ func GenerateDocument23(graph sbom.GraphConfig, classifications sbom.Classificat
 			refA, refB, relationship = toID, fromID, "BUILD_TOOL_OF"
 		case "embedded":
 			relationship = "CONTAINS"
+		default:
+			switch edge.Relationship {
+			case "contains":
+				relationship = "CONTAINS"
+			case "static_link":
+				relationship = "STATIC_LINK"
+			case "dynamic_link":
+				relationship = "DYNAMIC_LINK"
+			case "test_dependency":
+				refA, refB, relationship = toID, fromID, "TEST_DEPENDENCY_OF"
+			case "dev_dependency":
+				refA, refB, relationship = toID, fromID, "DEV_DEPENDENCY_OF"
+			}
 		}
 		relationships = append(relationships, &spdx2.Relationship{
 			RefA:         common.MakeDocElementID("", refA),

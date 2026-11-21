@@ -78,6 +78,7 @@ def _build_edges(all_targets):
         if hasattr(target_info, "direct_deps") and target_info.direct_deps:
             from_label = _label_to_string(target_info.target)
             involvements = target_info.direct_dep_involvements if hasattr(target_info, "direct_dep_involvements") else ()
+            relationships = target_info.direct_dep_relationships if hasattr(target_info, "direct_dep_relationships") else ()
             for index, dep in enumerate(target_info.direct_deps):
                 to_label = _label_to_string(dep)
                 if from_label == to_label:
@@ -88,6 +89,8 @@ def _build_edges(all_targets):
                     continue
                 involvement = involvements[index] if index < len(involvements) else "runtime"
                 key = from_label + "\0" + to_label + "\0" + involvement
+                relationship = relationships[index] if index < len(relationships) else "depends_on"
+                key += "\0" + relationship
                 if key in seen:
                     continue
                 seen[key] = True
@@ -98,6 +101,8 @@ def _build_edges(all_targets):
                 }
                 if involvement != "runtime":
                     edge["involvement"] = involvement
+                if relationship != "depends_on":
+                    edge["relationship"] = relationship
                 edges.append(edge)
     return edges
 
