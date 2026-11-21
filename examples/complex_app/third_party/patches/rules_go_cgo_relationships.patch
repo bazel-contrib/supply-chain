@@ -1,0 +1,60 @@
+diff --git a/MODULE.bazel b/MODULE.bazel
+--- a/MODULE.bazel
++++ b/MODULE.bazel
+@@ -17,4 +17,5 @@ bazel_dep(name = "rules_cc", version = "0.1.5")
+ bazel_dep(name = "package_metadata", version = "0.0.5")
++bazel_dep(name = "package_metadata_extensions", version = "HEAD")
+ 
+ # Only applies when rules_go is the root module, so it doesn't raise the version
+ # users get. Building protobuf from source fails on Windows, and the prebuilt
+diff --git a/go/private/rules/binary.bzl b/go/private/rules/binary.bzl
+--- a/go/private/rules/binary.bzl
++++ b/go/private/rules/binary.bzl
+@@ -17,3 +17,5 @@ load("@rules_cc//cc/common:cc_info.bzl", "CcInfo")
++load("@rules_cc//cc/common:cc_shared_library_info.bzl", "CcSharedLibraryInfo")
++load("@package_metadata_extensions//providers:package_linking_info.bzl", "PackageLinkingInfo")
+ load(
+     "//go/private:common.bzl",
+     "GO_TOOLCHAIN",
+@@ -126,5 +128,17 @@ def _go_cc_aspect_impl(target, ctx):
+     ]
+ 
++def _is_dynamic_cdep(dep):
++    if CcSharedLibraryInfo in dep:
++        return True
++    if CcInfo not in dep or dep[CcInfo].linking_context == None:
++        return False
++
++    for linker_input in dep[CcInfo].linking_context.linker_inputs.to_list():
++        for library in linker_input.libraries:
++            if library.dynamic_library != None:
++                return True
++    return False
++
+ def _go_binary_impl(ctx):
+     """go_binary_impl emits actions for compiling and linking a go executable."""
+     go = go_context(
+@@ -256,6 +277,14 @@ def _go_binary_impl(ctx):
+         ),
+     )
+ 
++    if ctx.attr.cgo:
++        dynamic_linked = [dep.label for dep in ctx.attr.cdeps if _is_dynamic_cdep(dep)]
++        dynamic_labels = {str(label): True for label in dynamic_linked}
++        providers.append(PackageLinkingInfo(
++            static_linked = [dep.label for dep in ctx.attr.cdeps if str(dep.label) not in dynamic_labels],
++            dynamic_linked = dynamic_linked,
++        ))
++
+     return providers
+ 
+ def _go_binary_kwargs(go_cc_aspects = []):
+@@ -511,5 +541,8 @@
+             "_supply_chain_toolchain_involvement": attr.label_keyed_string_dict(default = {
+                 Label("@io_bazel_rules_go//go:toolchain"): "build",
+                 Label("@bazel_tools//tools/cpp:toolchain_type"): "embedded",
+             }),
++            "_supply_chain_relationships": attr.string_dict(default = {
++                "data": "dynamic_link",
++            }),
+         },

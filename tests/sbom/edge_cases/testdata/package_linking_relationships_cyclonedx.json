@@ -1,0 +1,74 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
+  "bomFormat": "CycloneDX",
+  "components": [
+    {
+      "bom-ref": "pkg:generic/linking-dynamic@1.0.0",
+      "name": "linking-dynamic",
+      "purl": "pkg:generic/linking-dynamic@1.0.0",
+      "type": "library",
+      "version": "1.0.0"
+    },
+    {
+      "bom-ref": "pkg:generic/linking-fallback@1.0.0",
+      "name": "linking-fallback",
+      "purl": "pkg:generic/linking-fallback@1.0.0",
+      "type": "library",
+      "version": "1.0.0"
+    },
+    {
+      "bom-ref": "pkg:generic/linking-static@1.0.0",
+      "name": "linking-static",
+      "purl": "pkg:generic/linking-static@1.0.0",
+      "type": "library",
+      "version": "1.0.0"
+    }
+  ],
+  "compositions": [
+    {
+      "aggregate": "unknown",
+      "assemblies": [
+        "pkg:generic/linking-fallback@1.0.0"
+      ],
+      "bom-ref": "pkg:generic/linking-root@1.0.0"
+    }
+  ],
+  "dependencies": [
+    {
+      "dependsOn": [
+        "pkg:generic/linking-dynamic@1.0.0",
+        "pkg:generic/linking-static@1.0.0"
+      ],
+      "ref": "pkg:generic/linking-root@1.0.0"
+    }
+  ],
+  "metadata": {
+    "component": {
+      "bom-ref": "pkg:generic/linking-root@1.0.0",
+      "name": "linking-root",
+      "properties": [
+        {
+          "name": "bazel:relationship:dynamic_link",
+          "value": "pkg:generic/linking-dynamic@1.0.0"
+        },
+        {
+          "name": "bazel:relationship:static_link",
+          "value": "pkg:generic/linking-static@1.0.0"
+        }
+      ],
+      "purl": "pkg:generic/linking-root@1.0.0",
+      "type": "library",
+      "version": "1.0.0"
+    },
+    "tools": {
+      "components": [
+        {
+          "name": "Bazel Supply Chain Tools CycloneDX generator",
+          "type": "application"
+        }
+      ]
+    }
+  },
+  "specVersion": "1.6",
+  "version": 1
+}

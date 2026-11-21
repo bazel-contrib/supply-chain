@@ -3,6 +3,7 @@
 load("@supply_chain_tools//sbom:cyclonedx.bzl", "cyclonedx")
 load("@supply_chain_tools//sbom:sbom.bzl", "sbom")
 load("@supply_chain_tools//sbom:spdx.bzl", "spdx")
+load("@package_metadata_extensions//providers:package_linking_info.bzl", "PackageLinkingInfo")
 load("//sbom:golden_test.bzl", "sbom_golden_test")
 
 def _fixture_impl(ctx):
@@ -28,6 +29,30 @@ root_image_layer = rule(
         "applicable_licenses": attr.label_list(),
         "_supply_chain_relationships": attr.string_dict(default = {
             "srcs": "static_link",
+        }),
+    },
+)
+
+def _linking_root_impl(ctx):
+    static_names = {name: True for name in ctx.attr.static_names}
+    dynamic_names = {name: True for name in ctx.attr.dynamic_names}
+    return [
+        DefaultInfo(),
+        PackageLinkingInfo(
+            static_linked = [dep.label for dep in ctx.attr.deps if dep.label.name in static_names],
+            dynamic_linked = [dep.label for dep in ctx.attr.deps if dep.label.name in dynamic_names],
+        ),
+    ]
+
+linking_root = rule(
+    implementation = _linking_root_impl,
+    attrs = {
+        "deps": attr.label_list(),
+        "static_names": attr.string_list(),
+        "dynamic_names": attr.string_list(),
+        "applicable_licenses": attr.label_list(),
+        "_supply_chain_relationships": attr.string_dict(default = {
+            "deps": "contains",
         }),
     },
 )

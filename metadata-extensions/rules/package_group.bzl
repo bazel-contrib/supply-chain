@@ -15,8 +15,7 @@ def _package_group_rule_impl(ctx):
         else:
             config = positive
 
-        repo = pattern["repo"]
-        config.setdefault(repo, []).append(struct(
+        config.setdefault(pattern["repo"], []).append(struct(
             package = pattern["package"],
             target = pattern["target"],
             recursive = pattern["recursive"],
@@ -29,27 +28,20 @@ def _package_group_rule_impl(ctx):
         ),
     ]
 
-_package_group_rule = rule(
-    implementation = _package_group_rule_impl,
-    attrs = {
-        "patterns": attr.string_list(
-            mandatory = True,
-        ),
-    },
-    provides = [
-        PackageSpecificationInfo,
-    ],
-)
+def package_group(name, packages, visibility = None):
+    """Creates a package specification from repository-qualified patterns.
 
-def _package_group_impl(name, packages, visibility):
+    Unlike Bazel's native package_group, this supports patterns in other repos.
+    """
     patterns = []
     for label, configs in packages.items():
+        repo = Label(label).repo_name if label.startswith("@") else ""
         for config in json.decode(configs):
             patterns.append({
                 "negative": config["negative"],
                 "package": config["package"],
                 "recursive": config["recursive"],
-                "repo": label.repo_name,
+                "repo": repo,
                 "target": config["target"],
             })
 
@@ -59,17 +51,13 @@ def _package_group_impl(name, packages, visibility):
         patterns = [json.encode(pattern) for pattern in patterns],
     )
 
-package_group = macro(
-    implementation = _package_group_impl,
+_package_group_rule = rule(
+    implementation = _package_group_rule_impl,
     attrs = {
-        "packages": attr.label_keyed_string_dict(
+        "patterns": attr.string_list(
             mandatory = True,
-            configurable = False,
             doc = """
-A dict from a dummy label to the parsed configuration.
-
-Key: a label in the repository of the target pattern. Only `Label.repo_name` is
-    used. Does not need to exist.
+Repository-qualified patterns and their configuration data, encoded as JSON.
 Value: a `json.encode()`'d list of dicts defining the configuration of the
        target pattern.
 
@@ -82,11 +70,7 @@ Value: a `json.encode()`'d list of dicts defining the configuration of the
 """.strip(),
         ),
     },
-    doc = """
-A starlark implementation of [package_group](https://bazel.build/reference/be/functions#package_group).
-
-Unlike the native implementation in Bazel, this allows patterns referencing other repositories.
-
-This has a very subtle API. Not for direct use.
-""".strip(),
+    provides = [
+        PackageSpecificationInfo,
+    ],
 )

@@ -45,6 +45,27 @@ the glibc and musl entries automatically. The index is useful for demonstrating
 multi-variant SBOM collection, but production publishing should add a
 selection mechanism (for example separate tags or variant annotations).
 
+## Selecting cgo linkage
+
+The `//:cgo_link` string flag selects the C helper's linkage mode and defaults
+to `static`. The small resolver helper is called by `/api/resolve-free` and
+returns the deterministic value `42`.
+
+- `--//:cgo_link=static` links `//cgo_resolver:resolver` into the Go server.
+- `--//:cgo_link=dynamic` uses a `cc_shared_library` and `cc_import` for
+  glibc, places `libresolver.so` at `/app/libresolver.so` in the server image
+  layer, and includes it in the server's runfiles. This mode is deliberately
+  marked incompatible with musl; the musl Go binary remains statically linked.
+
+The patched `rules_go` and `rules_cc` rules return
+`PackageLinkingInfo` from `package_metadata_extensions`, classifying direct
+dependencies according to the actual configured linking decision. In static
+mode, the server has a `static_link` edge to the C library. In dynamic mode,
+the server has a `dynamic_link` edge to `libresolver.so`, and the shared
+library has a `static_link` edge to the C library it contains. The internal
+CcInfo adapter required by `cdeps` has no package metadata, so it does not
+appear as a helper component or an incorrectly classified SBOM relationship.
+
 ## Toolchain involvement edges
 
 The demo's root `MODULE.bazel` registers explicit Java toolchains, which
