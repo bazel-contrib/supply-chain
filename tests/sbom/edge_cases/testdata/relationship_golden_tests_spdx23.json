@@ -1,0 +1,289 @@
+{
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "creationInfo": {
+    "created": "1970-01-01T00:00:00Z",
+    "creators": [
+      "Tool: Bazel Supply Chain Tools SPDX generator"
+    ]
+  },
+  "dataLicense": "CC0-1.0",
+  "documentNamespace": "https://spdx.org/spdxdocs/pkg:generic%2Frelationship-root@1.0.0",
+  "name": "relationship-root",
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-dep-0",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:generic/relationship-root@1.0.0",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "name": "relationship-root",
+      "versionInfo": "1.0.0"
+    },
+    {
+      "SPDXID": "SPDXRef-dep-1",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:generic/dev-helper@1.0.0",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "name": "dev-helper",
+      "versionInfo": "1.0.0"
+    },
+    {
+      "SPDXID": "SPDXRef-dep-2",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:generic/dynamic-library@1.0.0",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "name": "dynamic-library",
+      "versionInfo": "1.0.0"
+    },
+    {
+      "SPDXID": "SPDXRef-dep-3",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:generic/image-layer@1.0.0",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "name": "image-layer",
+      "versionInfo": "1.0.0"
+    },
+    {
+      "SPDXID": "SPDXRef-dep-4",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:generic/legacy-library@1.0.0",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "name": "legacy-library",
+      "versionInfo": "1.0.0"
+    },
+    {
+      "SPDXID": "SPDXRef-dep-5",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:generic/server-tar@1.0.0",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "name": "server-tar",
+      "versionInfo": "1.0.0"
+    },
+    {
+      "SPDXID": "SPDXRef-dep-6",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:generic/static-library@1.0.0",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "name": "static-library",
+      "versionInfo": "1.0.0"
+    },
+    {
+      "SPDXID": "SPDXRef-dep-7",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:generic/test-helper@1.0.0",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "name": "test-helper",
+      "versionInfo": "1.0.0"
+    },
+    {
+      "SPDXID": "SPDXRef-dep-8",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:generic/other-provider-image-layer@1.0.0",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "name": "other-provider-image-layer",
+      "versionInfo": "1.0.0"
+    },
+    {
+      "SPDXID": "SPDXRef-dep-9",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:generic/provider-image-layer@1.0.0",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "name": "provider-image-layer",
+      "versionInfo": "1.0.0"
+    },
+    {
+      "SPDXID": "SPDXRef-dep-10",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:generic/provider-override@1.0.0",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "name": "provider-override",
+      "versionInfo": "1.0.0"
+    },
+    {
+      "SPDXID": "SPDXRef-dep-11",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:generic/server-binary@1.0.0",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "name": "server-binary",
+      "versionInfo": "1.0.0"
+    }
+  ],
+  "relationships": [
+    {
+      "relatedSpdxElement": "SPDXRef-dep-11",
+      "relationshipType": "STATIC_LINK",
+      "spdxElementId": "SPDXRef-dep-3"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-dep-11",
+      "relationshipType": "CONTAINS",
+      "spdxElementId": "SPDXRef-dep-5"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-dep-0",
+      "relationshipType": "DEV_DEPENDENCY_OF",
+      "spdxElementId": "SPDXRef-dep-1"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-dep-2",
+      "relationshipType": "DYNAMIC_LINK",
+      "spdxElementId": "SPDXRef-dep-0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-dep-3",
+      "relationshipType": "CONTAINS",
+      "spdxElementId": "SPDXRef-dep-0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-dep-4",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-dep-0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-dep-5",
+      "relationshipType": "CONTAINS",
+      "spdxElementId": "SPDXRef-dep-0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-dep-6",
+      "relationshipType": "STATIC_LINK",
+      "spdxElementId": "SPDXRef-dep-0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-dep-0",
+      "relationshipType": "TEST_DEPENDENCY_OF",
+      "spdxElementId": "SPDXRef-dep-7"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-dep-8",
+      "relationshipType": "CONTAINS",
+      "spdxElementId": "SPDXRef-dep-0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-dep-9",
+      "relationshipType": "CONTAINS",
+      "spdxElementId": "SPDXRef-dep-0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-dep-10",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-dep-0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-dep-11",
+      "relationshipType": "CONTAINS",
+      "spdxElementId": "SPDXRef-dep-8"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-dep-11",
+      "relationshipType": "DYNAMIC_LINK",
+      "spdxElementId": "SPDXRef-dep-9"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-dep-11",
+      "relationshipType": "STATIC_LINK",
+      "spdxElementId": "SPDXRef-dep-10"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-dep-0",
+      "relationshipType": "DESCRIBES",
+      "spdxElementId": "SPDXRef-DOCUMENT"
+    }
+  ],
+  "spdxVersion": "SPDX-2.3"
+}

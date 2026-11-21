@@ -15,8 +15,9 @@ type NodeConfig struct {
 }
 
 type EdgeConfig struct {
-	From        string `json:"from"`
-	To          string `json:"to"`
-	Type        string `json:"type"`
-	Involvement string `json:"involvement,omitempty"`
+	From         string `json:"from"`
+	To           string `json:"to"`
+	Type         string `json:"type"`
+	Involvement  string `json:"involvement,omitempty"`
+	Relationship string `json:"relationship,omitempty"`
 }

@@ -11,6 +11,7 @@ TargetWithMetadataInfo = provider(
         "metadata": "depset(): [list] of my direct collected leaf attribute providers",
         "direct_deps": "list<Label>: Direct dependencies of this target (for graph edges)",
         "direct_dep_involvements": "tuple<string>: Involvement values parallel to direct_deps",
+        "direct_dep_relationships": "tuple<string>: Relationship values parallel to direct_deps",
     },
 )
 

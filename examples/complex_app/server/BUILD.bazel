@@ -1,0 +1,34 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary")
+load("@package_metadata//rules:package_metadata.bzl", "package_metadata")
+
+package(
+    default_package_metadata = [":package_metadata"],
+    default_visibility = ["//visibility:public"],
+)
+
+package_metadata(
+    name = "package_metadata",
+    purl = "pkg:generic/toolchain-demo-server@0.1.0",
+)
+
+go_binary(
+    name = "server",
+    srcs = [
+        "//:openapi_generated.go",
+        "//:server.go",
+    ],
+    cgo = True,
+    data = select({
+        "//:libc_glibc": ["@@llvm++glibc+glibc_2.28//:runtime_dependency"],
+        "//:libc_musl": [],
+    }),
+    embedsrcs = [
+        "//:frontend.js",
+        "//:web/index.html",
+    ],
+    importpath = "example.com/complex-app",
+    static = select({
+        "//:libc_glibc": "off",
+        "//:libc_musl": "on",
+    }),
+)
