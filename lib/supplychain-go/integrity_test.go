@@ -19,7 +19,14 @@ func TestParseChecksums(t *testing.T) {
 }
 
 func TestParseChecksumsMalformed(t *testing.T) {
-	for _, sri := range []string{"sha256", "sha256-!!!", "sha256-AAAA"} {
+	for _, sri := range []string{
+		"sha256", "sha256-!!!", "sha256-AAAA",
+		// A length of 1 modulo 4 is impossible in base64.
+		"sha384-" + strings.Repeat("A", 65),
+		// At most two padding characters, completing a multiple of 4.
+		"sha256-" + strings.Repeat("A", 43) + "====",
+		"sha256-" + strings.Repeat("A", 42) + "=",
+	} {
 		_, err := ParseChecksums([]string{sri})
 		assert.Error(t, err, sri)
 	}

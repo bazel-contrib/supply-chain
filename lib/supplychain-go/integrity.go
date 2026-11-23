@@ -48,7 +48,12 @@ func ParseChecksums(sris []string) ([]Checksum, error) {
 		// must ignore the ones they do not recognize.
 		digest, _, _ = strings.Cut(digest, "?")
 		// Accept both the standard and the URL-safe base64 alphabets.
-		digest = strings.NewReplacer("-", "+", "_", "/").Replace(strings.TrimRight(digest, "="))
+		unpadded := strings.TrimRight(digest, "=")
+		// At most two padding characters, completing a multiple of 4.
+		if padding := len(digest) - len(unpadded); padding > 2 || (padding > 0 && len(digest)%4 != 0) {
+			return nil, fmt.Errorf("integrity %q: invalid base64 padding", sri)
+		}
+		digest = strings.NewReplacer("-", "+", "_", "/").Replace(unpadded)
 		raw, err := base64.RawStdEncoding.DecodeString(digest)
 		if err != nil {
 			return nil, fmt.Errorf("integrity %q: %w", sri, err)

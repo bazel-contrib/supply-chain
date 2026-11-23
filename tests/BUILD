@@ -271,6 +271,24 @@ integrity_failure_test(
 )
 
 integrity_failure_test(
+    name = "integrity_impossible_length_test",
+    message = "the digest is not base64",
+    values = ["sha384-" + "A" * 65],
+)
+
+integrity_failure_test(
+    name = "integrity_excess_padding_test",
+    message = "the digest is not base64",
+    values = ["sha256-" + "A" * 43 + "===="],
+)
+
+integrity_failure_test(
+    name = "integrity_misplaced_padding_test",
+    message = "the digest is not base64",
+    values = ["sha256-" + "A" * 42 + "="],
+)
+
+integrity_failure_test(
     name = "integrity_wrong_size_test",
     message = "a sha256 digest has 32 bytes",
     values = ["sha256-AAAA"],

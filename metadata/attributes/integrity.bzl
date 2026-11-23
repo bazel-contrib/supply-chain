@@ -25,12 +25,20 @@ def _validate(sri):
     # The SRI spec (https://www.w3.org/TR/sri/, section 3.5) reserves
     # `?<options>` after the digest but defines no options, and consumers must
     # ignore the ones they do not recognize.
-    digest = digest.partition("?")[0].rstrip("=")
-    if not digest:
+    digest = digest.partition("?")[0]
+    unpadded = digest.rstrip("=")
+    if not unpadded:
         fail("integrity {} has no digest".format(repr(sri)))
-    for char in digest.elems():
+    for char in unpadded.elems():
         if char not in _BASE64_ALPHABET:
             fail("integrity {}: the digest is not base64".format(repr(sri)))
+
+    # Base64 has at most two padding characters, which complete the digest to a
+    # multiple of 4 characters, and no digest has 1 character left over.
+    padding = len(digest) - len(unpadded)
+    if padding > 2 or (padding > 0 and len(digest) % 4 != 0) or len(unpadded) % 4 == 1:
+        fail("integrity {}: the digest is not base64".format(repr(sri)))
+    digest = unpadded
 
     # Algorithms that are not known are passed through, and tools may drop them.
     size = _DIGEST_SIZES.get(algorithm.lower())
