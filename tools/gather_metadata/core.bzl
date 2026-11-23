@@ -187,7 +187,8 @@ def _get_transitive_metadata(
     # library), or because a generated attribute value legitimately repeats a
     # label. Track labels already processed so each dependency contributes
     # exactly one edge and one slice of transitive metadata, regardless of
-    # how many attributes/positions reference it.
+    # how many attributes/positions reference it. Targets are told apart by
+    # label and by whether they are in the exec configuration.
     seen_dep_labels = {}
     seen_edges = {}
 
@@ -214,8 +215,13 @@ def _get_transitive_metadata(
                 dep_label = getattr(info, "top_level_target", None) or dep.label
                 if info != null_provider_instance:
                     label_key = str(dep_label)
-                    if label_key not in seen_dep_labels:
-                        seen_dep_labels[label_key] = True
+
+                    # The same label can be a distinct configured target (for
+                    # example in both "deps" and "tools"), with different
+                    # transitive dependencies in each configuration.
+                    config_key = label_key + "\0" + ("exec" if info.is_exec_config else "target")
+                    if config_key not in seen_dep_labels:
+                        seen_dep_labels[config_key] = True
                         transitive_depsets.append(info.transitive)
 
                     involvement = "build" if info.is_exec_config else "runtime"
@@ -246,8 +252,9 @@ def _get_transitive_metadata(
             # `ToolchainAspectsProviders.label` is missing before Bazel 9.
             label = getattr(resolved_toolchain, "label", None) or info.top_level_target
             label_key = str(label)
-            if label_key not in seen_dep_labels:
-                seen_dep_labels[label_key] = True
+            config_key = label_key + "\0" + ("exec" if info.is_exec_config else "target")
+            if config_key not in seen_dep_labels:
+                seen_dep_labels[config_key] = True
                 transitive_depsets.append(info.transitive)
 
             involvement = declarations.get(normalize_toolchain_type(toolchain_type))
