@@ -24,15 +24,6 @@
       "version": "1.0.0"
     }
   ],
-  "compositions": [
-    {
-      "aggregate": "unknown",
-      "assemblies": [
-        "pkg:generic/linking-fallback@1.0.0"
-      ],
-      "bom-ref": "pkg:generic/linking-root@1.0.0"
-    }
-  ],
   "dependencies": [
     {
       "dependsOn": [
@@ -47,6 +38,10 @@
       "bom-ref": "pkg:generic/linking-root@1.0.0",
       "name": "linking-root",
       "properties": [
+        {
+          "name": "bazel:relationship:contains",
+          "value": "pkg:generic/linking-fallback@1.0.0"
+        },
         {
           "name": "bazel:relationship:dynamic_link",
           "value": "pkg:generic/linking-dynamic@1.0.0"
