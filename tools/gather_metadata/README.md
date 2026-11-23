@@ -117,7 +117,7 @@ orthogonal.
 | Relationship | SPDX 2.3 | SPDX 3.0.1 | CycloneDX |
 | --- | --- | --- | --- |
 | `depends_on` | parent `DEPENDS_ON` child | `dependsOn` | dependency edge |
-| `contains` | parent `CONTAINS` child | `contains` | BOM composition with `aggregate: "unknown"` and child bom-ref in `assemblies` |
+| `contains` | parent `CONTAINS` child | `contains` | parent property `bazel:relationship:contains` |
 | `static_link` | parent `STATIC_LINK` child | `hasStaticLink` | dependency edge and parent property `bazel:relationship:static_link` |
 | `dynamic_link` | parent `DYNAMIC_LINK` child | `hasDynamicLink` | dependency edge and parent property `bazel:relationship:dynamic_link` |
 | `test_dependency` | child `TEST_DEPENDENCY_OF` parent | `dependsOn`, lifecycle scope `test` | dependency edge and parent property `bazel:relationship:test_dependency` |

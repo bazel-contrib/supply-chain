@@ -5,6 +5,12 @@
     {
       "bom-ref": "pkg:generic/toolchain-demo-server-tar@0.1.0",
       "name": "toolchain-demo-server-tar",
+      "properties": [
+        {
+          "name": "bazel:relationship:contains",
+          "value": "pkg:generic/toolchain-demo-server@0.1.0"
+        }
+      ],
       "purl": "pkg:generic/toolchain-demo-server-tar@0.1.0",
       "type": "library",
       "version": "0.1.0"
@@ -12,6 +18,16 @@
     {
       "bom-ref": "pkg:generic/toolchain-demo-server@0.1.0",
       "name": "toolchain-demo-server",
+      "properties": [
+        {
+          "name": "bazel:relationship:contains",
+          "value": "pkg:github/llvm/llvm-project@23.1.2"
+        },
+        {
+          "name": "bazel:relationship:contains",
+          "value": "pkg:golang/go@1.27.4"
+        }
+      ],
       "purl": "pkg:generic/toolchain-demo-server@0.1.0",
       "type": "library",
       "version": "0.1.0"
@@ -168,35 +184,6 @@
       "version": "1.27.4"
     }
   ],
-  "compositions": [
-    {
-      "aggregate": "unknown",
-      "assemblies": [
-        "pkg:generic/toolchain-demo-server@0.1.0"
-      ],
-      "bom-ref": "pkg:generic/toolchain-demo-server-tar@0.1.0"
-    },
-    {
-      "aggregate": "unknown",
-      "assemblies": [
-        "pkg:github/llvm/llvm-project@23.1.2",
-        "pkg:golang/go@1.27.4"
-      ],
-      "bom-ref": "pkg:generic/toolchain-demo-server@0.1.0"
-    },
-    {
-      "aggregate": "unknown",
-      "assemblies": [
-        "pkg:docker/library/ubuntu@sha256:1e622c5f073b4f6bfad6632f2616c7f59ef256e96fe78bf6a595d1dc4376ac02?repository_url=index.docker.io",
-        "pkg:generic/openjdk@25",
-        "pkg:generic/toolchain-demo-server-tar@0.1.0",
-        "pkg:generic/toolchain-demo-server@0.1.0",
-        "pkg:github/llvm/llvm-project@23.1.2",
-        "pkg:github/python/cpython@3.14.10"
-      ],
-      "bom-ref": "pkg:oci/toolchain-demo@0.1.0"
-    }
-  ],
   "dependencies": [
     {
       "dependsOn": [
@@ -244,6 +231,32 @@
         }
       ],
       "name": "toolchain-demo",
+      "properties": [
+        {
+          "name": "bazel:relationship:contains",
+          "value": "pkg:docker/library/ubuntu@sha256:1e622c5f073b4f6bfad6632f2616c7f59ef256e96fe78bf6a595d1dc4376ac02?repository_url=index.docker.io"
+        },
+        {
+          "name": "bazel:relationship:contains",
+          "value": "pkg:generic/openjdk@25"
+        },
+        {
+          "name": "bazel:relationship:contains",
+          "value": "pkg:generic/toolchain-demo-server-tar@0.1.0"
+        },
+        {
+          "name": "bazel:relationship:contains",
+          "value": "pkg:generic/toolchain-demo-server@0.1.0"
+        },
+        {
+          "name": "bazel:relationship:contains",
+          "value": "pkg:github/llvm/llvm-project@23.1.2"
+        },
+        {
+          "name": "bazel:relationship:contains",
+          "value": "pkg:github/python/cpython@3.14.10"
+        }
+      ],
       "purl": "pkg:oci/toolchain-demo@0.1.0",
       "type": "library",
       "version": "0.1.0"

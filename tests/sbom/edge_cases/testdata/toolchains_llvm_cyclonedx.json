@@ -16,19 +16,16 @@
       "version": "1.0.0"
     }
   ],
-  "compositions": [
-    {
-      "aggregate": "unknown",
-      "assemblies": [
-        "pkg:generic/toolchain-fixtures-llvm_runtime@1.0.0"
-      ],
-      "bom-ref": "pkg:generic/toolchain-fixture-app@1.0.0"
-    }
-  ],
   "metadata": {
     "component": {
       "bom-ref": "pkg:generic/toolchain-fixture-app@1.0.0",
       "name": "toolchain-fixture-app",
+      "properties": [
+        {
+          "name": "bazel:relationship:contains",
+          "value": "pkg:generic/toolchain-fixtures-llvm_runtime@1.0.0"
+        }
+      ],
       "purl": "pkg:generic/toolchain-fixture-app@1.0.0",
       "type": "library",
       "version": "1.0.0"
