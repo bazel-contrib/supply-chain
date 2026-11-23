@@ -66,6 +66,14 @@ library has a `static_link` edge to the C library it contains. The internal
 CcInfo adapter required by `cdeps` has no package metadata, so it does not
 appear as a helper component or an incorrectly classified SBOM relationship.
 
+The `rules_cc` patch is a demonstration and keeps the classification simple:
+every direct `deps` entry of a `cc_binary` or `cc_shared_library` is reported as
+statically linked unless it is listed in `dynamic_deps`. It does not model a
+`cc_import` that offers both an archive and a shared library with
+`linkstatic = False`, nor a dependency that a `dynamic_deps` library exports.
+The `rules_go` patch follows the library selection of `cgo.bzl` (an archive
+wins over a shared library).
+
 ## Toolchain involvement edges
 
 The demo's root `MODULE.bazel` registers explicit Java toolchains, which

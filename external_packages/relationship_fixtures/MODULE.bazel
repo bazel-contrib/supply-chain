@@ -4,3 +4,4 @@ module(
 )
 
 bazel_dep(name = "package_metadata", version = "HEAD")
+bazel_dep(name = "package_metadata_extensions", version = "HEAD")

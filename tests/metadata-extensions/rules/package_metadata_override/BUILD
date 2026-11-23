@@ -154,3 +154,19 @@ target_group_test(
     ],
     target = ":mixed_repo",
 )
+
+# The override is declared in another repository.
+target_group_test(
+    name = "declared_in_external_repo_test",
+    excluded = [
+        "//a/b",
+        "@package_metadata//a/b",
+        "@relationship_fixtures//b/c",
+    ],
+    included = [
+        "@relationship_fixtures//a/b",
+        "@relationship_fixtures//a:c",
+        "@package_metadata//b/c",
+    ],
+    target = "@relationship_fixtures//:override",
+)

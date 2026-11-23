@@ -35,7 +35,10 @@ def package_group(name, packages, visibility = None):
     """
     patterns = []
     for label, configs in packages.items():
-        repo = Label(label).repo_name if label.startswith("@") else ""
+        # Resolve the repository in the context of the caller: an unqualified
+        # pattern belongs to the caller's repository, and an apparent repository
+        # name is mapped with the caller's repository mapping.
+        repo = native.package_relative_label(label).repo_name
         for config in json.decode(configs):
             patterns.append({
                 "negative": config["negative"],

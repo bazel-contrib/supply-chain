@@ -16,7 +16,7 @@ diff --git a/go/private/rules/binary.bzl b/go/private/rules/binary.bzl
  load(
      "//go/private:common.bzl",
      "GO_TOOLCHAIN",
-@@ -126,5 +128,17 @@ def _go_cc_aspect_impl(target, ctx):
+@@ -126,5 +128,21 @@ def _go_cc_aspect_impl(target, ctx):
      ]
  
 +def _is_dynamic_cdep(dep):
@@ -27,7 +27,11 @@ diff --git a/go/private/rules/binary.bzl b/go/private/rules/binary.bzl
 +
 +    for linker_input in dep[CcInfo].linking_context.linker_inputs.to_list():
 +        for library in linker_input.libraries:
-+            if library.dynamic_library != None:
++            # Match the selection of cgo.bzl: an archive wins over a shared
++            # library, and an interface library stands for a shared one.
++            if library.static_library != None or library.pic_static_library != None:
++                continue
++            if library.interface_library != None or library.dynamic_library != None:
 +                return True
 +    return False
 +
