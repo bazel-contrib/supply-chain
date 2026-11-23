@@ -146,6 +146,13 @@ image layer. Go `1.27.4` is embedded, including across both libc variants: the
 Go runtime and standard library are linked into the server binary. The Go SDK is
 one component, so the compiler shares that classification.
 
+The report is checked in as
+[`reports/container_index_cyclonedx.json`](reports/container_index_cyclonedx.json).
+It is not compared in CI, because building this example downloads
+multi-gigabyte toolchains. To refresh it, run
+`bazel build //:container_index_cyclonedx` and copy
+`bazel-bin/container_index_cyclonedx.json` over it with its keys sorted.
+
 The musl executable's static linkage was verified from its ELF (`PT_INTERP`
 absent, no `DT_NEEDED` entries), so musl is embedded. The glibc executable
 uses `/lib64/ld-linux-x86-64.so.2` and has dynamic glibc dependencies, so
