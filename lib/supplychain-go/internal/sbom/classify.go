@@ -164,14 +164,14 @@ func deduplicateByMetadata(graph GraphConfig) GraphConfig {
 		nodes = append(nodes, node)
 	}
 
-	type pair struct{ from, to string }
+	type pair struct{ from, to, involvement string }
 	bestRelationship := make(map[pair]string)
 	for _, edge := range graph.Edges {
 		from, to := remapLabel(remap, edge.From), remapLabel(remap, edge.To)
 		if from == to {
 			continue
 		}
-		key := pair{from: from, to: to}
+		key := pair{from: from, to: to, involvement: edge.Involvement}
 		current, found := bestRelationship[key]
 		if !found || relationshipPriority(edge.Relationship) < relationshipPriority(current) {
 			bestRelationship[key] = edge.Relationship
@@ -186,7 +186,7 @@ func deduplicateByMetadata(graph GraphConfig) GraphConfig {
 			// Collapsing duplicate nodes turned this into a self-reference.
 			continue
 		}
-		e := EdgeConfig{From: from, To: to, Type: edge.Type, Involvement: edge.Involvement, Relationship: bestRelationship[pair{from: from, to: to}]}
+		e := EdgeConfig{From: from, To: to, Type: edge.Type, Involvement: edge.Involvement, Relationship: bestRelationship[pair{from: from, to: to, involvement: edge.Involvement}]}
 		key := edgeKey{from: from, to: to, involvement: edge.Involvement}
 		if seenEdges[key] {
 			continue

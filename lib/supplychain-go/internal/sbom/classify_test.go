@@ -292,3 +292,19 @@ func TestComputeClassifications_MalformedGraph_RootWithMetadataNoEdgesButOtherNo
 	assert.Contains(t, err.Error(), "//app:binary")
 	assert.Contains(t, err.Error(), "no dependency edges")
 }
+
+func TestNormalizeGraph_RelationshipIsSelectedPerInvolvement(t *testing.T) {
+	graph := sbom.NormalizeGraph(sbom.GraphConfig{
+		RootTarget: "//app:a",
+		Nodes:      []sbom.NodeConfig{{Label: "//app:a", MetadataFile: "a.json"}, {Label: "//lib:b", MetadataFile: "b.json"}},
+		Edges: []sbom.EdgeConfig{
+			{From: "//app:a", To: "//lib:b", Type: "depends_on", Involvement: "runtime", Relationship: "dynamic_link"},
+			{From: "//app:a", To: "//lib:b", Type: "depends_on", Involvement: "build", Relationship: "static_link"},
+		},
+	})
+	got := map[string]string{}
+	for _, edge := range graph.Edges {
+		got[edge.Involvement] = edge.Relationship
+	}
+	assert.Equal(t, map[string]string{"": "dynamic_link", "build": "static_link"}, got)
+}

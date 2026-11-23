@@ -287,44 +287,20 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications, o
 		}
 	}
 
-	// Collapse target edges to component edges. Containment is represented by
-	// compositions; only dependency edges participate in cycle removal.
+	// Collapse target edges to component edges. Typed relationships other than
+	// plain dependencies are recorded as properties of the parent component;
+	// containment is not a dependency, so only dependency edges participate in
+	// cycle removal.
 	componentEdges := componentDependencyEdges(graph.Edges, labelToBOMRef)
-	assembliesByParent := make(map[string]map[string]struct{})
 	for _, edge := range componentEdges {
 		relationship := effectiveRelationship(edge)
-		if relationship == "contains" {
-			assemblies, ok := assembliesByParent[edge.from]
-			if !ok {
-				assemblies = make(map[string]struct{})
-				assembliesByParent[edge.from] = assemblies
-			}
-			assemblies[edge.to] = struct{}{}
-		} else if relationship != "" && relationship != "depends_on" {
+		if relationship != "" && relationship != "depends_on" {
 			component := componentByRef(edge.from, rootComponent, components, componentIndexes)
 			if component != nil {
 				addRelationshipProperty(component, relationship, edge.to)
 			}
 		}
 	}
-	compositions := make([]cdx.Composition, 0, len(assembliesByParent))
-	for parentRef, assemblyRefs := range assembliesByParent {
-		assemblies := make([]cdx.BOMReference, 0, len(assemblyRefs))
-		for assemblyRef := range assemblyRefs {
-			assemblies = append(assemblies, cdx.BOMReference(assemblyRef))
-		}
-		sort.Slice(assemblies, func(i, j int) bool {
-			return assemblies[i] < assemblies[j]
-		})
-		compositions = append(compositions, cdx.Composition{
-			BOMRef:     parentRef,
-			Aggregate:  cdx.CompositionAggregateUnknown,
-			Assemblies: &assemblies,
-		})
-	}
-	sort.Slice(compositions, func(i, j int) bool {
-		return compositions[i].BOMRef < compositions[j].BOMRef
-	})
 	// Cycles are broken from the entry components: the root, or, when the
 	// root has no metadata, its direct dependencies.
 	var entryRefs []string
@@ -383,9 +359,6 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications, o
 	}
 
 	bom.Dependencies = dependencies
-	if len(compositions) > 0 {
-		bom.Compositions = &compositions
-	}
 
 	// Add metadata with tool information and root component
 	metadata := &cdx.Metadata{
@@ -449,17 +422,11 @@ func componentDependencyEdges(edges []sbom.EdgeConfig, labelToBOMRef map[string]
 			involvement:  edge.Involvement,
 			relationship: edge.Relationship,
 		}
+		// Involvement and relationship must come from the same edge, so that
+		// the emitted pair is one that an edge declares.
 		current, found := bestByPair[key]
-		if !found {
+		if !found || edgeIsBetter(candidate, current) {
 			bestByPair[key] = candidate
-		} else {
-			if involvementPriority(candidate.involvement) < involvementPriority(current.involvement) {
-				current.involvement = candidate.involvement
-			}
-			if relationshipPriority(candidate.relationship) < relationshipPriority(current.relationship) {
-				current.relationship = candidate.relationship
-			}
-			bestByPair[key] = current
 		}
 	}
 
@@ -469,6 +436,14 @@ func componentDependencyEdges(edges []sbom.EdgeConfig, labelToBOMRef map[string]
 	}
 	sortComponentDependencyEdges(result)
 	return result
+}
+
+// edgeIsBetter ranks the involvement first and, on a tie, the relationship.
+func edgeIsBetter(candidate, current componentDependencyEdge) bool {
+	if involvementPriority(candidate.involvement) != involvementPriority(current.involvement) {
+		return involvementPriority(candidate.involvement) < involvementPriority(current.involvement)
+	}
+	return relationshipPriority(candidate.relationship) < relationshipPriority(current.relationship)
 }
 
 func relationshipPriority(relationship string) int {

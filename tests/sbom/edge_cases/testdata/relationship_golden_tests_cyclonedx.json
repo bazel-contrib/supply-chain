@@ -39,6 +39,12 @@
     {
       "bom-ref": "pkg:generic/server-tar@1.0.0",
       "name": "server-tar",
+      "properties": [
+        {
+          "name": "bazel:relationship:contains",
+          "value": "pkg:generic/server-binary@1.0.0"
+        }
+      ],
       "purl": "pkg:generic/server-tar@1.0.0",
       "type": "library",
       "version": "1.0.0"
@@ -60,6 +66,12 @@
     {
       "bom-ref": "pkg:generic/other-provider-image-layer@1.0.0",
       "name": "other-provider-image-layer",
+      "properties": [
+        {
+          "name": "bazel:relationship:contains",
+          "value": "pkg:generic/server-binary@1.0.0"
+        }
+      ],
       "purl": "pkg:generic/other-provider-image-layer@1.0.0",
       "type": "library",
       "version": "1.0.0"
@@ -98,32 +110,6 @@
       "version": "1.0.0"
     }
   ],
-  "compositions": [
-    {
-      "aggregate": "unknown",
-      "assemblies": [
-        "pkg:generic/server-binary@1.0.0"
-      ],
-      "bom-ref": "pkg:generic/other-provider-image-layer@1.0.0"
-    },
-    {
-      "aggregate": "unknown",
-      "assemblies": [
-        "pkg:generic/image-layer@1.0.0",
-        "pkg:generic/other-provider-image-layer@1.0.0",
-        "pkg:generic/provider-image-layer@1.0.0",
-        "pkg:generic/server-tar@1.0.0"
-      ],
-      "bom-ref": "pkg:generic/relationship-root@1.0.0"
-    },
-    {
-      "aggregate": "unknown",
-      "assemblies": [
-        "pkg:generic/server-binary@1.0.0"
-      ],
-      "bom-ref": "pkg:generic/server-tar@1.0.0"
-    }
-  ],
   "dependencies": [
     {
       "dependsOn": [
@@ -160,6 +146,22 @@
       "bom-ref": "pkg:generic/relationship-root@1.0.0",
       "name": "relationship-root",
       "properties": [
+        {
+          "name": "bazel:relationship:contains",
+          "value": "pkg:generic/image-layer@1.0.0"
+        },
+        {
+          "name": "bazel:relationship:contains",
+          "value": "pkg:generic/other-provider-image-layer@1.0.0"
+        },
+        {
+          "name": "bazel:relationship:contains",
+          "value": "pkg:generic/provider-image-layer@1.0.0"
+        },
+        {
+          "name": "bazel:relationship:contains",
+          "value": "pkg:generic/server-tar@1.0.0"
+        },
         {
           "name": "bazel:relationship:dev_dependency",
           "value": "pkg:generic/dev-helper@1.0.0"

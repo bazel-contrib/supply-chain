@@ -249,3 +249,70 @@ func TestGenerateBOM_KeepsBuildToolPathWithoutRootMetadata(t *testing.T) {
 	}
 	t.Errorf("component a has no dependency on build tool b: %v", *bom.Dependencies)
 }
+
+func TestComponentDependencyEdges_RelationshipComesFromTheSelectedEdge(t *testing.T) {
+	edges := []sbom.EdgeConfig{
+		{From: "//a:a", To: "//b:b", Involvement: "runtime", Relationship: "dynamic_link"},
+		{From: "//a:a", To: "//b:b", Involvement: "build", Relationship: "static_link"},
+	}
+	got := componentDependencyEdges(edges, map[string]string{"//a:a": "a", "//b:b": "b"})
+	if len(got) != 1 {
+		t.Fatalf("got %d edges, want 1: %v", len(got), got)
+	}
+	if got[0].involvement != "runtime" || got[0].relationship != "dynamic_link" {
+		t.Errorf("selected %s %s, but no edge declares that combination", got[0].involvement, got[0].relationship)
+	}
+}
+
+func TestGenerateBOM_ContainmentDoesNotReuseComponentRefs(t *testing.T) {
+	dir := t.TempDir()
+	a := writePackageMetadata(t, dir, "a.json", "//fixture:a", "pkg:golang/example.com/a@v1")
+	b := writePackageMetadata(t, dir, "b.json", "//fixture:b", "pkg:golang/example.com/b@v1")
+	graph := sbom.GraphConfig{
+		RootTarget: "//app:a",
+		Nodes: []sbom.NodeConfig{
+			{Label: "//app:a", MetadataFile: a},
+			{Label: "//lib:b", MetadataFile: b},
+		},
+		Edges: []sbom.EdgeConfig{
+			{From: "//app:a", To: "//lib:b", Type: "depends_on", Relationship: "contains"},
+		},
+	}
+	classifications, err := sbom.ComputeClassifications(graph, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	bom, err := GenerateBOM(graph, classifications)
+	if err != nil {
+		t.Fatal(err)
+	}
+	refs := map[string]int{}
+	if bom.Metadata != nil && bom.Metadata.Component != nil {
+		refs[bom.Metadata.Component.BOMRef]++
+	}
+	for _, c := range *bom.Components {
+		refs[c.BOMRef]++
+	}
+	if bom.Compositions != nil {
+		for _, c := range *bom.Compositions {
+			refs[c.BOMRef]++
+		}
+	}
+	for ref, n := range refs {
+		if n > 1 {
+			t.Errorf("bom-ref %q is used %d times in the BOM", ref, n)
+		}
+	}
+
+	// The containment is kept as a property of the parent component.
+	if bom.Metadata == nil || bom.Metadata.Component == nil || bom.Metadata.Component.Properties == nil {
+		t.Fatal("root component has no properties")
+	}
+	want := cdx.Property{Name: "bazel:relationship:contains", Value: "pkg:golang/example.com/b@v1"}
+	for _, property := range *bom.Metadata.Component.Properties {
+		if property == want {
+			return
+		}
+	}
+	t.Errorf("properties = %v, want %v", *bom.Metadata.Component.Properties, want)
+}
