@@ -10,7 +10,7 @@ diff --git a/go/private/rules/binary.bzl b/go/private/rules/binary.bzl
              ),
 -        },
 +            "_supply_chain_toolchain_involvement": attr.label_keyed_string_dict(default = {
-+                Label("@io_bazel_rules_go//go:toolchain"): "build",
++                Label("@io_bazel_rules_go//go:toolchain"): "embedded",
 +                Label("@bazel_tools//tools/cpp:toolchain_type"): "embedded",
 +            }),
 +        },

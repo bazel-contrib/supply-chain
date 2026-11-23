@@ -134,7 +134,7 @@ and `CONTAINS`; SPDX 3.0.1 uses lifecycle-scoped `usesTool`, `dependsOn`, and
 | OpenJDK `25` | In scope | Runtime |
 | LLVM `23.1.2` | In scope | Embedded |
 | LLVM runtimes `23.1.2` | Excluded | Build |
-| Go `1.27.4` | Excluded | Build |
+| Go `1.27.4` | In scope | Embedded |
 | Node.js `22.23.4` | In scope | Runtime |
 | CPython `3.14.10` | In scope | Embedded |
 
@@ -142,7 +142,9 @@ These are the index CycloneDX classifications. JDK 21 is only used for
 compilation/bootstrap; JDK 25 is the Java service's runtime. Node.js has a
 runtime path through the shipped service even though the same PURL is also
 used by the build-time frontend bundler. CPython is embedded by the Python
-image layer. Go `1.27.4` is build-only, including across both libc variants.
+image layer. Go `1.27.4` is embedded, including across both libc variants: the
+Go runtime and standard library are linked into the server binary. The Go SDK is
+one component, so the compiler shares that classification.
 
 The musl executable's static linkage was verified from its ELF (`PT_INTERP`
 absent, no `DT_NEEDED` entries), so musl is embedded. The glibc executable

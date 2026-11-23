@@ -408,6 +408,7 @@ func componentDependencyEdges(edges []sbom.EdgeConfig, labelToBOMRef map[string]
 func makeAcyclicComponentDependencies(edges []componentDependencyEdge, root string) []componentDependencyEdge {
 	componentByNode, cyclicComponents := dependencyStronglyConnectedComponents(edges)
 	filtered := make([]componentDependencyEdge, 0, len(edges))
+	var dropped []componentDependencyEdge
 	for _, edge := range edges {
 		fromComponent, fromFound := componentByNode[edge.from]
 		toComponent, toFound := componentByNode[edge.to]
@@ -415,9 +416,28 @@ func makeAcyclicComponentDependencies(edges []componentDependencyEdge, root stri
 			fromFound && toFound &&
 			fromComponent == toComponent &&
 			cyclicComponents[fromComponent] {
+			dropped = append(dropped, edge)
 			continue
 		}
 		filtered = append(filtered, edge)
+	}
+
+	// Dropping every build edge inside a cycle can disconnect a build tool
+	// from the root. Restore a dropped edge when it is the only way the root
+	// reaches its target; the DFS below then cuts a different edge of the
+	// cycle instead.
+	if root != "" {
+		reachable := reachableFrom(filtered, root)
+		for changed := true; changed; {
+			changed = false
+			for _, edge := range dropped {
+				if reachable[edge.from] && !reachable[edge.to] {
+					filtered = append(filtered, edge)
+					reachable = reachableFrom(filtered, root)
+					changed = true
+				}
+			}
+		}
 	}
 
 	// SCC filtering handles build-only back edges first. A sorted DFS then
@@ -477,6 +497,26 @@ func makeAcyclicComponentDependencies(edges []componentDependencyEdge, root stri
 		}
 	}
 	return result
+}
+
+func reachableFrom(edges []componentDependencyEdge, root string) map[string]bool {
+	adjacency := make(map[string][]string)
+	for _, edge := range edges {
+		adjacency[edge.from] = append(adjacency[edge.from], edge.to)
+	}
+	reachable := map[string]bool{root: true}
+	queue := []string{root}
+	for len(queue) > 0 {
+		node := queue[0]
+		queue = queue[1:]
+		for _, next := range adjacency[node] {
+			if !reachable[next] {
+				reachable[next] = true
+				queue = append(queue, next)
+			}
+		}
+	}
+	return reachable
 }
 
 func dependencyStronglyConnectedComponents(edges []componentDependencyEdge) (map[string]int, map[int]bool) {

@@ -35,8 +35,14 @@ def _toolchain_involvement_declarations(ctx):
     if declarations == None:
         return {}
 
-    toolchain_types = {}
-    if hasattr(ctx.rule, "toolchains"):
+    # Toolchain types can only be enumerated (and toolchain edges are only
+    # exposed to aspects) on Bazel versions supporting toolchains_aspects = ["*"].
+    # Elsewhere the declarations have no edge to apply to, so only their values
+    # are validated and the key check is skipped.
+    toolchain_types = None
+    if (bazel_features.rules.supports_toolchains_aspects_star and
+        hasattr(ctx.rule, "toolchains")):
+        toolchain_types = {}
         for toolchain_type in ctx.rule.toolchains.toolchain_types():
             toolchain_types[normalize_toolchain_type(toolchain_type)] = True
 
@@ -44,7 +50,7 @@ def _toolchain_involvement_declarations(ctx):
     for toolchain_type_target, involvement in declarations.items():
         toolchain_type = toolchain_type_target.label
         normalized_type = normalize_toolchain_type(toolchain_type)
-        if normalized_type not in toolchain_types:
+        if toolchain_types != None and normalized_type not in toolchain_types:
             fail("Invalid _supply_chain_toolchain_involvement key {} on {} {}: key must name a toolchain declared by this rule".format(
                 toolchain_type,
                 ctx.rule.kind,

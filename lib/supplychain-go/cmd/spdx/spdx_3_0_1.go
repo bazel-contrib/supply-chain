@@ -45,8 +45,17 @@ func GenerateDocument301(graph sbom.GraphConfig, classifications sbom.Classifica
 			subjectName = purl.Name
 			subjectPURL = purl.String()
 		}
+		licenseAttribute, err := supplychain.GetLicenseAttribute(pkgMetadata)
+		if err != nil {
+			return fmt.Errorf("error reading license of %s: %w", node.Label, err)
+		}
 		if existing, exists := purlToPackage[purl.String()]; exists {
 			labelToPackage[node.Label] = existing
+			// Keep one package per PURL, but do not lose a license that only
+			// a later metadata file declares.
+			if licenseAttribute != nil && licenseOf[existing] == nil {
+				licenseOf[existing] = licenseAttribute
+			}
 			return nil
 		}
 
@@ -99,10 +108,6 @@ func GenerateDocument301(graph sbom.GraphConfig, classifications sbom.Classifica
 					Identifier: cpe,
 				})
 			}
-		}
-		licenseAttribute, err := supplychain.GetLicenseAttribute(pkgMetadata)
-		if err != nil {
-			return fmt.Errorf("error reading license of %s: %w", node.Label, err)
 		}
 		if licenseAttribute != nil {
 			licenseOf[pkg] = licenseAttribute

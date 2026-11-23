@@ -28,6 +28,11 @@ bootclasspath(
 
 toolchain(
     name = "demo_jdk21_compile_toolchain_registration",
+    # The compiler and bootclasspath run the macOS/arm64 JDK 21 directly.
+    exec_compatible_with = [
+        "@platforms//cpu:arm64",
+        "@platforms//os:macos",
+    ],
     toolchain = ":demo_jdk21_compile_toolchain",
     toolchain_type = "@bazel_tools//tools/jdk:toolchain_type",
 )

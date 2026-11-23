@@ -30,6 +30,14 @@ def _toolchain_involvement_test_impl(ctx):
     asserts.equals(env, "//x:y", normalize_toolchain_type("@@//x:y"))
     asserts.equals(env, "@bazel_tools//tools/jdk:toolchain_type", normalize_toolchain_type("@@bazel_tools//tools/jdk:toolchain_type"))
 
+    asserts.false(
+        env,
+        normalize_toolchain_type("@@toolchains++sdk+host//:type") == normalize_toolchain_type("@@toolchains++sdk+target//:type"),
+        "distinct extension repos collapsed to the same key",
+    )
+
+    asserts.equals(env, "@toolchains++sdk+host//:type", normalize_toolchain_type("@@toolchains++sdk+host//:type"))
+
     declarations = analysistest.target_under_test(env)[_DeclaredInfo].declarations
     declaration_key = declarations.keys()[0]
     asserts.equals(

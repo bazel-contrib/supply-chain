@@ -11,10 +11,15 @@ def normalize_toolchain_type(label):
         repository_end = value.find("//")
         if repository_end >= 0:
             repository = value[1:repository_end]
-            for separator in ["+", "~"]:
-                separator_index = repository.find(separator)
-                if separator_index >= 0:
-                    repository = repository[:separator_index]
+            # Module extension repositories (`module++extension+name`) are
+            # distinct repositories that share the module prefix, so they must
+            # keep their full name. Only module repositories (`module+` or
+            # `module~version`) are reduced to the module name.
+            if "++" not in repository:
+                for separator in ["+", "~"]:
+                    separator_index = repository.find(separator)
+                    if separator_index >= 0:
+                        repository = repository[:separator_index]
             value = "@" + repository + value[repository_end:]
     return value
 
