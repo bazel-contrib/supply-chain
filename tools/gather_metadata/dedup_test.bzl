@@ -24,6 +24,7 @@ dependency twice through a single attribute.
 """
 
 load("@bazel_skylib//lib:unittest.bzl", "analysistest", "asserts")
+load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
 load(":gather_metadata.bzl", "gather_metadata_info")
 load(":providers.bzl", "TransitiveMetadataInfo")
 load(":serialization.bzl", "metadata_info_to_json")
@@ -68,6 +69,23 @@ _platform_dep_rule = rule(
     implementation = _consume_impl,
     attrs = {
         "srcs": attr.label_list(),
+    },
+)
+
+def _flag_transition(value):
+    return transition(
+        implementation = lambda settings, attr: {str(Label(":dedup_flag")): value},
+        inputs = [],
+        outputs = [str(Label(":dedup_flag"))],
+    )
+
+# A rule reaching the same label through two attributes that put it in two
+# different target-side configurations.
+_two_transitions_rule = rule(
+    implementation = _consume_impl,
+    attrs = {
+        "first": attr.label_list(cfg = _flag_transition("first")),
+        "second": attr.label_list(cfg = _flag_transition("second")),
     },
 )
 
@@ -141,6 +159,23 @@ distinct_configurations_test = analysistest.make(
         "//command_line_option:extra_execution_platforms": [str(Label(":dedup_exec_platform"))],
         str(Label("//sbom:include_build_tools")): True,
     },
+)
+
+def _two_target_configurations_test_impl(ctx):
+    env = analysistest.begin(ctx)
+    info = analysistest.target_under_test(env)[TransitiveMetadataInfo]
+    targets = [str(twmi.target) for twmi in info.transitive.to_list()]
+    for leaf in ["dedup_flag_leaf_first", "dedup_flag_leaf_second"]:
+        asserts.true(
+            env,
+            any([t.endswith(":" + leaf) for t in targets]),
+            "Expected the transitive metadata of ':{}' to be retained, got {}".format(leaf, targets),
+        )
+    return analysistest.end(env)
+
+two_target_configurations_test = analysistest.make(
+    _two_target_configurations_test_impl,
+    extra_target_under_test_aspects = [gather_metadata_info],
 )
 
 def _via_two_attrs_test_impl(ctx):
@@ -217,6 +252,33 @@ def dedup_test_suite(name):
         target_under_test = ":dedup_via_deps_and_tools",
     )
 
+    # The same label reached in two different target-side configurations,
+    # where it has different dependencies: both must be retained.
+    string_flag(name = "dedup_flag", build_setting_default = "default")
+    native.config_setting(name = "dedup_flag_first", flag_values = {":dedup_flag": "first"})
+    native.config_setting(name = "dedup_flag_second", flag_values = {":dedup_flag": "second"})
+    native.filegroup(name = "dedup_flag_leaf_first", srcs = [], tags = ["manual"])
+    native.filegroup(name = "dedup_flag_leaf_second", srcs = [], tags = ["manual"])
+    _platform_dep_rule(
+        name = "dedup_flag_shared",
+        srcs = select({
+            ":dedup_flag_first": [":dedup_flag_leaf_first"],
+            ":dedup_flag_second": [":dedup_flag_leaf_second"],
+            "//conditions:default": [],
+        }),
+        tags = ["manual"],
+    )
+    _two_transitions_rule(
+        name = "dedup_via_two_transitions",
+        first = [":dedup_flag_shared"],
+        second = [":dedup_flag_shared"],
+        tags = ["manual"],
+    )
+    two_target_configurations_test(
+        name = "dedup_two_target_configurations_test",
+        target_under_test = ":dedup_via_two_transitions",
+    )
+
     via_two_attrs_test(
         name = "dedup_via_two_attrs_test",
         target_under_test = ":dedup_via_two_attrs",
@@ -233,5 +295,6 @@ def dedup_test_suite(name):
             ":dedup_via_two_attrs_test",
             ":dedup_via_repeated_dict_value_test",
             ":dedup_distinct_configurations_test",
+            ":dedup_two_target_configurations_test",
         ],
     )
