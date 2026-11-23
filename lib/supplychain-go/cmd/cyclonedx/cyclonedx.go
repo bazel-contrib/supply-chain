@@ -567,6 +567,7 @@ func makeAcyclicComponentDependencies(edges []componentDependencyEdge, roots []s
 
 	removed := make([]bool, len(filtered))
 	state := make(map[string]uint8)
+	var deferred []string
 	var visit func(string)
 	visit = func(from string) {
 		state[from] = 1
@@ -582,17 +583,28 @@ func makeAcyclicComponentDependencies(edges []componentDependencyEdge, roots []s
 				removed[edgeIndex] = true
 			}
 		}
-		for _, to := range contained[from] {
-			if state[to] == 0 {
-				visit(to)
+		// What a component contains is visited once the current search has
+		// returned, as a separate entry: the container, and the nodes above
+		// it, are not ancestors of the contained components in the
+		// dependency graph, and must not turn their dependencies into back
+		// edges.
+		deferred = append(deferred, contained[from]...)
+		state[from] = 2
+	}
+	visitDeferred := func() {
+		for len(deferred) > 0 {
+			next := deferred[0]
+			deferred = deferred[1:]
+			if state[next] == 0 {
+				visit(next)
 			}
 		}
-		state[from] = 2
 	}
 
 	for _, root := range roots {
 		if nodes[root] && state[root] == 0 {
 			visit(root)
+			visitDeferred()
 		}
 	}
 	orderedNodes := make([]string, 0, len(nodes))
@@ -603,6 +615,7 @@ func makeAcyclicComponentDependencies(edges []componentDependencyEdge, roots []s
 	for _, node := range orderedNodes {
 		if state[node] == 0 {
 			visit(node)
+			visitDeferred()
 		}
 	}
 

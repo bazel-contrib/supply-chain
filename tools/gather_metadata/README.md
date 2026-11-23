@@ -131,6 +131,7 @@ involvement is treated as `contains`, unless build involvement takes
 precedence. Other non-default relationship types remain dependency edges and
 are represented by sorted, deduplicated properties on the parent. Default
 `depends_on` edges need no extra property. Components remain flat. Containment
-is never cut and does not appear as a dependency edge, but it is followed from
-the entry components when breaking dependency cycles, so that the dependencies
-of contained components, directly or transitively, are preserved.
+is never cut and does not appear as a dependency edge, but it is followed
+when breaking dependency cycles, so that the dependencies of contained
+components, directly or transitively, are preserved. A container is not treated
+as a dependency ancestor of the components it contains.

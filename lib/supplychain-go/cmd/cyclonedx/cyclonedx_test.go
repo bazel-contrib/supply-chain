@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"sort"
 	"strings"
 	"testing"
 
@@ -409,4 +410,50 @@ func TestGenerateBOM_KeepsBuildToolPathBelowContainedPackageOfDependency(t *test
 		}
 	}
 	t.Errorf("package has no dependency on build tool: %v", *bom.Dependencies)
+}
+
+func TestGenerateBOM_ContainerIsNotADependencyAncestorOfWhatItContains(t *testing.T) {
+	dir := t.TempDir()
+	root := writePackageMetadata(t, dir, "root.json", "//fixture:root", "pkg:golang/example.com/root@v1")
+	a := writePackageMetadata(t, dir, "a.json", "//fixture:a", "pkg:golang/example.com/a@v1")
+	pkg := writePackageMetadata(t, dir, "pkg.json", "//fixture:pkg", "pkg:golang/example.com/pkg@v1")
+	graph := sbom.GraphConfig{
+		RootTarget: "//app:root",
+		Nodes: []sbom.NodeConfig{
+			{Label: "//app:root", MetadataFile: root},
+			{Label: "//a:a", MetadataFile: a},
+			{Label: "//pkg:pkg", MetadataFile: pkg},
+		},
+		Edges: []sbom.EdgeConfig{
+			{From: "//app:root", To: "//a:a", Type: "depends_on"},
+			{From: "//a:a", To: "//pkg:pkg", Type: "depends_on", Relationship: "contains"},
+			// The dependency graph has only pkg -> a and pkg -> root: no cycle.
+			{From: "//pkg:pkg", To: "//a:a", Type: "depends_on", Relationship: "dynamic_link"},
+			{From: "//pkg:pkg", To: "//app:root", Type: "depends_on"},
+		},
+	}
+	classifications, err := sbom.ComputeClassifications(graph, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	bom, err := GenerateBOM(graph, classifications)
+	if err != nil {
+		t.Fatal(err)
+	}
+	children := map[string][]string{}
+	for _, dependency := range *bom.Dependencies {
+		if dependency.Dependencies != nil {
+			children[dependency.Ref] = *dependency.Dependencies
+		}
+	}
+	want := map[string][]string{
+		"pkg:golang/example.com/pkg@v1":  {"pkg:golang/example.com/a@v1", "pkg:golang/example.com/root@v1"},
+		"pkg:golang/example.com/root@v1": {"pkg:golang/example.com/a@v1"},
+	}
+	for ref := range children {
+		sort.Strings(children[ref])
+	}
+	if !reflect.DeepEqual(children, want) {
+		t.Errorf("dependencies = %v, want %v", children, want)
+	}
 }
