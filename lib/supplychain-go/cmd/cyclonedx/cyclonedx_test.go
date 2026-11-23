@@ -191,3 +191,18 @@ func TestHashesOf(t *testing.T) {
 		t.Error("hashesOf(malformed) succeeded, want an error")
 	}
 }
+
+func TestMakeAcyclic_KeepsRootPathToBuildToolInCycle(t *testing.T) {
+	// root -build-> tool, tool -runtime-> root.
+	edges := []componentDependencyEdge{
+		{from: "root", to: "tool", involvement: "build"},
+		{from: "tool", to: "root", involvement: "runtime"},
+	}
+	got := makeAcyclicComponentDependencies(edges, "root")
+	for _, e := range got {
+		if e.from == "root" && e.to == "tool" {
+			return
+		}
+	}
+	t.Errorf("no path from root to tool after breaking the cycle: %v", got)
+}

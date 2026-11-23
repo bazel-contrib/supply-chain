@@ -18,6 +18,7 @@ func GenerateDocument23(graph sbom.GraphConfig, classifications sbom.Classificat
 	spdxPackages := make([]*spdx2.Package, 0)
 	labelToID := make(map[string]string)
 	purlToID := make(map[string]string)
+	purlToPackage := make(map[string]*spdx2.Package)
 	licenseOf := make(map[*spdx2.Package]*supplychain.LicenseAttribute)
 	patchesOf := make(map[*spdx2.Package][]*supplychain.PatchAttribute)
 	idx := 0
@@ -44,8 +45,17 @@ func GenerateDocument23(graph sbom.GraphConfig, classifications sbom.Classificat
 			subjectName = purl.Name
 			subjectPURL = purl.String()
 		}
+		licenseAttribute, err := supplychain.GetLicenseAttribute(pkgMetadata)
+		if err != nil {
+			return nil, fmt.Errorf("error reading license of %s: %w", node.Label, err)
+		}
 		if elementID, exists := purlToID[purl.String()]; exists {
 			labelToID[node.Label] = elementID
+			// Keep one package per PURL, but do not lose a license that only
+			// a later metadata file declares.
+			if existing := purlToPackage[purl.String()]; existing != nil && licenseAttribute != nil && licenseOf[existing] == nil {
+				licenseOf[existing] = licenseAttribute
+			}
 			return nil, nil
 		}
 
@@ -98,10 +108,6 @@ func GenerateDocument23(graph sbom.GraphConfig, classifications sbom.Classificat
 			}
 		}
 
-		licenseAttribute, err := supplychain.GetLicenseAttribute(pkgMetadata)
-		if err != nil {
-			return nil, fmt.Errorf("error reading license of %s: %w", node.Label, err)
-		}
 		if licenseAttribute != nil {
 			licenseOf[pkg] = licenseAttribute
 		}
@@ -129,6 +135,7 @@ func GenerateDocument23(graph sbom.GraphConfig, classifications sbom.Classificat
 		}
 		patchesOf[pkg] = patches
 
+		purlToPackage[purl.String()] = pkg
 		labelToID[node.Label] = elementID
 		purlToID[purl.String()] = elementID
 		return pkg, nil
