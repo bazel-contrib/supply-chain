@@ -357,3 +357,56 @@ func TestGenerateBOM_KeepsBuildToolPathBelowContainedPackage(t *testing.T) {
 	}
 	t.Errorf("package has no dependency on build tool: %v", *bom.Dependencies)
 }
+
+func TestGenerateBOM_KeepsBuildToolPathBelowContainedPackageOfDependency(t *testing.T) {
+	dir := t.TempDir()
+	root := writePackageMetadata(t, dir, "root.json", "//fixture:root", "pkg:golang/example.com/root@v1")
+	a := writePackageMetadata(t, dir, "a.json", "//fixture:a", "pkg:golang/example.com/a@v1")
+	pkg := writePackageMetadata(t, dir, "pkg.json", "//fixture:pkg", "pkg:golang/example.com/pkg@v1")
+	tool := writePackageMetadata(t, dir, "tool.json", "//fixture:tool", "pkg:golang/example.com/tool@v1")
+	graph := sbom.GraphConfig{
+		RootTarget: "//app:root",
+		Nodes: []sbom.NodeConfig{
+			{Label: "//app:root", MetadataFile: root},
+			{Label: "//a:a", MetadataFile: a},
+			{Label: "//pkg:pkg", MetadataFile: pkg},
+			{Label: "//tool:tool", MetadataFile: tool},
+		},
+		Edges: []sbom.EdgeConfig{
+			{From: "//app:root", To: "//a:a", Type: "depends_on"},
+			{From: "//a:a", To: "//pkg:pkg", Type: "depends_on", Relationship: "contains"},
+			{From: "//pkg:pkg", To: "//tool:tool", Type: "depends_on", Involvement: "build"},
+			{From: "//tool:tool", To: "//pkg:pkg", Type: "depends_on", Involvement: "runtime"},
+		},
+	}
+	classifications, err := sbom.ComputeClassifications(graph, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	bom, err := GenerateBOM(graph, classifications)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if bom.Dependencies == nil {
+		t.Fatal("dependencies is nil")
+	}
+	for _, dependency := range *bom.Dependencies {
+		if dependency.Ref == "pkg:golang/example.com/pkg@v1" && dependency.Dependencies != nil {
+			for _, child := range *dependency.Dependencies {
+				if child == "pkg:golang/example.com/tool@v1" {
+					return
+				}
+			}
+		}
+		for _, other := range []string{"a@v1", "pkg@v1"} {
+			if dependency.Ref == "pkg:golang/example.com/"+other && dependency.Dependencies != nil {
+				for _, child := range *dependency.Dependencies {
+					if child == "pkg:golang/example.com/pkg@v1" && other == "a@v1" {
+						t.Errorf("containment appears as a dependency edge: %v", *bom.Dependencies)
+					}
+				}
+			}
+		}
+	}
+	t.Errorf("package has no dependency on build tool: %v", *bom.Dependencies)
+}
