@@ -207,12 +207,6 @@
     },
     {
       "dependsOn": [
-        "pkg:github/llvm/llvm-project@23.1.2"
-      ],
-      "ref": "pkg:github/llvm/llvm-project@23.1.2#runtimes"
-    },
-    {
-      "dependsOn": [
         "pkg:generic/openjdk@21",
         "pkg:github/llvm/llvm-project@23.1.2#runtimes",
         "pkg:github/nodejs/node@22.23.4"

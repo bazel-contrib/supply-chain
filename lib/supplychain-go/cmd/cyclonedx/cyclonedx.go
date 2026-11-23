@@ -313,6 +313,9 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications, o
 			}
 		}
 	}
+	// Containment edges are not dependencies, but what a component contains is
+	// still reached from it, so contained components are entries as well.
+	entryRefs = withContainedComponents(componentEdges, entryRefs)
 	componentEdges = makeAcyclicComponentDependencies(componentEdges, entryRefs)
 	depMap := make(map[string][]string) // parent BOMRef -> []child BOMRefs
 	for _, edge := range componentEdges {
@@ -444,6 +447,31 @@ func edgeIsBetter(candidate, current componentDependencyEdge) bool {
 		return involvementPriority(candidate.involvement) < involvementPriority(current.involvement)
 	}
 	return relationshipPriority(candidate.relationship) < relationshipPriority(current.relationship)
+}
+
+// withContainedComponents returns the entries followed by every component that
+// they contain, directly or transitively.
+func withContainedComponents(edges []componentDependencyEdge, entries []string) []string {
+	contained := make(map[string][]string)
+	for _, edge := range edges {
+		if effectiveRelationship(edge) == "contains" {
+			contained[edge.from] = append(contained[edge.from], edge.to)
+		}
+	}
+	result := append([]string(nil), entries...)
+	seen := make(map[string]bool, len(entries))
+	for _, entry := range entries {
+		seen[entry] = true
+	}
+	for i := 0; i < len(result); i++ {
+		for _, child := range contained[result[i]] {
+			if !seen[child] {
+				seen[child] = true
+				result = append(result, child)
+			}
+		}
+	}
+	return result
 }
 
 func relationshipPriority(relationship string) int {

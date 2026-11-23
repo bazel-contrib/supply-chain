@@ -124,11 +124,13 @@ orthogonal.
 | `dev_dependency` | child `DEV_DEPENDENCY_OF` parent | `dependsOn`, lifecycle scope `development` | dependency edge and parent property `bazel:relationship:dev_dependency` |
 
 CycloneDX has no corresponding relationship vocabulary. `contains` edges are
-represented by BOM-level compositions, one per parent bom-ref, with
-`aggregate: "unknown"` and sorted child bom-refs in `assemblies`; they are not
-emitted as dependency edges or `bazel:relationship:contains` properties.
-Embedded involvement also maps to compositions, unless build involvement
-takes precedence. Other non-default relationship types remain dependency
-edges and are represented by sorted, deduplicated properties on the parent.
-Default `depends_on` edges need no extra property. Components remain flat, and
-composition references do not participate in dependency-cycle removal.
+represented by a `bazel:relationship:contains` property on the parent
+component, with the bom-ref of the child as its value; they are not emitted as
+dependency edges, and no BOM-level compositions are generated. Embedded
+involvement is treated as `contains`, unless build involvement takes
+precedence. Other non-default relationship types remain dependency edges and
+are represented by sorted, deduplicated properties on the parent. Default
+`depends_on` edges need no extra property. Components remain flat. Containment
+does not take part in dependency-cycle removal, but components contained by
+the root, directly or transitively, are used as entry points when breaking
+cycles so that their dependencies are preserved.
