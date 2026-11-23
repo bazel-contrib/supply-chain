@@ -198,11 +198,54 @@ func TestMakeAcyclic_KeepsRootPathToBuildToolInCycle(t *testing.T) {
 		{from: "root", to: "tool", involvement: "build"},
 		{from: "tool", to: "root", involvement: "runtime"},
 	}
-	got := makeAcyclicComponentDependencies(edges, "root")
+	got := makeAcyclicComponentDependencies(edges, []string{"root"})
 	for _, e := range got {
 		if e.from == "root" && e.to == "tool" {
 			return
 		}
 	}
 	t.Errorf("no path from root to tool after breaking the cycle: %v", got)
+}
+
+func TestGenerateBOM_KeepsBuildToolPathWithoutRootMetadata(t *testing.T) {
+	dir := t.TempDir()
+	// R has no metadata. A1 and A2 share a PURL and collapse into component A.
+	a1 := writePackageMetadata(t, dir, "a1.json", "//fixture:a1", "pkg:golang/example.com/a@v1")
+	a2 := writePackageMetadata(t, dir, "a2.json", "//fixture:a2", "pkg:golang/example.com/a@v1")
+	b := writePackageMetadata(t, dir, "b.json", "//fixture:b", "pkg:golang/example.com/b@v1")
+	graph := sbom.GraphConfig{
+		RootTarget: "//app:r",
+		Nodes: []sbom.NodeConfig{
+			{Label: "//app:r"},
+			{Label: "//a:one", MetadataFile: a1},
+			{Label: "//a:two", MetadataFile: a2},
+			{Label: "//b:tool", MetadataFile: b},
+		},
+		Edges: []sbom.EdgeConfig{
+			{From: "//app:r", To: "//a:one", Type: "depends_on", Involvement: "runtime"},
+			{From: "//a:one", To: "//b:tool", Type: "depends_on", Involvement: "build"},
+			{From: "//b:tool", To: "//a:two", Type: "depends_on", Involvement: "runtime"},
+		},
+	}
+	classifications, err := sbom.ComputeClassifications(graph, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	bom, err := GenerateBOM(graph, classifications)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if bom.Dependencies == nil {
+		t.Fatal("dependencies is nil")
+	}
+	for _, dependency := range *bom.Dependencies {
+		if dependency.Ref == "pkg:golang/example.com/a@v1" && dependency.Dependencies != nil {
+			for _, child := range *dependency.Dependencies {
+				if child == "pkg:golang/example.com/b@v1" {
+					return
+				}
+			}
+		}
+	}
+	t.Errorf("component a has no dependency on build tool b: %v", *bom.Dependencies)
 }
