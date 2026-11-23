@@ -32,11 +32,13 @@ func TestPatchAttributeParser(t *testing.T) {
 	}, a)
 
 	for name, input := range map[string]string{
-		"no integrity": `{"description":"x","integrity":[],"type":"backport","url":"u"}`,
-		"bad type":     `{"description":"x","integrity":["` + sriSha256 + `"],"type":"bogus","url":"u"}`,
-		"no source":    `{"description":"x","integrity":["` + sriSha256 + `"],"type":"backport"}`,
-		"two sources":  `{"description":"x","integrity":["` + sriSha256 + `"],"type":"backport","url":"u","file":"f","file_exec_path":"f"}`,
-		"no exec path": `{"description":"x","integrity":["` + sriSha256 + `"],"type":"backport","file":"f"}`,
+		"no integrity":      `{"description":"x","integrity":[],"type":"backport","url":"u"}`,
+		"bad type":          `{"description":"x","integrity":["` + sriSha256 + `"],"type":"bogus","url":"u"}`,
+		"no source":         `{"description":"x","integrity":["` + sriSha256 + `"],"type":"backport"}`,
+		"two sources":       `{"description":"x","integrity":["` + sriSha256 + `"],"type":"backport","url":"u","file":"f","file_exec_path":"f"}`,
+		"malformed digest":  `{"description":"x","integrity":["sha256-!!!"],"type":"backport","url":"u"}`,
+		"wrong size digest": `{"description":"x","integrity":["sha256-AAAA"],"type":"backport","url":"u"}`,
+		"no exec path":      `{"description":"x","integrity":["` + sriSha256 + `"],"type":"backport","file":"f"}`,
 	} {
 		_, err := parse(input)
 		assert.Error(t, err, name)

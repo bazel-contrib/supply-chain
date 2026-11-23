@@ -71,6 +71,10 @@ var PatchAttributeDescriptor = PackageAttributeDescriptor[PatchAttribute]{
 		if (a.File == "") != (a.FileExecPath == "") {
 			return nil, fmt.Errorf("patch attribute must have file_exec_path if and only if it has file")
 		}
+		// Fail on a malformed digest here, so that every format rejects it.
+		if _, err := a.Checksums(); err != nil {
+			return nil, err
+		}
 		return &a, nil
 	},
 }
