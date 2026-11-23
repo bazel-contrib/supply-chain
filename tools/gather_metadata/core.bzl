@@ -185,11 +185,11 @@ def _get_transitive_metadata(
     # A single dependency Target can be reachable more than once: through
     # more than one attribute (e.g. "deps" and "embed" both naming the same
     # library), or because a generated attribute value legitimately repeats a
-    # label. Track labels already processed so each dependency contributes
-    # exactly one edge and one slice of transitive metadata, regardless of
-    # how many attributes/positions reference it. Targets are told apart by
-    # label and by whether they are in the exec configuration.
-    seen_dep_labels = {}
+    # label. Each dependency contributes exactly one edge per involvement,
+    # regardless of how many attributes/positions reference it. Its transitive
+    # metadata is always kept, as the same label can be a different configured
+    # target (e.g. in the target and exec configurations) with different
+    # dependencies; the depsets remove the entries that repeat.
     seen_edges = {}
 
     attrs = [attr for attr in dir(ctx.rule.attr)]
@@ -216,13 +216,10 @@ def _get_transitive_metadata(
                 if info != null_provider_instance:
                     label_key = str(dep_label)
 
-                    # The same label can be a distinct configured target (for
-                    # example in both "deps" and "tools"), with different
-                    # transitive dependencies in each configuration.
-                    config_key = label_key + "\0" + ("exec" if info.is_exec_config else "target")
-                    if config_key not in seen_dep_labels:
-                        seen_dep_labels[config_key] = True
-                        transitive_depsets.append(info.transitive)
+                    # The same label can be a distinct configured target with
+                    # different transitive dependencies, so always keep its
+                    # closure. Depsets remove the repeated entries.
+                    transitive_depsets.append(info.transitive)
 
                     involvement = "build" if info.is_exec_config else "runtime"
                     edge_key = label_key + "\0" + involvement
@@ -252,10 +249,7 @@ def _get_transitive_metadata(
             # `ToolchainAspectsProviders.label` is missing before Bazel 9.
             label = getattr(resolved_toolchain, "label", None) or info.top_level_target
             label_key = str(label)
-            config_key = label_key + "\0" + ("exec" if info.is_exec_config else "target")
-            if config_key not in seen_dep_labels:
-                seen_dep_labels[config_key] = True
-                transitive_depsets.append(info.transitive)
+            transitive_depsets.append(info.transitive)
 
             involvement = declarations.get(normalize_toolchain_type(toolchain_type))
             if involvement == None:
