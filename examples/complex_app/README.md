@@ -180,7 +180,7 @@ and `CONTAINS`; SPDX 3.0.1 uses lifecycle-scoped `usesTool`, `dependsOn`, and
 | OpenJDK `21` | Excluded | Build |
 | OpenJDK `25` | In scope | Runtime |
 | LLVM `23.1.2` | In scope | Embedded |
-| LLVM runtimes `23.1.2` | Excluded | Build |
+| LLVM runtimes `23.1.2` | In scope | Runtime |
 | Go `1.27.4` | In scope | Embedded |
 | Node.js `22.23.4` | In scope | Runtime |
 | CPython `3.14.10` | In scope | Embedded |
@@ -192,6 +192,12 @@ used by the build-time frontend bundler. CPython is embedded by the Python
 image layer. Go `1.27.4` is embedded, including across both libc variants: the
 Go runtime and standard library are linked into the server binary. The Go SDK is
 one component, so the compiler shares that classification.
+
+The LLVM runtimes are in scope because of the cgo resolver: its C library
+depends on LLVM's `cc_runtimes` in the target configuration, and the Linux
+server link takes `libc++.a`, `libc++abi.a` and `libunwind.a` as inputs, so that
+code ships in the server binary. The report records this as a regular
+dependency, so the involvement is runtime rather than embedded.
 
 The report is checked in as
 [`reports/container_index_cyclonedx.json`](reports/container_index_cyclonedx.json).
