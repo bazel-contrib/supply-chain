@@ -52,6 +52,25 @@ _string_keyed_dict_rule = rule(
     },
 )
 
+# A rule reaching the same label through a target-configuration attribute and
+# an exec-configuration attribute (e.g. "deps" and "tools").
+_dual_config_rule = rule(
+    implementation = _consume_impl,
+    attrs = {
+        "deps": attr.label_list(),
+        "tools": attr.label_list(cfg = "exec"),
+    },
+)
+
+# A dependency whose own dependencies are selected by platform, so that it has
+# different transitive metadata in the target and exec configurations.
+_platform_dep_rule = rule(
+    implementation = _consume_impl,
+    attrs = {
+        "srcs": attr.label_list(),
+    },
+)
+
 def _single_edge_per_dependency_check(ctx, dep_suffix):
     """Asserts `dep_suffix` produces exactly one direct edge from the target under test."""
     env = analysistest.begin(ctx)
@@ -102,6 +121,28 @@ def _single_edge_per_dependency_check(ctx, dep_suffix):
 
     return analysistest.end(env)
 
+def _distinct_configurations_test_impl(ctx):
+    env = analysistest.begin(ctx)
+    info = analysistest.target_under_test(env)[TransitiveMetadataInfo]
+    targets = [str(twmi.target) for twmi in info.transitive.to_list()]
+    for leaf in ["dedup_config_leaf_target", "dedup_config_leaf_exec"]:
+        asserts.true(
+            env,
+            any([t.endswith(":" + leaf) for t in targets]),
+            "Expected the transitive metadata of ':{}' to be retained, got {}".format(leaf, targets),
+        )
+    return analysistest.end(env)
+
+distinct_configurations_test = analysistest.make(
+    _distinct_configurations_test_impl,
+    extra_target_under_test_aspects = [gather_metadata_info],
+    config_settings = {
+        "//command_line_option:platforms": [str(Label(":dedup_target_platform"))],
+        "//command_line_option:extra_execution_platforms": [str(Label(":dedup_exec_platform"))],
+        str(Label("//sbom:include_build_tools")): True,
+    },
+)
+
 def _via_two_attrs_test_impl(ctx):
     return _single_edge_per_dependency_check(ctx, "dedup_shared_leaf")
 
@@ -146,6 +187,36 @@ def dedup_test_suite(name):
         tags = ["manual"],
     )
 
+    # The same label reached in the target and in the exec configuration,
+    # where it has different dependencies: both must be retained.
+    native.constraint_setting(name = "dedup_setting")
+    native.constraint_value(name = "dedup_target_value", constraint_setting = ":dedup_setting")
+    native.constraint_value(name = "dedup_exec_value", constraint_setting = ":dedup_setting")
+    native.platform(name = "dedup_target_platform", constraint_values = [":dedup_target_value"])
+    native.platform(name = "dedup_exec_platform", constraint_values = [":dedup_exec_value"])
+    native.config_setting(name = "dedup_is_target", constraint_values = [":dedup_target_value"])
+    native.config_setting(name = "dedup_is_exec", constraint_values = [":dedup_exec_value"])
+    native.filegroup(name = "dedup_config_leaf_target", srcs = [], tags = ["manual"])
+    native.filegroup(name = "dedup_config_leaf_exec", srcs = [], tags = ["manual"])
+    _platform_dep_rule(
+        name = "dedup_config_shared",
+        srcs = select({
+            ":dedup_is_target": [":dedup_config_leaf_target"],
+            ":dedup_is_exec": [":dedup_config_leaf_exec"],
+        }),
+        tags = ["manual"],
+    )
+    _dual_config_rule(
+        name = "dedup_via_deps_and_tools",
+        deps = [":dedup_config_shared"],
+        tools = [":dedup_config_shared"],
+        tags = ["manual"],
+    )
+    distinct_configurations_test(
+        name = "dedup_distinct_configurations_test",
+        target_under_test = ":dedup_via_deps_and_tools",
+    )
+
     via_two_attrs_test(
         name = "dedup_via_two_attrs_test",
         target_under_test = ":dedup_via_two_attrs",
@@ -161,5 +232,6 @@ def dedup_test_suite(name):
         tests = [
             ":dedup_via_two_attrs_test",
             ":dedup_via_repeated_dict_value_test",
+            ":dedup_distinct_configurations_test",
         ],
     )
