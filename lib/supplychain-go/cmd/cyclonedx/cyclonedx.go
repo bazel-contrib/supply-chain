@@ -291,11 +291,19 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications, o
 	// Collapse target edges to component edges, then remove only edges needed
 	// to make CycloneDX's component dependency graph acyclic.
 	componentEdges := componentDependencyEdges(graph.Edges, labelToBOMRef)
-	rootRef := ""
+	// Cycles are broken from the entry components: the root, or, when the
+	// root has no metadata, its direct dependencies.
+	var entryRefs []string
 	if rootComponent != nil {
-		rootRef = rootComponent.BOMRef
+		entryRefs = append(entryRefs, rootComponent.BOMRef)
+	} else {
+		for i := range classifications.Dependencies.Direct {
+			if ref, ok := labelToBOMRef[classifications.Dependencies.Direct[i].Label]; ok {
+				entryRefs = append(entryRefs, ref)
+			}
+		}
 	}
-	componentEdges = makeAcyclicComponentDependencies(componentEdges, rootRef)
+	componentEdges = makeAcyclicComponentDependencies(componentEdges, entryRefs)
 	depMap := make(map[string][]string) // parent BOMRef -> []child BOMRefs
 	for _, edge := range componentEdges {
 		depMap[edge.from] = append(depMap[edge.from], edge.to)
@@ -405,7 +413,7 @@ func componentDependencyEdges(edges []sbom.EdgeConfig, labelToBOMRef map[string]
 	return result
 }
 
-func makeAcyclicComponentDependencies(edges []componentDependencyEdge, root string) []componentDependencyEdge {
+func makeAcyclicComponentDependencies(edges []componentDependencyEdge, roots []string) []componentDependencyEdge {
 	componentByNode, cyclicComponents := dependencyStronglyConnectedComponents(edges)
 	filtered := make([]componentDependencyEdge, 0, len(edges))
 	var dropped []componentDependencyEdge
@@ -426,14 +434,14 @@ func makeAcyclicComponentDependencies(edges []componentDependencyEdge, root stri
 	// from the root. Restore a dropped edge when it is the only way the root
 	// reaches its target; the DFS below then cuts a different edge of the
 	// cycle instead.
-	if root != "" {
-		reachable := reachableFrom(filtered, root)
+	if len(roots) > 0 {
+		reachable := reachableFrom(filtered, roots)
 		for changed := true; changed; {
 			changed = false
 			for _, edge := range dropped {
 				if reachable[edge.from] && !reachable[edge.to] {
 					filtered = append(filtered, edge)
-					reachable = reachableFrom(filtered, root)
+					reachable = reachableFrom(filtered, roots)
 					changed = true
 				}
 			}
@@ -476,8 +484,10 @@ func makeAcyclicComponentDependencies(edges []componentDependencyEdge, root stri
 		state[from] = 2
 	}
 
-	if root != "" && nodes[root] {
-		visit(root)
+	for _, root := range roots {
+		if nodes[root] && state[root] == 0 {
+			visit(root)
+		}
 	}
 	orderedNodes := make([]string, 0, len(nodes))
 	for node := range nodes {
@@ -499,13 +509,19 @@ func makeAcyclicComponentDependencies(edges []componentDependencyEdge, root stri
 	return result
 }
 
-func reachableFrom(edges []componentDependencyEdge, root string) map[string]bool {
+func reachableFrom(edges []componentDependencyEdge, roots []string) map[string]bool {
 	adjacency := make(map[string][]string)
 	for _, edge := range edges {
 		adjacency[edge.from] = append(adjacency[edge.from], edge.to)
 	}
-	reachable := map[string]bool{root: true}
-	queue := []string{root}
+	reachable := make(map[string]bool, len(roots))
+	queue := make([]string, 0, len(roots))
+	for _, root := range roots {
+		if !reachable[root] {
+			reachable[root] = true
+			queue = append(queue, root)
+		}
+	}
 	for len(queue) > 0 {
 		node := queue[0]
 		queue = queue[1:]
