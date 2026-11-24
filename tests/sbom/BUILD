@@ -231,6 +231,7 @@ build_test(
         "app_cyclonedx",
         "app_spdx_jsonld",
         "lib_with_third_party_deps_cyclonedx",
+        "lib_with_third_party_deps_cyclonedx_no_patch_files",
         "lib_with_third_party_deps_spdx",
         "lib_with_third_party_deps_spdx_jsonld",
     ]

@@ -29,14 +29,16 @@ With Bazelisk installed, run from this directory:
 ```sh
 bazel build \
     //sample_reports:library_cyclonedx \
-    //sample_reports:library_spdx
+    //sample_reports:library_spdx \
+    //sample_reports:library_spdx_3_0_1
 ```
 
 The first build downloads Bazel dependencies and a Go toolchain, so it needs
 network access. The generated JSON files are:
 
 - `bazel-bin/sample_reports/library_cyclonedx.json`
-- `bazel-bin/sample_reports/library_spdx.json`
+- `bazel-bin/sample_reports/library_spdx.json` (SPDX 2.3)
+- `bazel-bin/sample_reports/library_spdx_3_0_1.json` (SPDX 3.0.1)
 
 Both reports describe the example module and its ACME dependency
 (`pkg:github/acmecorp/coyote@3.1.4`). These are demonstration package identities,

@@ -48,6 +48,39 @@
       "licenseDeclared": "LicenseRef-acme",
       "name": "coyote",
       "versionInfo": "3.1.4"
+    },
+    {
+      "SPDXID": "SPDXRef-patch-0",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "72d6febcbbbd81df21396bb28a40ab726a55b2f47cac1cd0e684dd756ae2f3c0"
+        }
+      ],
+      "comment": "Patch file vendor/acme/fix_coyote.patch in the repository that declares the package.",
+      "description": "Fixes an off-by-one in the coyote parser.",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "name": "fix_coyote.patch",
+      "primaryPackagePurpose": "FILE"
+    },
+    {
+      "SPDXID": "SPDXRef-patch-1",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "description": "Backport of the upstream fix.",
+      "downloadLocation": "https://example.com/coyote/cve-2024-0001.patch",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "name": "cve-2024-0001.patch",
+      "primaryPackagePurpose": "FILE"
     }
   ],
   "relationships": [
@@ -60,6 +93,16 @@
       "relatedSpdxElement": "SPDXRef-dep-0",
       "relationshipType": "DESCRIBES",
       "spdxElementId": "SPDXRef-DOCUMENT"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-dep-1",
+      "relationshipType": "PATCH_APPLIED",
+      "spdxElementId": "SPDXRef-patch-0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-dep-1",
+      "relationshipType": "PATCH_APPLIED",
+      "spdxElementId": "SPDXRef-patch-1"
     }
   ],
   "spdxVersion": "SPDX-2.3"
