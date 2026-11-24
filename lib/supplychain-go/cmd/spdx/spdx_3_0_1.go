@@ -261,9 +261,11 @@ var hashAlgorithms = map[string]spdx.HashAlgorithm{
 	"sha512": spdx.HashAlgorithm_Sha512,
 }
 
-// originatedBy names the organization the package comes from. Only purl types
-// whose namespace is the owner of the repository tell it; for others (e.g.
-// the maven group or the npm scope) the namespace is not necessarily one.
+// originatedBy names the organization the package comes from, as a fallback for
+// a package that declares no originator: an explicit originator attribute (see
+// #274) takes precedence over it. Only purl types whose namespace is the owner
+// of the repository tell it; for others (e.g. the maven group or the npm scope)
+// the namespace is not necessarily one.
 func originatedBy(purlType, namespace string) spdx.AgentList {
 	switch purlType {
 	case "github", "gitlab", "bitbucket":

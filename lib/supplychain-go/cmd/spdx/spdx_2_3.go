@@ -79,6 +79,23 @@ func GenerateDocument23(graph sbom.GraphConfig, classifications sbom.Classificat
 			licenseOf[pkg] = licenseAttribute
 		}
 
+		integrity, err := supplychain.GetIntegrityAttribute(pkgMetadata)
+		if err != nil {
+			return nil, fmt.Errorf("error reading integrity of %s: %w", node.Label, err)
+		}
+		if integrity != nil {
+			checksums, err := integrity.Checksums()
+			if err != nil {
+				return nil, fmt.Errorf("error reading integrity of %s: %w", node.Label, err)
+			}
+			for _, checksum := range checksums {
+				pkg.PackageChecksums = append(pkg.PackageChecksums, common.Checksum{
+					Algorithm: common.ChecksumAlgorithm(strings.ToUpper(checksum.Algorithm)),
+					Value:     checksum.Hex,
+				})
+			}
+		}
+
 		patches, err := supplychain.GetPatchAttributes(pkgMetadata)
 		if err != nil {
 			return nil, fmt.Errorf("error reading patches of %s: %w", node.Label, err)
