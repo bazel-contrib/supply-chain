@@ -18,6 +18,7 @@ func GenerateDocument23(graph sbom.GraphConfig, classifications sbom.Classificat
 	spdxPackages := make([]*spdx2.Package, 0)
 	labelToID := make(map[string]string)
 	licenseOf := make(map[*spdx2.Package]*supplychain.LicenseAttribute)
+	patchesOf := make(map[*spdx2.Package][]*supplychain.PatchAttribute)
 	idx := 0
 
 	// Identify the document as a whole (name/namespace, below) by its
@@ -77,6 +78,12 @@ func GenerateDocument23(graph sbom.GraphConfig, classifications sbom.Classificat
 		if licenseAttribute != nil {
 			licenseOf[pkg] = licenseAttribute
 		}
+
+		patches, err := supplychain.GetPatchAttributes(pkgMetadata)
+		if err != nil {
+			return nil, fmt.Errorf("error reading patches of %s: %w", node.Label, err)
+		}
+		patchesOf[pkg] = patches
 
 		labelToID[node.Label] = elementID
 		return pkg, nil
@@ -154,6 +161,13 @@ func GenerateDocument23(graph sbom.GraphConfig, classifications sbom.Classificat
 	if err != nil {
 		return nil, err
 	}
+
+	patchPackages, patchRelationships, err := patchPackages23(spdxPackages, patchesOf)
+	if err != nil {
+		return nil, err
+	}
+	spdxPackages = append(spdxPackages, patchPackages...)
+	relationships = append(relationships, patchRelationships...)
 
 	if subjectName == "" {
 		subjectName = "sbom"

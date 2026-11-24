@@ -24,6 +24,34 @@
         }
       ],
       "name": "acmecorp/coyote",
+      "pedigree": {
+        "notes": "fix_coyote.patch: Fixes an off-by-one in the coyote parser. Patch file vendor/acme/fix_coyote.patch in the repository that declares the package.\ncve-2024-0001.patch: Backport of the upstream fix.",
+        "patches": [
+          {
+            "diff": {
+              "text": {
+                "content": "LS0tIGEvY295b3RlLmNjCisrKyBiL2NveW90ZS5jYwpAQCAtMSArMSBAQAotb2xkCituZXcK",
+                "contentType": "text/x-patch",
+                "encoding": "base64"
+              }
+            },
+            "type": "unofficial"
+          },
+          {
+            "diff": {
+              "url": "https://example.com/coyote/cve-2024-0001.patch"
+            },
+            "resolves": [
+              {
+                "description": "",
+                "id": "CVE-2024-0001",
+                "type": "security"
+              }
+            ],
+            "type": "backport"
+          }
+        ]
+      },
       "purl": "pkg:github/acmecorp/coyote@3.1.4?download_url=https:%2F%2Fgithub.com%2Facmecorp%2Fcoyote%2Farchive%2Frefs%2Ftags%2F3.1.4.tar.gz",
       "type": "library",
       "version": "3.1.4"

@@ -6,6 +6,8 @@ go_library(
     srcs = [
         "license_2_3.go",
         "license_3_0_1.go",
+        "patch_2_3.go",
+        "patch_3_0_1.go",
         "main.go",
         "spdx_2_3.go",
         "spdx_3_0_1.go",
@@ -37,8 +39,9 @@ go_test(
     name = "spdx_test",
     srcs = [
         "main_test.go",
-        "spdx_3_0_1_test.go",
+        "patch_test.go",
         "spdx_2_3_test.go",
+        "spdx_3_0_1_test.go",
     ],
     embed = [":spdx_lib"],
     deps = [
