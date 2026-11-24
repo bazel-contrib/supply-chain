@@ -55,10 +55,9 @@ my_binary = rule(
 Each key is a toolchain-type label and each value is `"runtime"`, `"embedded"`,
 or `"build"`. Since the keys are real label dependencies, Bazel resolves their
 repository mapping and reports misspelled or unavailable labels at loading
-time. The aspect normalizes canonical toolchain labels when matching the
-declaration to an edge and validates that each key names a toolchain declared
-by the rule, reporting invalid keys or values with the rule kind and target
-label. A rule without the attribute retains the existing heuristics:
+time. The aspect matches the declaration to an edge by toolchain type and
+validates that each key names a toolchain declared by the rule, reporting
+invalid keys or values with the rule kind and target label. A rule without the attribute retains the existing heuristics:
 exec-configured toolchains are `"build"` and other toolchains are `"runtime"`.
 
 This design keeps declarations next to rules, avoids a shared generated

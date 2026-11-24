@@ -1,7 +1,6 @@
-"""Unit tests for toolchain involvement normalization and graph output."""
+"""Unit tests for toolchain involvement declarations and graph output."""
 
 load("@bazel_skylib//lib:unittest.bzl", "analysistest", "asserts")
-load(":toolchain_involvement.bzl", "normalize_toolchain_type")
 load(":providers.bzl", "TargetWithMetadataInfo", "TransitiveMetadataInfo")
 load(":serialization.bzl", "metadata_info_to_json")
 
@@ -24,19 +23,6 @@ _declared_rule = rule(
 
 def _toolchain_involvement_test_impl(ctx):
     env = analysistest.begin(ctx)
-
-    asserts.equals(env, "@rules_java//x:y", normalize_toolchain_type("@@rules_java+//x:y"))
-    asserts.equals(env, "@rules_java//x:y", normalize_toolchain_type("@@rules_java~1.0//x:y"))
-    asserts.equals(env, "//x:y", normalize_toolchain_type("@@//x:y"))
-    asserts.equals(env, "@bazel_tools//tools/jdk:toolchain_type", normalize_toolchain_type("@@bazel_tools//tools/jdk:toolchain_type"))
-
-    asserts.false(
-        env,
-        normalize_toolchain_type("@@toolchains++sdk+host//:type") == normalize_toolchain_type("@@toolchains++sdk+target//:type"),
-        "distinct extension repos collapsed to the same key",
-    )
-
-    asserts.equals(env, "@toolchains++sdk+host//:type", normalize_toolchain_type("@@toolchains++sdk+host//:type"))
 
     declarations = analysistest.target_under_test(env)[_DeclaredInfo].declarations
     declaration_key = declarations.keys()[0]
