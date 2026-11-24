@@ -27,7 +27,6 @@ bzl_library(
         ":providers.bzl",
         ":rule_filters.bzl",
         ":serialization.bzl",
-        ":toolchain_involvement.bzl",
         "//:core_metadata",
     ],
     visibility = ["//visibility:public"],

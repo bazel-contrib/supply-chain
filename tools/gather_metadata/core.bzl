@@ -4,7 +4,6 @@ load("@bazel_features//:features.bzl", "bazel_features")
 load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
 load(":providers.bzl", "TargetWithMetadataInfo")
 load(":rule_filters.bzl", "rule_to_excluded_attributes")
-load(":toolchain_involvement.bzl", "normalize_toolchain_type")
 
 _VALID_TOOLCHAIN_INVOLVEMENTS = ["runtime", "embedded", "build"]
 
@@ -44,13 +43,13 @@ def _toolchain_involvement_declarations(ctx):
         hasattr(ctx.rule, "toolchains")):
         toolchain_types = {}
         for toolchain_type in ctx.rule.toolchains.toolchain_types():
-            toolchain_types[normalize_toolchain_type(toolchain_type)] = True
+            toolchain_types[str(toolchain_type)] = True
 
-    normalized_declarations = {}
+    declarations_by_type = {}
     for toolchain_type_target, involvement in declarations.items():
         toolchain_type = toolchain_type_target.label
-        normalized_type = normalize_toolchain_type(toolchain_type)
-        if toolchain_types != None and normalized_type not in toolchain_types:
+        toolchain_key = str(toolchain_type)
+        if toolchain_types != None and toolchain_key not in toolchain_types:
             fail("Invalid _supply_chain_toolchain_involvement key {} on {} {}: key must name a toolchain declared by this rule".format(
                 toolchain_type,
                 ctx.rule.kind,
@@ -64,8 +63,8 @@ def _toolchain_involvement_declarations(ctx):
                 toolchain_type,
                 _VALID_TOOLCHAIN_INVOLVEMENTS,
             ))
-        normalized_declarations[normalized_type] = involvement
-    return normalized_declarations
+        declarations_by_type[toolchain_key] = involvement
+    return declarations_by_type
 
 def _is_exec_config(ctx):
     """Determines whether the current configuration is an exec configuration."""
@@ -251,7 +250,7 @@ def _get_transitive_metadata(
             label_key = str(label)
             transitive_depsets.append(info.transitive)
 
-            involvement = declarations.get(normalize_toolchain_type(toolchain_type))
+            involvement = declarations.get(str(toolchain_type))
             if involvement == None:
                 involvement = "build" if info.is_exec_config else "runtime"
             edge_key = label_key + "\0" + involvement
