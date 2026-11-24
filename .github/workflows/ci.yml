@@ -23,7 +23,7 @@ jobs:
       matrix:
         include:
           - name: "Docs"
-            bazel_version: "8.x"
+            bazel_version: "9.x"
             package: "docs"
             runner: "ubuntu-latest"
 
