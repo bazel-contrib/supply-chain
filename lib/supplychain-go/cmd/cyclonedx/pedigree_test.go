@@ -16,6 +16,11 @@ const sha256SRI = "sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU="
 
 func generatePatched(t *testing.T, dir string, attrs ...string) (cdx.Component, error) {
 	t.Helper()
+	return generatePatchedWith(t, dir, nil, attrs...)
+}
+
+func generatePatchedWith(t *testing.T, dir string, options []Option, attrs ...string) (cdx.Component, error) {
+	t.Helper()
 	list := ""
 	for i, a := range attrs {
 		p := filepath.Join(dir, "patch"+strconv.Itoa(i)+".json")
@@ -37,7 +42,7 @@ func generatePatched(t *testing.T, dir string, attrs ...string) (cdx.Component, 
 	}
 	node := sbom.NodeConfig{Label: "//lib:dep", MetadataFile: meta}
 	bom, err := GenerateBOM(sbom.GraphConfig{Nodes: []sbom.NodeConfig{node}},
-		sbom.Classifications{Dependencies: sbom.DependencyNodes{Direct: []sbom.NodeConfig{node}}})
+		sbom.Classifications{Dependencies: sbom.DependencyNodes{Direct: []sbom.NodeConfig{node}}}, options...)
 	if err != nil {
 		return cdx.Component{}, err
 	}
@@ -103,5 +108,34 @@ func TestGenerateBOM_NoPatchesNoPedigree(t *testing.T) {
 	}
 	if c.Pedigree != nil {
 		t.Errorf("pedigree = %+v, want nil", c.Pedigree)
+	}
+}
+
+func TestGenerateBOM_WithoutPatchFiles(t *testing.T) {
+	dir := t.TempDir()
+	// A file that is not embedded is not read, so it need not exist.
+	missing := filepath.Join(dir, "missing.patch")
+	local := `{"description":"Local tweak.","integrity":["` + sha256SRI + `"],"resolves":["CVE-2024-1"],"type":"unofficial","file":"pkg/b.patch","file_exec_path":"` + missing + `"}`
+	remote := `{"description":"Fix.","integrity":["` + sha256SRI + `"],"type":"backport","url":"https://example.com/a.patch"}`
+
+	if _, err := generatePatched(t, dir, local); err == nil {
+		t.Fatal("GenerateBOM() succeeded, want an error for the missing patch file")
+	}
+
+	c, err := generatePatchedWith(t, dir, []Option{WithoutPatchFiles()}, remote, local)
+	if err != nil {
+		t.Fatalf("GenerateBOM() error = %v", err)
+	}
+	want := []cdx.Patch{
+		{Type: cdx.PatchTypeBackport, Diff: &cdx.Diff{URL: "https://example.com/a.patch"}},
+		{Type: cdx.PatchTypeUnofficial, Resolves: &[]cdx.Issue{{ID: "CVE-2024-1", Type: cdx.IssueTypeSecurity}}},
+	}
+	if !reflect.DeepEqual(*c.Pedigree.Patches, want) {
+		t.Errorf("patches = %+v, want %+v", *c.Pedigree.Patches, want)
+	}
+	// The path of the file stays in the notes.
+	wantNotes := "a.patch: Fix.\nb.patch: Local tweak. Patch file pkg/b.patch in the repository that declares the package."
+	if c.Pedigree.Notes != wantNotes {
+		t.Errorf("notes = %q, want %q", c.Pedigree.Notes, wantNotes)
 	}
 }

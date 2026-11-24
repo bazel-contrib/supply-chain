@@ -16,11 +16,13 @@ import (
 
 func main() {
 	var outPath, graphPath, classificationsPath, format, validatorPath string
+	var embedPatchFiles bool
 	flag.StringVar(&outPath, "out", "", "The path to write the generated CycloneDX SBOM.")
 	flag.StringVar(&graphPath, "graph", "", "The path to the graph JSON file.")
 	flag.StringVar(&classificationsPath, "classifications", "", "The path to the classifications JSON file.")
 	flag.StringVar(&format, "format", "json", "The output format of the CycloneDX SBOM (json or xml).")
 	flag.StringVar(&validatorPath, "validator", "", "Optional runfiles path or executable path to the CycloneDX CLI validator.")
+	flag.BoolVar(&embedPatchFiles, "embed_patch_files", true, "Embed the content of the patch files in the pedigree of the packages they patch. Disable it to keep local patches out of the report.")
 	flag.Parse()
 
 	if outPath == "" {
@@ -57,7 +59,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	bom, err := GenerateBOM(graph, classifications)
+	var opts []Option
+	if !embedPatchFiles {
+		opts = append(opts, WithoutPatchFiles())
+	}
+	bom, err := GenerateBOM(graph, classifications, opts...)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error generating BOM: %v\n", err)
 		os.Exit(1)
@@ -94,7 +100,25 @@ func main() {
 	}
 }
 
-func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications) (*cdx.BOM, error) {
+// Option customizes GenerateBOM.
+type Option func(*options)
+
+type options struct {
+	omitPatchFiles bool
+}
+
+// WithoutPatchFiles leaves the content of patch files out of the BOM. The
+// patches are still reported, with their type and the issues they resolve, and
+// the path of a patch file stays in the notes of the pedigree.
+func WithoutPatchFiles() Option {
+	return func(o *options) { o.omitPatchFiles = true }
+}
+
+func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications, opts ...Option) (*cdx.BOM, error) {
+	var config options
+	for _, opt := range opts {
+		opt(&config)
+	}
 	graph = sbom.NormalizeGraph(graph)
 	components := make([]cdx.Component, 0)
 	labelToBOMRef := make(map[string]string)
@@ -157,7 +181,7 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications) (
 		if err != nil {
 			return cdx.Component{}, fmt.Errorf("error reading patches of %s: %w", node.Label, err)
 		}
-		pedigree, err := pedigreeOf(patches)
+		pedigree, err := pedigreeOf(patches, !config.omitPatchFiles)
 		if err != nil {
 			return cdx.Component{}, fmt.Errorf("error reporting patches of %s: %w", node.Label, err)
 		}

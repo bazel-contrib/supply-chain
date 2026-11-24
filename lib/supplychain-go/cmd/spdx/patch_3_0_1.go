@@ -30,6 +30,8 @@ func patchFiles(packages []*spdx.Package, patchesOf map[*spdx.Package][]*supplyc
 				return nil, nil, fmt.Errorf("reading the checksums of patch %s of %s: %w", patch.Name(), pkg.Name, err)
 			}
 
+			patch.WarnIfNoSupportedIntegrity(warnings, pkg.Name)
+
 			file := &spdx.File{
 				ID:             fmt.Sprintf("patch-%d", len(files)),
 				Name:           patch.Name(),

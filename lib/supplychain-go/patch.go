@@ -128,6 +128,25 @@ var checksumSizes = map[string]int{
 	"sha512": 64,
 }
 
+// WarnIfNoSupportedIntegrity writes a warning to w if none of the integrity
+// entries of the patch uses a supported algorithm, so that the checksum missing
+// from a report does not go unnoticed. owner names what the patch applies to.
+// A malformed entry is not reported here: parsing the attribute already fails
+// on it.
+func (p *PatchAttribute) WarnIfNoSupportedIntegrity(w io.Writer, owner string) {
+	checksums, err := p.Checksums()
+	if err != nil || len(checksums) > 0 {
+		return
+	}
+	algorithms := make([]string, 0, len(checksumSizes))
+	for algorithm := range checksumSizes {
+		algorithms = append(algorithms, algorithm)
+	}
+	slices.Sort(algorithms)
+	fmt.Fprintf(w, "warning: none of the integrity entries of patch %s of %s uses a supported algorithm (%s), so no checksum is reported for it\n",
+		p.Name(), owner, strings.Join(algorithms, ", "))
+}
+
 // Checksums returns the checksums of the patch from its integrity. Algorithms
 // that are not supported are dropped. A malformed entry is an error.
 func (p *PatchAttribute) Checksums() ([]Checksum, error) {

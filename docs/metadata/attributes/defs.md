@@ -223,6 +223,15 @@ Values are passed through as-is: tools consuming the
 attribute are responsible for mapping them to the format they produce.
 Entries are assumed to be UTF-8 encoded.
 
+SBOM generators report the `integrity` as checksums of the patch, for the
+algorithms they support (`sha1`, `sha256`, `sha384` and `sha512`), and warn
+when none of the entries uses one. The CycloneDX report attaches the content
+of a patch `file`, base64 encoded, to the pedigree of the patched package.
+That makes the report larger and discloses the patch to whoever receives
+it: set `embed_patch_files = False` on the `cyclonedx` rule to leave the
+content out. The patch is then still reported, with the path of its file in
+the notes.
+
 Usage:
 
 ```starlark

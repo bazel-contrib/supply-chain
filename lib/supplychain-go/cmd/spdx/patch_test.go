@@ -154,3 +154,37 @@ func TestGenerateDocument301_FilePatch(t *testing.T) {
 	}
 	t.Fatal("patch file missing")
 }
+
+const unsupportedPatch = `{"description":"x","integrity":["md5-1B2M2Y8AsgTpgAmY7PhCfg=="],"type":"backport","url":"https://example.com/md5.patch"}`
+
+func TestPatchWithoutSupportedIntegrityWarns(t *testing.T) {
+	for name, tc := range map[string]struct {
+		attr string
+		warn bool
+	}{
+		"unsupported only": {unsupportedPatch, true},
+		"supported":        {urlPatch, false},
+	} {
+		for format, generate := range map[string]func(sbom.GraphConfig, sbom.Classifications) error{
+			"2.3": func(g sbom.GraphConfig, c sbom.Classifications) error {
+				_, err := GenerateDocument23(g, c, time.Unix(1700000000, 0).UTC())
+				return err
+			},
+			"3.0.1": func(g sbom.GraphConfig, c sbom.Classifications) error {
+				_, err := GenerateDocument301(g, c, time.Unix(1700000000, 0).UTC())
+				return err
+			},
+		} {
+			var out bytes.Buffer
+			warnings = &out
+			graph, cls := patchedGraph(t, tc.attr)
+			if err := generate(graph, cls); err != nil {
+				t.Fatalf("%s %s: %v", name, format, err)
+			}
+			if got := out.String(); (got != "") != tc.warn {
+				t.Errorf("%s %s: warnings = %q, want a warning: %v", name, format, got, tc.warn)
+			}
+		}
+	}
+	warnings = os.Stderr
+}

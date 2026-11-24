@@ -2,12 +2,18 @@ package main
 
 import (
 	"fmt"
+	"io"
+	"os"
 	"strings"
 
 	supplychain "github.com/bazel-contrib/supply-chain/lib/supplychain-go"
 	spdx2 "github.com/spdx/tools-golang/spdx"
 	"github.com/spdx/tools-golang/spdx/v2/common"
 )
+
+// warnings is where the generator reports what it could not put in the
+// document.
+var warnings io.Writer = os.Stderr
 
 // patchPackages23 creates a package for every patch of the packages, and a
 // PATCH_APPLIED relationship from it to the package it patches.
@@ -25,6 +31,8 @@ func patchPackages23(packages []*spdx2.Package, patchesOf map[*spdx2.Package][]*
 			if err != nil {
 				return nil, nil, fmt.Errorf("reading the checksums of patch %s of %s: %w", patch.Name(), pkg.PackageName, err)
 			}
+
+			patch.WarnIfNoSupportedIntegrity(warnings, pkg.PackageName)
 
 			downloadLocation := "NOASSERTION"
 			if patch.URL != "" {

@@ -17,8 +17,9 @@ import (
 // reported; the content of a patch file is attached to its diff, and the
 // descriptions go to the notes of the pedigree, the place for commentary about
 // it, each prefixed by the name of its patch. The path of a patch file goes to
-// the notes too.
-func pedigreeOf(patches []*supplychain.PatchAttribute) (*cdx.Pedigree, error) {
+// the notes too. With embedFiles false the content of the patch files is left
+// out, as a patch file can be large or not meant to leave the repository.
+func pedigreeOf(patches []*supplychain.PatchAttribute, embedFiles bool) (*cdx.Pedigree, error) {
 	if len(patches) == 0 {
 		return nil, nil
 	}
@@ -29,7 +30,7 @@ func pedigreeOf(patches []*supplychain.PatchAttribute) (*cdx.Pedigree, error) {
 		patch := cdx.Patch{Type: cdx.PatchType(p.Type)}
 		if p.URL != "" {
 			patch.Diff = &cdx.Diff{URL: p.URL}
-		} else {
+		} else if embedFiles {
 			content, err := os.ReadFile(p.FileExecPath)
 			if err != nil {
 				return nil, fmt.Errorf("reading patch file %s: %w", p.File, err)

@@ -105,3 +105,27 @@ func TestGetPatchAttributes(t *testing.T) {
 	require.NoError(t, err)
 	assert.Empty(t, patches)
 }
+
+func TestPatchAttributeWarnIfNoSupportedIntegrity(t *testing.T) {
+	md5 := "md5-1B2M2Y8AsgTpgAmY7PhCfg=="
+	for name, tc := range map[string]struct {
+		integrity []string
+		warns     bool
+	}{
+		"only unsupported":  {[]string{md5, "sha3-512-AAAA"}, true},
+		"one supported":     {[]string{md5, sriSha256}, false},
+		"only supported":    {[]string{sriSha256}, false},
+		"malformed entries": {[]string{"abc"}, false}, // The parser rejects it; no warning on top.
+	} {
+		var out strings.Builder
+		(&PatchAttribute{URL: "https://example.com/a.patch", Integrity: tc.integrity}).WarnIfNoSupportedIntegrity(&out, "//lib:dep")
+		if tc.warns {
+			assert.Contains(t, out.String(), "warning", name)
+			assert.Contains(t, out.String(), "a.patch", name)
+			assert.Contains(t, out.String(), "//lib:dep", name)
+			assert.Contains(t, out.String(), "sha256", name)
+		} else {
+			assert.Empty(t, out.String(), name)
+		}
+	}
+}
