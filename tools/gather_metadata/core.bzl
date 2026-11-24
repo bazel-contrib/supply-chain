@@ -43,13 +43,12 @@ def _toolchain_involvement_declarations(ctx):
         hasattr(ctx.rule, "toolchains")):
         toolchain_types = {}
         for toolchain_type in ctx.rule.toolchains.toolchain_types():
-            toolchain_types[str(toolchain_type)] = True
+            toolchain_types[toolchain_type] = True
 
     declarations_by_type = {}
     for toolchain_type_target, involvement in declarations.items():
         toolchain_type = toolchain_type_target.label
-        toolchain_key = str(toolchain_type)
-        if toolchain_types != None and toolchain_key not in toolchain_types:
+        if toolchain_types != None and toolchain_type not in toolchain_types:
             fail("Invalid _supply_chain_toolchain_involvement key {} on {} {}: key must name a toolchain declared by this rule".format(
                 toolchain_type,
                 ctx.rule.kind,
@@ -63,7 +62,7 @@ def _toolchain_involvement_declarations(ctx):
                 toolchain_type,
                 _VALID_TOOLCHAIN_INVOLVEMENTS,
             ))
-        declarations_by_type[toolchain_key] = involvement
+        declarations_by_type[toolchain_type] = involvement
     return declarations_by_type
 
 def _is_exec_config(ctx):
@@ -250,7 +249,7 @@ def _get_transitive_metadata(
             label_key = str(label)
             transitive_depsets.append(info.transitive)
 
-            involvement = declarations.get(str(toolchain_type))
+            involvement = declarations.get(toolchain_type)
             if involvement == None:
                 involvement = "build" if info.is_exec_config else "runtime"
             edge_key = label_key + "\0" + involvement
