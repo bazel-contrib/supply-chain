@@ -10,15 +10,16 @@ def _spdx_impl(ctx):
     strict = ctx.attr._strict_validations[BuildSettingInfo].value
 
     # creationInfo.created (mandatory in SPDX 2.3 and 3.0.1) comes from Bazel's own
-    # build-stamping mechanism: ctx.version_file (volatile-status.txt) holds
-    # a real BUILD_TIMESTAMP only when the build is invoked with --stamp;
-    # otherwise Bazel substitutes a fixed placeholder, which keeps this
-    # action's output (and therefore its cache key) deterministic by
-    # default. See https://bazel.build/reference/be/make-variables#stamp-flag.
+    # build-stamping mechanism. Bazel always writes the time of the invocation to
+    # ctx.version_file (volatile-status.txt), also without --stamp, so the file
+    # is only passed to the generator when the build is stamped. Otherwise the
+    # generator writes the Unix epoch, which keeps this action's output (and
+    # therefore its cache key) deterministic by default. See
+    # https://bazel.build/reference/be/make-variables#stamp-flag.
     extra_inputs = []
     extra_args = []
     extra_tools = []
-    if ctx.version_file:
+    if ctx.attr.stamp:
         extra_inputs.append(ctx.version_file)
         extra_args.extend(["--created_from_status_file", ctx.version_file.path])
     if ctx.file.document_namespace:
@@ -57,9 +58,12 @@ def _spdx_impl(ctx):
         DefaultInfo(files = depset([out])),
     ]
 
-spdx = rule(
+_spdx = rule(
     _spdx_impl,
     attrs = {
+        "stamp": attr.bool(
+            doc = "Whether the report is stamped with the time of the build, which is read from the workspace status. Set by the macro, which defaults it to whether the build is invoked with `--stamp`.",
+        ),
         "sbom": attr.label(doc = "The sbom target to generate the SPDX SBOM from."),
         "format": attr.string(
             default = "json",
@@ -86,3 +90,25 @@ spdx = rule(
     },
     toolchains = ["//sbom:spdx_validator_toolchain_type"],
 )
+
+def spdx(name, stamp = None, **kwargs):
+    """Generates a SPDX report from an `sbom` target.
+
+    Args:
+      name: A unique name for this target.
+      stamp: Whether to stamp the report with the time of the build, in `creationInfo.created`.
+        By default it follows `--stamp`: the real time of the build with
+        `--stamp`, and the Unix epoch otherwise, so that the report is
+        deterministic. Bazel writes the time of the invocation to the workspace
+        status also without `--stamp`, so the rule does not read it then.
+      **kwargs: The other attributes of the rule: `sbom`, `format`, `out`
+        and the optional ones described there.
+    """
+    _spdx(
+        name = name,
+        stamp = select({
+            Label("//sbom:stamp"): True,
+            "//conditions:default": False,
+        }) if stamp == None else stamp,
+        **kwargs
+    )

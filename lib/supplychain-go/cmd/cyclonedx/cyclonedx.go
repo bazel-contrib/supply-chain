@@ -360,7 +360,9 @@ func licensesOf(attribute *supplychain.LicenseAttribute) *cdx.Licenses {
 	return &cdx.Licenses{{License: &license}}
 }
 
-var serialNumberPattern = regexp.MustCompile(`^urn:uuid:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$`)
+// serialNumberPattern is the one of the CycloneDX schema, which only accepts
+// lowercase hexadecimal digits, as RFC 4122 asks for.
+var serialNumberPattern = regexp.MustCompile(`^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)
 
 // readSerialNumber reads a CycloneDX BOM serialNumber from the file at path.
 // An empty path returns an empty serial number, meaning "not provided".
@@ -374,7 +376,7 @@ func readSerialNumber(path string) (string, error) {
 	}
 	serialNumber := strings.TrimSpace(string(data))
 	if !serialNumberPattern.MatchString(serialNumber) {
-		return "", fmt.Errorf("%s must contain a serial number in urn:uuid form, got %q", path, serialNumber)
+		return "", fmt.Errorf("%s must contain a serial number in lowercase urn:uuid form, got %q", path, serialNumber)
 	}
 	return serialNumber, nil
 }

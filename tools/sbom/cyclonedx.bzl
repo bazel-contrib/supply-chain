@@ -10,11 +10,12 @@ def _cyclonedx_impl(ctx):
     extra_inputs = []
 
     # metadata.timestamp comes from Bazel's own build-stamping mechanism, in the
-    # same way as creationInfo.created of the SPDX reports: ctx.version_file
-    # (volatile-status.txt) holds a real BUILD_TIMESTAMP only when the build is
-    # invoked with --stamp, and a fixed placeholder otherwise, which keeps the
-    # output deterministic by default.
-    if ctx.version_file:
+    # same way as creationInfo.created of the SPDX reports. Bazel always writes
+    # the time of the invocation to ctx.version_file (volatile-status.txt), also
+    # without --stamp, so the file is only passed to the generator when the
+    # build is stamped. Otherwise the generator writes the Unix epoch, which
+    # keeps the output deterministic by default.
+    if ctx.attr.stamp:
         extra_inputs.append(ctx.version_file)
         extra_args.extend(["--created_from_status_file", ctx.version_file.path])
     if ctx.file.serial_number:
@@ -56,9 +57,12 @@ def _cyclonedx_impl(ctx):
         DefaultInfo(files = depset([out])),
     ]
 
-cyclonedx = rule(
+_cyclonedx = rule(
     _cyclonedx_impl,
     attrs = {
+        "stamp": attr.bool(
+            doc = "Whether the report is stamped with the time of the build, which is read from the workspace status. Set by the macro, which defaults it to whether the build is invoked with `--stamp`.",
+        ),
         "sbom": attr.label(doc = "The sbom target to generate the CycloneDX SBOM from."),
         "format": attr.string(default = "json", values = ["json", "xml"], doc = "The output format for the CycloneDX SBOM."),
         "embed_patch_files": attr.bool(
@@ -70,7 +74,7 @@ The embedded content makes the report self-contained but makes it larger, and di
         "out": attr.output(doc = "The output file for the CycloneDX SBOM."),
         "serial_number": attr.label(
             allow_single_file = True,
-            doc = """Optional file holding the BOM serialNumber, in `urn:uuid:` form, unique to each generated BOM. By default the BOM has no serialNumber.
+            doc = """Optional file holding the BOM serialNumber, in `urn:uuid:` form, unique to each generated BOM. The UUID must be in lowercase, as the CycloneDX schema requires. By default the BOM has no serialNumber.
 
     This is a file, not a string, because the value that makes a BOM unique is
     normally produced by the build, for example from its workspace status with
@@ -87,3 +91,25 @@ The embedded content makes the report self-contained but makes it larger, and di
     },
     toolchains = ["//sbom:cyclonedx_validator_toolchain_type"],
 )
+
+def cyclonedx(name, stamp = None, **kwargs):
+    """Generates a CycloneDX report from an `sbom` target.
+
+    Args:
+      name: A unique name for this target.
+      stamp: Whether to stamp the report with the time of the build, in `metadata.timestamp`.
+        By default it follows `--stamp`: the real time of the build with
+        `--stamp`, and the Unix epoch otherwise, so that the report is
+        deterministic. Bazel writes the time of the invocation to the workspace
+        status also without `--stamp`, so the rule does not read it then.
+      **kwargs: The other attributes of the rule: `sbom`, `format`, `out`
+        and the optional ones described there.
+    """
+    _cyclonedx(
+        name = name,
+        stamp = select({
+            Label("//sbom:stamp"): True,
+            "//conditions:default": False,
+        }) if stamp == None else stamp,
+        **kwargs
+    )

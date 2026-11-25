@@ -35,7 +35,7 @@ func Validate(namespace string) error {
 	if err != nil {
 		return err
 	}
-	if !uri.IsAbs() || uri.Scheme == "" {
+	if !uri.IsAbs() {
 		return fmt.Errorf("namespace must be an absolute URI with a scheme")
 	}
 	if uri.Fragment != "" || strings.Contains(namespace, "#") {
