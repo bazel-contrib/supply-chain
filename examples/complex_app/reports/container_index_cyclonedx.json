@@ -25,7 +25,7 @@
         },
         {
           "name": "bazel:relationship:contains",
-          "value": "pkg:golang/go@1.27.4"
+          "value": "pkg:golang/stdlib@1.27.4"
         },
         {
           "name": "bazel:relationship:dynamic_link",
@@ -178,7 +178,7 @@
       "version": "1.2.6"
     },
     {
-      "bom-ref": "pkg:golang/go@1.27.4",
+      "bom-ref": "pkg:golang/stdlib@1.27.4",
       "licenses": [
         {
           "license": {
@@ -186,14 +186,14 @@
           }
         }
       ],
-      "name": "go",
+      "name": "stdlib",
       "properties": [
         {
           "name": "bazel:involvement",
           "value": "embedded"
         }
       ],
-      "purl": "pkg:golang/go@1.27.4",
+      "purl": "pkg:golang/stdlib@1.27.4",
       "type": "library",
       "version": "1.27.4"
     }
@@ -253,7 +253,7 @@
       "ref": "pkg:github/python/cpython@3.14.10"
     },
     {
-      "ref": "pkg:golang/go@1.27.4"
+      "ref": "pkg:golang/stdlib@1.27.4"
     },
     {
       "dependsOn": [
