@@ -14,7 +14,7 @@
 +package_metadata(
 +    name = "go_metadata",
 +    attributes = [":go_license"],
-+    purl = "pkg:golang/go@{version}",
++    purl = "pkg:golang/stdlib@{version}",
 +)
 +
 +package(
