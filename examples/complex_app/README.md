@@ -96,7 +96,8 @@ declarations through `third_party/BUILD.bazel`. PURL versions come from the
 resolved payload: LLVM's `@llvm_version` repository, rules_go's parsed SDK
 version from `go.mod`, Node.js's selected `node_version`, rules_python's
 `python_version`, and rules_java's `RUNTIME_VERSION`. Their PURLs identify
-`llvm/llvm-project`, `golang/go`, `nodejs/node`, `python/cpython`, and OpenJDK;
+`llvm/llvm-project`, `golang/stdlib` (the name syft and trivy give the Go
+standard library), `nodejs/node`, `python/cpython`, and OpenJDK;
 the host `local-jdk` has no metadata declaration and is not included.
 
 ## Integration test with rules_itest
