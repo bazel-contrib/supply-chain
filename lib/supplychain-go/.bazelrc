@@ -1,0 +1,6 @@
+# Modules of this repository are used from their directory instead of from a
+# registry, so that they are always at HEAD. Their `MODULE.bazel` declare the
+# minimum versions they need once published, which `bazel --noworkspace_rc`
+# (ignoring this file) checks. The paths are relative to the directory Bazel is
+# run from, which has to be the directory of the module.
+common --override_module=package_metadata=../../metadata

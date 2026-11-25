@@ -1,0 +1,16 @@
+# Modules of this repository are used from their directory instead of from a
+# registry, so that they are always at HEAD. Their `MODULE.bazel` declare the
+# minimum versions they need once published, which `bazel --noworkspace_rc`
+# (ignoring this file) checks. The paths are relative to the directory Bazel is
+# run from, which has to be the directory of the module.
+common --override_module=package_metadata=../metadata
+common --override_module=package_metadata_extensions=../metadata-extensions
+common --override_module=rules_license=../rules_license
+common --override_module=supply-chain-go=../lib/supplychain-go
+common --override_module=supply_chain_tools=../tools
+common --override_module=acme_plugin=../external_packages/acme_plugin
+common --override_module=acme_sdk=../external_packages/acme_sdk
+common --override_module=classpath_runtime=../external_packages/classpath_runtime
+common --override_module=crypto_suite=../external_packages/crypto_suite
+common --override_module=dual_licensed=../external_packages/dual_licensed
+common --override_module=legacy_gpl=../external_packages/legacy_gpl
