@@ -31,6 +31,12 @@
         "pkg:generic/toolchain-fixtures-node_transpiler@1.0.0"
       ],
       "ref": "pkg:generic/toolchain-fixture-app@1.0.0"
+    },
+    {
+      "ref": "pkg:generic/toolchain-fixtures-node_runtime@1.0.0"
+    },
+    {
+      "ref": "pkg:generic/toolchain-fixtures-node_transpiler@1.0.0"
     }
   ],
   "metadata": {

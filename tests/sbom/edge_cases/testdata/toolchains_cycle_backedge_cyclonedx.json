@@ -16,6 +16,9 @@
         "pkg:generic/toolchain-fixtures-cycle-tool@1.0.0"
       ],
       "ref": "pkg:generic/toolchain-fixture-app@1.0.0"
+    },
+    {
+      "ref": "pkg:generic/toolchain-fixtures-cycle-tool@1.0.0"
     }
   ],
   "metadata": {

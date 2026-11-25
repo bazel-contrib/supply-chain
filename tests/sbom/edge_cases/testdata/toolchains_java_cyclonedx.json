@@ -31,6 +31,12 @@
         "pkg:generic/toolchain-fixtures-javac@1.0.0"
       ],
       "ref": "pkg:generic/toolchain-fixture-app@1.0.0"
+    },
+    {
+      "ref": "pkg:generic/toolchain-fixtures-java_jre@1.0.0"
+    },
+    {
+      "ref": "pkg:generic/toolchain-fixtures-javac@1.0.0"
     }
   ],
   "metadata": {
