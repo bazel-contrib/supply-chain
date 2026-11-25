@@ -37,6 +37,12 @@
         "pkg:generic/toolchain-fixtures-python@1.0.0"
       ],
       "ref": "pkg:generic/toolchain-fixture-app@1.0.0"
+    },
+    {
+      "ref": "pkg:generic/toolchain-fixtures-image_tar@1.0.0"
+    },
+    {
+      "ref": "pkg:generic/toolchain-fixtures-python@1.0.0"
     }
   ],
   "metadata": {

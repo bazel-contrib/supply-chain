@@ -170,16 +170,40 @@
       "ref": "pkg:bazel/complex_app@0.1.0"
     },
     {
+      "ref": "pkg:docker/library/ubuntu@sha256:1e622c5f073b4f6bfad6632f2616c7f59ef256e96fe78bf6a595d1dc4376ac02?repository_url=index.docker.io"
+    },
+    {
       "dependsOn": [
         "pkg:github/llvm/llvm-project@23.1.2"
       ],
       "ref": "pkg:generic/glibc@2.28"
     },
     {
+      "ref": "pkg:generic/musl@1.2.6"
+    },
+    {
+      "ref": "pkg:generic/openjdk@21"
+    },
+    {
+      "ref": "pkg:generic/openjdk@25"
+    },
+    {
       "dependsOn": [
         "pkg:generic/musl@1.2.6"
       ],
       "ref": "pkg:github/llvm/llvm-project@23.1.2"
+    },
+    {
+      "ref": "pkg:github/llvm/llvm-project@23.1.2#runtimes"
+    },
+    {
+      "ref": "pkg:github/nodejs/node@22.23.4"
+    },
+    {
+      "ref": "pkg:github/python/cpython@3.14.10"
+    },
+    {
+      "ref": "pkg:golang/go@1.27.4"
     }
   ],
   "metadata": {
