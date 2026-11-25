@@ -1,0 +1,83 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
+  "bomFormat": "CycloneDX",
+  "components": [
+    {
+      "bom-ref": "pkg:generic/download_url@1.2.3?download_url=https:%2F%2Fexample.com%2Fdownload_url.tar.gz",
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://example.com/download_url.tar.gz"
+        }
+      ],
+      "name": "download_url",
+      "purl": "pkg:generic/download_url@1.2.3?download_url=https:%2F%2Fexample.com%2Fdownload_url.tar.gz",
+      "type": "library",
+      "version": "1.2.3"
+    },
+    {
+      "bom-ref": "pkg:generic/many@1.0.0",
+      "cpe": "cpe:2.3:a:acme:many:1.0.0:*:*:*:*:*:*:*",
+      "name": "many",
+      "properties": [
+        {
+          "name": "bazel:cpe",
+          "value": "cpe:/a:acme:many:1.0.0"
+        },
+        {
+          "name": "bazel:cpe",
+          "value": "cpe:2.3:a:acme_inc:many:1.0.0:*:*:*:*:*:*:*"
+        }
+      ],
+      "purl": "pkg:generic/many@1.0.0",
+      "type": "library",
+      "version": "1.0.0"
+    },
+    {
+      "bom-ref": "pkg:generic/single@1.0.0",
+      "cpe": "cpe:2.3:a:acme:single:1.0.0:*:*:*:*:*:*:*",
+      "name": "single",
+      "purl": "pkg:generic/single@1.0.0",
+      "type": "library",
+      "version": "1.0.0"
+    }
+  ],
+  "dependencies": [
+    {
+      "dependsOn": [
+        "pkg:generic/download_url@1.2.3?download_url=https:%2F%2Fexample.com%2Fdownload_url.tar.gz",
+        "pkg:generic/many@1.0.0",
+        "pkg:generic/single@1.0.0"
+      ],
+      "ref": "pkg:generic/app@1.0.0"
+    },
+    {
+      "ref": "pkg:generic/download_url@1.2.3?download_url=https:%2F%2Fexample.com%2Fdownload_url.tar.gz"
+    },
+    {
+      "ref": "pkg:generic/many@1.0.0"
+    },
+    {
+      "ref": "pkg:generic/single@1.0.0"
+    }
+  ],
+  "metadata": {
+    "component": {
+      "bom-ref": "pkg:generic/app@1.0.0",
+      "name": "app",
+      "purl": "pkg:generic/app@1.0.0",
+      "type": "library",
+      "version": "1.0.0"
+    },
+    "tools": {
+      "components": [
+        {
+          "name": "Bazel Supply Chain Tools CycloneDX generator",
+          "type": "application"
+        }
+      ]
+    }
+  },
+  "specVersion": "1.6",
+  "version": 1
+}
