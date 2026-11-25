@@ -112,10 +112,22 @@
   ],
   "dependencies": [
     {
+      "ref": "pkg:generic/dev-helper@1.0.0"
+    },
+    {
+      "ref": "pkg:generic/dynamic-library@1.0.0"
+    },
+    {
       "dependsOn": [
         "pkg:generic/server-binary@1.0.0"
       ],
       "ref": "pkg:generic/image-layer@1.0.0"
+    },
+    {
+      "ref": "pkg:generic/legacy-library@1.0.0"
+    },
+    {
+      "ref": "pkg:generic/other-provider-image-layer@1.0.0"
     },
     {
       "dependsOn": [
@@ -139,6 +151,18 @@
         "pkg:generic/test-helper@1.0.0"
       ],
       "ref": "pkg:generic/relationship-root@1.0.0"
+    },
+    {
+      "ref": "pkg:generic/server-binary@1.0.0"
+    },
+    {
+      "ref": "pkg:generic/server-tar@1.0.0"
+    },
+    {
+      "ref": "pkg:generic/static-library@1.0.0"
+    },
+    {
+      "ref": "pkg:generic/test-helper@1.0.0"
     }
   ],
   "metadata": {
