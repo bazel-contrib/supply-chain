@@ -128,18 +128,26 @@ def _get_transitive_metadata(
             # synthetic and not have the aspect. This provides protection
             # against those outlier cases.
             if provider in dep:
-                label_key = str(dep.label)
+                info = dep[provider]
+
+                # A dependency on a generated file (for example the _deploy.jar
+                # of a java_binary) is analyzed through the rule that generates
+                # it. Its metadata is recorded under the label of that rule, not
+                # under the label of the file, so the edge must lead to the
+                # rule, which is the node of the graph. For any other dependency
+                # both labels are the same.
+                dep_label = getattr(info, "top_level_target", None) or dep.label
+                label_key = str(dep_label)
                 if label_key in seen_dep_labels:
                     continue
                 seen_dep_labels[label_key] = True
 
-                info = dep[provider]
                 if info != null_provider_instance:
                     transitive_depsets.append(info.transitive)
 
                     # Track direct dependency for graph edges
                     if direct_deps != None:
-                        direct_deps.append(dep.label)
+                        direct_deps.append(dep_label)
 
 def gather_metadata_info_common(
         target,

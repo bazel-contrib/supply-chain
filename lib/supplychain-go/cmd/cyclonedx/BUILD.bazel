@@ -2,7 +2,10 @@ load("@rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
 
 go_library(
     name = "cyclonedx_lib",
-    srcs = ["cyclonedx.go"],
+    srcs = [
+        "cyclonedx.go",
+        "pedigree.go",
+    ],
     importpath = "github.com/bazel-contrib/supply-chain/lib/supplychain-go/cmd/cyclonedx",
     visibility = ["//visibility:private"],
     deps = [
@@ -20,7 +23,10 @@ go_binary(
 
 go_test(
     name = "cyclonedx_test",
-    srcs = ["cyclonedx_test.go"],
+    srcs = [
+        "cyclonedx_test.go",
+        "pedigree_test.go",
+    ],
     embed = [":cyclonedx_lib"],
     deps = [
         "//internal/sbom",

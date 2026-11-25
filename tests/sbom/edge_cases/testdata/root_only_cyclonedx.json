@@ -1,0 +1,29 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
+  "bomFormat": "CycloneDX",
+  "dependencies": [
+    {
+      "ref": "pkg:generic/app@1.0.0"
+    }
+  ],
+  "metadata": {
+    "component": {
+      "bom-ref": "pkg:generic/app@1.0.0",
+      "name": "app",
+      "purl": "pkg:generic/app@1.0.0",
+      "type": "library",
+      "version": "1.0.0"
+    },
+    "timestamp": "1970-01-01T00:00:00Z",
+    "tools": {
+      "components": [
+        {
+          "name": "Bazel Supply Chain Tools CycloneDX generator",
+          "type": "application"
+        }
+      ]
+    }
+  },
+  "specVersion": "1.6",
+  "version": 1
+}

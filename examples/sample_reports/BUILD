@@ -21,3 +21,10 @@ spdx(
     name = "library_spdx",
     sbom = ":library_sbom",
 )
+
+# SPDX 3.0.1 (JSON-LD), the other targets write SPDX 2.3.
+spdx(
+    name = "library_spdx_3_0_1",
+    format = "json-ld",
+    sbom = ":library_sbom",
+)

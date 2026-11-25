@@ -21,6 +21,7 @@ load("@stardoc//stardoc:stardoc.bzl", "stardoc")
         "integrity",
         "copyright_notice",
         "cpe",
+        "patch",
         "defs",
     ]
 ]

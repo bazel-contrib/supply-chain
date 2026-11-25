@@ -3,10 +3,12 @@ load("@package_metadata//licenses/rules:license_exception.bzl", "license_excepti
 load("@package_metadata//licenses/rules:license_kind.bzl", "license_kind")
 load("@package_metadata//purl:purl.bzl", "purl")
 load("@package_metadata//rules:package_metadata.bzl", "package_metadata")
+load("//:custom_attribute_test.bzl", "custom_attribute_test")
 load("//:license_exception_test.bzl", "license_exception_test")
 load("//:license_expression_analysis_test.bzl", "license_expression_case_test", "license_expression_custom_kinds_test", "license_expression_failure_test", "license_expression_graph_test", "license_expression_or_later_test", "license_expression_parsing_tests")
 load("//:license_json_test.bzl", "license_json_test")
 load("//:license_kind_test.bzl", "license_kind_test")
+load("//:multiple_attributes_test.bzl", "multiple_attributes_tests")
 load("//:purl_test.bzl", "purl_bazel_registry_test")
 load("//:spdx_alias_test.bzl", "spdx_alias_test")
 
@@ -246,4 +248,11 @@ license_expression_failure_test(
     expression = "MIT WITH AdditionRef-acme_internal",
     kinds = [":invalid_identifier_exception"],
     message = "invalid license exception identifier 'AdditionRef-acme_internal'*found '_'",
+)
+
+multiple_attributes_tests(name = "multiple_attributes")
+
+custom_attribute_test(
+    name = "custom_attribute_test",
+    golden = "testdata/custom_attribute_metadata.json",
 )

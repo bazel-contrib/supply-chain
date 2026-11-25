@@ -25,6 +25,9 @@ def _cyclonedx_impl(ctx):
         extra_args.extend(["--validator", cyclonedx_validator.validator.path])
         extra_tools.append(cyclonedx_validator.files_to_run)
 
+    if not ctx.attr.embed_patch_files:
+        extra_args.append("--embed_patch_files=false")
+
     inputs = depset(
         extra_inputs,
         transitive = [
@@ -58,6 +61,12 @@ cyclonedx = rule(
     attrs = {
         "sbom": attr.label(doc = "The sbom target to generate the CycloneDX SBOM from."),
         "format": attr.string(default = "json", values = ["json", "xml"], doc = "The output format for the CycloneDX SBOM."),
+        "embed_patch_files": attr.bool(
+            default = True,
+            doc = """Whether to embed the content of patch files (the `file` of a `patch` attribute) in the report, as base64 in the pedigree of the patched package.
+
+The embedded content makes the report self-contained but makes it larger, and discloses the patches to whoever receives the report. Set it to False to keep the patches local: they are still reported, with their type, the issues they resolve and the path of the file in the notes, but without their content. Patches given by `url` are never embedded.""",
+        ),
         "out": attr.output(doc = "The output file for the CycloneDX SBOM."),
         "serial_number": attr.label(
             allow_single_file = True,

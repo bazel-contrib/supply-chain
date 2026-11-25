@@ -48,7 +48,7 @@ def _my_rule_impl(ctx):
 | <a id="package_metadata_common.create_package_metadata-actions"></a>actions |  The [actions](https://bazel.build/rules/lib/builtins/actions) object from the rule context, used to declare and write files.   |  none |
 | <a id="package_metadata_common.create_package_metadata-label"></a>label |  The [Label](https://bazel.build/rules/lib/builtins/Label) of the target being processed.   |  none |
 | <a id="package_metadata_common.create_package_metadata-purl"></a>purl |  A string containing the [PURL](https://github.com/package-url/purl-spec) uniquely identifying this package (e.g., "pkg:npm/lodash@4.17.21"). Typically constructed with `purl.builder` or `purl.bazel`.   |  none |
-| <a id="package_metadata_common.create_package_metadata-attributes"></a>attributes |  A list of `PackageAttributeInfo` providers representing package attributes (e.g., source location, license). Defaults to an empty list.   |  `[]` |
+| <a id="package_metadata_common.create_package_metadata-attributes"></a>attributes |  A list of `PackageAttributeInfo` providers representing package attributes (e.g., source location, license). Defaults to an empty list. Attributes sharing a `kind` are only allowed if their `allow_multiple` is set; they are then emitted as a list of paths, otherwise the build fails.   |  `[]` |
 
 **RETURNS**
 

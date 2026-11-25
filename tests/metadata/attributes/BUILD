@@ -1,7 +1,10 @@
 load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
+load("@jq.bzl//jq:jq.bzl", "jq")
 load("@package_metadata//attributes:copyright_notice.bzl", "copyright_notice")
 load("@package_metadata//attributes:cpe.bzl", "cpe")
 load("@package_metadata//attributes:integrity.bzl", "integrity")
+load("@package_metadata//attributes:patch.bzl", "patch")
+load("@package_metadata//rules:package_metadata.bzl", "package_metadata")
 
 [
     [
@@ -67,3 +70,74 @@ load("@package_metadata//attributes:integrity.bzl", "integrity")
         ],
     }.items()
 ]
+
+patch(
+    name = "patch.valid-1",
+    description = "Fixes a buffer overflow in the parser.",
+    integrity = ["sha256-EbbT7lVO7feSmZBamPm5oE5JghC1nxUJTJFskdFQ51Q="],
+    resolves = ["CVE-2024-12345"],
+    type = "backport",
+    url = "https://example.com/patches/fix_overflow.patch",
+)
+
+diff_test(
+    name = "patch.valid-1.test",
+    file1 = ":patch.valid-1",
+    file2 = "testdata/patch/valid-1.json",
+)
+
+patch(
+    name = "patch.valid-2",
+    description = "Local tweak.",
+    file = "testdata/patch/local_tweak.patch",
+    type = "unofficial",
+    integrity = ["sha256-EbbT7lVO7feSmZBamPm5oE5JghC1nxUJTJFskdFQ51Q="],
+)
+
+diff_test(
+    name = "patch.valid-2.test",
+    file1 = ":patch.valid-2",
+    file2 = "testdata/patch/valid-2.json",
+)
+
+# The path of a file of an external repository is relative to the root of that
+# repository, without the `../<repo>/` prefix of its `short_path`.
+patch(
+    name = "patch.external",
+    description = "Patch of an external repository.",
+    file = "@rules_license//:LICENSE",
+    integrity = ["sha256-EbbT7lVO7feSmZBamPm5oE5JghC1nxUJTJFskdFQ51Q="],
+    type = "monkey",
+)
+
+diff_test(
+    name = "patch.external.test",
+    file1 = ":patch.external",
+    file2 = "testdata/patch/external.json",
+)
+
+# A `patch` allows multiple attributes of its kind: both end up, in order, in
+# the same `package_metadata`.
+package_metadata(
+    name = "patch.multiple.package_metadata",
+    attributes = [
+        ":patch.valid-1",
+        ":patch.valid-2",
+    ],
+    purl = "pkg:generic/patched@1.0.0",
+)
+
+# Keeps only the file names, since the paths contain the configuration.
+jq(
+    name = "patch.multiple.actual",
+    srcs = [":patch.multiple.package_metadata"],
+    args = ["-S"],
+    filter = '.attributes |= map_values(if type == "array" then map(split("/") | last) else split("/") | last end)',
+    out = "patch.multiple.actual.json",
+)
+
+diff_test(
+    name = "patch.multiple.test",
+    file1 = "testdata/patch/multiple.json",
+    file2 = ":patch.multiple.actual",
+)

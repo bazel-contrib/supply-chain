@@ -1,7 +1,8 @@
-# SPDX 3.0.1 reports of graphs with unusual shapes, checked against goldens.
+# Reports of graphs with unusual shapes, checked against goldens.
 # See ../golden_test.bzl to update them.
 
 load("@package_metadata//rules:package_metadata.bzl", "package_metadata")
+load("@supply_chain_tools//sbom:cyclonedx.bzl", "cyclonedx")
 load("@supply_chain_tools//sbom:sbom.bzl", "sbom")
 load("@supply_chain_tools//sbom:spdx.bzl", "spdx")
 load("//sbom:golden_test.bzl", "sbom_golden_test")
@@ -178,4 +179,73 @@ sbom_golden_test(
     name = "empty_spdx_golden_test",
     golden = "testdata/empty_spdx.json",
     report = ":empty_spdx",
+)
+
+# A dependency on a generated file: the target lists the output of a rule with
+# package metadata (like a java_binary and its _deploy.jar), here two of them.
+# The package must be reported as a dependency of the target, once, and not left
+# out of its dependency graph.
+package_metadata(
+    name = "generated_metadata",
+    purl = "pkg:generic/generated@1.0.0",
+)
+
+genrule(
+    name = "generated",
+    outs = [
+        "generated.txt",
+        "generated_other.txt",
+    ],
+    applicable_licenses = [":generated_metadata"],
+    cmd = "echo generated > $(location generated.txt) && echo other > $(location generated_other.txt)",
+)
+
+filegroup(
+    name = "generated_file_app",
+    srcs = [
+        ":generated.txt",
+        ":generated_other.txt",
+    ],
+    applicable_licenses = [":app_metadata"],
+)
+
+sbom(
+    name = "generated_file_sbom",
+    target = ":generated_file_app",
+)
+
+spdx(
+    name = "generated_file_spdx",
+    format = "json-ld",
+    sbom = ":generated_file_sbom",
+)
+
+sbom_golden_test(
+    name = "generated_file_spdx_golden_test",
+    golden = "testdata/generated_file_spdx.json",
+    report = ":generated_file_spdx",
+)
+
+# A root without dependencies, alone in the report: CycloneDX has to declare it
+# with an empty dependency list, since a component absent from the dependency
+# graph has unknown dependencies.
+filegroup(
+    name = "root_only",
+    applicable_licenses = [":app_metadata"],
+)
+
+sbom(
+    name = "root_only_sbom",
+    target = ":root_only",
+)
+
+cyclonedx(
+    name = "root_only_cyclonedx",
+    sbom = ":root_only_sbom",
+)
+
+sbom_golden_test(
+    name = "root_only_cyclonedx_golden_test",
+    golden = "testdata/root_only_cyclonedx.json",
+    report = ":root_only_cyclonedx",
 )

@@ -55,12 +55,14 @@ a JSON object, encoded as UTF-8 and written without insignificant whitespace
 
 | Field | Description |
 | :---- | :---------- |
-| `attributes` | The declared `attributes`, keyed by the `kind` of their `PackageAttributeInfo`. Values are the paths of the `attributes` files, relative to the execution root. |
+| `attributes` | The declared `attributes`, keyed by the `kind` of their `PackageAttributeInfo`. Values are the paths of the `attributes` files, relative to the execution root, or an array of such paths for kinds with `allow_multiple`. |
 | `label` | The label of this `package_metadata` target. |
 | `purl` | The `purl` of this target, verbatim. |
 
-Since `attributes` is keyed by `kind`, declaring two attributes of the same
-`kind` on one target is not meaningful — only one of them is recorded.
+Declaring two attributes of the same `kind` on one target fails the build,
+unless the `PackageAttributeInfo` sets `allow_multiple`. In that case the
+value for that `kind` is a JSON array of paths, in declaration order, instead
+of a single string.
 
 
 **PARAMETERS**

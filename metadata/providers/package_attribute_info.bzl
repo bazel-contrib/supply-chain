@@ -2,8 +2,9 @@
 
 visibility("public")
 
-def _init(kind, attributes, files = []):
+def _init(kind, attributes, files = [], allow_multiple = False):
     return {
+        "allow_multiple": allow_multiple,
         "attributes": attributes,
         "files": depset(
             direct = [
@@ -25,6 +26,16 @@ point for organizations that need to inject metadata beyond the attributes
 provided by `@package_metadata`.
 """.strip(),
     fields = {
+        "allow_multiple": """
+Whether a `package_metadata` target may declare more than one attribute of this
+`kind`. Defaults to `False`.
+
+If `False`, declaring two attributes of this `kind` on the same
+`package_metadata` fails the build. If `True`, all of them are recorded, in the
+order they were declared, and consumers are expected to handle a list of
+`attributes` files for this `kind` (e.g., a `patch` attribute declared once per
+patch).
+""".strip(),
         "attributes": """
 The [File](https://bazel.build/rules/lib/builtins/File) containing the
 attributes.

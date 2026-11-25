@@ -119,6 +119,13 @@ cyclonedx(
     sbom = ":lib_with_third_party_deps_sbom",
 )
 
+# The same report without the content of the patch files.
+cyclonedx(
+    name = "lib_with_third_party_deps_cyclonedx_no_patch_files",
+    embed_patch_files = False,
+    sbom = ":lib_with_third_party_deps_sbom",
+)
+
 spdx(
     name = "lib_with_third_party_deps_spdx",
     sbom = ":lib_with_third_party_deps_sbom",

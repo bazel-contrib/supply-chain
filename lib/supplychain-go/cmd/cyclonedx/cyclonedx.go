@@ -18,6 +18,7 @@ import (
 
 func main() {
 	var outPath, graphPath, classificationsPath, format, buildStatusPath, serialNumberPath, validatorPath string
+	var embedPatchFiles bool
 	flag.StringVar(&outPath, "out", "", "The path to write the generated CycloneDX SBOM.")
 	flag.StringVar(&graphPath, "graph", "", "The path to the graph JSON file.")
 	flag.StringVar(&classificationsPath, "classifications", "", "The path to the classifications JSON file.")
@@ -25,6 +26,7 @@ func main() {
 	flag.StringVar(&buildStatusPath, "created_from_status_file", "", "Path to a Bazel volatile-status.txt file to read a BUILD_TIMESTAMP from for metadata.timestamp. If unset, or the file has no BUILD_TIMESTAMP key, a fixed deterministic timestamp (the Unix epoch) is used instead, matching Bazel's own --nostamp default.")
 	flag.StringVar(&serialNumberPath, "serial_number_file", "", "Optional path to a file holding the BOM serialNumber, in urn:uuid form. It should be unique to each generated BOM. If unset, the BOM has no serialNumber.")
 	flag.StringVar(&validatorPath, "validator", "", "Optional runfiles path or executable path to the CycloneDX CLI validator.")
+	flag.BoolVar(&embedPatchFiles, "embed_patch_files", true, "Embed the content of the patch files in the pedigree of the packages they patch. Disable it to keep local patches out of the report.")
 	flag.Parse()
 
 	if outPath == "" {
@@ -61,7 +63,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	bom, err := GenerateBOM(graph, classifications)
+	var opts []Option
+	if !embedPatchFiles {
+		opts = append(opts, WithoutPatchFiles())
+	}
+	bom, err := GenerateBOM(graph, classifications, opts...)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error generating BOM: %v\n", err)
 		os.Exit(1)
@@ -117,7 +123,25 @@ func main() {
 	}
 }
 
-func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications) (*cdx.BOM, error) {
+// Option customizes GenerateBOM.
+type Option func(*options)
+
+type options struct {
+	omitPatchFiles bool
+}
+
+// WithoutPatchFiles leaves the content of patch files out of the BOM. The
+// patches are still reported, with their type and the issues they resolve, and
+// the path of a patch file stays in the notes of the pedigree.
+func WithoutPatchFiles() Option {
+	return func(o *options) { o.omitPatchFiles = true }
+}
+
+func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications, opts ...Option) (*cdx.BOM, error) {
+	var config options
+	for _, opt := range opts {
+		opt(&config)
+	}
 	graph = sbom.NormalizeGraph(graph)
 	components := make([]cdx.Component, 0)
 	labelToBOMRef := make(map[string]string)
@@ -175,6 +199,16 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications) (
 			return cdx.Component{}, fmt.Errorf("error reading license of %s: %w", node.Label, err)
 		}
 		component.Licenses = licensesOf(licenseAttribute)
+
+		patches, err := supplychain.GetPatchAttributes(pkgMetadata)
+		if err != nil {
+			return cdx.Component{}, fmt.Errorf("error reading patches of %s: %w", node.Label, err)
+		}
+		pedigree, err := pedigreeOf(patches, !config.omitPatchFiles)
+		if err != nil {
+			return cdx.Component{}, fmt.Errorf("error reporting patches of %s: %w", node.Label, err)
+		}
+		component.Pedigree = pedigree
 
 		labelToBOMRef[node.Label] = bomRef
 		return component, nil
@@ -239,6 +273,22 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications) (
 		}
 		seenDep[fromRef][toRef] = true
 		depMap[fromRef] = append(depMap[fromRef], toRef)
+	}
+
+	// CycloneDX treats a component that is absent from the dependency graph as
+	// having unknown dependencies, and one with an empty dependsOn as having none.
+	// Every component of the graph was resolved above, so declare the ones without
+	// outgoing edges explicitly instead of leaving them out.
+	declareLeaf := func(ref string) {
+		if _, ok := depMap[ref]; !ok {
+			depMap[ref] = []string{}
+		}
+	}
+	if rootComponent != nil {
+		declareLeaf(rootComponent.BOMRef)
+	}
+	for _, component := range components {
+		declareLeaf(component.BOMRef)
 	}
 
 	// Convert to CycloneDX Dependencies format

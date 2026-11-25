@@ -111,6 +111,21 @@
       "ref": "pkg:bazel/acme_plugin@0.4.1"
     },
     {
+      "ref": "pkg:bazel/acme_sdk@1.2.0"
+    },
+    {
+      "ref": "pkg:bazel/classpath_runtime@21.0.2"
+    },
+    {
+      "ref": "pkg:bazel/crypto_suite@3.1.0"
+    },
+    {
+      "ref": "pkg:bazel/dual_licensed@1.0.219"
+    },
+    {
+      "ref": "pkg:bazel/legacy_gpl@0.9.0"
+    },
+    {
       "dependsOn": [
         "pkg:bazel/acme_plugin@0.4.1",
         "pkg:bazel/classpath_runtime@21.0.2",
@@ -126,6 +141,9 @@
         "pkg:bazel/legacy_gpl@0.9.0"
       ],
       "ref": "pkg:generic/dual_custom@0.3.0"
+    },
+    {
+      "ref": "pkg:generic/http_client@2.0.0"
     }
   ],
   "metadata": {

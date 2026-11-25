@@ -9,7 +9,7 @@ Public API of `@package_metadata`.
 <pre>
 load("@package_metadata//:defs.bzl", "PackageAttributeInfo")
 
-PackageAttributeInfo(<a href="#PackageAttributeInfo-kind">kind</a>, <a href="#PackageAttributeInfo-attributes">attributes</a>, <a href="#PackageAttributeInfo-files">files</a>)
+PackageAttributeInfo(<a href="#PackageAttributeInfo-kind">kind</a>, <a href="#PackageAttributeInfo-attributes">attributes</a>, <a href="#PackageAttributeInfo-files">files</a>, <a href="#PackageAttributeInfo-allow_multiple">allow_multiple</a>)
 </pre>
 
 Provider for declaring a single attribute of a Bazel package (e.g., the license
@@ -27,6 +27,7 @@ provided by `@package_metadata`.
 | <a id="PackageAttributeInfo-kind"></a>kind | The identifier of the attribute.<br><br>This should generally be in reverse DNS format (e.g., `com.example.foo`). | none |
 | <a id="PackageAttributeInfo-attributes"></a>attributes | The [File](https://bazel.build/rules/lib/builtins/File) containing the attributes.<br><br>The format of this file depends on the `kind` of attribute. Please consult the documentation of the attribute (e.g., `license` documents the JSON object it writes). | none |
 | <a id="PackageAttributeInfo-files"></a>files | A [depset](https://bazel.build/rules/lib/builtins/depset) of [File](https://bazel.build/rules/lib/builtins/File)s containing information about this attribute. | `[]` |
+| <a id="PackageAttributeInfo-allow_multiple"></a>allow_multiple | Whether a `package_metadata` target may declare more than one attribute of this `kind`. Defaults to `False`.<br><br>If `False`, declaring two attributes of this `kind` on the same `package_metadata` fails the build. If `True`, all of them are recorded, in the order they were declared, and consumers are expected to handle a list of `attributes` files for this `kind` (e.g., a `patch` attribute declared once per patch). | `False` |
 
 
 <a id="PackageMetadataInfo"></a>
@@ -144,12 +145,14 @@ a JSON object, encoded as UTF-8 and written without insignificant whitespace
 
 | Field | Description |
 | :---- | :---------- |
-| `attributes` | The declared `attributes`, keyed by the `kind` of their `PackageAttributeInfo`. Values are the paths of the `attributes` files, relative to the execution root. |
+| `attributes` | The declared `attributes`, keyed by the `kind` of their `PackageAttributeInfo`. Values are the paths of the `attributes` files, relative to the execution root, or an array of such paths for kinds with `allow_multiple`. |
 | `label` | The label of this `package_metadata` target. |
 | `purl` | The `purl` of this target, verbatim. |
 
-Since `attributes` is keyed by `kind`, declaring two attributes of the same
-`kind` on one target is not meaningful — only one of them is recorded.
+Declaring two attributes of the same `kind` on one target fails the build,
+unless the `PackageAttributeInfo` sets `allow_multiple`. In that case the
+value for that `kind` is a JSON array of paths, in declaration order, instead
+of a single string.
 
 
 **PARAMETERS**
@@ -206,7 +209,7 @@ def _my_rule_impl(ctx):
 | <a id="package_metadata_common.create_package_metadata-actions"></a>actions |  The [actions](https://bazel.build/rules/lib/builtins/actions) object from the rule context, used to declare and write files.   |  none |
 | <a id="package_metadata_common.create_package_metadata-label"></a>label |  The [Label](https://bazel.build/rules/lib/builtins/Label) of the target being processed.   |  none |
 | <a id="package_metadata_common.create_package_metadata-purl"></a>purl |  A string containing the [PURL](https://github.com/package-url/purl-spec) uniquely identifying this package (e.g., "pkg:npm/lodash@4.17.21"). Typically constructed with `purl.builder` or `purl.bazel`.   |  none |
-| <a id="package_metadata_common.create_package_metadata-attributes"></a>attributes |  A list of `PackageAttributeInfo` providers representing package attributes (e.g., source location, license). Defaults to an empty list.   |  `[]` |
+| <a id="package_metadata_common.create_package_metadata-attributes"></a>attributes |  A list of `PackageAttributeInfo` providers representing package attributes (e.g., source location, license). Defaults to an empty list. Attributes sharing a `kind` are only allowed if their `allow_multiple` is set; they are then emitted as a list of paths, otherwise the build fails.   |  `[]` |
 
 **RETURNS**
 

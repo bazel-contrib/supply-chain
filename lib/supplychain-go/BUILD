@@ -18,6 +18,7 @@ go_library(
         "license.go",
         "package_attribute.go",
         "package_metadata.go",
+        "patch.go",
     ],
     importpath = "github.com/bazel-contrib/supply-chain/lib/supplychain-go",
     visibility = ["//visibility:public"],
@@ -29,11 +30,15 @@ go_library(
 
 go_test(
     name = "supplychain-go_test",
-    srcs = ["package_metadata_test.go"],
+    srcs = [
+        "package_metadata_test.go",
+        "patch_test.go",
+    ],
     embed = [":supplychain-go"],
     deps = [
         "//label",
         "@com_github_package_url_packageurl_go//:packageurl-go",
         "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
     ],
 )
