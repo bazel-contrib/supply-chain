@@ -26,11 +26,20 @@
   ],
   "dependencies": [
     {
+      "ref": "pkg:generic/linking-dynamic@1.0.0"
+    },
+    {
+      "ref": "pkg:generic/linking-fallback@1.0.0"
+    },
+    {
       "dependsOn": [
         "pkg:generic/linking-dynamic@1.0.0",
         "pkg:generic/linking-static@1.0.0"
       ],
       "ref": "pkg:generic/linking-root@1.0.0"
+    },
+    {
+      "ref": "pkg:generic/linking-static@1.0.0"
     }
   ],
   "metadata": {
