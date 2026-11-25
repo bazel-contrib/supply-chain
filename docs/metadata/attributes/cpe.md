@@ -27,6 +27,18 @@ external reference of the `SECURITY` category, of the type `cpe22Type` or
 `cpe23`. A CycloneDX component has a single `cpe`, so it gets the first
 identifier, and the other ones are properties named `bazel:cpe`.
 
+Note: a tool that only reads the `cpe` of a CycloneDX component, such as
+Dependency-Track, never sees the `bazel:cpe` properties, so it matches a
+component against a single CPE. Vulnerability reports can then under-report.
+The NVD may list the CVEs of one product under several CPEs, for example
+under different vendor names (`cpe:2.3:a:teluu:pjsip` and
+`cpe:2.3:a:pjsip:pjsip` for PJSIP), and a component that carries only one of
+them misses the CVEs listed under the others. Listing the same component
+several times in the report, each time with one of the CPEs, lets such a
+tool match all of them. The cost is that the component appears several
+times, and that a CVE listed under more than one of those CPEs can be
+reported more than once.
+
 Usage:
 
 ```starlark
