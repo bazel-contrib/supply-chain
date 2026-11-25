@@ -200,6 +200,20 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications, o
 		}
 		component.Licenses = licensesOf(licenseAttribute)
 
+		cpeAttribute, err := supplychain.GetCPEAttribute(pkgMetadata)
+		if err != nil {
+			return cdx.Component{}, fmt.Errorf("error reading CPE of %s: %w", node.Label, err)
+		}
+		if cpeAttribute != nil && len(*cpeAttribute) > 0 {
+			// A CycloneDX component has room for a single CPE. It is the first
+			// one, and the others are kept as properties.
+			component.CPE = (*cpeAttribute)[0]
+			for _, cpe := range (*cpeAttribute)[1:] {
+				properties := append(valueOrEmpty(component.Properties), cdx.Property{Name: "bazel:cpe", Value: cpe})
+				component.Properties = &properties
+			}
+		}
+
 		patches, err := supplychain.GetPatchAttributes(pkgMetadata)
 		if err != nil {
 			return cdx.Component{}, fmt.Errorf("error reading patches of %s: %w", node.Label, err)
@@ -379,4 +393,11 @@ func readSerialNumber(path string) (string, error) {
 		return "", fmt.Errorf("%s must contain a serial number in lowercase urn:uuid form, got %q", path, serialNumber)
 	}
 	return serialNumber, nil
+}
+
+func valueOrEmpty[T any](list *[]T) []T {
+	if list == nil {
+		return nil
+	}
+	return *list
 }

@@ -71,6 +71,28 @@ func GenerateDocument23(graph sbom.GraphConfig, classifications sbom.Classificat
 			PackageVersion: purl.Version,
 		}
 
+		cpeAttribute, err := supplychain.GetCPEAttribute(pkgMetadata)
+		if err != nil {
+			return nil, fmt.Errorf("error reading CPE of %s: %w", node.Label, err)
+		}
+		if cpeAttribute != nil {
+			for _, cpe := range *cpeAttribute {
+				version, err := supplychain.CPEVersionOf(cpe)
+				if err != nil {
+					return nil, fmt.Errorf("error reading CPE of %s: %w", node.Label, err)
+				}
+				refType := "cpe23Type"
+				if version == supplychain.CPE22 {
+					refType = "cpe22Type"
+				}
+				pkg.PackageExternalReferences = append(pkg.PackageExternalReferences, &spdx2.PackageExternalReference{
+					Category: "SECURITY",
+					RefType:  refType,
+					Locator:  cpe,
+				})
+			}
+		}
+
 		licenseAttribute, err := supplychain.GetLicenseAttribute(pkgMetadata)
 		if err != nil {
 			return nil, fmt.Errorf("error reading license of %s: %w", node.Label, err)
