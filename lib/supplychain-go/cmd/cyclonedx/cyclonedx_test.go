@@ -449,6 +449,7 @@ func TestGenerateBOM_ContainerIsNotADependencyAncestorOfWhatItContains(t *testin
 	want := map[string][]string{
 		"pkg:golang/example.com/pkg@v1":  {"pkg:golang/example.com/a@v1", "pkg:golang/example.com/root@v1"},
 		"pkg:golang/example.com/root@v1": {"pkg:golang/example.com/a@v1"},
+		"pkg:golang/example.com/a@v1":    {},
 	}
 	for ref := range children {
 		sort.Strings(children[ref])
