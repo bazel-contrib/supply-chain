@@ -56,6 +56,9 @@
         "pkg:github/acmecorp/coyote@3.1.4?download_url=https:%2F%2Fgithub.com%2Facmecorp%2Fcoyote%2Farchive%2Frefs%2Ftags%2F3.1.4.tar.gz"
       ],
       "ref": "pkg:bazel/supply_chain_examples@0.0.1"
+    },
+    {
+      "ref": "pkg:github/acmecorp/coyote@3.1.4?download_url=https:%2F%2Fgithub.com%2Facmecorp%2Fcoyote%2Farchive%2Frefs%2Ftags%2F3.1.4.tar.gz"
     }
   ],
   "metadata": {

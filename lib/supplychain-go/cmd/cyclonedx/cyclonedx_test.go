@@ -165,6 +165,7 @@ func TestGenerateBOM_RetainsPackageEdges(t *testing.T) {
 			want := map[string][]string{
 				"pkg:golang/example.com/app@v1":      {"pkg:golang/example.com/module_a@v1"},
 				"pkg:golang/example.com/module_a@v1": {"pkg:golang/example.com/module_b@v1"},
+				"pkg:golang/example.com/module_b@v1": {},
 			}
 			if !reflect.DeepEqual(got, want) {
 				t.Fatalf("dependencies = %v, want %v", got, want)

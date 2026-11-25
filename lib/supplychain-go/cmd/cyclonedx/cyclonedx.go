@@ -264,6 +264,22 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications, o
 		depMap[fromRef] = append(depMap[fromRef], toRef)
 	}
 
+	// CycloneDX treats a component that is absent from the dependency graph as
+	// having unknown dependencies, and one with an empty dependsOn as having none.
+	// Every component of the graph was resolved above, so declare the ones without
+	// outgoing edges explicitly instead of leaving them out.
+	declareLeaf := func(ref string) {
+		if _, ok := depMap[ref]; !ok {
+			depMap[ref] = []string{}
+		}
+	}
+	if rootComponent != nil {
+		declareLeaf(rootComponent.BOMRef)
+	}
+	for _, component := range components {
+		declareLeaf(component.BOMRef)
+	}
+
 	// Convert to CycloneDX Dependencies format
 	var dependencies *[]cdx.Dependency
 	if len(depMap) > 0 {
