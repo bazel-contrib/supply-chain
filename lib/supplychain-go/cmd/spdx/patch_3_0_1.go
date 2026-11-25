@@ -7,13 +7,6 @@ import (
 	spdx "github.com/spdx/tools-golang/spdx/v3/v3_0"
 )
 
-var hashAlgorithms = map[string]spdx.HashAlgorithm{
-	"sha1":   spdx.HashAlgorithm_Sha1,
-	"sha256": spdx.HashAlgorithm_Sha256,
-	"sha384": spdx.HashAlgorithm_Sha384,
-	"sha512": spdx.HashAlgorithm_Sha512,
-}
-
 // patchFiles creates a file of the purpose patch for every patch of the
 // packages, and a patchedBy relationship from the package to it. Relationship
 // ids start at firstRelationship.

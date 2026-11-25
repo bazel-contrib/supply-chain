@@ -29,6 +29,7 @@ go_test(
     ],
     embed = [":cyclonedx_lib"],
     deps = [
+        "//:supplychain-go",
         "//internal/sbom",
         "@com_github_cyclonedx_cyclonedx_go//:cyclonedx-go",
     ],

@@ -1,6 +1,7 @@
 # A package with a commercial license.
 
 load("@package_metadata//:defs.bzl", "package_metadata")
+load("@package_metadata//attributes:integrity.bzl", "integrity")
 load("@package_metadata//attributes:patch.bzl", "patch")
 load("@package_metadata//licenses/rules:license.bzl", "license")
 load("@rules_cc//cc:cc_library.bzl", "cc_library")
@@ -13,11 +14,18 @@ package(
 package_metadata(
     name = "package_data",
     attributes = [
+        ":integrity",
         ":license",
         ":fix_coyote",
         ":fix_cve",
     ],
     purl = "pkg:github/acmecorp/coyote@3.1.4?download_url=https://github.com/acmecorp/coyote/archive/refs/tags/3.1.4.tar.gz",
+)
+
+# Illustrative digest: this example does not fetch an actual source archive.
+integrity(
+    name = "integrity",
+    values = ["sha256-U5OHFmw/vsc7vJ9Wen/cAyR7Qgk0b+TC88c/Xjn8uKY="],
 )
 
 # The default license for an entire package is typically named "license".

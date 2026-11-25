@@ -5,9 +5,11 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"strings"
 	"testing"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
+	supplychain "github.com/bazel-contrib/supply-chain/lib/supplychain-go"
 	"github.com/bazel-contrib/supply-chain/lib/supplychain-go/internal/sbom"
 )
 
@@ -169,5 +171,23 @@ func TestGenerateBOM_RetainsPackageEdges(t *testing.T) {
 				t.Fatalf("dependencies = %v, want %v", got, want)
 			}
 		})
+	}
+}
+
+func TestHashesOf(t *testing.T) {
+	got, err := hashesOf(supplychain.IntegrityAttribute{"sha256-" + strings.Repeat("A", 43) + "=", "md5-AAAA"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := []cdx.Hash{{Algorithm: cdx.HashAlgoSHA256, Value: strings.Repeat("00", 32)}}
+	if got == nil || !reflect.DeepEqual(*got, want) {
+		t.Errorf("hashesOf = %v, want %v", got, want)
+	}
+
+	if got, err := hashesOf(supplychain.IntegrityAttribute{"md5-AAAA"}); err != nil || got != nil {
+		t.Errorf("hashesOf(unsupported only) = %v, %v, want nil, nil", got, err)
+	}
+	if _, err := hashesOf(supplychain.IntegrityAttribute{"sha256-AAAA"}); err == nil {
+		t.Error("hashesOf(malformed) succeeded, want an error")
 	}
 }

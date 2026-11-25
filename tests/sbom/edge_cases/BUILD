@@ -379,3 +379,53 @@ sbom(
         "spdx_2_3": "json",
     }.items()
 ]
+
+# The organization that originated a package is inferred from the namespace of
+# its purl for the hosts where the namespace is the owner of the repository
+# (github, gitlab, bitbucket), and for no other type: the namespace of a maven
+# group or of an npm scope is not necessarily an organization.
+package_metadata(
+    name = "github_metadata",
+    purl = "pkg:github/acmecorp/inferred@1.0.0",
+)
+
+package_metadata(
+    name = "maven_metadata",
+    purl = "pkg:maven/org.acme/not_inferred@1.0.0",
+)
+
+filegroup(
+    name = "github",
+    applicable_licenses = [":github_metadata"],
+)
+
+filegroup(
+    name = "maven",
+    applicable_licenses = [":maven_metadata"],
+)
+
+filegroup(
+    name = "originated",
+    srcs = [
+        ":github",
+        ":maven",
+    ],
+    applicable_licenses = [":app_metadata"],
+)
+
+sbom(
+    name = "originated_sbom",
+    target = ":originated",
+)
+
+spdx(
+    name = "originated_spdx",
+    format = "json-ld",
+    sbom = ":originated_sbom",
+)
+
+sbom_golden_test(
+    name = "originated_spdx_golden_test",
+    golden = "testdata/originated_spdx.json",
+    report = ":originated_spdx",
+)

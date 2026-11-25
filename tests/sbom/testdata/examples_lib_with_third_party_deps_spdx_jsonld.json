@@ -10,9 +10,21 @@
     },
     {
       "creationInfo": "_:CreationInfo-1",
+      "name": "acmecorp",
+      "spdxId": "SPDXRef:Organization-1",
+      "type": "Organization"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
       "name": "Bazel Supply Chain Tools SPDX generator",
       "spdxId": "SPDXRef:SoftwareAgent-1",
       "type": "SoftwareAgent"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "Bazel Supply Chain Tools SPDX generator",
+      "spdxId": "SPDXRef:Tool-1",
+      "type": "Tool"
     },
     {
       "creationInfo": "_:CreationInfo-1",
@@ -25,11 +37,21 @@
     {
       "creationInfo": "_:CreationInfo-1",
       "name": "coyote",
+      "originatedBy": [
+        "SPDXRef:Organization-1"
+      ],
       "software_downloadLocation": "https://github.com/acmecorp/coyote/archive/refs/tags/3.1.4.tar.gz",
       "software_packageUrl": "pkg:github/acmecorp/coyote@3.1.4?download_url=https:%2F%2Fgithub.com%2Facmecorp%2Fcoyote%2Farchive%2Frefs%2Ftags%2F3.1.4.tar.gz",
       "software_packageVersion": "3.1.4",
       "spdxId": "SPDXRef:dep-1",
-      "type": "software_Package"
+      "type": "software_Package",
+      "verifiedUsing": [
+        {
+          "algorithm": "sha256",
+          "hashValue": "539387166c3fbec73bbc9f567a7fdc03247b4209346fe4c2f3c73f5e39fcb8a6",
+          "type": "Hash"
+        }
+      ]
     },
     {
       "comment": "Patch file vendor/acme/fix_coyote.patch in the repository that declares the package.",
@@ -125,7 +147,9 @@
       "creationInfo": "_:CreationInfo-1",
       "element": [
         "SPDXRef:LicenseRef-acme",
+        "SPDXRef:Organization-1",
         "SPDXRef:SoftwareAgent-1",
+        "SPDXRef:Tool-1",
         "SPDXRef:dep-0",
         "SPDXRef:dep-1",
         "SPDXRef:patch-0",
@@ -140,6 +164,9 @@
       "rootElement": [
         "SPDXRef:dep-0"
       ],
+      "software_sbomType": [
+        "build"
+      ],
       "spdxId": "SPDXRef:sbom",
       "type": "software_Sbom"
     },
@@ -149,7 +176,9 @@
       "createdBy": [
         "SPDXRef:SoftwareAgent-1"
       ],
-      "createdUsing": [],
+      "createdUsing": [
+        "SPDXRef:Tool-1"
+      ],
       "specVersion": "3.0.1",
       "type": "CreationInfo"
     },

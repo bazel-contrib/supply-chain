@@ -4,6 +4,7 @@ load("@package_metadata//licenses/rules:license_kind.bzl", "license_kind")
 load("@package_metadata//purl:purl.bzl", "purl")
 load("@package_metadata//rules:package_metadata.bzl", "package_metadata")
 load("//:custom_attribute_test.bzl", "custom_attribute_test")
+load("//:integrity_failure_test.bzl", "integrity_failure_test")
 load("//:license_exception_test.bzl", "license_exception_test")
 load("//:license_expression_analysis_test.bzl", "license_expression_case_test", "license_expression_custom_kinds_test", "license_expression_failure_test", "license_expression_graph_test", "license_expression_or_later_test", "license_expression_parsing_tests")
 load("//:license_json_test.bzl", "license_json_test")
@@ -255,4 +256,40 @@ multiple_attributes_tests(name = "multiple_attributes")
 custom_attribute_test(
     name = "custom_attribute_test",
     golden = "testdata/custom_attribute_metadata.json",
+)
+
+integrity_failure_test(
+    name = "integrity_without_digest_test",
+    message = "is not of the form <algorithm>-<base64 digest>",
+    values = ["sha256"],
+)
+
+integrity_failure_test(
+    name = "integrity_not_base64_test",
+    message = "the digest is not base64",
+    values = ["sha256-not base64!"],
+)
+
+integrity_failure_test(
+    name = "integrity_impossible_length_test",
+    message = "the digest is not base64",
+    values = ["sha384-" + "A" * 65],
+)
+
+integrity_failure_test(
+    name = "integrity_excess_padding_test",
+    message = "the digest is not base64",
+    values = ["sha256-" + "A" * 43 + "===="],
+)
+
+integrity_failure_test(
+    name = "integrity_misplaced_padding_test",
+    message = "the digest is not base64",
+    values = ["sha256-" + "A" * 42 + "="],
+)
+
+integrity_failure_test(
+    name = "integrity_wrong_size_test",
+    message = "a sha256 digest has 32 bytes",
+    values = ["sha256-AAAA"],
 )

@@ -49,9 +49,8 @@ func TestPatchAttributeChecksums(t *testing.T) {
 	p := &PatchAttribute{Integrity: []string{sriSha1, sriSha256, "md5-1B2M2Y8AsgTpgAmY7PhCfg=="}}
 	checksums, err := p.Checksums()
 	require.NoError(t, err)
-	// md5 is not supported and dropped.
+	// sha1 and md5 are not supported and dropped.
 	assert.Equal(t, []Checksum{
-		{Algorithm: "sha1", Hex: "a9993e364706816aba3e25717850c26c9cd0d89d"},
 		{Algorithm: "sha256", Hex: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
 	}, checksums)
 
@@ -112,7 +111,7 @@ func TestPatchAttributeWarnIfNoSupportedIntegrity(t *testing.T) {
 		integrity []string
 		warns     bool
 	}{
-		"only unsupported":  {[]string{md5, "sha3-512-AAAA"}, true},
+		"only unsupported":  {[]string{md5, sriSha1, "sha3-512-AAAA"}, true},
 		"one supported":     {[]string{md5, sriSha256}, false},
 		"only supported":    {[]string{sriSha256}, false},
 		"malformed entries": {[]string{"abc"}, false}, // The parser rejects it; no warning on top.

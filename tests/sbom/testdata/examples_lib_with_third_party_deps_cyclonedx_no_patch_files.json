@@ -10,6 +10,12 @@
           "url": "https://github.com/acmecorp/coyote/archive/refs/tags/3.1.4.tar.gz"
         }
       ],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "539387166c3fbec73bbc9f567a7fdc03247b4209346fe4c2f3c73f5e39fcb8a6"
+        }
+      ],
       "licenses": [
         {
           "license": {

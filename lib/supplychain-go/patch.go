@@ -1,8 +1,6 @@
 package supplychain
 
 import (
-	"encoding/base64"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -113,21 +111,6 @@ func (p *PatchAttribute) Name() string {
 	return name
 }
 
-// Checksum is the digest of a patch.
-type Checksum struct {
-	// Algorithm is one of "sha1", "sha256", "sha384" and "sha512".
-	Algorithm string
-	// Hex is the digest, hex-encoded.
-	Hex string
-}
-
-var checksumSizes = map[string]int{
-	"sha1":   20,
-	"sha256": 32,
-	"sha384": 48,
-	"sha512": 64,
-}
-
 // WarnIfNoSupportedIntegrity writes a warning to w if none of the integrity
 // entries of the patch uses a supported algorithm, so that the checksum missing
 // from a report does not go unnoticed. owner names what the patch applies to.
@@ -147,34 +130,8 @@ func (p *PatchAttribute) WarnIfNoSupportedIntegrity(w io.Writer, owner string) {
 		p.Name(), owner, strings.Join(algorithms, ", "))
 }
 
-// Checksums returns the checksums of the patch from its integrity. Algorithms
-// that are not supported are dropped. A malformed entry is an error.
+// Checksums returns the checksums of the patch from its integrity. See
+// ParseChecksums.
 func (p *PatchAttribute) Checksums() ([]Checksum, error) {
-	var checksums []Checksum
-	for _, sri := range p.Integrity {
-		algorithm, digest, ok := strings.Cut(sri, "-")
-		if !ok {
-			return nil, fmt.Errorf("integrity %q is not of the form <algorithm>-<base64 digest>", sri)
-		}
-		size, ok := checksumSizes[strings.ToLower(algorithm)]
-		if !ok {
-			continue
-		}
-		// An SRI string can carry options after the digest.
-		digest, _, _ = strings.Cut(digest, "?")
-		// Accept both the standard and the URL-safe base64 alphabets.
-		digest = strings.NewReplacer("-", "+", "_", "/").Replace(strings.TrimRight(digest, "="))
-		raw, err := base64.RawStdEncoding.DecodeString(digest)
-		if err != nil {
-			return nil, fmt.Errorf("integrity %q: %w", sri, err)
-		}
-		if len(raw) != size {
-			return nil, fmt.Errorf("integrity %q: a %s digest has %d bytes, got %d", sri, algorithm, size, len(raw))
-		}
-		checksums = append(checksums, Checksum{
-			Algorithm: strings.ToLower(algorithm),
-			Hex:       hex.EncodeToString(raw),
-		})
-	}
-	return checksums, nil
+	return ParseChecksums(p.Integrity)
 }

@@ -200,6 +200,18 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications, o
 		}
 		component.Licenses = licensesOf(licenseAttribute)
 
+		integrity, err := supplychain.GetIntegrityAttribute(pkgMetadata)
+		if err != nil {
+			return cdx.Component{}, fmt.Errorf("error reading integrity of %s: %w", node.Label, err)
+		}
+		if integrity != nil {
+			hashes, err := hashesOf(*integrity)
+			if err != nil {
+				return cdx.Component{}, fmt.Errorf("error reading integrity of %s: %w", node.Label, err)
+			}
+			component.Hashes = hashes
+		}
+
 		cpeAttribute, err := supplychain.GetCPEAttribute(pkgMetadata)
 		if err != nil {
 			return cdx.Component{}, fmt.Errorf("error reading CPE of %s: %w", node.Label, err)
@@ -372,6 +384,29 @@ func licensesOf(attribute *supplychain.LicenseAttribute) *cdx.Licenses {
 		}
 	}
 	return &cdx.Licenses{{License: &license}}
+}
+
+var hashAlgorithms = map[string]cdx.HashAlgorithm{
+	"sha256": cdx.HashAlgoSHA256,
+	"sha384": cdx.HashAlgoSHA384,
+	"sha512": cdx.HashAlgoSHA512,
+}
+
+// hashesOf converts integrity entries to CycloneDX hashes, or nil if none of
+// the algorithms is supported.
+func hashesOf(integrity supplychain.IntegrityAttribute) (*[]cdx.Hash, error) {
+	checksums, err := integrity.Checksums()
+	if err != nil {
+		return nil, err
+	}
+	var hashes []cdx.Hash
+	for _, checksum := range checksums {
+		hashes = append(hashes, cdx.Hash{Algorithm: hashAlgorithms[checksum.Algorithm], Value: checksum.Hex})
+	}
+	if len(hashes) == 0 {
+		return nil, nil
+	}
+	return &hashes, nil
 }
 
 // serialNumberPattern is the one of the CycloneDX schema, which only accepts

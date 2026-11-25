@@ -16,6 +16,7 @@ go_library(
     name = "supplychain-go",
     srcs = [
         "cpe.go",
+        "integrity.go",
         "license.go",
         "package_attribute.go",
         "package_metadata.go",
@@ -32,6 +33,7 @@ go_library(
 go_test(
     name = "supplychain-go_test",
     srcs = [
+        "integrity_test.go",
         "package_metadata_test.go",
         "patch_test.go",
     ],
