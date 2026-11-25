@@ -24,6 +24,13 @@ bool_flag(
     build_setting_default = False,
 )
 
+# True when the build is invoked with --stamp. The `cyclonedx` and `spdx` rules
+# use it as the default of their `stamp` attribute.
+config_setting(
+    name = "stamp",
+    values = {"stamp": "1"},
+)
+
 toolchain_type(name = "cyclonedx_validator_toolchain_type")
 
 toolchain_type(name = "spdx_validator_toolchain_type")

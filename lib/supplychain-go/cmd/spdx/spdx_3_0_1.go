@@ -75,6 +75,26 @@ func GenerateDocument301(graph sbom.GraphConfig, classifications sbom.Classifica
 				})
 			}
 		}
+		cpeAttribute, err := supplychain.GetCPEAttribute(pkgMetadata)
+		if err != nil {
+			return fmt.Errorf("error reading CPE of %s: %w", node.Label, err)
+		}
+		if cpeAttribute != nil {
+			for _, cpe := range *cpeAttribute {
+				version, err := supplychain.CPEVersionOf(cpe)
+				if err != nil {
+					return fmt.Errorf("error reading CPE of %s: %w", node.Label, err)
+				}
+				identifierType := spdx.ExternalIdentifierType_Cpe23
+				if version == supplychain.CPE22 {
+					identifierType = spdx.ExternalIdentifierType_Cpe22
+				}
+				pkg.ExternalIdentifiers = append(pkg.ExternalIdentifiers, &spdx.ExternalIdentifier{
+					Type:       identifierType,
+					Identifier: cpe,
+				})
+			}
+		}
 		licenseAttribute, err := supplychain.GetLicenseAttribute(pkgMetadata)
 		if err != nil {
 			return fmt.Errorf("error reading license of %s: %w", node.Label, err)

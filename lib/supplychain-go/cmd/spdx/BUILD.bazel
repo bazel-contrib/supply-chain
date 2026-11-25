@@ -20,6 +20,7 @@ go_library(
     deps = [
         "//:supplychain-go",
         "//internal/sbom",
+        "//internal/spdxnamespace",
         "@com_github_spdx_tools_golang//json",
         "@com_github_spdx_tools_golang//spdx",
         "@com_github_spdx_tools_golang//spdx/v2/common",

@@ -6,8 +6,10 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"regexp"
 	"sort"
 	"strings"
+	"time"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	supplychain "github.com/bazel-contrib/supply-chain/lib/supplychain-go"
@@ -15,12 +17,14 @@ import (
 )
 
 func main() {
-	var outPath, graphPath, classificationsPath, format, validatorPath string
+	var outPath, graphPath, classificationsPath, format, buildStatusPath, serialNumberPath, validatorPath string
 	var embedPatchFiles bool
 	flag.StringVar(&outPath, "out", "", "The path to write the generated CycloneDX SBOM.")
 	flag.StringVar(&graphPath, "graph", "", "The path to the graph JSON file.")
 	flag.StringVar(&classificationsPath, "classifications", "", "The path to the classifications JSON file.")
 	flag.StringVar(&format, "format", "json", "The output format of the CycloneDX SBOM (json or xml).")
+	flag.StringVar(&buildStatusPath, "created_from_status_file", "", "Path to a Bazel volatile-status.txt file to read a BUILD_TIMESTAMP from for metadata.timestamp. If unset, or the file has no BUILD_TIMESTAMP key, a fixed deterministic timestamp (the Unix epoch) is used instead, matching Bazel's own --nostamp default.")
+	flag.StringVar(&serialNumberPath, "serial_number_file", "", "Optional path to a file holding the BOM serialNumber, in urn:uuid form. It should be unique to each generated BOM. If unset, the BOM has no serialNumber.")
 	flag.StringVar(&validatorPath, "validator", "", "Optional runfiles path or executable path to the CycloneDX CLI validator.")
 	flag.BoolVar(&embedPatchFiles, "embed_patch_files", true, "Embed the content of the patch files in the pedigree of the packages they patch. Disable it to keep local patches out of the report.")
 	flag.Parse()
@@ -67,6 +71,25 @@ func main() {
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error generating BOM: %v\n", err)
 		os.Exit(1)
+	}
+
+	created, err := sbom.ReadBuildTimestamp(buildStatusPath)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error reading build status file: %v\n", err)
+		os.Exit(1)
+	}
+	if bom.Metadata == nil {
+		bom.Metadata = &cdx.Metadata{}
+	}
+	bom.Metadata.Timestamp = created.Format(time.RFC3339)
+
+	serialNumber, err := readSerialNumber(serialNumberPath)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error reading serial number: %v\n", err)
+		os.Exit(1)
+	}
+	if serialNumber != "" {
+		bom.SerialNumber = serialNumber
 	}
 
 	var buf bytes.Buffer
@@ -187,6 +210,20 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications, o
 				return cdx.Component{}, fmt.Errorf("error reading integrity of %s: %w", node.Label, err)
 			}
 			component.Hashes = hashes
+		}
+
+		cpeAttribute, err := supplychain.GetCPEAttribute(pkgMetadata)
+		if err != nil {
+			return cdx.Component{}, fmt.Errorf("error reading CPE of %s: %w", node.Label, err)
+		}
+		if cpeAttribute != nil && len(*cpeAttribute) > 0 {
+			// A CycloneDX component has room for a single CPE. It is the first
+			// one, and the others are kept as properties.
+			component.CPE = (*cpeAttribute)[0]
+			for _, cpe := range (*cpeAttribute)[1:] {
+				properties := append(valueOrEmpty(component.Properties), cdx.Property{Name: "bazel:cpe", Value: cpe})
+				component.Properties = &properties
+			}
 		}
 
 		patches, err := supplychain.GetPatchAttributes(pkgMetadata)
@@ -370,4 +407,32 @@ func hashesOf(integrity supplychain.IntegrityAttribute) (*[]cdx.Hash, error) {
 		return nil, nil
 	}
 	return &hashes, nil
+}
+
+// serialNumberPattern is the one of the CycloneDX schema, which only accepts
+// lowercase hexadecimal digits, as RFC 4122 asks for.
+var serialNumberPattern = regexp.MustCompile(`^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)
+
+// readSerialNumber reads a CycloneDX BOM serialNumber from the file at path.
+// An empty path returns an empty serial number, meaning "not provided".
+func readSerialNumber(path string) (string, error) {
+	if path == "" {
+		return "", nil
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return "", err
+	}
+	serialNumber := strings.TrimSpace(string(data))
+	if !serialNumberPattern.MatchString(serialNumber) {
+		return "", fmt.Errorf("%s must contain a serial number in lowercase urn:uuid form, got %q", path, serialNumber)
+	}
+	return serialNumber, nil
+}
+
+func valueOrEmpty[T any](list *[]T) []T {
+	if list == nil {
+		return nil
+	}
+	return *list
 }

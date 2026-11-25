@@ -1,10 +1,13 @@
 # Reports of graphs with unusual shapes, checked against goldens.
 # See ../golden_test.bzl to update them.
 
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
+load("@package_metadata//attributes:cpe.bzl", "cpe")
 load("@package_metadata//rules:package_metadata.bzl", "package_metadata")
 load("@supply_chain_tools//sbom:cyclonedx.bzl", "cyclonedx")
 load("@supply_chain_tools//sbom:sbom.bzl", "sbom")
 load("@supply_chain_tools//sbom:spdx.bzl", "spdx")
+load("//sbom:expected_failure.bzl", "spdx_expected_failure")
 load("//sbom:golden_test.bzl", "sbom_golden_test")
 
 package_metadata(
@@ -249,6 +252,133 @@ sbom_golden_test(
     golden = "testdata/root_only_cyclonedx.json",
     report = ":root_only_cyclonedx",
 )
+
+# The CPEs of a package. SPDX reports every one of them, as an external
+# reference (2.3) or an external identifier (3.0.1) of the type of its CPE
+# version. CycloneDX has room for a single CPE, so it reports the first one
+# and keeps the others as properties.
+cpe(
+    name = "cpe_single",
+    identifiers = ["cpe:2.3:a:acme:single:1.0.0:*:*:*:*:*:*:*"],
+)
+
+cpe(
+    name = "cpe_many",
+    identifiers = [
+        "cpe:2.3:a:acme:many:1.0.0:*:*:*:*:*:*:*",
+        "cpe:/a:acme:many:1.0.0",
+        "cpe:2.3:a:acme_inc:many:1.0.0:*:*:*:*:*:*:*",
+    ],
+)
+
+package_metadata(
+    name = "single_cpe_metadata",
+    attributes = [":cpe_single"],
+    purl = "pkg:generic/single@1.0.0",
+)
+
+package_metadata(
+    name = "many_cpes_metadata",
+    attributes = [":cpe_many"],
+    purl = "pkg:generic/many@1.0.0",
+)
+
+filegroup(
+    name = "single_cpe",
+    applicable_licenses = [":single_cpe_metadata"],
+)
+
+filegroup(
+    name = "many_cpes",
+    applicable_licenses = [":many_cpes_metadata"],
+)
+
+# A package without a CPE, next to the ones with.
+filegroup(
+    name = "cpe_app",
+    srcs = [
+        ":download_url",
+        ":many_cpes",
+        ":single_cpe",
+    ],
+    applicable_licenses = [":app_metadata"],
+)
+
+sbom(
+    name = "cpe_sbom",
+    target = ":cpe_app",
+)
+
+[
+    [
+        spdx(
+            name = "cpe_{}".format(name),
+            format = format,
+            sbom = ":cpe_sbom",
+        ),
+        sbom_golden_test(
+            name = "cpe_{}_golden_test".format(name),
+            golden = "testdata/cpe_{}.json".format(name),
+            report = ":cpe_{}".format(name),
+        ),
+    ]
+    for name, format in {
+        "spdx": "json-ld",
+        "spdx_2_3": "json",
+    }.items()
+]
+
+cyclonedx(
+    name = "cpe_cyclonedx",
+    sbom = ":cpe_sbom",
+)
+
+sbom_golden_test(
+    name = "cpe_cyclonedx_golden_test",
+    golden = "testdata/cpe_cyclonedx.json",
+    report = ":cpe_cyclonedx",
+)
+
+# A CPE that is neither a CPE 2.2 URI nor a CPE 2.3 formatted string is an error.
+cpe(
+    name = "cpe_malformed",
+    identifiers = ["cpe:2.3:a:acme"],
+)
+
+package_metadata(
+    name = "malformed_cpe_metadata",
+    attributes = [":cpe_malformed"],
+    purl = "pkg:generic/malformed@1.0.0",
+)
+
+filegroup(
+    name = "malformed_cpe",
+    applicable_licenses = [":malformed_cpe_metadata"],
+)
+
+sbom(
+    name = "malformed_cpe_sbom",
+    target = ":malformed_cpe",
+)
+
+[
+    [
+        spdx_expected_failure(
+            name = "malformed_cpe_{}".format(name),
+            format = format,
+            message = "is not a CPE 2.2 URI",
+            sbom = ":malformed_cpe_sbom",
+        ),
+        build_test(
+            name = "malformed_cpe_{}_test".format(name),
+            targets = [":malformed_cpe_{}".format(name)],
+        ),
+    ]
+    for name, format in {
+        "spdx": "json-ld",
+        "spdx_2_3": "json",
+    }.items()
+]
 
 # The organization that originated a package is inferred from the namespace of
 # its purl for the hosts where the namespace is the owner of the repository
