@@ -7,7 +7,7 @@ load("@package_metadata//rules:package_metadata.bzl", "package_metadata")
 load("@supply_chain_tools//sbom:cyclonedx.bzl", "cyclonedx")
 load("@supply_chain_tools//sbom:sbom.bzl", "sbom")
 load("@supply_chain_tools//sbom:spdx.bzl", "spdx")
-load("//sbom:expected_failure.bzl", "spdx_expected_failure")
+load("//sbom:expected_failure.bzl", "cyclonedx_expected_failure", "spdx_expected_failure")
 load("//sbom:golden_test.bzl", "sbom_golden_test")
 
 package_metadata(
@@ -379,3 +379,17 @@ sbom(
         "spdx_2_3": "json",
     }.items()
 ]
+
+# CycloneDX reads the attribute in its own generator, so it needs its own check
+# that the error reaches the report.
+cyclonedx_expected_failure(
+    name = "malformed_cpe_cyclonedx",
+    format = "json",
+    message = "is not a CPE 2.2 URI",
+    sbom = ":malformed_cpe_sbom",
+)
+
+build_test(
+    name = "malformed_cpe_cyclonedx_test",
+    targets = [":malformed_cpe_cyclonedx"],
+)
