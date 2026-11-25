@@ -19,6 +19,14 @@ This is typically passed to the `attributes` of a `package_metadata` target.
 `identifiers` entries are assumed to be UTF-8 encoded. Tools for building SBOMs
 presume that.
 
+Each identifier is a CPE 2.2 URI (`cpe:/a:acme:widget:1.0`) or a CPE 2.3
+formatted string (`cpe:2.3:a:acme:widget:1.0:*:*:*:*:*:*:*`). SBOM generators
+reject anything else. They report every identifier: in SPDX 2.3 as an
+external reference of the `SECURITY` category, of the type `cpe22Type` or
+`cpe23Type`, and in SPDX 3.0.1 as an external identifier of the type `cpe22` or
+`cpe23`. A CycloneDX component has a single `cpe`, so it gets the first
+identifier, and the other ones are properties named `bazel:cpe`.
+
 Usage:
 
 ```starlark
