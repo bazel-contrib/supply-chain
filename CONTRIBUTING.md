@@ -11,7 +11,7 @@ The paths of the overrides are relative to the directory Bazel is run from, so
 run Bazel from the directory of the module (the one with its `MODULE.bazel`),
 not from a subdirectory.
 
-The `tests` and `docs` modules are not published, so they keep using
+The `tests`, `docs` and `examples` modules are not published, so they keep using
 `local_path_override` in their `MODULE.bazel`.
 
 When a module starts to need a newer version of another module, update the
