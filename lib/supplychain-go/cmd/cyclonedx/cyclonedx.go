@@ -235,6 +235,31 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications, o
 			return cdx.Component{}, fmt.Errorf("error reporting patches of %s: %w", node.Label, err)
 		}
 		component.Pedigree = pedigree
+		supplierAttribute, err := supplychain.GetSupplierAttribute(pkgMetadata)
+		if err != nil {
+			return cdx.Component{}, fmt.Errorf("error reading supplier of %s: %w", node.Label, err)
+		}
+		if supplierAttribute != nil {
+			component.Supplier = &cdx.OrganizationalEntity{Name: supplierAttribute.Name}
+			if supplierAttribute.URL != "" {
+				component.Supplier.URL = &[]string{supplierAttribute.URL}
+			}
+			if supplierAttribute.Email != "" {
+				component.Supplier.Contact = &[]cdx.OrganizationalContact{{
+					Name:  supplierAttribute.Name,
+					Email: supplierAttribute.Email,
+				}}
+			}
+		}
+
+		originatorAttribute, err := supplychain.GetOriginatorAttribute(pkgMetadata)
+		if err != nil {
+			return cdx.Component{}, fmt.Errorf("error reading originator of %s: %w", node.Label, err)
+		}
+		if originatorAttribute != nil {
+			// CycloneDX publisher is a plain string, so only the name is representable.
+			component.Publisher = originatorAttribute.Name
+		}
 
 		labelToBOMRef[node.Label] = bomRef
 		return component, nil

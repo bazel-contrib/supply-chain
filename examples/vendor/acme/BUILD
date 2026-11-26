@@ -2,7 +2,9 @@
 
 load("@package_metadata//:defs.bzl", "package_metadata")
 load("@package_metadata//attributes:integrity.bzl", "integrity")
+load("@package_metadata//attributes:originator.bzl", "originator")
 load("@package_metadata//attributes:patch.bzl", "patch")
+load("@package_metadata//attributes:supplier.bzl", "supplier")
 load("@package_metadata//licenses/rules:license.bzl", "license")
 load("@rules_cc//cc:cc_library.bzl", "cc_library")
 
@@ -18,6 +20,8 @@ package_metadata(
         ":license",
         ":fix_coyote",
         ":fix_cve",
+        ":supplier",
+        ":originator",
     ],
     purl = "pkg:github/acmecorp/coyote@3.1.4?download_url=https://github.com/acmecorp/coyote/archive/refs/tags/3.1.4.tar.gz",
 )
@@ -26,6 +30,20 @@ package_metadata(
 integrity(
     name = "integrity",
     values = ["sha256-U5OHFmw/vsc7vJ9Wen/cAyR7Qgk0b+TC88c/Xjn8uKY="],
+)
+
+supplier(
+    name = "supplier",
+    email = "oss@acme.example",
+    entity_name = "ACME Corp",
+    url = "https://acme.example",
+)
+
+originator(
+    name = "originator",
+    email = "coyote@acme.example",
+    entity_name = "A. Coyote",
+    type = "person",
 )
 
 # The default license for an entire package is typically named "license".

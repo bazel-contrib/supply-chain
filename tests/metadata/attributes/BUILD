@@ -3,7 +3,9 @@ load("@jq.bzl//jq:jq.bzl", "jq")
 load("@package_metadata//attributes:copyright_notice.bzl", "copyright_notice")
 load("@package_metadata//attributes:cpe.bzl", "cpe")
 load("@package_metadata//attributes:integrity.bzl", "integrity")
+load("@package_metadata//attributes:originator.bzl", "originator")
 load("@package_metadata//attributes:patch.bzl", "patch")
+load("@package_metadata//attributes:supplier.bzl", "supplier")
 load("@package_metadata//rules:package_metadata.bzl", "package_metadata")
 
 [
@@ -90,8 +92,8 @@ patch(
     name = "patch.valid-2",
     description = "Local tweak.",
     file = "testdata/patch/local_tweak.patch",
-    type = "unofficial",
     integrity = ["sha256-EbbT7lVO7feSmZBamPm5oE5JghC1nxUJTJFskdFQ51Q="],
+    type = "unofficial",
 )
 
 diff_test(
@@ -127,13 +129,55 @@ package_metadata(
     purl = "pkg:generic/patched@1.0.0",
 )
 
+[
+    [
+        supplier(
+            name = "supplier.{}".format(name),
+            email = email,
+            entity_name = entity_name,
+            type = agent_type,
+            url = url,
+        ),
+        diff_test(
+            name = "supplier.{}.test".format(name),
+            file1 = ":supplier.{}".format(name),
+            file2 = "testdata/supplier/{}.json".format(name),
+        ),
+    ]
+    for name, entity_name, agent_type, url, email in [
+        ("valid-1", "ACME Corp", "organization", "https://acme.example", "oss@acme.example"),
+        ("valid-2", "A. Creator", "person", None, "creator@example"),
+    ]
+]
+
+[
+    [
+        originator(
+            name = "originator.{}".format(name),
+            email = email,
+            entity_name = entity_name,
+            type = agent_type,
+            url = url,
+        ),
+        diff_test(
+            name = "originator.{}.test".format(name),
+            file1 = ":originator.{}".format(name),
+            file2 = "testdata/originator/{}.json".format(name),
+        ),
+    ]
+    for name, entity_name, agent_type, url, email in [
+        ("valid-1", "ACME Corp", "organization", "https://acme.example", "oss@acme.example"),
+        ("valid-2", "A. Creator", "person", None, "creator@example"),
+    ]
+]
+
 # Keeps only the file names, since the paths contain the configuration.
 jq(
     name = "patch.multiple.actual",
     srcs = [":patch.multiple.package_metadata"],
+    out = "patch.multiple.actual.json",
     args = ["-S"],
     filter = '.attributes |= map_values(if type == "array" then map(split("/") | last) else split("/") | last end)',
-    out = "patch.multiple.actual.json",
 )
 
 diff_test(

@@ -53,6 +53,8 @@
       "licenseConcluded": "NOASSERTION",
       "licenseDeclared": "LicenseRef-acme",
       "name": "coyote",
+      "originator": "Person: A. Coyote (coyote@acme.example)",
+      "supplier": "Organization: ACME Corp (oss@acme.example)",
       "versionInfo": "3.1.4"
     },
     {
