@@ -28,8 +28,3 @@ use_repo(
     "com_github_spdx_tools_golang",
     "com_github_stretchr_testify",
 )
-
-local_path_override(
-    module_name = "package_metadata",
-    path = "../../metadata",
-)
