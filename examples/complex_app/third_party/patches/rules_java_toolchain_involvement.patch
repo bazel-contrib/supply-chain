@@ -1,0 +1,30 @@
+diff --git a/java/bazel/rules/bazel_java_binary.bzl b/java/bazel/rules/bazel_java_binary.bzl
+--- a/java/bazel/rules/bazel_java_binary.bzl
++++ b/java/bazel/rules/bazel_java_binary.bzl
+@@ -317,7 +317,11 @@
+         implementation = implementation,
+         initializer = initializer,
+         doc = doc,
+-        attrs = attrs,
++        attrs = attrs | {
++            "_supply_chain_toolchain_involvement": attr.label_keyed_string_dict(default = {
++                Label("@bazel_tools//tools/jdk:toolchain_type"): "build",
++            }),
++        },
+         executable = executable,
+         test = test,
+         fragments = ["cpp", "java"],
+diff --git a/toolchains/bootclasspath.bzl b/toolchains/bootclasspath.bzl
+--- a/toolchains/bootclasspath.bzl
++++ b/toolchains/bootclasspath.bzl
+@@ -51,6 +51,9 @@
+         "java_runtime_version": attr.label(
+             providers = [BuildSettingInfo],
+         ),
+-    },
++        "_supply_chain_toolchain_involvement": attr.label_keyed_string_dict(default = {
++            Label("@bazel_tools//tools/jdk:bootstrap_runtime_toolchain_type"): "build",
++        }),
++    },
+     toolchains = [
+         config_common.toolchain_type("@bazel_tools//tools/jdk:bootstrap_runtime_toolchain_type", mandatory = False),

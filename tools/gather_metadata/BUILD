@@ -7,6 +7,7 @@ load(":dedup_test.bzl", "dedup_test_suite")
 load(":filtering_test.bzl", "filtering_test_suite")
 load(":integration_test.bzl", "integration_test_suite")
 load(":serialization_integration_test.bzl", "serialization_integration_test_suite")
+load(":toolchain_involvement_test.bzl", "toolchain_involvement_test_suite")
 
 package(
     default_package_metadata = ["//:package_metadata"],
@@ -31,6 +32,7 @@ bzl_library(
     visibility = ["//visibility:public"],
     deps = [
         "@bazel_features//:features",
+        "@bazel_skylib//rules:common_settings",
     ],
 )
 
@@ -44,6 +46,8 @@ attr_types_test_suite(name = "attr_types_tests")
 
 dedup_test_suite(name = "dedup_tests")
 
+toolchain_involvement_test_suite(name = "toolchain_involvement_tests")
+
 test_suite(
     name = "all_tests",
     tests = [
@@ -52,5 +56,6 @@ test_suite(
         ":filtering_tests",
         ":integration_tests",
         ":serialization_integration_tests",
+        ":toolchain_involvement_tests",
     ],
 )

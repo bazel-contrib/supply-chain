@@ -77,7 +77,8 @@ def _build_edges(all_targets):
     for target_info in all_targets:
         if hasattr(target_info, "direct_deps") and target_info.direct_deps:
             from_label = _label_to_string(target_info.target)
-            for dep in target_info.direct_deps:
+            involvements = target_info.direct_dep_involvements if hasattr(target_info, "direct_dep_involvements") else ()
+            for index, dep in enumerate(target_info.direct_deps):
                 to_label = _label_to_string(dep)
                 if from_label == to_label:
                     # Can happen if a target is reachable from itself via two
@@ -85,15 +86,19 @@ def _build_edges(all_targets):
                     # across (each attribute scan resets nothing, but belt and
                     # suspenders here keeps the graph well-formed).
                     continue
-                key = from_label + "\0" + to_label
+                involvement = involvements[index] if index < len(involvements) else "runtime"
+                key = from_label + "\0" + to_label + "\0" + involvement
                 if key in seen:
                     continue
                 seen[key] = True
-                edges.append({
+                edge = {
                     "from": from_label,
                     "to": to_label,
                     "type": "depends_on",
-                })
+                }
+                if involvement != "runtime":
+                    edge["involvement"] = involvement
+                edges.append(edge)
     return edges
 
 def metadata_info_to_json(metadata_info):
