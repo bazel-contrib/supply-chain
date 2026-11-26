@@ -85,10 +85,12 @@ toolchain-involvement registry or override mechanism; changing a declaration
 requires patching its rule. Unannotated rules continue to use the aspect's
 configuration-based defaults.
 
-The helper's attrs dictionary is merged with `|`, which requires Bazel 7.2 or
-newer. That minimum is compatible with the repository's Bazel 7.x, 8.x, and
-9.x CI lines. Because declarations live on the rule, a consuming root module
-cannot override them without patching that rule.
+The plain `attr.label_keyed_string_dict`/`attr.string_dict` contract does not
+add a Bazel minimum beyond the repository's supported Bazel 7.x, 8.x, and 9.x
+CI lines. Toolchain-type keys are checked at loading time; relationship and
+value declarations are checked by the aspect at analysis time. Because
+declarations live on the rule, a consuming root module cannot override them
+without patching that rule.
 
 The external source patches declare package metadata in the generated or
 upstream package that supplies each toolchain, rather than routing those
@@ -115,6 +117,21 @@ bazel build --config=itest //:itest_cyclonedx //:itest_spdx
 
 `itest_sbom` takes the test as its target, so the SBOM ties together the Go, Node.js,
 Python and Java components with their toolchains and rules_itest itself.
+
+## Dependency relationships
+
+Rule authors declare relationships directly in the private
+`_supply_chain_relationships` string dictionary. For example, a layer rule
+can include `"srcs": "contains"` in its `attr.string_dict` default. The
+supported values are `depends_on`, `contains`, `static_link`, `dynamic_link`,
+`test_dependency`, and `dev_dependency`; undeclared attrs default to
+`depends_on`. The aspect validates types, attribute names, and values during
+analysis. Same-named rules in different modules can declare different
+relationships without a module marker or central registry.
+
+The demo patches the underlying `rules_img` image-layer and `rules_pkg`
+archive rule definitions with their inline attributes. Those upstream rulesets
+do not depend on `supply_chain_tools` or `package_metadata`.
 
 ## Verified SBOM components
 

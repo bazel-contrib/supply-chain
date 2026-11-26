@@ -75,12 +75,13 @@ func NormalizeGraph(graph GraphConfig) GraphConfig {
 	for _, node := range nodes {
 		seen := map[string]bool{node.Label: true}
 		type pendingEdge struct {
-			edge        EdgeConfig
-			involvement string
+			edge         EdgeConfig
+			involvement  string
+			relationship string
 		}
 		pending := make([]pendingEdge, 0, len(adjacency[node.Label]))
 		for _, edge := range adjacency[node.Label] {
-			pending = append(pending, pendingEdge{edge: edge, involvement: edge.Involvement})
+			pending = append(pending, pendingEdge{edge: edge, involvement: edge.Involvement, relationship: edge.Relationship})
 		}
 		seenStates := make(map[string]bool)
 		for len(pending) > 0 {
@@ -88,10 +89,11 @@ func NormalizeGraph(graph GraphConfig) GraphConfig {
 			pending = pending[:len(pending)-1]
 			edge := next.edge
 			involvement := composeInvolvement(next.involvement, edge.Involvement)
+			relationship := composeRelationship(next.relationship, edge.Relationship)
 			if seen[edge.To] {
 				// A node can be reached through paths with different
 				// involvement. Preserve each distinct composed path marker.
-				state := edge.To + "\x00" + involvement
+				state := edge.To + "\x00" + involvement + "\x00" + relationship
 				if seenStates[state] {
 					continue
 				}
@@ -101,11 +103,11 @@ func NormalizeGraph(graph GraphConfig) GraphConfig {
 			}
 			if metadataLabels[edge.To] {
 				edges = append(edges, EdgeConfig{
-					From: node.Label, To: edge.To, Type: edge.Type, Involvement: involvement,
+					From: node.Label, To: edge.To, Type: edge.Type, Involvement: involvement, Relationship: relationship,
 				})
 			} else {
 				for _, child := range adjacency[edge.To] {
-					pending = append(pending, pendingEdge{edge: child, involvement: involvement})
+					pending = append(pending, pendingEdge{edge: child, involvement: involvement, relationship: relationship})
 				}
 			}
 		}
@@ -162,7 +164,21 @@ func deduplicateByMetadata(graph GraphConfig) GraphConfig {
 		nodes = append(nodes, node)
 	}
 
-	seenEdges := make(map[EdgeConfig]bool)
+	type pair struct{ from, to, involvement string }
+	bestRelationship := make(map[pair]string)
+	for _, edge := range graph.Edges {
+		from, to := remapLabel(remap, edge.From), remapLabel(remap, edge.To)
+		if from == to {
+			continue
+		}
+		key := pair{from: from, to: to, involvement: edge.Involvement}
+		current, found := bestRelationship[key]
+		if !found || relationshipPriority(edge.Relationship) < relationshipPriority(current) {
+			bestRelationship[key] = edge.Relationship
+		}
+	}
+	type edgeKey struct{ from, to, involvement string }
+	seenEdges := make(map[edgeKey]bool)
 	edges := make([]EdgeConfig, 0, len(graph.Edges))
 	for _, edge := range graph.Edges {
 		from, to := remapLabel(remap, edge.From), remapLabel(remap, edge.To)
@@ -170,11 +186,12 @@ func deduplicateByMetadata(graph GraphConfig) GraphConfig {
 			// Collapsing duplicate nodes turned this into a self-reference.
 			continue
 		}
-		e := EdgeConfig{From: from, To: to, Type: edge.Type, Involvement: edge.Involvement}
-		if seenEdges[e] {
+		e := EdgeConfig{From: from, To: to, Type: edge.Type, Involvement: edge.Involvement, Relationship: bestRelationship[pair{from: from, to: to, involvement: edge.Involvement}]}
+		key := edgeKey{from: from, to: to, involvement: edge.Involvement}
+		if seenEdges[key] {
 			continue
 		}
-		seenEdges[e] = true
+		seenEdges[key] = true
 		edges = append(edges, e)
 	}
 
@@ -192,7 +209,10 @@ func deduplicateByMetadata(graph GraphConfig) GraphConfig {
 		if a.Type != b.Type {
 			return a.Type < b.Type
 		}
-		return a.Involvement < b.Involvement
+		if a.Involvement != b.Involvement {
+			return a.Involvement < b.Involvement
+		}
+		return a.Relationship < b.Relationship
 	})
 	return graph
 }
@@ -208,6 +228,35 @@ func composeInvolvement(left, right string) string {
 		return "embedded"
 	}
 	return ""
+}
+
+// composeRelationship keeps the most specific relationship closest to the
+// root. This lets a packaging edge describe all packages reached through it.
+func composeRelationship(left, right string) string {
+	if left != "" && left != "depends_on" {
+		return left
+	}
+	if right != "" && right != "depends_on" {
+		return right
+	}
+	return ""
+}
+
+func relationshipPriority(relationship string) int {
+	switch relationship {
+	case "contains":
+		return 0
+	case "static_link":
+		return 1
+	case "dynamic_link":
+		return 2
+	case "test_dependency":
+		return 3
+	case "dev_dependency":
+		return 4
+	default:
+		return 5
+	}
 }
 
 func remapLabel(remap map[string]string, label string) string {

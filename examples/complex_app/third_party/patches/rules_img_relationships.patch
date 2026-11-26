@@ -1,0 +1,37 @@
+diff --git a/img/private/layer.bzl b/img/private/layer.bzl
+--- a/img/private/layer.bzl
++++ b/img/private/layer.bzl
+@@ -178,5 +178,8 @@
+ """,
+     attrs = {
++        "_supply_chain_relationships": attr.string_dict(default = {
++            "srcs": "contains",
++        }),
+         "srcs": attr.string_keyed_label_dict(
+             doc = """Files to include in the layer. Keys are paths in the image (e.g., "/app/bin/server"),
+ values are labels to files or executables.
+diff --git a/img/private/manifest.bzl b/img/private/manifest.bzl
+--- a/img/private/manifest.bzl
++++ b/img/private/manifest.bzl
+@@ -801,5 +801,9 @@
+ """,
+     attrs = {
++        "_supply_chain_relationships": attr.string_dict(default = {
++            "layers": "contains",
++            "base": "contains",
++        }),
+         "base": attr.label(
+             doc = "Base image to inherit layers from. Should provide ImageManifestInfo or ImageIndexInfo.",
+         ),
+diff --git a/img/private/index.bzl b/img/private/index.bzl
+--- a/img/private/index.bzl
++++ b/img/private/index.bzl
+@@ -302,5 +302,8 @@
+ """,
+     attrs = {
++        "_supply_chain_relationships": attr.string_dict(default = {
++            "manifests": "contains",
++        }),
+         "manifests": attr.label_list(
+             providers = [ImageManifestInfo],
+             doc = "List of manifests for specific platforms.",

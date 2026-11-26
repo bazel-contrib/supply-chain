@@ -19,7 +19,8 @@ This set of rules produces a graph of nodes (targets) and their edges starting f
       "from": "//some:target",
       "to": "//other:dep",
       "type": "depends_on",
-      "involvement": "embedded"
+      "involvement": "embedded",
+      "relationship": "contains"
     }
   ]
 }
@@ -78,3 +79,59 @@ requires instantiating a target per rule, and merging a hint attr with `|`
 would clobber any existing `_aspect_rule_hints` definition. This experiment
 therefore uses plain-data private string-dict attributes, the documented
 `_supply_chain_toolchain_involvement` contract.
+
+## Provider-declared dependency relationships
+
+Rulesets can classify dependency edges independently of toolchain involvement
+by adding the private `_supply_chain_relationships` string-dictionary
+attribute to the rule definition:
+
+```starlark
+image_layer = rule(
+    implementation = _impl,
+    attrs = {
+        "srcs": attr.label_list(),
+        "_supply_chain_relationships": attr.string_dict(default = {
+            "srcs": "contains",
+        }),
+    },
+)
+```
+
+Keys are attribute names declared by that rule. Values must be `depends_on`,
+`contains`, `static_link`, `dynamic_link`, `test_dependency`, or
+`dev_dependency`. The aspect validates the attribute type, keys, and values at
+analysis time and reports the rule kind, target label, and attribute name for
+invalid declarations. Undeclared attributes and toolchain edges default to
+`depends_on`. Since each rule carries its own declaration, same-named rules in
+different modules can naturally use different relationships. As with
+toolchain involvement, a root module cannot override a declaration without
+patching the owning rule; there is no typo safety at definition time.
+
+The relationship attribute only changes classification; the serialized graph
+and Go generators retain the same edge fields and vocabulary. When graph paths
+collapse intermediate Bazel targets, the first non-default relationship
+encountered from the root is retained. Toolchain `involvement` remains
+orthogonal.
+
+| Relationship | SPDX 2.3 | SPDX 3.0.1 | CycloneDX |
+| --- | --- | --- | --- |
+| `depends_on` | parent `DEPENDS_ON` child | `dependsOn` | dependency edge |
+| `contains` | parent `CONTAINS` child | `contains` | parent property `bazel:relationship:contains` |
+| `static_link` | parent `STATIC_LINK` child | `hasStaticLink` | dependency edge and parent property `bazel:relationship:static_link` |
+| `dynamic_link` | parent `DYNAMIC_LINK` child | `hasDynamicLink` | dependency edge and parent property `bazel:relationship:dynamic_link` |
+| `test_dependency` | child `TEST_DEPENDENCY_OF` parent | `dependsOn`, lifecycle scope `test` | dependency edge and parent property `bazel:relationship:test_dependency` |
+| `dev_dependency` | child `DEV_DEPENDENCY_OF` parent | `dependsOn`, lifecycle scope `development` | dependency edge and parent property `bazel:relationship:dev_dependency` |
+
+CycloneDX has no corresponding relationship vocabulary. `contains` edges are
+represented by a `bazel:relationship:contains` property on the parent
+component, with the bom-ref of the child as its value; they are not emitted as
+dependency edges, and no BOM-level compositions are generated. Embedded
+involvement is treated as `contains`, unless build involvement takes
+precedence. Other non-default relationship types remain dependency edges and
+are represented by sorted, deduplicated properties on the parent. Default
+`depends_on` edges need no extra property. Components remain flat. Containment
+is never cut and does not appear as a dependency edge, but it is followed
+when breaking dependency cycles, so that the dependencies of contained
+components, directly or transitively, are preserved. A container is not treated
+as a dependency ancestor of the components it contains.

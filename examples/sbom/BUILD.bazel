@@ -133,6 +133,6 @@ spdx(
 
 spdx(
     name = "lib_with_third_party_deps_spdx_jsonld",
-    sbom = ":lib_with_third_party_deps_sbom",
     format = "json-ld",
+    sbom = ":lib_with_third_party_deps_sbom",
 )

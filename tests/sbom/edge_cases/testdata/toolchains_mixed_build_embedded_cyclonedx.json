@@ -18,9 +18,6 @@
   ],
   "dependencies": [
     {
-      "dependsOn": [
-        "pkg:generic/toolchain-fixtures-shared-tool@1.0.0"
-      ],
       "ref": "pkg:generic/toolchain-fixture-app@1.0.0"
     },
     {
@@ -31,6 +28,12 @@
     "component": {
       "bom-ref": "pkg:generic/toolchain-fixture-app@1.0.0",
       "name": "toolchain-fixture-app",
+      "properties": [
+        {
+          "name": "bazel:relationship:contains",
+          "value": "pkg:generic/toolchain-fixtures-shared-tool@1.0.0"
+        }
+      ],
       "purl": "pkg:generic/toolchain-fixture-app@1.0.0",
       "type": "library",
       "version": "1.0.0"

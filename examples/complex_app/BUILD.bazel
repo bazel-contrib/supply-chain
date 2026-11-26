@@ -1,8 +1,7 @@
 load("@aspect_rules_js//js:defs.bzl", "js_binary", "js_image_layer", "js_run_binary")
 load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
-load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_test")
+load("@io_bazel_rules_go//go:def.bzl", "go_test")
 load("@package_metadata//licenses/rules:license.bzl", "license")
-load("@package_metadata//purl:purl.bzl", "purl")
 load("@package_metadata//rules:package_metadata.bzl", "package_metadata")
 load("@rules_img//img:image.bzl", "image_index", "image_manifest")
 load("@rules_img//img:layer.bzl", "image_layer")
@@ -19,6 +18,11 @@ package(
     default_package_metadata = [":package_metadata"],
     default_visibility = ["//visibility:public"],
 )
+
+exports_files([
+    "server.go",
+    "web/index.html",
+])
 
 string_flag(
     name = "libc",
@@ -52,10 +56,7 @@ platform(
 package_metadata(
     name = "package_metadata",
     attributes = [":license"],
-    purl = purl.bazel(
-        module_name(),
-        module_version(),
-    ),
+    purl = "pkg:oci/toolchain-demo@0.1.0",
 )
 
 license(
@@ -115,33 +116,9 @@ openapi_generate_sources(
     spec = "openapi.json",
 )
 
-go_binary(
+alias(
     name = "server",
-    srcs = [
-        "openapi_generated.go",
-        "server.go",
-    ],
-    cgo = True,
-    data = select({
-        ":libc_glibc": ["@@llvm++glibc+glibc_2.28//:runtime_dependency"],
-        ":libc_musl": [],
-    }),
-    embedsrcs = [
-        "frontend.js",
-        "web/index.html",
-    ],
-    importpath = "example.com/complex-app",
-    static = select({
-        ":libc_glibc": "off",
-        ":libc_musl": "on",
-    }),
-)
-
-image_layer(
-    name = "server_layer",
-    srcs = {
-        "/app/server": ":server",
-    },
+    actual = "//server:server",
 )
 
 image_layer(
@@ -158,7 +135,7 @@ image_manifest(
     entrypoint = ["/app/server"],
     env = {"PORT": "8080"},
     layers = [
-        ":server_layer",
+        "//packaging/server_layer:server_layer",
     ] + select({
         ":libc_glibc": [
             ":node_image_layers",

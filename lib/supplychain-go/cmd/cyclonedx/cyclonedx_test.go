@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"sort"
 	"strings"
 	"testing"
 
@@ -248,4 +249,212 @@ func TestGenerateBOM_KeepsBuildToolPathWithoutRootMetadata(t *testing.T) {
 		}
 	}
 	t.Errorf("component a has no dependency on build tool b: %v", *bom.Dependencies)
+}
+
+func TestComponentDependencyEdges_RelationshipComesFromTheSelectedEdge(t *testing.T) {
+	edges := []sbom.EdgeConfig{
+		{From: "//a:a", To: "//b:b", Involvement: "runtime", Relationship: "dynamic_link"},
+		{From: "//a:a", To: "//b:b", Involvement: "build", Relationship: "static_link"},
+	}
+	got := componentDependencyEdges(edges, map[string]string{"//a:a": "a", "//b:b": "b"})
+	if len(got) != 1 {
+		t.Fatalf("got %d edges, want 1: %v", len(got), got)
+	}
+	if got[0].involvement != "runtime" || got[0].relationship != "dynamic_link" {
+		t.Errorf("selected %s %s, but no edge declares that combination", got[0].involvement, got[0].relationship)
+	}
+}
+
+func TestGenerateBOM_ContainmentDoesNotReuseComponentRefs(t *testing.T) {
+	dir := t.TempDir()
+	a := writePackageMetadata(t, dir, "a.json", "//fixture:a", "pkg:golang/example.com/a@v1")
+	b := writePackageMetadata(t, dir, "b.json", "//fixture:b", "pkg:golang/example.com/b@v1")
+	graph := sbom.GraphConfig{
+		RootTarget: "//app:a",
+		Nodes: []sbom.NodeConfig{
+			{Label: "//app:a", MetadataFile: a},
+			{Label: "//lib:b", MetadataFile: b},
+		},
+		Edges: []sbom.EdgeConfig{
+			{From: "//app:a", To: "//lib:b", Type: "depends_on", Relationship: "contains"},
+		},
+	}
+	classifications, err := sbom.ComputeClassifications(graph, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	bom, err := GenerateBOM(graph, classifications)
+	if err != nil {
+		t.Fatal(err)
+	}
+	refs := map[string]int{}
+	if bom.Metadata != nil && bom.Metadata.Component != nil {
+		refs[bom.Metadata.Component.BOMRef]++
+	}
+	for _, c := range *bom.Components {
+		refs[c.BOMRef]++
+	}
+	if bom.Compositions != nil {
+		for _, c := range *bom.Compositions {
+			refs[c.BOMRef]++
+		}
+	}
+	for ref, n := range refs {
+		if n > 1 {
+			t.Errorf("bom-ref %q is used %d times in the BOM", ref, n)
+		}
+	}
+
+	// The containment is kept as a property of the parent component.
+	if bom.Metadata == nil || bom.Metadata.Component == nil || bom.Metadata.Component.Properties == nil {
+		t.Fatal("root component has no properties")
+	}
+	want := cdx.Property{Name: "bazel:relationship:contains", Value: "pkg:golang/example.com/b@v1"}
+	for _, property := range *bom.Metadata.Component.Properties {
+		if property == want {
+			return
+		}
+	}
+	t.Errorf("properties = %v, want %v", *bom.Metadata.Component.Properties, want)
+}
+
+func TestGenerateBOM_KeepsBuildToolPathBelowContainedPackage(t *testing.T) {
+	dir := t.TempDir()
+	root := writePackageMetadata(t, dir, "root.json", "//fixture:root", "pkg:golang/example.com/root@v1")
+	pkg := writePackageMetadata(t, dir, "pkg.json", "//fixture:pkg", "pkg:golang/example.com/pkg@v1")
+	tool := writePackageMetadata(t, dir, "tool.json", "//fixture:tool", "pkg:golang/example.com/tool@v1")
+	graph := sbom.GraphConfig{
+		RootTarget: "//app:root",
+		Nodes: []sbom.NodeConfig{
+			{Label: "//app:root", MetadataFile: root},
+			{Label: "//pkg:pkg", MetadataFile: pkg},
+			{Label: "//tool:tool", MetadataFile: tool},
+		},
+		Edges: []sbom.EdgeConfig{
+			{From: "//app:root", To: "//pkg:pkg", Type: "depends_on", Relationship: "contains"},
+			{From: "//pkg:pkg", To: "//tool:tool", Type: "depends_on", Involvement: "build"},
+			{From: "//tool:tool", To: "//pkg:pkg", Type: "depends_on", Involvement: "runtime"},
+		},
+	}
+	classifications, err := sbom.ComputeClassifications(graph, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	bom, err := GenerateBOM(graph, classifications)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if bom.Dependencies == nil {
+		t.Fatal("dependencies is nil")
+	}
+	for _, dependency := range *bom.Dependencies {
+		if dependency.Ref == "pkg:golang/example.com/pkg@v1" && dependency.Dependencies != nil {
+			for _, child := range *dependency.Dependencies {
+				if child == "pkg:golang/example.com/tool@v1" {
+					return
+				}
+			}
+		}
+	}
+	t.Errorf("package has no dependency on build tool: %v", *bom.Dependencies)
+}
+
+func TestGenerateBOM_KeepsBuildToolPathBelowContainedPackageOfDependency(t *testing.T) {
+	dir := t.TempDir()
+	root := writePackageMetadata(t, dir, "root.json", "//fixture:root", "pkg:golang/example.com/root@v1")
+	a := writePackageMetadata(t, dir, "a.json", "//fixture:a", "pkg:golang/example.com/a@v1")
+	pkg := writePackageMetadata(t, dir, "pkg.json", "//fixture:pkg", "pkg:golang/example.com/pkg@v1")
+	tool := writePackageMetadata(t, dir, "tool.json", "//fixture:tool", "pkg:golang/example.com/tool@v1")
+	graph := sbom.GraphConfig{
+		RootTarget: "//app:root",
+		Nodes: []sbom.NodeConfig{
+			{Label: "//app:root", MetadataFile: root},
+			{Label: "//a:a", MetadataFile: a},
+			{Label: "//pkg:pkg", MetadataFile: pkg},
+			{Label: "//tool:tool", MetadataFile: tool},
+		},
+		Edges: []sbom.EdgeConfig{
+			{From: "//app:root", To: "//a:a", Type: "depends_on"},
+			{From: "//a:a", To: "//pkg:pkg", Type: "depends_on", Relationship: "contains"},
+			{From: "//pkg:pkg", To: "//tool:tool", Type: "depends_on", Involvement: "build"},
+			{From: "//tool:tool", To: "//pkg:pkg", Type: "depends_on", Involvement: "runtime"},
+		},
+	}
+	classifications, err := sbom.ComputeClassifications(graph, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	bom, err := GenerateBOM(graph, classifications)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if bom.Dependencies == nil {
+		t.Fatal("dependencies is nil")
+	}
+	for _, dependency := range *bom.Dependencies {
+		if dependency.Ref == "pkg:golang/example.com/pkg@v1" && dependency.Dependencies != nil {
+			for _, child := range *dependency.Dependencies {
+				if child == "pkg:golang/example.com/tool@v1" {
+					return
+				}
+			}
+		}
+		for _, other := range []string{"a@v1", "pkg@v1"} {
+			if dependency.Ref == "pkg:golang/example.com/"+other && dependency.Dependencies != nil {
+				for _, child := range *dependency.Dependencies {
+					if child == "pkg:golang/example.com/pkg@v1" && other == "a@v1" {
+						t.Errorf("containment appears as a dependency edge: %v", *bom.Dependencies)
+					}
+				}
+			}
+		}
+	}
+	t.Errorf("package has no dependency on build tool: %v", *bom.Dependencies)
+}
+
+func TestGenerateBOM_ContainerIsNotADependencyAncestorOfWhatItContains(t *testing.T) {
+	dir := t.TempDir()
+	root := writePackageMetadata(t, dir, "root.json", "//fixture:root", "pkg:golang/example.com/root@v1")
+	a := writePackageMetadata(t, dir, "a.json", "//fixture:a", "pkg:golang/example.com/a@v1")
+	pkg := writePackageMetadata(t, dir, "pkg.json", "//fixture:pkg", "pkg:golang/example.com/pkg@v1")
+	graph := sbom.GraphConfig{
+		RootTarget: "//app:root",
+		Nodes: []sbom.NodeConfig{
+			{Label: "//app:root", MetadataFile: root},
+			{Label: "//a:a", MetadataFile: a},
+			{Label: "//pkg:pkg", MetadataFile: pkg},
+		},
+		Edges: []sbom.EdgeConfig{
+			{From: "//app:root", To: "//a:a", Type: "depends_on"},
+			{From: "//a:a", To: "//pkg:pkg", Type: "depends_on", Relationship: "contains"},
+			// The dependency graph has only pkg -> a and pkg -> root: no cycle.
+			{From: "//pkg:pkg", To: "//a:a", Type: "depends_on", Relationship: "dynamic_link"},
+			{From: "//pkg:pkg", To: "//app:root", Type: "depends_on"},
+		},
+	}
+	classifications, err := sbom.ComputeClassifications(graph, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	bom, err := GenerateBOM(graph, classifications)
+	if err != nil {
+		t.Fatal(err)
+	}
+	children := map[string][]string{}
+	for _, dependency := range *bom.Dependencies {
+		if dependency.Dependencies != nil {
+			children[dependency.Ref] = *dependency.Dependencies
+		}
+	}
+	want := map[string][]string{
+		"pkg:golang/example.com/pkg@v1":  {"pkg:golang/example.com/a@v1", "pkg:golang/example.com/root@v1"},
+		"pkg:golang/example.com/root@v1": {"pkg:golang/example.com/a@v1"},
+		"pkg:golang/example.com/a@v1":    {},
+	}
+	for ref := range children {
+		sort.Strings(children[ref])
+	}
+	if !reflect.DeepEqual(children, want) {
+		t.Errorf("dependencies = %v, want %v", children, want)
+	}
 }

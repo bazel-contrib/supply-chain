@@ -1,0 +1,222 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
+  "bomFormat": "CycloneDX",
+  "components": [
+    {
+      "bom-ref": "pkg:generic/dev-helper@1.0.0",
+      "name": "dev-helper",
+      "purl": "pkg:generic/dev-helper@1.0.0",
+      "type": "library",
+      "version": "1.0.0"
+    },
+    {
+      "bom-ref": "pkg:generic/dynamic-library@1.0.0",
+      "name": "dynamic-library",
+      "purl": "pkg:generic/dynamic-library@1.0.0",
+      "type": "library",
+      "version": "1.0.0"
+    },
+    {
+      "bom-ref": "pkg:generic/image-layer@1.0.0",
+      "name": "image-layer",
+      "properties": [
+        {
+          "name": "bazel:relationship:static_link",
+          "value": "pkg:generic/server-binary@1.0.0"
+        }
+      ],
+      "purl": "pkg:generic/image-layer@1.0.0",
+      "type": "library",
+      "version": "1.0.0"
+    },
+    {
+      "bom-ref": "pkg:generic/legacy-library@1.0.0",
+      "name": "legacy-library",
+      "purl": "pkg:generic/legacy-library@1.0.0",
+      "type": "library",
+      "version": "1.0.0"
+    },
+    {
+      "bom-ref": "pkg:generic/server-tar@1.0.0",
+      "name": "server-tar",
+      "properties": [
+        {
+          "name": "bazel:relationship:contains",
+          "value": "pkg:generic/server-binary@1.0.0"
+        }
+      ],
+      "purl": "pkg:generic/server-tar@1.0.0",
+      "type": "library",
+      "version": "1.0.0"
+    },
+    {
+      "bom-ref": "pkg:generic/static-library@1.0.0",
+      "name": "static-library",
+      "purl": "pkg:generic/static-library@1.0.0",
+      "type": "library",
+      "version": "1.0.0"
+    },
+    {
+      "bom-ref": "pkg:generic/test-helper@1.0.0",
+      "name": "test-helper",
+      "purl": "pkg:generic/test-helper@1.0.0",
+      "type": "library",
+      "version": "1.0.0"
+    },
+    {
+      "bom-ref": "pkg:generic/other-provider-image-layer@1.0.0",
+      "name": "other-provider-image-layer",
+      "properties": [
+        {
+          "name": "bazel:relationship:contains",
+          "value": "pkg:generic/server-binary@1.0.0"
+        }
+      ],
+      "purl": "pkg:generic/other-provider-image-layer@1.0.0",
+      "type": "library",
+      "version": "1.0.0"
+    },
+    {
+      "bom-ref": "pkg:generic/provider-image-layer@1.0.0",
+      "name": "provider-image-layer",
+      "properties": [
+        {
+          "name": "bazel:relationship:dynamic_link",
+          "value": "pkg:generic/server-binary@1.0.0"
+        }
+      ],
+      "purl": "pkg:generic/provider-image-layer@1.0.0",
+      "type": "library",
+      "version": "1.0.0"
+    },
+    {
+      "bom-ref": "pkg:generic/provider-override@1.0.0",
+      "name": "provider-override",
+      "properties": [
+        {
+          "name": "bazel:relationship:static_link",
+          "value": "pkg:generic/server-binary@1.0.0"
+        }
+      ],
+      "purl": "pkg:generic/provider-override@1.0.0",
+      "type": "library",
+      "version": "1.0.0"
+    },
+    {
+      "bom-ref": "pkg:generic/server-binary@1.0.0",
+      "name": "server-binary",
+      "purl": "pkg:generic/server-binary@1.0.0",
+      "type": "library",
+      "version": "1.0.0"
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "pkg:generic/dev-helper@1.0.0"
+    },
+    {
+      "ref": "pkg:generic/dynamic-library@1.0.0"
+    },
+    {
+      "dependsOn": [
+        "pkg:generic/server-binary@1.0.0"
+      ],
+      "ref": "pkg:generic/image-layer@1.0.0"
+    },
+    {
+      "ref": "pkg:generic/legacy-library@1.0.0"
+    },
+    {
+      "ref": "pkg:generic/other-provider-image-layer@1.0.0"
+    },
+    {
+      "dependsOn": [
+        "pkg:generic/server-binary@1.0.0"
+      ],
+      "ref": "pkg:generic/provider-image-layer@1.0.0"
+    },
+    {
+      "dependsOn": [
+        "pkg:generic/server-binary@1.0.0"
+      ],
+      "ref": "pkg:generic/provider-override@1.0.0"
+    },
+    {
+      "dependsOn": [
+        "pkg:generic/dev-helper@1.0.0",
+        "pkg:generic/dynamic-library@1.0.0",
+        "pkg:generic/legacy-library@1.0.0",
+        "pkg:generic/provider-override@1.0.0",
+        "pkg:generic/static-library@1.0.0",
+        "pkg:generic/test-helper@1.0.0"
+      ],
+      "ref": "pkg:generic/relationship-root@1.0.0"
+    },
+    {
+      "ref": "pkg:generic/server-binary@1.0.0"
+    },
+    {
+      "ref": "pkg:generic/server-tar@1.0.0"
+    },
+    {
+      "ref": "pkg:generic/static-library@1.0.0"
+    },
+    {
+      "ref": "pkg:generic/test-helper@1.0.0"
+    }
+  ],
+  "metadata": {
+    "component": {
+      "bom-ref": "pkg:generic/relationship-root@1.0.0",
+      "name": "relationship-root",
+      "properties": [
+        {
+          "name": "bazel:relationship:contains",
+          "value": "pkg:generic/image-layer@1.0.0"
+        },
+        {
+          "name": "bazel:relationship:contains",
+          "value": "pkg:generic/other-provider-image-layer@1.0.0"
+        },
+        {
+          "name": "bazel:relationship:contains",
+          "value": "pkg:generic/provider-image-layer@1.0.0"
+        },
+        {
+          "name": "bazel:relationship:contains",
+          "value": "pkg:generic/server-tar@1.0.0"
+        },
+        {
+          "name": "bazel:relationship:dev_dependency",
+          "value": "pkg:generic/dev-helper@1.0.0"
+        },
+        {
+          "name": "bazel:relationship:dynamic_link",
+          "value": "pkg:generic/dynamic-library@1.0.0"
+        },
+        {
+          "name": "bazel:relationship:static_link",
+          "value": "pkg:generic/static-library@1.0.0"
+        },
+        {
+          "name": "bazel:relationship:test_dependency",
+          "value": "pkg:generic/test-helper@1.0.0"
+        }
+      ],
+      "purl": "pkg:generic/relationship-root@1.0.0",
+      "type": "library",
+      "version": "1.0.0"
+    },
+    "timestamp": "1970-01-01T00:00:00Z",
+    "tools": {
+      "components": [
+        {
+          "name": "Bazel Supply Chain Tools CycloneDX generator",
+          "type": "application"
+        }
+      ]
+    }
+  },
+  "specVersion": "1.6",
+  "version": 1
+}

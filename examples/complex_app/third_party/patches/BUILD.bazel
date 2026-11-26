@@ -16,4 +16,6 @@ exports_files([
     "rules_python_metadata.patch",
     "rules_python_toolchain_involvement.patch",
     "rules_py_toolchain_involvement.patch",
+    "rules_img_relationships.patch",
+    "rules_pkg_relationships.patch",
 ])

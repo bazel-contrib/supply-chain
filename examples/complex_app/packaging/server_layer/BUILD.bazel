@@ -1,0 +1,13 @@
+load("@rules_img//img:layer.bzl", "image_layer")
+
+package(
+    default_visibility = ["//visibility:public"],
+)
+
+image_layer(
+    name = "server_layer",
+    srcs = {
+        "/app/server": "//server:server",
+        "/app/server.tar": "//packaging/server_tar:server_tar",
+    },
+)
