@@ -1,0 +1,20 @@
+load(":variants.bzl", "libc_variant")
+
+exports_files(
+    ["variants.bzl"],
+    visibility = ["//visibility:public"],
+)
+
+libc_variant(
+    name = "container_glibc",
+    libc = "glibc",
+    target = "//:container_manifest",
+    visibility = ["//:__pkg__"],
+)
+
+libc_variant(
+    name = "container_musl",
+    libc = "musl",
+    target = "//:container_manifest",
+    visibility = ["//:__pkg__"],
+)
