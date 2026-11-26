@@ -9,6 +9,12 @@
     },
     {
       "creationInfo": "_:CreationInfo-1",
+      "name": "Bazel Supply Chain Tools SPDX generator",
+      "spdxId": "SPDXRef:Tool-1",
+      "type": "Tool"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
       "name": "toolchain-fixture-app",
       "software_packageUrl": "pkg:generic/toolchain-fixture-app@1.0.0",
       "software_packageVersion": "1.0.0",
@@ -38,12 +44,16 @@
       "creationInfo": "_:CreationInfo-1",
       "element": [
         "SPDXRef:SoftwareAgent-1",
+        "SPDXRef:Tool-1",
         "SPDXRef:dep-0",
         "SPDXRef:dep-1",
         "SPDXRef:rel-0"
       ],
       "rootElement": [
         "SPDXRef:dep-0"
+      ],
+      "software_sbomType": [
+        "build"
       ],
       "spdxId": "SPDXRef:sbom",
       "type": "software_Sbom"
@@ -54,7 +64,9 @@
       "createdBy": [
         "SPDXRef:SoftwareAgent-1"
       ],
-      "createdUsing": [],
+      "createdUsing": [
+        "SPDXRef:Tool-1"
+      ],
       "specVersion": "3.0.1",
       "type": "CreationInfo"
     },
