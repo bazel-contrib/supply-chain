@@ -11,7 +11,7 @@ load("@supply_chain_tools//sbom:spdx.bzl", "spdx")
 load("//sbom:expected_failure.bzl", "spdx_expected_failure")
 load("//sbom:golden_test.bzl", "sbom_golden_test")
 load(":toolchain_cases.bzl", "cycle_backedge_binary", "invalid_toolchain_attr_tests", "mixed_path_cyclonedx_golden", "toolchain_alias_probe_test", "toolchain_golden_cases")
-load(":relationship_cases.bzl", "image_layer", "pkg_tar_impl", "relationship_golden_tests", "relationship_root", "root_image_layer")
+load(":relationship_cases.bzl", "image_layer", "linking_root", "pkg_tar_impl", "relationship_golden_tests", "relationship_root", "root_image_layer")
 
 package_metadata(
     name = "toolchain_app_metadata",
@@ -63,6 +63,26 @@ package_metadata(
     purl = "pkg:generic/legacy-library@1.0.0",
 )
 
+package_metadata(
+    name = "linking_root_metadata",
+    purl = "pkg:generic/linking-root@1.0.0",
+)
+
+package_metadata(
+    name = "linking_static_metadata",
+    purl = "pkg:generic/linking-static@1.0.0",
+)
+
+package_metadata(
+    name = "linking_dynamic_metadata",
+    purl = "pkg:generic/linking-dynamic@1.0.0",
+)
+
+package_metadata(
+    name = "linking_fallback_metadata",
+    purl = "pkg:generic/linking-fallback@1.0.0",
+)
+
 filegroup(
     name = "relationship_payload",
     applicable_licenses = [":relationship_payload_metadata"],
@@ -91,6 +111,38 @@ filegroup(
 filegroup(
     name = "relationship_legacy",
     applicable_licenses = [":relationship_legacy_metadata"],
+)
+
+filegroup(
+    name = "linking_static",
+    applicable_licenses = [":linking_static_metadata"],
+)
+
+filegroup(
+    name = "linking_dynamic",
+    applicable_licenses = [":linking_dynamic_metadata"],
+)
+
+filegroup(
+    name = "linking_fallback",
+    applicable_licenses = [":linking_fallback_metadata"],
+)
+
+linking_root(
+    name = "linking_relationship_root",
+    applicable_licenses = [":linking_root_metadata"],
+    deps = [
+        ":linking_static",
+        ":linking_dynamic",
+        ":linking_fallback",
+    ],
+    static_names = ["linking_static"],
+    dynamic_names = ["linking_dynamic"],
+)
+
+relationship_golden_tests(
+    name = "package_linking_relationships",
+    target = ":linking_relationship_root",
 )
 
 root_image_layer(

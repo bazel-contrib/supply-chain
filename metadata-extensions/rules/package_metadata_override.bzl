@@ -31,9 +31,6 @@ _package_metadata_override_rule = rule(
     provides = [
         PackageMetadataOverrideInfo,
     ],
-    doc = """
-TODO
-""".strip(),
 )
 
 def _parse_package_pattern(pattern):
@@ -46,7 +43,25 @@ def _parse_package_pattern(pattern):
 
     return pattern[:target_separator], pattern[(target_separator + 1):], False
 
-def _package_metadata_override_impl(name, targets, metadata, visibility):
+def package_metadata_override(name, targets, metadata, visibility = None):
+    """Overrides package metadata for the matching target patterns.
+
+    Args:
+      name: Name for the generated override target.
+      targets: A list of strings containing package or target patterns. For
+        example, `//foo/...` matches descendants, `//foo` matches one package,
+        and `//foo:bar` matches one target. Prefix a pattern with `-` to
+        exclude it. Patterns may name external repositories, such as
+        `@other_repo//foo/...`.
+      metadata: A target providing PackageMetadataInfo.
+      visibility: Visibility applied to generated targets.
+    """
+    if type(targets) != "list":
+        fail("package_metadata_override targets must be a list of strings; got {}".format(type(targets)))
+    for target in targets:
+        if type(target) != "string":
+            fail("package_metadata_override targets must be a list of strings; got {} in targets".format(type(target)))
+
     patterns = {}
     for pattern in targets:
         if pattern.startswith("//") or pattern.startswith("-//"):
@@ -89,41 +104,3 @@ def _package_metadata_override_impl(name, targets, metadata, visibility):
         packages = ":{}_packages".format(name),
         metadata = metadata,
     )
-
-package_metadata_override = macro(
-    implementation = _package_metadata_override_impl,
-    attrs = {
-        "metadata": attr.label(
-            mandatory = True,
-            configurable = False,
-            doc = """
-A `package_metadata` target to use for the provided packages.
-
-This overrides any `package_metadata` directly declared by the packages.
-""".strip(),
-            providers = [
-                PackageMetadataInfo,
-            ],
-        ),
-        "targets": attr.string_list(
-            mandatory = True,
-            configurable = False,
-            doc = """
-A list of targets the override applies to.
-
-This allows passing targets of the form
-
-  - `//foo/...` matches all targets under `//foo` in the current repository.
-  - `//foo` matches all targets in `//foo` (but not in subpackages).
-  - `//foo:bar` matches exactly target `//foo:bar`.
-
-This also supports referencing packages and targets in external repositories.
-
-  - `@other_repo//foo/...` matches all targets under `//foo` in `other_repo`.
-  - `@other_repo//foo` matches all targets in `//foo` in `other_repo` (but not
-    in subpackages).
-  - `@other_repo//foo:bar` matches exactly target `//foo:bar` in `other_repo`.
-""".strip(),
-        ),
-    },
-)

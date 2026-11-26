@@ -1,0 +1,101 @@
+{
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "creationInfo": {
+    "created": "1970-01-01T00:00:00Z",
+    "creators": [
+      "Tool: Bazel Supply Chain Tools SPDX generator"
+    ]
+  },
+  "dataLicense": "CC0-1.0",
+  "documentNamespace": "https://spdx.org/spdxdocs/pkg:generic%2Flinking-root@1.0.0",
+  "name": "linking-root",
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-dep-0",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:generic/linking-root@1.0.0",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "name": "linking-root",
+      "versionInfo": "1.0.0"
+    },
+    {
+      "SPDXID": "SPDXRef-dep-1",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:generic/linking-dynamic@1.0.0",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "name": "linking-dynamic",
+      "versionInfo": "1.0.0"
+    },
+    {
+      "SPDXID": "SPDXRef-dep-2",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:generic/linking-fallback@1.0.0",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "name": "linking-fallback",
+      "versionInfo": "1.0.0"
+    },
+    {
+      "SPDXID": "SPDXRef-dep-3",
+      "downloadLocation": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:generic/linking-static@1.0.0",
+          "referenceType": "purl"
+        }
+      ],
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "name": "linking-static",
+      "versionInfo": "1.0.0"
+    }
+  ],
+  "relationships": [
+    {
+      "relatedSpdxElement": "SPDXRef-dep-1",
+      "relationshipType": "DYNAMIC_LINK",
+      "spdxElementId": "SPDXRef-dep-0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-dep-2",
+      "relationshipType": "CONTAINS",
+      "spdxElementId": "SPDXRef-dep-0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-dep-3",
+      "relationshipType": "STATIC_LINK",
+      "spdxElementId": "SPDXRef-dep-0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-dep-0",
+      "relationshipType": "DESCRIBES",
+      "spdxElementId": "SPDXRef-DOCUMENT"
+    }
+  ],
+  "spdxVersion": "SPDX-2.3"
+}

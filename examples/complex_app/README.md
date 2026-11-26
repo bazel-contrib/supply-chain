@@ -45,6 +45,35 @@ the glibc and musl entries automatically. The index is useful for demonstrating
 multi-variant SBOM collection, but production publishing should add a
 selection mechanism (for example separate tags or variant annotations).
 
+## Selecting cgo linkage
+
+The `//:cgo_link` string flag selects the C helper's linkage mode and defaults
+to `static`. The small resolver helper is called by `/api/resolve-free` and
+returns the deterministic value `42`.
+
+- `--//:cgo_link=static` links `//cgo_resolver:resolver` into the Go server.
+- `--//:cgo_link=dynamic` uses a `cc_shared_library` and `cc_import` for
+  glibc, places `libresolver.so` at `/app/libresolver.so` in the server image
+  layer, and includes it in the server's runfiles. This mode is deliberately
+  marked incompatible with musl; the musl Go binary remains statically linked.
+
+The patched `rules_go` and `rules_cc` rules return
+`PackageLinkingInfo` from `package_metadata_extensions`, classifying direct
+dependencies according to the actual configured linking decision. In static
+mode, the server has a `static_link` edge to the C library. In dynamic mode,
+the server has a `dynamic_link` edge to `libresolver.so`, and the shared
+library has a `static_link` edge to the C library it contains. The internal
+CcInfo adapter required by `cdeps` has no package metadata, so it does not
+appear as a helper component or an incorrectly classified SBOM relationship.
+
+The `rules_cc` patch is a demonstration and keeps the classification simple:
+every direct `deps` entry of a `cc_binary` or `cc_shared_library` is reported as
+statically linked unless it is listed in `dynamic_deps`. It does not model a
+`cc_import` that offers both an archive and a shared library with
+`linkstatic = False`, nor a dependency that a `dynamic_deps` library exports.
+The `rules_go` patch follows the library selection of `cgo.bzl` (an archive
+wins over a shared library).
+
 ## Toolchain involvement edges
 
 The demo's root `MODULE.bazel` registers explicit Java toolchains, which
@@ -151,7 +180,7 @@ and `CONTAINS`; SPDX 3.0.1 uses lifecycle-scoped `usesTool`, `dependsOn`, and
 | OpenJDK `21` | Excluded | Build |
 | OpenJDK `25` | In scope | Runtime |
 | LLVM `23.1.2` | In scope | Embedded |
-| LLVM runtimes `23.1.2` | Excluded | Build |
+| LLVM runtimes `23.1.2` | In scope | Runtime |
 | Go `1.27.4` | In scope | Embedded |
 | Node.js `22.23.4` | In scope | Runtime |
 | CPython `3.14.10` | In scope | Embedded |
@@ -163,6 +192,12 @@ used by the build-time frontend bundler. CPython is embedded by the Python
 image layer. Go `1.27.4` is embedded, including across both libc variants: the
 Go runtime and standard library are linked into the server binary. The Go SDK is
 one component, so the compiler shares that classification.
+
+The LLVM runtimes are in scope because of the cgo resolver: its C library
+depends on LLVM's `cc_runtimes` in the target configuration, and the Linux
+server link takes `libc++.a`, `libc++abi.a` and `libunwind.a` as inputs, so that
+code ships in the server binary. The report records this as a regular
+dependency, so the involvement is runtime rather than embedded.
 
 The report is checked in as
 [`reports/container_index_cyclonedx.json`](reports/container_index_cyclonedx.json).

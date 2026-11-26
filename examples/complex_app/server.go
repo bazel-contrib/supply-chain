@@ -1,9 +1,15 @@
 package main
 
+/*
+#include "resolver.h"
+*/
+import "C"
+
 import (
 	"embed"
 	"errors"
 	"flag"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -11,6 +17,10 @@ import (
 	"os/exec"
 	"path/filepath"
 )
+
+func cgoResolverAnswer() int {
+	return int(C.resolver_answer())
+}
 
 //go:embed frontend.js web/index.html
 var frontend embed.FS
@@ -26,6 +36,10 @@ func main() {
 	http.HandleFunc("/openapi.json", func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = io.WriteString(w, openAPISpec)
+	})
+	http.HandleFunc("/api/resolve-free", func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "text/plain")
+		_, _ = fmt.Fprintln(w, cgoResolverAnswer())
 	})
 	pythonAPI := flag.String("python-api", "/app/python_api", "Path of the Python API binary.")
 	javaGreeter := flag.String("java-greeter", "/app/java-greeter", "Path of the Java greeter binary.")

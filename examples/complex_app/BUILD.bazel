@@ -33,6 +33,15 @@ string_flag(
     ],
 )
 
+string_flag(
+    name = "cgo_link",
+    build_setting_default = "static",
+    values = [
+        "static",
+        "dynamic",
+    ],
+)
+
 config_setting(
     name = "libc_glibc",
     flag_values = {":libc": "glibc"},
@@ -41,6 +50,22 @@ config_setting(
 config_setting(
     name = "libc_musl",
     flag_values = {":libc": "musl"},
+)
+
+config_setting(
+    name = "glibc_dynamic_cgo",
+    flag_values = {
+        ":cgo_link": "dynamic",
+        ":libc": "glibc",
+    },
+)
+
+config_setting(
+    name = "musl_dynamic_cgo",
+    flag_values = {
+        ":cgo_link": "dynamic",
+        ":libc": "musl",
+    },
 )
 
 platform(

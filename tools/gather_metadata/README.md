@@ -108,6 +108,16 @@ different modules can naturally use different relationships. As with
 toolchain involvement, a root module cannot override a declaration without
 patching the owning rule; there is no typo safety at definition time.
 
+For per-configured-target link decisions, a ruleset may return
+`PackageLinkingInfo` from
+`@package_metadata_extensions//providers:package_linking_info.bzl`. Its
+`static_linked` and `dynamic_linked` fields are lists of Labels for direct
+dependency targets. For a listed child, this classification takes precedence
+over `_supply_chain_relationships`; unlisted children retain the declared
+attribute relationship, or default to `depends_on`. The provider lives in
+`package_metadata_extensions`, not `package_metadata`; its plain Starlark
+provider file is loadable on Bazel 7.
+
 The relationship attribute only changes classification; the serialized graph
 and Go generators retain the same edge fields and vocabulary. When graph paths
 collapse intermediate Bazel targets, the first non-default relationship

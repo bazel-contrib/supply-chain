@@ -1,0 +1,17 @@
+load("@rules_cc//cc:defs.bzl", "cc_import", "cc_library")
+
+package(
+    default_visibility = ["//visibility:public"],
+)
+
+cc_import(
+    name = "resolver_dynamic",
+    shared_library = "//cgo_resolver/shared:resolver_shared",
+)
+
+cc_library(
+    name = "resolver_dynamic_deps",
+    hdrs = ["//cgo_resolver:resolver.h"],
+    strip_include_prefix = "/cgo_resolver",
+    deps = [":resolver_dynamic"],
+)

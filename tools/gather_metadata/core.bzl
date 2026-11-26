@@ -2,6 +2,7 @@
 
 load("@bazel_features//:features.bzl", "bazel_features")
 load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
+load("@package_metadata_extensions//providers:package_linking_info.bzl", "PackageLinkingInfo")
 load(":providers.bzl", "TargetWithMetadataInfo")
 load(":rule_filters.bzl", "rule_to_excluded_attributes")
 
@@ -209,6 +210,7 @@ def _include_build_tools(ctx):
     )
 
 def _get_transitive_metadata(
+        target,
         ctx,
         transitive_depsets,
         provider = None,
@@ -245,6 +247,15 @@ def _get_transitive_metadata(
     seen_edges = {}
 
     relationships = _relationship_declarations(ctx)
+    static_linked = {}
+    dynamic_linked = {}
+    if PackageLinkingInfo in target:
+        linking_info = target[PackageLinkingInfo]
+        for label in linking_info.static_linked:
+            static_linked[str(label)] = True
+        for label in linking_info.dynamic_linked:
+            dynamic_linked[str(label)] = True
+
     attrs = [attr for attr in dir(ctx.rule.attr)]
     for name in attrs:
         if filter_func and not filter_func(ctx, name):
@@ -277,6 +288,10 @@ def _get_transitive_metadata(
                     involvement = "build" if info.is_exec_config else "runtime"
 
                     relationship = relationships.get(name, "depends_on")
+                    if label_key in static_linked:
+                        relationship = "static_link"
+                    elif label_key in dynamic_linked:
+                        relationship = "dynamic_link"
                     edge_key = label_key + "\0" + involvement + "\0" + relationship
                     if edge_key not in seen_edges:
                         seen_edges[edge_key] = True
@@ -394,6 +409,7 @@ def gather_metadata_info_common(
     direct_dep_involvements = []
     direct_dep_relationships = []
     _get_transitive_metadata(
+        target = target,
         ctx = ctx,
         transitive_depsets = transitive_depsets,
         provider = provider_factory,

@@ -6,8 +6,15 @@ package(
 
 image_layer(
     name = "server_layer",
-    srcs = {
-        "/app/server": "//server:server",
-        "/app/server.tar": "//packaging/server_tar:server_tar",
-    },
+    srcs = select({
+        "//:glibc_dynamic_cgo": {
+            "/app/libresolver.so": "//cgo_resolver/shared:resolver_shared",
+            "/app/server": "//server:server",
+            "/app/server.tar": "//packaging/server_tar:server_tar",
+        },
+        "//conditions:default": {
+            "/app/server": "//server:server",
+            "/app/server.tar": "//packaging/server_tar:server_tar",
+        },
+    }),
 )

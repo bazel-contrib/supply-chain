@@ -5,6 +5,7 @@ module(
 
 # Do not update to newer versions until you need a specific new feature.
 bazel_dep(name = "package_metadata", version = "0.0.13")
+bazel_dep(name = "package_metadata_extensions", version = "HEAD")
 bazel_dep(name = "rules_license", version = "1.0.0")
 bazel_dep(name = "bazel_features", version = "1.51.0")
 bazel_dep(name = "bazel_skylib", version = "1.8.2")
@@ -16,6 +17,11 @@ bazel_dep(name = "supply-chain-go", version = "0.0.6")
 local_path_override(
     module_name = "package_metadata",
     path = "../metadata",
+)
+
+local_path_override(
+    module_name = "package_metadata_extensions",
+    path = "../metadata-extensions",
 )
 
 local_path_override(

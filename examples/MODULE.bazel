@@ -27,6 +27,11 @@ local_path_override(
 )
 
 local_path_override(
+    module_name = "package_metadata_extensions",
+    path = "../metadata-extensions",
+)
+
+local_path_override(
     module_name = "supply-chain-go",
     path = "../lib/supplychain-go",
 )

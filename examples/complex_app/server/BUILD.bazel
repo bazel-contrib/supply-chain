@@ -17,8 +17,16 @@ go_binary(
         "//:openapi_generated.go",
         "//:server.go",
     ],
+    cdeps = select({
+        "//:glibc_dynamic_cgo": ["//cgo_resolver/dynamic_link:resolver_dynamic_deps"],
+        "//conditions:default": ["//cgo_resolver:resolver"],
+    }),
     cgo = True,
     data = select({
+        "//:glibc_dynamic_cgo": [
+            "//cgo_resolver/shared:resolver_shared",
+            "@@llvm++glibc+glibc_2.28//:runtime_dependency",
+        ],
         "//:libc_glibc": ["@@llvm++glibc+glibc_2.28//:runtime_dependency"],
         "//:libc_musl": [],
     }),
@@ -30,5 +38,9 @@ go_binary(
     static = select({
         "//:libc_glibc": "off",
         "//:libc_musl": "on",
+    }),
+    target_compatible_with = select({
+        "//:musl_dynamic_cgo": ["@platforms//:incompatible"],
+        "//conditions:default": [],
     }),
 )

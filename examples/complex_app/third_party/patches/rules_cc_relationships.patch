@@ -1,0 +1,57 @@
+diff --git a/MODULE.bazel b/MODULE.bazel
+--- a/MODULE.bazel
++++ b/MODULE.bazel
+@@ -15,4 +15,5 @@ bazel_dep(name = "protobuf", version = "27.0", repo_name = "com_google_protobuf")
+ bazel_dep(name = "protobuf", version = "27.0", repo_name = "com_google_protobuf")
++bazel_dep(name = "package_metadata_extensions", version = "HEAD")
+ 
+ cc_configure = use_extension("//cc:extensions.bzl", "cc_configure_extension")
+ use_repo(cc_configure, "local_config_cc", "local_config_cc_toolchains")
+diff --git a/cc/private/rules_impl/cc_shared_library_impl.bzl b/cc/private/rules_impl/cc_shared_library_impl.bzl
+--- a/cc/private/rules_impl/cc_shared_library_impl.bzl
++++ b/cc/private/rules_impl/cc_shared_library_impl.bzl
+@@ -18,6 +18,7 @@ load("//cc/common:cc_helper.bzl", "cc_helper")
+ load("//cc/common:cc_info.bzl", "CcInfo")
+ load("//cc/common:cc_shared_library_info.bzl", "CcSharedLibraryInfo")
+ load("//cc/common:semantics.bzl", "semantics")
++load("@package_metadata_extensions//providers:package_linking_info.bzl", "PackageLinkingInfo")
+ load("//cc/private:graph_node_info.bzl", "GraphNodeInfo")
+ load(":function_providing_rule.bzl", "wrap_starlark_function")
+ 
+@@ -778,6 +779,10 @@ def _cc_shared_library_impl(ctx):
+                 libraries = depset([linking_outputs.library_to_link] + precompiled_only_dynamic_libraries),
+             ),
+         ),
++        PackageLinkingInfo(
++            static_linked = [dep.label for dep in deps if str(dep.label) not in {str(dynamic_dep.label): True for dynamic_dep in ctx.attr.dynamic_deps}],
++            dynamic_linked = [dep.label for dep in ctx.attr.dynamic_deps],
++        ),
+     ]
+ 
+ for_testing_dont_use_check_if_target_under_path = _check_if_target_under_path
+diff --git a/cc/private/rules_impl/cc_binary_impl.bzl b/cc/private/rules_impl/cc_binary_impl.bzl
+--- a/cc/private/rules_impl/cc_binary_impl.bzl
++++ b/cc/private/rules_impl/cc_binary_impl.bzl
+@@ -20,6 +20,7 @@ load("//cc/common:cc_helper.bzl", "artifact_category", "cc_helper", "linker_mode")
+ load("//cc/common:cc_info.bzl", "CcInfo")
+ load("//cc/common:debug_package_info.bzl", "DebugPackageInfo")
+ load("//cc/common:semantics.bzl", "semantics")
++load("@package_metadata_extensions//providers:package_linking_info.bzl", "PackageLinkingInfo")
+ load("//cc/private:graph_node_info.bzl", "GraphNodeInfo")
+ load(":cc_shared_library_impl.bzl", "add_unused_dynamic_deps", "build_exports_map_from_only_dynamic_deps", "build_link_once_static_libs_map", "merge_cc_shared_library_infos", "separate_static_and_dynamic_link_libraries", "sort_linker_inputs", "throw_linked_but_not_exported_errors")
+ load(":function_providing_rule.bzl", "wrap_starlark_function")
+@@ -829,4 +830,14 @@ def cc_binary_impl(ctx, additional_linkopts, force_linkstatic = False):
+     ]
+     if cc_launcher_info != None:
+         result.append(cc_launcher_info)
++    dynamic_deps = getattr(ctx.attr, "dynamic_deps", [])
++    dynamic_dep_labels = {str(dep.label): True for dep in dynamic_deps}
++    result.append(PackageLinkingInfo(
++        static_linked = [
++            dep.label
++            for dep in getattr(ctx.attr, "deps", [])
++            if str(dep.label) not in dynamic_dep_labels
++        ],
++        dynamic_linked = [dep.label for dep in dynamic_deps],
++    ))
+     return binary_info, result

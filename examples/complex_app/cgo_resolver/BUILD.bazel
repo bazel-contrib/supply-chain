@@ -1,0 +1,20 @@
+load("@package_metadata//rules:package_metadata.bzl", "package_metadata")
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+package(
+    default_package_metadata = [":package_metadata"],
+    default_visibility = ["//visibility:public"],
+)
+
+package_metadata(
+    name = "package_metadata",
+    purl = "pkg:generic/complex-app-cgo-resolver@0.1.0",
+)
+
+cc_library(
+    name = "resolver",
+    srcs = ["resolver.c"],
+    hdrs = ["resolver.h"],
+    includes = ["."],
+    linkstatic = True,
+)

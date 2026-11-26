@@ -4,11 +4,13 @@ module(
 )
 
 bazel_dep(name = "package_metadata", version = "0.0.13")
+bazel_dep(name = "package_metadata_extensions", version = "HEAD")
 bazel_dep(name = "bazel_skylib", version = "1.9.2")
 bazel_dep(name = "supply_chain_tools", version = "0.0.1")
 bazel_dep(name = "supply-chain-go", version = "0.0.6")
 bazel_dep(name = "aspect_rules_js", version = "3.6.1")
 bazel_dep(name = "rules_img", version = "0.3.26")
+bazel_dep(name = "rules_cc", version = "0.2.25")
 bazel_dep(name = "rules_pkg", version = "1.1.0")
 bazel_dep(name = "rules_itest", version = "0.0.61")
 bazel_dep(name = "rules_java", version = "9.9.0")
@@ -54,8 +56,16 @@ single_version_override(
         "//third_party/patches:rules_go_sdk_metadata.patch",
         "//third_party/patches:rules_go_bootstrap_sdk_metadata.patch",
         "//third_party/patches:rules_go_toolchain_involvement.patch",
+        "//third_party/patches:rules_go_cgo_relationships.patch",
     ],
     version = "0.65.0",
+)
+
+single_version_override(
+    module_name = "rules_cc",
+    patch_strip = 1,
+    patches = ["//third_party/patches:rules_cc_relationships.patch"],
+    version = "0.2.25",
 )
 
 single_version_override(
@@ -113,6 +123,11 @@ single_version_override(
 local_path_override(
     module_name = "package_metadata",
     path = "../../metadata",
+)
+
+local_path_override(
+    module_name = "package_metadata_extensions",
+    path = "../../metadata-extensions",
 )
 
 local_path_override(
