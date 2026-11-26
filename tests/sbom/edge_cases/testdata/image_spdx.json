@@ -9,6 +9,12 @@
     },
     {
       "creationInfo": "_:CreationInfo-1",
+      "name": "Bazel Supply Chain Tools SPDX generator",
+      "spdxId": "SPDXRef:Tool-1",
+      "type": "Tool"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
       "name": "my-image",
       "software_packageUrl": "pkg:oci/my-image?repository_url=registry.example.com%2Fmy-image",
       "software_primaryPurpose": "container",
@@ -94,6 +100,7 @@
       "creationInfo": "_:CreationInfo-1",
       "element": [
         "SPDXRef:SoftwareAgent-1",
+        "SPDXRef:Tool-1",
         "SPDXRef:dep-0",
         "SPDXRef:dep-1",
         "SPDXRef:dep-2",
@@ -107,6 +114,9 @@
       "rootElement": [
         "SPDXRef:dep-0"
       ],
+      "software_sbomType": [
+        "build"
+      ],
       "spdxId": "SPDXRef:sbom",
       "type": "software_Sbom"
     },
@@ -116,7 +126,9 @@
       "createdBy": [
         "SPDXRef:SoftwareAgent-1"
       ],
-      "createdUsing": [],
+      "createdUsing": [
+        "SPDXRef:Tool-1"
+      ],
       "specVersion": "3.0.1",
       "type": "CreationInfo"
     },
