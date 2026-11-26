@@ -104,7 +104,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	// cyclonedx-go defaults to a newer spec than the validator supports.
 	if err := encoder.EncodeVersion(bom, cdx.SpecVersion1_6); err != nil {
 		fmt.Fprintf(os.Stderr, "Error encoding BOM: %v\n", err)
 		os.Exit(1)
@@ -288,9 +287,20 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications, o
 		}
 	}
 
-	// Collapse target edges to component edges, then remove only edges needed
-	// to make CycloneDX's component dependency graph acyclic.
+	// Collapse target edges to component edges. Typed relationships other than
+	// plain dependencies are recorded as properties of the parent component;
+	// containment is not a dependency, so only dependency edges participate in
+	// cycle removal.
 	componentEdges := componentDependencyEdges(graph.Edges, labelToBOMRef)
+	for _, edge := range componentEdges {
+		relationship := effectiveRelationship(edge)
+		if relationship != "" && relationship != "depends_on" {
+			component := componentByRef(edge.from, rootComponent, components, componentIndexes)
+			if component != nil {
+				addRelationshipProperty(component, relationship, edge.to)
+			}
+		}
+	}
 	// Cycles are broken from the entry components: the root, or, when the
 	// root has no metadata, its direct dependencies.
 	var entryRefs []string
@@ -373,9 +383,21 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications, o
 }
 
 type componentDependencyEdge struct {
-	from        string
-	to          string
-	involvement string
+	from         string
+	to           string
+	involvement  string
+	relationship string
+}
+
+func effectiveRelationship(edge componentDependencyEdge) string {
+	switch edge.involvement {
+	case "build":
+		return ""
+	case "embedded":
+		return "contains"
+	default:
+		return edge.relationship
+	}
 }
 
 func componentDependencyEdges(edges []sbom.EdgeConfig, labelToBOMRef map[string]string) []componentDependencyEdge {
@@ -395,12 +417,15 @@ func componentDependencyEdges(edges []sbom.EdgeConfig, labelToBOMRef map[string]
 
 		key := edgeKey{from: fromRef, to: toRef}
 		candidate := componentDependencyEdge{
-			from:        fromRef,
-			to:          toRef,
-			involvement: edge.Involvement,
+			from:         fromRef,
+			to:           toRef,
+			involvement:  edge.Involvement,
+			relationship: edge.Relationship,
 		}
+		// Involvement and relationship must come from the same edge, so that
+		// the emitted pair is one that an edge declares.
 		current, found := bestByPair[key]
-		if !found || involvementPriority(candidate.involvement) < involvementPriority(current.involvement) {
+		if !found || edgeIsBetter(candidate, current) {
 			bestByPair[key] = candidate
 		}
 	}
@@ -413,7 +438,78 @@ func componentDependencyEdges(edges []sbom.EdgeConfig, labelToBOMRef map[string]
 	return result
 }
 
+// edgeIsBetter ranks the involvement first and, on a tie, the relationship.
+func edgeIsBetter(candidate, current componentDependencyEdge) bool {
+	if involvementPriority(candidate.involvement) != involvementPriority(current.involvement) {
+		return involvementPriority(candidate.involvement) < involvementPriority(current.involvement)
+	}
+	return relationshipPriority(candidate.relationship) < relationshipPriority(current.relationship)
+}
+
+func relationshipPriority(relationship string) int {
+	switch relationship {
+	case "contains":
+		return 0
+	case "static_link":
+		return 1
+	case "dynamic_link":
+		return 2
+	case "test_dependency":
+		return 3
+	case "dev_dependency":
+		return 4
+	default:
+		return 5
+	}
+}
+
+func componentByRef(ref string, root *cdx.Component, components []cdx.Component, indexes map[string]int) *cdx.Component {
+	if root != nil && root.BOMRef == ref {
+		return root
+	}
+	if index, ok := indexes[ref]; ok {
+		return &components[index]
+	}
+	return nil
+}
+
+func addRelationshipProperty(component *cdx.Component, relationship, childRef string) {
+	property := cdx.Property{Name: "bazel:relationship:" + relationship, Value: childRef}
+	if component.Properties == nil {
+		component.Properties = &[]cdx.Property{property}
+	} else {
+		for _, existing := range *component.Properties {
+			if existing == property {
+				return
+			}
+		}
+		*component.Properties = append(*component.Properties, property)
+	}
+	sort.Slice(*component.Properties, func(i, j int) bool {
+		if (*component.Properties)[i].Name != (*component.Properties)[j].Name {
+			return (*component.Properties)[i].Name < (*component.Properties)[j].Name
+		}
+		return (*component.Properties)[i].Value < (*component.Properties)[j].Value
+	})
+}
+
 func makeAcyclicComponentDependencies(edges []componentDependencyEdge, roots []string) []componentDependencyEdge {
+	// Containment is not a dependency: it is never emitted nor cut. What a
+	// component contains is still reached from it, so containment edges are
+	// followed when looking for the entry's reachable components.
+	dependencyEdges := make([]componentDependencyEdge, 0, len(edges))
+	contained := make(map[string][]string)
+	for _, edge := range edges {
+		if effectiveRelationship(edge) == "contains" {
+			contained[edge.from] = append(contained[edge.from], edge.to)
+		} else {
+			dependencyEdges = append(dependencyEdges, edge)
+		}
+	}
+	for from := range contained {
+		sort.Strings(contained[from])
+	}
+	edges = dependencyEdges
 	componentByNode, cyclicComponents := dependencyStronglyConnectedComponents(edges)
 	filtered := make([]componentDependencyEdge, 0, len(edges))
 	var dropped []componentDependencyEdge
@@ -435,13 +531,13 @@ func makeAcyclicComponentDependencies(edges []componentDependencyEdge, roots []s
 	// reaches its target; the DFS below then cuts a different edge of the
 	// cycle instead.
 	if len(roots) > 0 {
-		reachable := reachableFrom(filtered, roots)
+		reachable := reachableFrom(filtered, contained, roots)
 		for changed := true; changed; {
 			changed = false
 			for _, edge := range dropped {
 				if reachable[edge.from] && !reachable[edge.to] {
 					filtered = append(filtered, edge)
-					reachable = reachableFrom(filtered, roots)
+					reachable = reachableFrom(filtered, contained, roots)
 					changed = true
 				}
 			}
@@ -449,8 +545,7 @@ func makeAcyclicComponentDependencies(edges []componentDependencyEdge, roots []s
 	}
 
 	// SCC filtering handles build-only back edges first. A sorted DFS then
-	// removes any remaining back edges, including cycles made only of runtime
-	// or embedded dependencies.
+	// removes any remaining back edges in the dependency graph.
 	adjacency := make(map[string][]int)
 	nodes := make(map[string]bool)
 	for index, edge := range filtered {
@@ -463,9 +558,16 @@ func makeAcyclicComponentDependencies(edges []componentDependencyEdge, roots []s
 			return filtered[adjacency[from][i]].to < filtered[adjacency[from][j]].to
 		})
 	}
+	for from, children := range contained {
+		nodes[from] = true
+		for _, child := range children {
+			nodes[child] = true
+		}
+	}
 
 	removed := make([]bool, len(filtered))
 	state := make(map[string]uint8)
+	var deferred []string
 	var visit func(string)
 	visit = func(from string) {
 		state[from] = 1
@@ -481,12 +583,28 @@ func makeAcyclicComponentDependencies(edges []componentDependencyEdge, roots []s
 				removed[edgeIndex] = true
 			}
 		}
+		// What a component contains is visited once the current search has
+		// returned, as a separate entry: the container, and the nodes above
+		// it, are not ancestors of the contained components in the
+		// dependency graph, and must not turn their dependencies into back
+		// edges.
+		deferred = append(deferred, contained[from]...)
 		state[from] = 2
+	}
+	visitDeferred := func() {
+		for len(deferred) > 0 {
+			next := deferred[0]
+			deferred = deferred[1:]
+			if state[next] == 0 {
+				visit(next)
+			}
+		}
 	}
 
 	for _, root := range roots {
 		if nodes[root] && state[root] == 0 {
 			visit(root)
+			visitDeferred()
 		}
 	}
 	orderedNodes := make([]string, 0, len(nodes))
@@ -497,6 +615,7 @@ func makeAcyclicComponentDependencies(edges []componentDependencyEdge, roots []s
 	for _, node := range orderedNodes {
 		if state[node] == 0 {
 			visit(node)
+			visitDeferred()
 		}
 	}
 
@@ -509,7 +628,7 @@ func makeAcyclicComponentDependencies(edges []componentDependencyEdge, roots []s
 	return result
 }
 
-func reachableFrom(edges []componentDependencyEdge, roots []string) map[string]bool {
+func reachableFrom(edges []componentDependencyEdge, contained map[string][]string, roots []string) map[string]bool {
 	adjacency := make(map[string][]string)
 	for _, edge := range edges {
 		adjacency[edge.from] = append(adjacency[edge.from], edge.to)
@@ -525,7 +644,7 @@ func reachableFrom(edges []componentDependencyEdge, roots []string) map[string]b
 	for len(queue) > 0 {
 		node := queue[0]
 		queue = queue[1:]
-		for _, next := range adjacency[node] {
+		for _, next := range append(adjacency[node], contained[node]...) {
 			if !reachable[next] {
 				reachable[next] = true
 				queue = append(queue, next)
@@ -620,7 +739,10 @@ func sortComponentDependencyEdges(edges []componentDependencyEdge) {
 		if edges[i].from != edges[j].from {
 			return edges[i].from < edges[j].from
 		}
-		return edges[i].to < edges[j].to
+		if edges[i].to != edges[j].to {
+			return edges[i].to < edges[j].to
+		}
+		return relationshipPriority(edges[i].relationship) < relationshipPriority(edges[j].relationship)
 	})
 }
 

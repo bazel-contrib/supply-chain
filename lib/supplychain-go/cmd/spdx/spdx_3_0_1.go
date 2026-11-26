@@ -140,7 +140,7 @@ func GenerateDocument301(graph sbom.GraphConfig, classifications sbom.Classifica
 	}
 
 	var relationships []spdx.AnyRelationship
-	seenRelationship := make(map[[3]string]bool)
+	seenRelationship := make(map[[4]string]bool)
 	for _, edge := range graph.Edges {
 		from, fromOk := labelToPackage[edge.From]
 		to, toOk := labelToPackage[edge.To]
@@ -150,7 +150,7 @@ func GenerateDocument301(graph sbom.GraphConfig, classifications sbom.Classifica
 		if !fromOk || !toOk || from == to {
 			continue
 		}
-		key := [3]string{from.ID, to.ID, edge.Involvement}
+		key := [4]string{from.ID, to.ID, edge.Involvement, edge.Relationship}
 		if seenRelationship[key] {
 			continue
 		}
@@ -174,12 +174,28 @@ func GenerateDocument301(graph sbom.GraphConfig, classifications sbom.Classifica
 				Type: spdx.RelationshipType_Contains,
 			})
 		default:
-			relationships = append(relationships, &spdx.Relationship{
-				ID:   id,
-				From: from,
-				To:   spdx.ElementList{to},
-				Type: spdx.RelationshipType_DependsOn,
-			})
+			switch edge.Relationship {
+			case "contains":
+				relationships = append(relationships, &spdx.Relationship{ID: id, From: from, To: spdx.ElementList{to}, Type: spdx.RelationshipType_Contains})
+			case "static_link":
+				relationships = append(relationships, &spdx.Relationship{ID: id, From: from, To: spdx.ElementList{to}, Type: spdx.RelationshipType_HasStaticLink})
+			case "dynamic_link":
+				relationships = append(relationships, &spdx.Relationship{ID: id, From: from, To: spdx.ElementList{to}, Type: spdx.RelationshipType_HasDynamicLink})
+			case "test_dependency", "dev_dependency":
+				scope := spdx.LifecycleScopeType_Test
+				if edge.Relationship == "dev_dependency" {
+					scope = spdx.LifecycleScopeType_Development
+				}
+				relationships = append(relationships, &spdx.LifecycleScopedRelationship{
+					ID: id, From: from, To: spdx.ElementList{to},
+					Type: spdx.RelationshipType_DependsOn, Scope: scope,
+				})
+			default:
+				relationships = append(relationships, &spdx.Relationship{
+					ID: id, From: from, To: spdx.ElementList{to},
+					Type: spdx.RelationshipType_DependsOn,
+				})
+			}
 		}
 	}
 

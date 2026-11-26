@@ -6,6 +6,36 @@ load(":providers.bzl", "TargetWithMetadataInfo")
 load(":rule_filters.bzl", "rule_to_excluded_attributes")
 
 _VALID_TOOLCHAIN_INVOLVEMENTS = ["runtime", "embedded", "build"]
+_VALID_RELATIONSHIPS = [
+    "depends_on",
+    "contains",
+    "static_link",
+    "dynamic_link",
+    "test_dependency",
+    "dev_dependency",
+]
+
+def _read_string_dict_attr(ctx, name):
+    if not hasattr(ctx.rule.attr, name):
+        return None
+
+    value = getattr(ctx.rule.attr, name)
+    if type(value) != "dict":
+        fail("{} {} has invalid {} attribute type {}; expected dict of string to string".format(
+            ctx.rule.kind,
+            ctx.label,
+            name,
+            type(value),
+        ))
+    for key, item in value.items():
+        if type(key) != "string" or type(item) != "string":
+            fail("{} {} has invalid {} entry {}: expected string keys and values".format(
+                ctx.rule.kind,
+                ctx.label,
+                name,
+                key,
+            ))
+    return value
 
 def _read_label_keyed_string_dict_attr(ctx, name):
     if not hasattr(ctx.rule.attr, name):
@@ -28,6 +58,29 @@ def _read_label_keyed_string_dict_attr(ctx, name):
                 key,
             ))
     return value
+
+def _relationship_declarations(ctx):
+    declarations = _read_string_dict_attr(ctx, "_supply_chain_relationships")
+    if declarations == None:
+        return {}
+
+    attr_names = dir(ctx.rule.attr)
+    for attr_name, relationship in declarations.items():
+        if attr_name not in attr_names:
+            fail("Invalid _supply_chain_relationships key {} on {} {}: no such rule attribute".format(
+                attr_name,
+                ctx.rule.kind,
+                ctx.label,
+            ))
+        if relationship not in _VALID_RELATIONSHIPS:
+            fail("Invalid _supply_chain_relationships value {} for {} {} attribute {}: expected one of {}".format(
+                relationship,
+                ctx.rule.kind,
+                ctx.label,
+                attr_name,
+                _VALID_RELATIONSHIPS,
+            ))
+    return declarations
 
 def _toolchain_involvement_declarations(ctx):
     declarations = _read_label_keyed_string_dict_attr(ctx, "_supply_chain_toolchain_involvement")
@@ -162,7 +215,8 @@ def _get_transitive_metadata(
         null_provider_instance = None,
         filter_func = None,
         direct_deps = None,
-        direct_dep_involvements = None):
+        direct_dep_involvements = None,
+        direct_dep_relationships = None):
     """Gather the collection provider instances of interest from our children.
 
     This is a helper to pull up the collected metadata info from children so
@@ -183,13 +237,14 @@ def _get_transitive_metadata(
     # A single dependency Target can be reachable more than once: through
     # more than one attribute (e.g. "deps" and "embed" both naming the same
     # library), or because a generated attribute value legitimately repeats a
-    # label. Each dependency contributes exactly one edge per involvement,
-    # regardless of how many attributes/positions reference it. Its transitive
-    # metadata is always kept, as the same label can be a different configured
-    # target (e.g. in the target and exec configurations) with different
-    # dependencies; the depsets remove the entries that repeat.
+    # label. Each dependency contributes exactly one edge per involvement and
+    # relationship, regardless of how many attributes/positions reference it.
+    # Its transitive metadata is always kept, as the same label can be a
+    # different configured target (e.g. in the target and exec configurations)
+    # with different dependencies; the depsets remove the entries that repeat.
     seen_edges = {}
 
+    relationships = _relationship_declarations(ctx)
     attrs = [attr for attr in dir(ctx.rule.attr)]
     for name in attrs:
         if filter_func and not filter_func(ctx, name):
@@ -220,13 +275,17 @@ def _get_transitive_metadata(
                     transitive_depsets.append(info.transitive)
 
                     involvement = "build" if info.is_exec_config else "runtime"
-                    edge_key = label_key + "\0" + involvement
+
+                    relationship = relationships.get(name, "depends_on")
+                    edge_key = label_key + "\0" + involvement + "\0" + relationship
                     if edge_key not in seen_edges:
                         seen_edges[edge_key] = True
                         if direct_deps != None:
                             direct_deps.append(dep_label)
                             if direct_dep_involvements != None:
                                 direct_dep_involvements.append(involvement)
+                            if direct_dep_relationships != None:
+                                direct_dep_relationships.append(relationship)
 
     declarations = _toolchain_involvement_declarations(ctx)
 
@@ -252,13 +311,16 @@ def _get_transitive_metadata(
             involvement = declarations.get(toolchain_type)
             if involvement == None:
                 involvement = "build" if info.is_exec_config else "runtime"
-            edge_key = label_key + "\0" + involvement
+            relationship = "depends_on"
+            edge_key = label_key + "\0" + involvement + "\0" + relationship
             if edge_key not in seen_edges:
                 seen_edges[edge_key] = True
                 if direct_deps != None:
                     direct_deps.append(label)
                     if direct_dep_involvements != None:
                         direct_dep_involvements.append(involvement)
+                    if direct_dep_relationships != None:
+                        direct_dep_relationships.append(relationship)
 
 def gather_metadata_info_common(
         target,
@@ -330,6 +392,7 @@ def gather_metadata_info_common(
     transitive_depsets = []
     direct_deps = []
     direct_dep_involvements = []
+    direct_dep_relationships = []
     _get_transitive_metadata(
         ctx = ctx,
         transitive_depsets = transitive_depsets,
@@ -338,6 +401,7 @@ def gather_metadata_info_common(
         filter_func = filter_func,
         direct_deps = direct_deps,
         direct_dep_involvements = direct_dep_involvements,
+        direct_dep_relationships = direct_dep_relationships,
     )
 
     # State so far:
@@ -382,6 +446,7 @@ def gather_metadata_info_common(
         metadata = depset(got_providers),
         direct_deps = tuple(direct_deps),  # Convert to tuple for immutability (required for depset)
         direct_dep_involvements = tuple(direct_dep_involvements),
+        direct_dep_relationships = tuple(direct_dep_relationships),
     )
     if not transitive_depsets:
         return [provider_factory(

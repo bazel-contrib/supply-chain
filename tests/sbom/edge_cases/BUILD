@@ -11,10 +11,129 @@ load("@supply_chain_tools//sbom:spdx.bzl", "spdx")
 load("//sbom:expected_failure.bzl", "spdx_expected_failure")
 load("//sbom:golden_test.bzl", "sbom_golden_test")
 load(":toolchain_cases.bzl", "cycle_backedge_binary", "invalid_toolchain_attr_tests", "mixed_path_cyclonedx_golden", "toolchain_alias_probe_test", "toolchain_golden_cases")
+load(":relationship_cases.bzl", "image_layer", "pkg_tar_impl", "relationship_golden_tests", "relationship_root", "root_image_layer")
 
 package_metadata(
     name = "toolchain_app_metadata",
     purl = "pkg:generic/toolchain-fixture-app@1.0.0",
+)
+
+package_metadata(
+    name = "relationship_root_metadata",
+    purl = "pkg:generic/relationship-root@1.0.0",
+)
+
+package_metadata(
+    name = "relationship_layer_metadata",
+    purl = "pkg:generic/image-layer@1.0.0",
+)
+
+package_metadata(
+    name = "relationship_archive_metadata",
+    purl = "pkg:generic/server-tar@1.0.0",
+)
+
+package_metadata(
+    name = "relationship_payload_metadata",
+    purl = "pkg:generic/server-binary@1.0.0",
+)
+
+package_metadata(
+    name = "relationship_static_metadata",
+    purl = "pkg:generic/static-library@1.0.0",
+)
+
+package_metadata(
+    name = "relationship_dynamic_metadata",
+    purl = "pkg:generic/dynamic-library@1.0.0",
+)
+
+package_metadata(
+    name = "relationship_test_metadata",
+    purl = "pkg:generic/test-helper@1.0.0",
+)
+
+package_metadata(
+    name = "relationship_dev_metadata",
+    purl = "pkg:generic/dev-helper@1.0.0",
+)
+
+package_metadata(
+    name = "relationship_legacy_metadata",
+    purl = "pkg:generic/legacy-library@1.0.0",
+)
+
+filegroup(
+    name = "relationship_payload",
+    applicable_licenses = [":relationship_payload_metadata"],
+)
+
+filegroup(
+    name = "relationship_static",
+    applicable_licenses = [":relationship_static_metadata"],
+)
+
+filegroup(
+    name = "relationship_dynamic",
+    applicable_licenses = [":relationship_dynamic_metadata"],
+)
+
+filegroup(
+    name = "relationship_test",
+    applicable_licenses = [":relationship_test_metadata"],
+)
+
+filegroup(
+    name = "relationship_dev",
+    applicable_licenses = [":relationship_dev_metadata"],
+)
+
+filegroup(
+    name = "relationship_legacy",
+    applicable_licenses = [":relationship_legacy_metadata"],
+)
+
+root_image_layer(
+    name = "relationship_image_layer",
+    srcs = [":relationship_payload"],
+    applicable_licenses = [":relationship_layer_metadata"],
+)
+
+filegroup(
+    name = "relationship_image_layer_wrapper",
+    srcs = [":relationship_image_layer"],
+)
+
+pkg_tar_impl(
+    name = "relationship_pkg_tar",
+    srcs = [":relationship_payload"],
+    applicable_licenses = [":relationship_archive_metadata"],
+    deps = [":relationship_payload"],
+)
+
+relationship_root(
+    name = "relationship_root",
+    applicable_licenses = [":relationship_root_metadata"],
+    dev_deps = [":relationship_dev"],
+    dynamic_deps = [":relationship_dynamic"],
+    layers = [
+        ":relationship_image_layer_wrapper",
+        "@toolchain_fixtures//:provider_image_layer",
+        "@relationship_fixtures//:provider_image_layer",
+        ":relationship_pkg_tar",
+    ],
+    legacy_deps = [":relationship_legacy"],
+    static_deps = [":relationship_static"],
+    test_deps = [":relationship_test"],
+    deps = [
+        ":relationship_pkg_tar",
+        "@toolchain_fixtures//:provider_override",
+    ],
+)
+
+relationship_golden_tests(
+    name = "relationship_golden_tests",
+    target = ":relationship_root",
 )
 
 java_binary(name = "java_app")

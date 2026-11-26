@@ -121,6 +121,25 @@ _invalid_type_toolchain_rule = rule(
     },
 )
 
+_invalid_relationship_value_rule = rule(
+    implementation = _invalid_toolchain_attr_impl,
+    attrs = {
+        "applicable_licenses": attr.label_list(),
+        "deps": attr.label_list(),
+        "_supply_chain_relationships": attr.string_dict(default = {
+            "deps": "invalid",
+        }),
+    },
+)
+
+_invalid_relationship_type_rule = rule(
+    implementation = _invalid_toolchain_attr_impl,
+    attrs = {
+        "applicable_licenses": attr.label_list(),
+        "_supply_chain_relationships": attr.string(default = "invalid"),
+    },
+)
+
 def _invalid_toolchain_attr_test_impl(ctx):
     env = analysistest.begin(ctx)
     asserts.expect_failure(env, ctx.attr.expected_message)
@@ -136,9 +155,11 @@ def invalid_toolchain_attr_tests(name, applicable_licenses):
     """Test that the aspect rejects invalid rule-declared attribute data."""
     tests = []
     for suffix, target_rule, message in [
-        ("invalid_key", _invalid_key_toolchain_rule, "Invalid _supply_chain_toolchain_involvement key"),
-        ("invalid_value", _invalid_value_toolchain_rule, "Invalid _supply_chain_toolchain_involvement value"),
-        ("invalid_type", _invalid_type_toolchain_rule, "invalid _supply_chain_toolchain_involvement attribute type"),
+        ("invalid_toolchain_key", _invalid_key_toolchain_rule, "Invalid _supply_chain_toolchain_involvement key"),
+        ("invalid_toolchain_value", _invalid_value_toolchain_rule, "Invalid _supply_chain_toolchain_involvement value"),
+        ("invalid_toolchain_type", _invalid_type_toolchain_rule, "invalid _supply_chain_toolchain_involvement attribute type"),
+        ("invalid_relationship_value", _invalid_relationship_value_rule, "Invalid _supply_chain_relationships value"),
+        ("invalid_relationship_type", _invalid_relationship_type_rule, "invalid _supply_chain_relationships attribute type"),
     ]:
         target_name = name + "_" + suffix + "_target"
         sbom_name = name + "_" + suffix + "_sbom"

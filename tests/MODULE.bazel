@@ -14,6 +14,7 @@ bazel_dep(name = "supply-chain-go", version = "HEAD")
 bazel_dep(name = "supply_chain_tools", version = "HEAD")
 bazel_dep(name = "supply_chain_examples", version = "HEAD")
 bazel_dep(name = "toolchain_fixtures", version = "1.0.0")
+bazel_dep(name = "relationship_fixtures", version = "1.0.0")
 
 local_path_override(
     module_name = "package_metadata",
@@ -59,6 +60,7 @@ local_path_override(
         "dual_licensed",
         "legacy_gpl",
         "toolchain_fixtures",
+        "relationship_fixtures",
     ]
 ]
 

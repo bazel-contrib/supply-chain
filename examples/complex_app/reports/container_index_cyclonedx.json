@@ -3,18 +3,34 @@
   "bomFormat": "CycloneDX",
   "components": [
     {
-      "bom-ref": "pkg:generic/glibc@2.28",
-      "licenses": [
+      "bom-ref": "pkg:generic/toolchain-demo-server-tar@0.1.0",
+      "name": "toolchain-demo-server-tar",
+      "properties": [
         {
-          "license": {
-            "id": "LGPL-2.1-or-later"
-          }
+          "name": "bazel:relationship:contains",
+          "value": "pkg:generic/toolchain-demo-server@0.1.0"
         }
       ],
-      "name": "glibc",
-      "purl": "pkg:generic/glibc@2.28",
+      "purl": "pkg:generic/toolchain-demo-server-tar@0.1.0",
       "type": "library",
-      "version": "2.28"
+      "version": "0.1.0"
+    },
+    {
+      "bom-ref": "pkg:generic/toolchain-demo-server@0.1.0",
+      "name": "toolchain-demo-server",
+      "properties": [
+        {
+          "name": "bazel:relationship:contains",
+          "value": "pkg:github/llvm/llvm-project@23.1.2"
+        },
+        {
+          "name": "bazel:relationship:contains",
+          "value": "pkg:golang/stdlib@1.27.4"
+        }
+      ],
+      "purl": "pkg:generic/toolchain-demo-server@0.1.0",
+      "type": "library",
+      "version": "0.1.0"
     },
     {
       "bom-ref": "pkg:github/llvm/llvm-project@23.1.2#runtimes",
@@ -46,26 +62,6 @@
       "purl": "pkg:github/llvm/llvm-project@23.1.2",
       "type": "library",
       "version": "23.1.2"
-    },
-    {
-      "bom-ref": "pkg:golang/stdlib@1.27.4",
-      "licenses": [
-        {
-          "license": {
-            "id": "BSD-3-Clause"
-          }
-        }
-      ],
-      "name": "stdlib",
-      "properties": [
-        {
-          "name": "bazel:involvement",
-          "value": "embedded"
-        }
-      ],
-      "purl": "pkg:golang/stdlib@1.27.4",
-      "type": "library",
-      "version": "1.27.4"
     },
     {
       "bom-ref": "pkg:docker/library/ubuntu@sha256:1e622c5f073b4f6bfad6632f2616c7f59ef256e96fe78bf6a595d1dc4376ac02?repository_url=index.docker.io",
@@ -140,6 +136,20 @@
       "version": "3.14.10"
     },
     {
+      "bom-ref": "pkg:generic/glibc@2.28",
+      "licenses": [
+        {
+          "license": {
+            "id": "LGPL-2.1-or-later"
+          }
+        }
+      ],
+      "name": "glibc",
+      "purl": "pkg:generic/glibc@2.28",
+      "type": "library",
+      "version": "2.28"
+    },
+    {
       "bom-ref": "pkg:generic/musl@1.2.6",
       "licenses": [
         {
@@ -152,30 +162,33 @@
       "purl": "pkg:generic/musl@1.2.6",
       "type": "library",
       "version": "1.2.6"
+    },
+    {
+      "bom-ref": "pkg:golang/stdlib@1.27.4",
+      "licenses": [
+        {
+          "license": {
+            "id": "BSD-3-Clause"
+          }
+        }
+      ],
+      "name": "stdlib",
+      "properties": [
+        {
+          "name": "bazel:involvement",
+          "value": "embedded"
+        }
+      ],
+      "purl": "pkg:golang/stdlib@1.27.4",
+      "type": "library",
+      "version": "1.27.4"
     }
   ],
   "dependencies": [
     {
-      "dependsOn": [
-        "pkg:docker/library/ubuntu@sha256:1e622c5f073b4f6bfad6632f2616c7f59ef256e96fe78bf6a595d1dc4376ac02?repository_url=index.docker.io",
-        "pkg:generic/glibc@2.28",
-        "pkg:generic/openjdk@21",
-        "pkg:generic/openjdk@25",
-        "pkg:github/llvm/llvm-project@23.1.2",
-        "pkg:github/llvm/llvm-project@23.1.2#runtimes",
-        "pkg:github/nodejs/node@22.23.4",
-        "pkg:github/python/cpython@3.14.10",
-        "pkg:golang/stdlib@1.27.4"
-      ],
-      "ref": "pkg:bazel/complex_app@0.1.0"
-    },
-    {
       "ref": "pkg:docker/library/ubuntu@sha256:1e622c5f073b4f6bfad6632f2616c7f59ef256e96fe78bf6a595d1dc4376ac02?repository_url=index.docker.io"
     },
     {
-      "dependsOn": [
-        "pkg:github/llvm/llvm-project@23.1.2"
-      ],
       "ref": "pkg:generic/glibc@2.28"
     },
     {
@@ -189,6 +202,21 @@
     },
     {
       "dependsOn": [
+        "pkg:github/llvm/llvm-project@23.1.2",
+        "pkg:github/python/cpython@3.14.10"
+      ],
+      "ref": "pkg:generic/toolchain-demo-server-tar@0.1.0"
+    },
+    {
+      "dependsOn": [
+        "pkg:generic/glibc@2.28",
+        "pkg:oci/toolchain-demo@0.1.0"
+      ],
+      "ref": "pkg:generic/toolchain-demo-server@0.1.0"
+    },
+    {
+      "dependsOn": [
+        "pkg:generic/glibc@2.28",
         "pkg:generic/musl@1.2.6"
       ],
       "ref": "pkg:github/llvm/llvm-project@23.1.2"
@@ -204,11 +232,19 @@
     },
     {
       "ref": "pkg:golang/stdlib@1.27.4"
+    },
+    {
+      "dependsOn": [
+        "pkg:generic/openjdk@21",
+        "pkg:github/llvm/llvm-project@23.1.2#runtimes",
+        "pkg:github/nodejs/node@22.23.4"
+      ],
+      "ref": "pkg:oci/toolchain-demo@0.1.0"
     }
   ],
   "metadata": {
     "component": {
-      "bom-ref": "pkg:bazel/complex_app@0.1.0",
+      "bom-ref": "pkg:oci/toolchain-demo@0.1.0",
       "licenses": [
         {
           "license": {
@@ -216,8 +252,34 @@
           }
         }
       ],
-      "name": "complex_app",
-      "purl": "pkg:bazel/complex_app@0.1.0",
+      "name": "toolchain-demo",
+      "properties": [
+        {
+          "name": "bazel:relationship:contains",
+          "value": "pkg:docker/library/ubuntu@sha256:1e622c5f073b4f6bfad6632f2616c7f59ef256e96fe78bf6a595d1dc4376ac02?repository_url=index.docker.io"
+        },
+        {
+          "name": "bazel:relationship:contains",
+          "value": "pkg:generic/openjdk@25"
+        },
+        {
+          "name": "bazel:relationship:contains",
+          "value": "pkg:generic/toolchain-demo-server-tar@0.1.0"
+        },
+        {
+          "name": "bazel:relationship:contains",
+          "value": "pkg:generic/toolchain-demo-server@0.1.0"
+        },
+        {
+          "name": "bazel:relationship:contains",
+          "value": "pkg:github/llvm/llvm-project@23.1.2"
+        },
+        {
+          "name": "bazel:relationship:contains",
+          "value": "pkg:github/python/cpython@3.14.10"
+        }
+      ],
+      "purl": "pkg:oci/toolchain-demo@0.1.0",
       "type": "library",
       "version": "0.1.0"
     },
