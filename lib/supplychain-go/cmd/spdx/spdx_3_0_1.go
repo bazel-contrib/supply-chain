@@ -19,6 +19,7 @@ import (
 func GenerateDocument301(graph sbom.GraphConfig, classifications sbom.Classifications, created time.Time) (*spdx.Document, error) {
 	graph = sbom.NormalizeGraph(graph)
 	labelToPackage := make(map[string]*spdx.Package)
+	purlToPackage := make(map[string]*spdx.Package)
 	var packages []*spdx.Package
 	licenseOf := make(map[*spdx.Package]*supplychain.LicenseAttribute)
 	patchesOf := make(map[*spdx.Package][]*supplychain.PatchAttribute)
@@ -43,6 +44,19 @@ func GenerateDocument301(graph sbom.GraphConfig, classifications sbom.Classifica
 		if subjectPURL == "" {
 			subjectName = purl.Name
 			subjectPURL = purl.String()
+		}
+		licenseAttribute, err := supplychain.GetLicenseAttribute(pkgMetadata)
+		if err != nil {
+			return fmt.Errorf("error reading license of %s: %w", node.Label, err)
+		}
+		if existing, exists := purlToPackage[purl.String()]; exists {
+			labelToPackage[node.Label] = existing
+			// Keep one package per PURL, but do not lose a license that only
+			// a later metadata file declares.
+			if licenseAttribute != nil && licenseOf[existing] == nil {
+				licenseOf[existing] = licenseAttribute
+			}
+			return nil
 		}
 
 		qualifiers := purl.Qualifiers.Map()
@@ -95,10 +109,6 @@ func GenerateDocument301(graph sbom.GraphConfig, classifications sbom.Classifica
 				})
 			}
 		}
-		licenseAttribute, err := supplychain.GetLicenseAttribute(pkgMetadata)
-		if err != nil {
-			return fmt.Errorf("error reading license of %s: %w", node.Label, err)
-		}
 		if licenseAttribute != nil {
 			licenseOf[pkg] = licenseAttribute
 		}
@@ -109,6 +119,7 @@ func GenerateDocument301(graph sbom.GraphConfig, classifications sbom.Classifica
 		patchesOf[pkg] = patches
 		packages = append(packages, pkg)
 		labelToPackage[node.Label] = pkg
+		purlToPackage[purl.String()] = pkg
 		return nil
 	}
 
@@ -128,8 +139,8 @@ func GenerateDocument301(graph sbom.GraphConfig, classifications sbom.Classifica
 		}
 	}
 
-	var relationships []*spdx.Relationship
-	seenRelationship := make(map[[2]string]bool)
+	var relationships []spdx.AnyRelationship
+	seenRelationship := make(map[[3]string]bool)
 	for _, edge := range graph.Edges {
 		from, fromOk := labelToPackage[edge.From]
 		to, toOk := labelToPackage[edge.To]
@@ -139,30 +150,54 @@ func GenerateDocument301(graph sbom.GraphConfig, classifications sbom.Classifica
 		if !fromOk || !toOk || from == to {
 			continue
 		}
-		key := [2]string{from.ID, to.ID}
+		key := [3]string{from.ID, to.ID, edge.Involvement}
 		if seenRelationship[key] {
 			continue
 		}
 		seenRelationship[key] = true
-		relationships = append(relationships, &spdx.Relationship{
-			ID:   fmt.Sprintf("rel-%d", len(relationships)),
-			From: from,
-			To:   spdx.ElementList{to},
-			Type: spdx.RelationshipType_DependsOn,
-		})
+		id := fmt.Sprintf("rel-%d", len(relationships))
+		switch edge.Involvement {
+		case "build":
+			// SPDX 3 models a build tool as a tool used by the consumer.
+			relationships = append(relationships, &spdx.LifecycleScopedRelationship{
+				ID:    id,
+				From:  from,
+				To:    spdx.ElementList{to},
+				Type:  spdx.RelationshipType_UsesTool,
+				Scope: spdx.LifecycleScopeType_Build,
+			})
+		case "embedded":
+			relationships = append(relationships, &spdx.Relationship{
+				ID:   id,
+				From: from,
+				To:   spdx.ElementList{to},
+				Type: spdx.RelationshipType_Contains,
+			})
+		default:
+			relationships = append(relationships, &spdx.Relationship{
+				ID:   id,
+				From: from,
+				To:   spdx.ElementList{to},
+				Type: spdx.RelationshipType_DependsOn,
+			})
+		}
 	}
 
 	licenses, licenseRelationships, err := declaredLicenses(packages, licenseOf, len(relationships))
 	if err != nil {
 		return nil, err
 	}
-	relationships = append(relationships, licenseRelationships...)
+	for _, relationship := range licenseRelationships {
+		relationships = append(relationships, relationship)
+	}
 
 	patches, patchRelationships, err := patchFiles(packages, patchesOf, len(relationships))
 	if err != nil {
 		return nil, err
 	}
-	relationships = append(relationships, patchRelationships...)
+	for _, relationship := range patchRelationships {
+		relationships = append(relationships, relationship)
+	}
 
 	if subjectName == "" {
 		subjectName = "sbom"

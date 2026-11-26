@@ -1,0 +1,19 @@
+diff --git a/go/private/rules/binary.bzl b/go/private/rules/binary.bzl
+--- a/go/private/rules/binary.bzl
++++ b/go/private/rules/binary.bzl
+@@ -13,3 +13,4 @@
+ 
+ load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
+@@ -507,7 +507,11 @@
+             "_bincov": attr.label(
+                 default = "//go/tools/bzltestutil/bincov",
+             ),
+-        },
++            "_supply_chain_toolchain_involvement": attr.label_keyed_string_dict(default = {
++                Label("@io_bazel_rules_go//go:toolchain"): "embedded",
++                Label("@bazel_tools//tools/cpp:toolchain_type"): "embedded",
++            }),
++        },
+         "exec_groups": {
+             "go_link": exec_group(
+                 toolchains = [GO_TOOLCHAIN] + CGO_TOOLCHAINS,

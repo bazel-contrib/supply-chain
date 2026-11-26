@@ -122,6 +122,10 @@ go_binary(
         "server.go",
     ],
     cgo = True,
+    data = select({
+        ":libc_glibc": ["@@llvm++glibc+glibc_2.28//:runtime_dependency"],
+        ":libc_musl": [],
+    }),
     embedsrcs = [
         "frontend.js",
         "web/index.html",

@@ -1,9 +1,44 @@
 load("@rules_java//java:defs.bzl", "java_binary")
+load("@rules_java//toolchains:bootclasspath.bzl", "bootclasspath")
+load(
+    "@rules_java//toolchains:default_java_toolchain.bzl",
+    "DEFAULT_TOOLCHAIN_CONFIGURATION",
+    "default_java_toolchain",
+)
 
 package(default_visibility = ["//visibility:public"])
 
+default_java_toolchain(
+    name = "demo_jdk21_compile_toolchain",
+    configuration = dict(
+        DEFAULT_TOOLCHAIN_CONFIGURATION,
+        bootclasspath = [":demo_jdk21_platformclasspath"],
+        java_runtime = "@remotejdk21_macos_aarch64//:jdk",
+    ),
+    source_version = "21",
+    target_version = "21",
+)
+
+bootclasspath(
+    name = "demo_jdk21_platformclasspath",
+    src = "@rules_java//toolchains:DumpPlatformClassPath.java",
+    java_runtime_alias = "@remotejdk21_macos_aarch64//:jdk",
+    language_version_bootstrap_runtime = "@remotejdk21_macos_aarch64//:jdk",
+)
+
 toolchain(
-    name = "runtime_jdk21_macos",
+    name = "demo_jdk21_compile_toolchain_registration",
+    # The compiler and bootclasspath run the macOS/arm64 JDK 21 directly.
+    exec_compatible_with = [
+        "@platforms//cpu:arm64",
+        "@platforms//os:macos",
+    ],
+    toolchain = ":demo_jdk21_compile_toolchain",
+    toolchain_type = "@bazel_tools//tools/jdk:toolchain_type",
+)
+
+toolchain(
+    name = "demo_jdk21_runtime_toolchain",
     target_compatible_with = [
         "@platforms//cpu:arm64",
         "@platforms//os:macos",
@@ -13,7 +48,17 @@ toolchain(
 )
 
 toolchain(
-    name = "runtime_jdk25_linux",
+    name = "demo_jdk21_bootstrap_runtime_toolchain",
+    exec_compatible_with = [
+        "@platforms//cpu:arm64",
+        "@platforms//os:macos",
+    ],
+    toolchain = "@remotejdk21_macos_aarch64//:jdk",
+    toolchain_type = "@bazel_tools//tools/jdk:bootstrap_runtime_toolchain_type",
+)
+
+toolchain(
+    name = "demo_jdk25_runtime_toolchain",
     target_compatible_with = [
         "@platforms//cpu:x86_64",
         "@platforms//os:linux",
