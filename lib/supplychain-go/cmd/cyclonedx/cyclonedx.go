@@ -19,6 +19,7 @@ import (
 func main() {
 	var outPath, graphPath, classificationsPath, format, buildStatusPath, serialNumberPath, validatorPath string
 	var embedPatchFiles bool
+	var verboseComponentTypes bool
 	flag.StringVar(&outPath, "out", "", "The path to write the generated CycloneDX SBOM.")
 	flag.StringVar(&graphPath, "graph", "", "The path to the graph JSON file.")
 	flag.StringVar(&classificationsPath, "classifications", "", "The path to the classifications JSON file.")
@@ -27,6 +28,7 @@ func main() {
 	flag.StringVar(&serialNumberPath, "serial_number_file", "", "Optional path to a file holding the BOM serialNumber, in urn:uuid form. It should be unique to each generated BOM. If unset, the BOM has no serialNumber.")
 	flag.StringVar(&validatorPath, "validator", "", "Optional runfiles path or executable path to the CycloneDX CLI validator.")
 	flag.BoolVar(&embedPatchFiles, "embed_patch_files", true, "Embed the content of the patch files in the pedigree of the packages they patch. Disable it to keep local patches out of the report.")
+	flag.BoolVar(&verboseComponentTypes, "verbose_component_types", false, "Warn about the components that do not declare a component_type attribute.")
 	flag.Parse()
 
 	if outPath == "" {
@@ -67,10 +69,15 @@ func main() {
 	if !embedPatchFiles {
 		opts = append(opts, WithoutPatchFiles())
 	}
-	bom, err := GenerateBOM(graph, classifications, opts...)
+	bom, untyped, err := generateBOM(graph, classifications, opts...)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error generating BOM: %v\n", err)
 		os.Exit(1)
+	}
+	if verboseComponentTypes && len(untyped) > 0 {
+		fmt.Fprintf(os.Stderr, "WARNING: %d component(s) do not declare a component_type and are reported as %q because CycloneDX requires a type: %s\n"+
+			"Declare one with the component_type attribute of @package_metadata//attributes:component_type.bzl, or build with --//sbom:strict_component_types to fail instead.\n",
+			len(untyped), cdx.ComponentTypeLibrary, strings.Join(untyped, ", "))
 	}
 
 	created, err := sbom.ReadBuildTimestamp(buildStatusPath)
@@ -138,6 +145,14 @@ func WithoutPatchFiles() Option {
 }
 
 func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications, opts ...Option) (*cdx.BOM, error) {
+	bom, _, err := generateBOM(graph, classifications, opts...)
+	return bom, err
+}
+
+// generateBOM is GenerateBOM that also returns the labels of the components
+// that do not declare a component type, in order of appearance.
+func generateBOM(graph sbom.GraphConfig, classifications sbom.Classifications, opts ...Option) (*cdx.BOM, []string, error) {
+	var untyped []string
 	var config options
 	for _, opt := range opts {
 		opt(&config)
@@ -244,6 +259,17 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications, o
 		}
 		component.Pedigree = pedigree
 
+		componentType, err := supplychain.GetComponentTypeAttribute(pkgMetadata)
+		if err != nil {
+			return cdx.Component{}, fmt.Errorf("error reading component type of %s: %w", node.Label, err)
+		}
+		if componentType != "" {
+			// The component types are the CycloneDX ones.
+			component.Type = cdx.ComponentType(componentType)
+		} else {
+			untyped = append(untyped, node.Label)
+		}
+
 		labelToBOMRef[node.Label] = bomRef
 		return component, nil
 	}
@@ -252,7 +278,7 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications, o
 	if classifications.RootComponent != nil {
 		comp, err := createComponent(classifications.RootComponent)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		rootComponent = &comp
 	}
@@ -278,13 +304,13 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications, o
 
 	for i := range classifications.Dependencies.Direct {
 		if err := addComponent(&classifications.Dependencies.Direct[i]); err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 	}
 
 	for i := range classifications.Dependencies.Transitive {
 		if err := addComponent(&classifications.Dependencies.Transitive[i]); err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 	}
 
@@ -369,7 +395,7 @@ func GenerateBOM(graph sbom.GraphConfig, classifications sbom.Classifications, o
 
 	bom.Metadata = metadata
 
-	return bom, nil
+	return bom, untyped, nil
 }
 
 type componentDependencyEdge struct {

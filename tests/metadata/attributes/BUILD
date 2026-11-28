@@ -1,6 +1,7 @@
 load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
 load("@jq.bzl//jq:jq.bzl", "jq")
 load("@package_metadata//attributes:copyright_notice.bzl", "copyright_notice")
+load("@package_metadata//attributes:component_type.bzl", "component_type")
 load("@package_metadata//attributes:cpe.bzl", "cpe")
 load("@package_metadata//attributes:integrity.bzl", "integrity")
 load("@package_metadata//attributes:patch.bzl", "patch")
@@ -29,6 +30,24 @@ load("@package_metadata//rules:package_metadata.bzl", "package_metadata")
         "valid-3": [
             "Copyright © 2026 The authors of this stuff.",
         ],
+    }.items()
+]
+
+[
+    [
+        component_type(
+            name = "component_type.{}".format(name),
+            type = type,
+        ),
+        diff_test(
+            name = "component_type.{}.test".format(name),
+            file1 = ":component_type.{}".format(name),
+            file2 = "testdata/component_type/{}.json".format(name),
+        ),
+    ]
+    for name, type in {
+        "valid-1": "container",
+        "valid-2": "operating-system",
     }.items()
 ]
 

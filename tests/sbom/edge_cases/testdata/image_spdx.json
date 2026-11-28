@@ -1,0 +1,164 @@
+{
+  "@context": "https://spdx.org/rdf/3.0.1/spdx-context.jsonld",
+  "@graph": [
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "Bazel Supply Chain Tools SPDX generator",
+      "spdxId": "SPDXRef:SoftwareAgent-1",
+      "type": "SoftwareAgent"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "Bazel Supply Chain Tools SPDX generator",
+      "spdxId": "SPDXRef:Tool-1",
+      "type": "Tool"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "my-image",
+      "software_packageUrl": "pkg:oci/my-image?repository_url=registry.example.com%2Fmy-image",
+      "software_primaryPurpose": "container",
+      "spdxId": "SPDXRef:dep-0",
+      "type": "software_Package"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "base-os",
+      "software_packageUrl": "pkg:generic/base-os@12.1",
+      "software_packageVersion": "12.1",
+      "software_primaryPurpose": "operatingSystem",
+      "spdxId": "SPDXRef:dep-1",
+      "type": "software_Package"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "bootloader",
+      "software_packageUrl": "pkg:generic/bootloader@2.4",
+      "software_packageVersion": "2.4",
+      "software_primaryPurpose": "firmware",
+      "spdxId": "SPDXRef:dep-2",
+      "type": "software_Package"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "direct",
+      "software_packageUrl": "pkg:generic/direct@1.0.0",
+      "software_packageVersion": "1.0.0",
+      "spdxId": "SPDXRef:dep-3",
+      "type": "software_Package"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "service",
+      "software_packageUrl": "pkg:generic/service@3.0.0",
+      "software_packageVersion": "3.0.0",
+      "software_primaryPurpose": "application",
+      "spdxId": "SPDXRef:dep-4",
+      "type": "software_Package"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-0",
+      "relationshipType": "dependsOn",
+      "spdxId": "SPDXRef:rel-0",
+      "to": [
+        "SPDXRef:dep-1"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-0",
+      "relationshipType": "dependsOn",
+      "spdxId": "SPDXRef:rel-1",
+      "to": [
+        "SPDXRef:dep-2"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-0",
+      "relationshipType": "dependsOn",
+      "spdxId": "SPDXRef:rel-2",
+      "to": [
+        "SPDXRef:dep-3"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "from": "SPDXRef:dep-0",
+      "relationshipType": "dependsOn",
+      "spdxId": "SPDXRef:rel-3",
+      "to": [
+        "SPDXRef:dep-4"
+      ],
+      "type": "Relationship"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "element": [
+        "SPDXRef:SoftwareAgent-1",
+        "SPDXRef:Tool-1",
+        "SPDXRef:dep-0",
+        "SPDXRef:dep-1",
+        "SPDXRef:dep-2",
+        "SPDXRef:dep-3",
+        "SPDXRef:dep-4",
+        "SPDXRef:rel-0",
+        "SPDXRef:rel-1",
+        "SPDXRef:rel-2",
+        "SPDXRef:rel-3"
+      ],
+      "rootElement": [
+        "SPDXRef:dep-0"
+      ],
+      "software_sbomType": [
+        "build"
+      ],
+      "spdxId": "SPDXRef:sbom",
+      "type": "software_Sbom"
+    },
+    {
+      "@id": "_:CreationInfo-1",
+      "created": "1970-01-01T00:00:00Z",
+      "createdBy": [
+        "SPDXRef:SoftwareAgent-1"
+      ],
+      "createdUsing": [
+        "SPDXRef:Tool-1"
+      ],
+      "specVersion": "3.0.1",
+      "type": "CreationInfo"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "name": "CC0-1.0",
+      "simplelicensing_licenseText": "NOASSERTION",
+      "spdxId": "https://spdx.org/licenses/CC0-1.0",
+      "type": "expandedlicensing_ListedLicense"
+    },
+    {
+      "creationInfo": "_:CreationInfo-1",
+      "dataLicense": "https://spdx.org/licenses/CC0-1.0",
+      "name": "my-image",
+      "namespaceMap": [
+        {
+          "namespace": "https://spdx.org/spdxdocs/pkg:oci%2Fmy-image%3Frepository_url=registry.example.com%252Fmy-image#",
+          "prefix": "SPDXRef",
+          "type": "NamespaceMap"
+        }
+      ],
+      "profileConformance": [
+        "core",
+        "software"
+      ],
+      "rootElement": [
+        "SPDXRef:sbom"
+      ],
+      "spdxId": "https://spdx.org/spdxdocs/pkg:oci%2Fmy-image%3Frepository_url=registry.example.com%252Fmy-image",
+      "type": "SpdxDocument"
+    }
+  ]
+}

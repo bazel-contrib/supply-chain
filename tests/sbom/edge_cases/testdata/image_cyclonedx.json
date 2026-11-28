@@ -1,0 +1,76 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
+  "bomFormat": "CycloneDX",
+  "components": [
+    {
+      "bom-ref": "pkg:generic/base-os@12.1",
+      "name": "base-os",
+      "purl": "pkg:generic/base-os@12.1",
+      "type": "operating-system",
+      "version": "12.1"
+    },
+    {
+      "bom-ref": "pkg:generic/bootloader@2.4",
+      "name": "bootloader",
+      "purl": "pkg:generic/bootloader@2.4",
+      "type": "firmware",
+      "version": "2.4"
+    },
+    {
+      "bom-ref": "pkg:generic/direct@1.0.0",
+      "name": "direct",
+      "purl": "pkg:generic/direct@1.0.0",
+      "type": "library",
+      "version": "1.0.0"
+    },
+    {
+      "bom-ref": "pkg:generic/service@3.0.0",
+      "name": "service",
+      "purl": "pkg:generic/service@3.0.0",
+      "type": "application",
+      "version": "3.0.0"
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "pkg:generic/base-os@12.1"
+    },
+    {
+      "ref": "pkg:generic/bootloader@2.4"
+    },
+    {
+      "ref": "pkg:generic/direct@1.0.0"
+    },
+    {
+      "ref": "pkg:generic/service@3.0.0"
+    },
+    {
+      "dependsOn": [
+        "pkg:generic/base-os@12.1",
+        "pkg:generic/bootloader@2.4",
+        "pkg:generic/direct@1.0.0",
+        "pkg:generic/service@3.0.0"
+      ],
+      "ref": "pkg:oci/my-image?repository_url=registry.example.com%2Fmy-image"
+    }
+  ],
+  "metadata": {
+    "component": {
+      "bom-ref": "pkg:oci/my-image?repository_url=registry.example.com%2Fmy-image",
+      "name": "my-image",
+      "purl": "pkg:oci/my-image?repository_url=registry.example.com%2Fmy-image",
+      "type": "container"
+    },
+    "timestamp": "1970-01-01T00:00:00Z",
+    "tools": {
+      "components": [
+        {
+          "name": "Bazel Supply Chain Tools CycloneDX generator",
+          "type": "application"
+        }
+      ]
+    }
+  },
+  "specVersion": "1.6",
+  "version": 1
+}

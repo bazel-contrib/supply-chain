@@ -117,6 +117,17 @@ func GenerateDocument301(graph sbom.GraphConfig, classifications sbom.Classifica
 			return fmt.Errorf("error reading patches of %s: %w", node.Label, err)
 		}
 		patchesOf[pkg] = patches
+		componentType, err := supplychain.GetComponentTypeAttribute(pkgMetadata)
+		if err != nil {
+			return fmt.Errorf("error reading component type of %s: %w", node.Label, err)
+		}
+		if componentType != "" {
+			purpose, ok := softwarePurposes[componentType]
+			if !ok {
+				return fmt.Errorf("unsupported component type %q of %s", componentType, node.Label)
+			}
+			pkg.PrimaryPurpose = purpose
+		}
 		packages = append(packages, pkg)
 		labelToPackage[node.Label] = pkg
 		purlToPackage[purl.String()] = pkg
@@ -329,4 +340,17 @@ func originatedBy(purlType, namespace string) spdx.AgentList {
 		}
 	}
 	return nil
+}
+
+// softwarePurposes maps the component types to the SPDX 3.0.1 software
+// purposes.
+var softwarePurposes = map[string]spdx.SoftwarePurpose{
+	"application":      spdx.SoftwarePurpose_Application,
+	"container":        spdx.SoftwarePurpose_Container,
+	"device":           spdx.SoftwarePurpose_Device,
+	"file":             spdx.SoftwarePurpose_File,
+	"firmware":         spdx.SoftwarePurpose_Firmware,
+	"framework":        spdx.SoftwarePurpose_Framework,
+	"library":          spdx.SoftwarePurpose_Library,
+	"operating-system": spdx.SoftwarePurpose_OperatingSystem,
 }

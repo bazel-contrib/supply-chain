@@ -21,6 +21,8 @@ def _cyclonedx_impl(ctx):
     if ctx.file.serial_number:
         extra_inputs.append(ctx.file.serial_number)
         extra_args.extend(["--serial_number_file", ctx.file.serial_number.path])
+    if ctx.attr._verbose_component_types[BuildSettingInfo].value:
+        extra_args.append("--verbose_component_types")
     if strict:
         cyclonedx_validator = ctx.toolchains["//sbom:cyclonedx_validator_toolchain_type"]
         extra_args.extend(["--validator", cyclonedx_validator.validator.path])
@@ -87,6 +89,10 @@ The embedded content makes the report self-contained but makes it larger, and di
         "_strict_validations": attr.label(
             default = "//sbom:strict_validations",
             doc = "Whether to validate generated reports with the upstream CycloneDX CLI. See //sbom:strict_validations.",
+        ),
+        "_verbose_component_types": attr.label(
+            default = "//sbom:verbose_component_types",
+            doc = "Whether to warn about components that do not declare a `component_type` attribute. See //sbom:verbose_component_types.",
         ),
     },
     toolchains = ["//sbom:cyclonedx_validator_toolchain_type"],
